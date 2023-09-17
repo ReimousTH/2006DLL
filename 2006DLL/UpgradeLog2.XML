@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type='text/xsl' href='_UpgradeReport_Files/UpgradeReport.xslt'?><UpgradeLog>
+<Properties><Property Name="Solution" Value="DLLModule2005">
+</Property><Property Name="Solution File" Value="D:\Games\X360\SONIC THE HEDGEHOG (XBOX 360)\DLL_NEW\2006DLL\2006DLL\DLLModule2005.sln">
+</Property><Property Name="Date" Value="1 сентября 2023 г.">
+</Property><Property Name="Time" Value="17:36:35">
+</Property><Property Name="Log Number" Value="2">
+</Property></Properties><Event ErrorLevel="2" Project="DLLModule2005" Source="DLLModule2005.vcproj" Description="The following error has occurred during XML parsing:&#xA;&#xA;File: D:\Games\X360\SONIC THE HEDGEHOG (XBOX 360)\DLL_NEW\2006DLL\2006DLL\DLLModule2005.vcproj&#xA;Line: 10&#xA;Column: 2&#xA;Error Message:&#xA;&quot;9.00&quot; нарушает ограничение enumeration для &quot;7.00 7,00 7.10 7,10 8.00 8,00&quot;.&#xA;Не удалось проанализировать атрибут &quot;Version&quot; со значением &quot;9.00&quot;.&#xA;&#xA;The file 'D:\Games\X360\SONIC THE HEDGEHOG (XBOX 360)\DLL_NEW\2006DLL\2006DLL\DLLModule2005.vcproj' has failed to load.">
+</Event><Event ErrorLevel="2" Project="DLLModule2005" Source="DLLModule2005.vcproj" Description="Project upgrade failed.">
+</Event><Event ErrorLevel="3" Project="DLLModule2005" Source="DLLModule2005.vcproj" Description="Not Converted">
+</Event></UpgradeLog>

@@ -1,0 +1,30 @@
+#pragma once
+
+#include <xtl.h>
+
+
+namespace SonicTeam{
+
+	namespace Player{
+
+		class IFlagCommunicator
+		{
+		public:
+			IFlagCommunicator(void);
+			virtual ~IFlagCommunicator(void);
+			virtual void SetFlag01(DWORD flag_value){};
+			virtual void SetFlag02(DWORD flag_value){};
+			virtual void SetFlag03(DWORD flag_value){};
+			virtual void SetFlag04(DWORD flag_value){};
+			virtual void SetFlag05(DWORD flag_value){};
+			virtual void SetFlag06(DWORD flag_value){};
+			virtual void SetAnimationStateFlag(DWORD flag_value){};
+			virtual void SetFlag08(DWORD flag_value){};
+			virtual void SetFlag09(DWORD flag_value){};
+			virtual void SetFlag10(DWORD flag_value){};
+			virtual void SetFlag11(DWORD flag_value){};
+			virtual void SetFlag12(DWORD flag_value){};
+		};
+
+	}
+}
