@@ -1,5 +1,5 @@
 // -- algorithm.hpp -- Boost Lambda Library -----------------------------------
-// Copyright (C) 2002 Jaakko Jarvi (jaakko.jarvi@cs.utu.fi)
+// Copyright (C) 2002 Jaakko Järvi (jaakko.jarvi@cs.utu.fi)
 // Copyright (C) 2002 Gary Powell (gwpowell@hotmail.com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See
@@ -684,8 +684,6 @@ struct rotate_copy {
 
 // random_shuffle  ---------------------------------
 
-#ifndef BOOST_NO_CXX98_RANDOM_SHUFFLE
-
 struct random_shuffle {
 
   template <class Args>
@@ -705,7 +703,6 @@ struct random_shuffle {
 
 };
 
-#endif
 
 // partition  ---------------------------------
 

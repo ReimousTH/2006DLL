@@ -1,12 +1,12 @@
 #ifndef DATE_TIME_DST_RULES_HPP__
 #define DATE_TIME_DST_RULES_HPP__
 
-/* Copyright (c) 2002,2003, 2007 CrystalClear Software, Inc.
+/* Copyright (c) 2002,2003 CrystalClear Software, Inc.
  * Use, modification and distribution is subject to the 
  * Boost Software License, Version 1.0. (See accompanying
- * file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+ * file LICENSE-1.0 or http://www.boost.org/LICENSE-1.0)
  * Author: Jeff Garland, Bart Garst
- * $Date$
+ * $Date: 2004/10/02 18:49:16 $
  */
 
 /*! @file dst_rules.hpp
@@ -106,12 +106,12 @@ namespace boost {
                    const time_duration_type& dst_end_offset,
                    const time_duration_type& dst_length_minutes)
       {
-        unsigned int start_minutes = static_cast<unsigned>(
-          dst_start_offset.hours() * 60 + dst_start_offset.minutes());
-        unsigned int end_minutes = static_cast<unsigned>(
-          dst_end_offset.hours() * 60 + dst_end_offset.minutes());
-        long length_minutes = static_cast<long>(
-          dst_length_minutes.hours() * 60 + dst_length_minutes.minutes());
+        unsigned int start_minutes = 
+          dst_start_offset.hours() * 60 + dst_start_offset.minutes();
+        unsigned int end_minutes = 
+          dst_end_offset.hours() * 60 + dst_end_offset.minutes();
+        long length_minutes =  
+          dst_length_minutes.hours() * 60 + dst_length_minutes.minutes();
 
         return local_is_dst(current_day, time_of_day,
                             dst_start_day, start_minutes,
@@ -251,12 +251,18 @@ namespace boost {
 
       static date_type local_dst_start_day(year_type year)
       {
-        return dst_traits::local_dst_start_day(year);      
+        typedef typename dst_traits::start_rule_functor start_rule;
+        start_rule start(dst_traits::start_day(), 
+                         dst_traits::start_month());
+        return start.get_date(year);      
       }
 
       static date_type local_dst_end_day(year_type year)
       {
-        return dst_traits::local_dst_end_day(year);
+        typedef typename dst_traits::end_rule_functor end_rule;
+        end_rule end(dst_traits::end_day(), 
+                     dst_traits::end_month());
+        return end.get_date(year);      
       }
 
 
@@ -264,8 +270,6 @@ namespace boost {
 
     //! Depricated: Class to calculate dst boundaries for US time zones
     /* Use dst_calc_engine instead.
-     * In 2007 US/Canada DST rules changed
-     * (http://en.wikipedia.org/wiki/Energy_Policy_Act_of_2005#Change_to_daylight_saving_time).
      */
     template<class date_type_, 
              class time_duration_type_,
@@ -280,7 +284,6 @@ namespace boost {
       typedef typename date_type::calendar_type calendar_type;
       typedef date_time::last_kday_of_month<date_type> lkday;
       typedef date_time::first_kday_of_month<date_type> fkday;
-      typedef date_time::nth_kday_of_month<date_type> nkday;
       typedef dst_calculator<date_type, time_duration_type> dstcalc;
 
       //! Calculates if the given local time is dst or not
@@ -312,36 +315,22 @@ namespace boost {
 
       static date_type local_dst_start_day(year_type year)
       {
-        if (year >= year_type(2007)) {
-          //second sunday in march
-          nkday ssim(nkday::second, Sunday, gregorian::Mar);
-          return ssim.get_date(year);      
-        } else {
-          //first sunday in april
-          fkday fsia(Sunday, gregorian::Apr);
-          return fsia.get_date(year);      
-        }
+        //first sunday in april
+        fkday fsia(Sunday, gregorian::Apr);
+        return fsia.get_date(year);      
       }
 
       static date_type local_dst_end_day(year_type year)
       {
-        if (year >= year_type(2007)) {
-          //first sunday in november
-          fkday fsin(Sunday, gregorian::Nov);
-          return fsin.get_date(year);      
-        } else {
-          //last sunday in october
-          lkday lsio(Sunday, gregorian::Oct);
-          return lsio.get_date(year);
-        }
+        //last sunday in october
+        lkday lsio(Sunday, gregorian::Oct);
+        return lsio.get_date(year);
       }
 
       static time_duration_type dst_offset()
       {
         return time_duration_type(0,dst_length_minutes,0);
       }
-
-     private:
 
 
     };
@@ -371,7 +360,7 @@ namespace boost {
         return is_not_in_dst;
       }
 
-      static bool is_dst_boundary_day(date_type /*d*/)
+      static bool is_dst_boundary_day(date_type d)
       {
         return false;
       }

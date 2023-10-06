@@ -4,19 +4,18 @@
 /* Copyright (c) 2002,2003,2005 CrystalClear Software, Inc.
  * Use, modification and distribution is subject to the 
  * Boost Software License, Version 1.0. (See accompanying
- * file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+ * file LICENSE-1.0 or http://www.boost.org/LICENSE-1.0)
  * Author: Jeff Garland, Bart Garst
- * $Date$
+ * $Date: 2005/04/23 05:39:52 $
  */
 
 
 /*! @file time.hpp
   This file contains the interface for the time associated classes.
 */
+#include "boost/date_time/time_defs.hpp"
+#include "boost/operators.hpp"
 #include <string>
-#include <boost/operators.hpp>
-#include <boost/date_time/time_defs.hpp>
-#include <boost/date_time/special_defs.hpp>
 
 namespace boost {
 namespace date_time {
@@ -49,8 +48,6 @@ namespace date_time {
       > >
   {
   public:
-    // A tag for type categorization. Can be used to detect Boost.DateTime time points in generic code.
-    typedef void _is_boost_date_time_time_point;
     typedef T time_type;
     typedef typename time_system::time_rep_type time_rep_type;
     typedef typename time_system::date_type date_type;
@@ -80,21 +77,21 @@ namespace date_time {
     /*! Optional bool parameter will return time zone as an offset 
      * (ie "+07:00"). Empty string is returned for classes that do 
      * not use a time_zone */
-    std::string zone_name(bool /*as_offset*/=false) const
+    std::string zone_name(bool as_offset=false) const
     {
       return time_system::zone_name(time_);
     }
     /*! Optional bool parameter will return time zone as an offset 
      * (ie "+07:00"). Empty string is returned for classes that do 
      * not use a time_zone */
-    std::string zone_abbrev(bool /*as_offset*/=false) const
+    std::string zone_abbrev(bool as_offset=false) const
     {
       return time_system::zone_name(time_);
     }
     //! An empty string is returned for classes that do not use a time_zone
     std::string zone_as_posix_string() const
     {
-      return std::string();
+      return std::string("");
     }
 
     //! check to see if date is not a value

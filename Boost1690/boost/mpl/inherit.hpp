@@ -14,9 +14,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/inherit.hpp,v $
+// $Date: 2004/09/02 15:40:41 $
+// $Revision: 1.5 $
 
 #if !defined(BOOST_MPL_PREPROCESSING_MODE)
 #   include <boost/mpl/empty_base.hpp>

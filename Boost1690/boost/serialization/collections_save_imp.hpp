@@ -2,7 +2,7 @@
 #define BOOST_SERIALIZATION_COLLECTIONS_SAVE_IMP_HPP
 
 // MS compatible compilers support #pragma once
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
 # pragma once
 #endif
 
@@ -18,13 +18,8 @@
 
 // helper function templates for serialization of collections
 
-#include <boost/config.hpp>
-#include <boost/core/addressof.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/serialization.hpp>
-#include <boost/serialization/version.hpp>
-#include <boost/serialization/collection_size_type.hpp>
-#include <boost/serialization/item_version_type.hpp>
 
 namespace boost{
 namespace serialization {
@@ -35,45 +30,18 @@ namespace stl {
 //
 
 template<class Archive, class Container>
-inline void save_collection(
-    Archive & ar,
-    const Container &s,
-    collection_size_type count)
-{
-    ar << BOOST_SERIALIZATION_NVP(count);
-    // record number of elements
-    const item_version_type item_version(
-        version<typename Container::value_type>::value
-    );
-    #if 0
-        boost::archive::library_version_type library_version(
-            ar.get_library_version()
-        );
-        if(boost::archive::library_version_type(3) < library_version){
-            ar << BOOST_SERIALIZATION_NVP(item_version);
-        }
-    #else
-        ar << BOOST_SERIALIZATION_NVP(item_version);
-    #endif
-
-    typename Container::const_iterator it = s.begin();
-    while(count-- > 0){
-        // note borland emits a no-op without the explicit namespace
-        boost::serialization::save_construct_data_adl(
-            ar, 
-            boost::addressof(*it),
-            item_version
-        );
-        ar << boost::serialization::make_nvp("item", *it++);
-    }
-}
-
-template<class Archive, class Container>
 inline void save_collection(Archive & ar, const Container &s)
 {
     // record number of elements
-    collection_size_type count(s.size());
-    save_collection(ar, s, count);
+    unsigned int count = s.size();
+    ar << make_nvp("count", const_cast<const unsigned int &>(count));
+    BOOST_DEDUCED_TYPENAME Container::const_iterator it = s.begin();
+    while(count-- > 0){
+        //if(0 == (ar.get_flags() & boost::archive::no_object_creation))
+                // note borland emits a no-op without the explicit namespace
+                boost::serialization::save_construct_data_adl(ar, &(*it), 0U);
+        ar << boost::serialization::make_nvp("item", *it++);
+    }
 }
 
 } // namespace stl 

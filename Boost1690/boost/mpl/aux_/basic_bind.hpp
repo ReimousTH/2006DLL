@@ -11,9 +11,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/aux_/basic_bind.hpp,v $
+// $Date: 2004/09/05 09:42:55 $
+// $Revision: 1.1 $
 
 #define BOOST_MPL_CFG_NO_UNNAMED_PLACEHOLDER_SUPPORT
 #include <boost/mpl/bind.hpp>

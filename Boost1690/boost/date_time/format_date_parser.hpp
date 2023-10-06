@@ -5,9 +5,9 @@
 /* Copyright (c) 2004-2005 CrystalClear Software, Inc.
  * Use, modification and distribution is subject to the 
  * Boost Software License, Version 1.0. (See accompanying
- * file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+ * file LICENSE-1.0 or http://www.boost.org/LICENSE-1.0)
  * Author: Jeff Garland, Bart Garst
- * $Date$
+ * $Date: 2005/06/16 13:22:27 $
  */
 
 
@@ -17,64 +17,9 @@
 #include "boost/date_time/special_values_parser.hpp"
 #include <string>
 #include <vector>
-#include <sstream>
-#include <iterator>
-#ifndef BOOST_NO_STDC_NAMESPACE
-#  include <cctype>
-#else
-#  include <ctype.h>
-#endif
 
-#ifdef BOOST_NO_STDC_NAMESPACE
-namespace std {
-  using ::isspace;
-  using ::isdigit;
-}
-#endif
 namespace boost { namespace date_time {
   
-//! Helper function for parsing fixed length strings into integers
-/*! Will consume 'length' number of characters from stream. Consumed 
- * character are transfered to parse_match_result struct. 
- * Returns '-1' if no number can be parsed or incorrect number of 
- * digits in stream. */
-template<typename int_type, typename charT>
-inline
-int_type
-fixed_string_to_int(std::istreambuf_iterator<charT>& itr,
-                    std::istreambuf_iterator<charT>& stream_end,
-                    parse_match_result<charT>& mr,
-                    unsigned int length,
-                    const charT& fill_char)
-{
-  //typedef std::basic_string<charT>  string_type;
-  unsigned int j = 0;
-  //string_type s;
-  while (j < length && itr != stream_end && 
-      (std::isdigit(*itr) || *itr == fill_char)) {
-    if(*itr == fill_char) {
-      /* Since a fill_char can be anything, we convert it to a zero. 
-       * lexical_cast will behave predictably when zero is used as fill. */
-      mr.cache += ('0'); 
-    }
-    else {
-      mr.cache += (*itr);
-    }
-    itr++;
-    j++;
-  }
-  int_type i = static_cast<int_type>(-1);
-  // mr.cache will hold leading zeros. size() tells us when input is too short.
-  if(mr.cache.size() < length) {
-    return i;
-  }
-  try {
-    i = boost::lexical_cast<int_type>(mr.cache);
-  }catch(bad_lexical_cast&){
-    // we want to return -1 if the cast fails so nothing to do here
-  }
-  return i;
-}
 
 //! Helper function for parsing fixed length strings into integers
 /*! Will consume 'length' number of characters from stream. Consumed 
@@ -89,7 +34,25 @@ fixed_string_to_int(std::istreambuf_iterator<charT>& itr,
                     parse_match_result<charT>& mr,
                     unsigned int length)
 {
-  return fixed_string_to_int<int_type, charT>(itr, stream_end, mr, length, '0');
+  //typedef std::basic_string<charT>  string_type;
+  unsigned int j = 0;
+  //string_type s;
+  while (j < length && itr != stream_end && std::isdigit(*itr)) {
+    mr.cache += (*itr);
+    itr++;
+    j++;
+  }
+  int_type i = -1;
+  // mr.cache will hold leading zeros. size() tells us when input is too short.
+  if(mr.cache.size() < length) {
+    return i;
+  }
+  try {
+    i = boost::lexical_cast<int_type>(mr.cache);
+  }catch(bad_lexical_cast blc){
+    // we want to return -1 if the cast fails so nothing to do here
+  }
+  return i;
 }
 
 //! Helper function for parsing varied length strings into integers
@@ -100,19 +63,19 @@ template<typename int_type, typename charT>
 inline
 int_type
 var_string_to_int(std::istreambuf_iterator<charT>& itr,
-                  const std::istreambuf_iterator<charT>& stream_end,
+                  std::istreambuf_iterator<charT>& stream_end,
                   unsigned int max_length)
 {
   typedef std::basic_string<charT>  string_type;
   unsigned int j = 0;
   string_type s;
-  while (itr != stream_end && (j < max_length) && std::isdigit(*itr)) {
+  while ((j < max_length) && std::isdigit(*itr)) {
     s += (*itr);
-    ++itr;
-    ++j;
+    itr++;
+    j++;
   }
-  int_type i = static_cast<int_type>(-1);
-  if(!s.empty()) {
+  int_type i = -1;
+  if(s.length() != 0) {
     i = boost::lexical_cast<int_type>(s);
   }
   return i;
@@ -152,7 +115,7 @@ class format_date_parser
 {
  public:
   typedef std::basic_string<charT>        string_type;
-  typedef std::basic_istringstream<charT>  stringstream_type;
+  typedef std::basic_stringstream<charT>  stringstream_type;
   typedef std::istreambuf_iterator<charT> stream_itr_type;
   typedef typename string_type::const_iterator const_itr;
   typedef typename date_type::year_type  year_type;
@@ -167,21 +130,21 @@ class format_date_parser
 
   // TODO sv_parser uses its default constructor - write the others
   
-  format_date_parser(const string_type& format_str,
+  format_date_parser(const string_type& format,
                      const input_collection_type& month_short_names,
                      const input_collection_type& month_long_names,
                      const input_collection_type& weekday_short_names,
                      const input_collection_type& weekday_long_names) :
-    m_format(format_str),
+    m_format(format),
     m_month_short_names(month_short_names, 1),
     m_month_long_names(month_long_names, 1),
     m_weekday_short_names(weekday_short_names),
     m_weekday_long_names(weekday_long_names)
   {}
   
-  format_date_parser(const string_type& format_str,
+  format_date_parser(const string_type& format,
                      const std::locale& locale) :
-    m_format(format_str),
+    m_format(format),
     m_month_short_names(gather_month_strings<charT>(locale), 1),
     m_month_long_names(gather_month_strings<charT>(locale, false), 1),
     m_weekday_short_names(gather_weekday_strings<charT>(locale)),
@@ -202,9 +165,9 @@ class format_date_parser
     return m_format;
   }
 
-  void format(string_type format_str)
+  void format(string_type format)
   {
-    m_format = format_str;
+    m_format = format;
   }
 
   void short_month_names(const input_collection_type& month_names)
@@ -226,13 +189,14 @@ class format_date_parser
 
   date_type
   parse_date(const string_type& value, 
-             const string_type& format_str,
+             const string_type& format,
              const special_values_parser<date_type,charT>& sv_parser) const
   {
-    stringstream_type ss(value);
+    stringstream_type ss;
+    ss << value; 
     stream_itr_type sitr(ss);
     stream_itr_type stream_end;
-    return parse_date(sitr, stream_end, format_str, sv_parser);
+    return parse_date(sitr, stream_end, format, sv_parser);
   }
 
   date_type
@@ -249,13 +213,14 @@ class format_date_parser
   date_type
   parse_date(std::istreambuf_iterator<charT>& sitr, 
              std::istreambuf_iterator<charT>& stream_end,
-             string_type format_str,
+             string_type format,
              const special_values_parser<date_type,charT>& sv_parser) const
   {
     bool use_current_char = false;
     
     // skip leading whitespace
     while(std::isspace(*sitr) && sitr != stream_end) { ++sitr; } 
+    charT current_char = *sitr;
 
     short year(0), month(0), day(0), day_of_year(0);// wkday(0); 
     /* Initialized the following to their minimum values. These intermediate 
@@ -268,11 +233,10 @@ class format_date_parser
     day_of_week_type wkday(0);
     
     
-    const_itr itr(format_str.begin());
-    while (itr != format_str.end() && (sitr != stream_end)) {
+    const_itr itr(format.begin());
+    while (itr != format.end() && (sitr != stream_end)) {
       if (*itr == '%') {
-        if ( ++itr == format_str.end())
-        	break;
+        itr++;
         if (*itr != '%') {
           switch(*itr) {
           case 'a': 
@@ -290,6 +254,7 @@ class format_date_parser
               }
               wkday = mr.current_match;
               if (mr.has_remaining()) {
+                current_char = mr.last_char();
                 use_current_char = true;
               }
               break;
@@ -309,6 +274,7 @@ class format_date_parser
               }
               wkday = mr.current_match;
               if (mr.has_remaining()) {
+                current_char = mr.last_char();
                 use_current_char = true;
               }
               break;
@@ -324,6 +290,7 @@ class format_date_parser
               }
               t_month = month_type(mr.current_match);
               if (mr.has_remaining()) {
+                current_char = mr.last_char();
                 use_current_char = true;
               }
               break;
@@ -339,6 +306,7 @@ class format_date_parser
               }
               t_month = month_type(mr.current_match);
               if (mr.has_remaining()) {
+                current_char = mr.last_char();
                 use_current_char = true;
               }
               break;
@@ -347,18 +315,6 @@ class format_date_parser
             {
               match_results mr;
               day = fixed_string_to_int<short, charT>(sitr, stream_end, mr, 2);
-              if(day == -1) {
-                if(sv_parser.match(sitr, stream_end, mr)) {
-                  return date_type(static_cast<special_values>(mr.current_match));
-                }
-              }
-              t_day = day_type(day);
-              break;
-            }
-          case 'e': 
-            {
-              match_results mr;
-              day = fixed_string_to_int<short, charT>(sitr, stream_end, mr, 2, ' ');
               if(day == -1) {
                 if(sv_parser.match(sitr, stream_end, mr)) {
                   return date_type(static_cast<special_values>(mr.current_match));
@@ -410,6 +366,7 @@ class format_date_parser
               match_results mr;
               year = fixed_string_to_int<short, charT>(sitr, stream_end, mr, 2);
               if(year == -1) {
+                match_results mr;
                 if(sv_parser.match(sitr, stream_end, mr)) {
                   return date_type(static_cast<special_values>(mr.current_match));
                 }
@@ -434,6 +391,7 @@ class format_date_parser
         itr++;
         if (use_current_char) {
           use_current_char = false;
+          current_char = *sitr;
         }
         else {
           sitr++;
@@ -454,31 +412,31 @@ class format_date_parser
   month_type
   parse_month(std::istreambuf_iterator<charT>& sitr, 
              std::istreambuf_iterator<charT>& stream_end,
-             string_type format_str) const
+             string_type format) const
   {
     match_results mr;
-    return parse_month(sitr, stream_end, format_str, mr);
+    return parse_month(sitr, stream_end, format, mr);
   }
  
   //! Throws bad_month if unable to parse
   month_type
   parse_month(std::istreambuf_iterator<charT>& sitr, 
              std::istreambuf_iterator<charT>& stream_end,
-             string_type format_str,
+             string_type format,
              match_results& mr) const
   {
     bool use_current_char = false;
     
     // skip leading whitespace
     while(std::isspace(*sitr) && sitr != stream_end) { ++sitr; } 
+    charT current_char = *sitr;
 
     short month(0);
     
-    const_itr itr(format_str.begin());
-    while (itr != format_str.end() && (sitr != stream_end)) {
+    const_itr itr(format.begin());
+    while (itr != format.end() && (sitr != stream_end)) {
       if (*itr == '%') {
-        if ( ++itr == format_str.end())
-        	break;
+        itr++;
         if (*itr != '%') {
           switch(*itr) {
           case 'b': 
@@ -486,6 +444,7 @@ class format_date_parser
               mr = m_month_short_names.match(sitr, stream_end);
               month = mr.current_match;
               if (mr.has_remaining()) {
+                current_char = mr.last_char();
                 use_current_char = true;
               }
               break;
@@ -495,6 +454,7 @@ class format_date_parser
               mr = m_month_long_names.match(sitr, stream_end);
               month = mr.current_match;
               if (mr.has_remaining()) {
+                current_char = mr.last_char();
                 use_current_char = true;
               }
               break;
@@ -522,6 +482,7 @@ class format_date_parser
         itr++;
         if (use_current_char) {
           use_current_char = false;
+          current_char = *sitr;
         }
         else {
           sitr++;
@@ -532,17 +493,7 @@ class format_date_parser
     return month_type(month); // throws bad_month exception when values are zero
   }
 
-  //! Expects 1 or 2 digits 1-31. Throws bad_day_of_month if unable to parse
-  day_type
-  parse_var_day_of_month(std::istreambuf_iterator<charT>& sitr, 
-                         std::istreambuf_iterator<charT>& stream_end) const
-  {
-    // skip leading whitespace
-    while(std::isspace(*sitr) && sitr != stream_end) { ++sitr; } 
-
-    return day_type(var_string_to_int<short, charT>(sitr, stream_end, 2));
-  }
-  //! Expects 2 digits 01-31. Throws bad_day_of_month if unable to parse
+  //! throws bad_day_of_month if unable to parse
   day_type
   parse_day_of_month(std::istreambuf_iterator<charT>& sitr, 
                      std::istreambuf_iterator<charT>& stream_end) const
@@ -550,37 +501,35 @@ class format_date_parser
     // skip leading whitespace
     while(std::isspace(*sitr) && sitr != stream_end) { ++sitr; } 
 
-    //return day_type(var_string_to_int<short, charT>(sitr, stream_end, 2));
-    match_results mr;
-    return day_type(fixed_string_to_int<short, charT>(sitr, stream_end, mr, 2));
+    return day_type(var_string_to_int<short, charT>(sitr, stream_end, 2));
   }
 
   day_of_week_type
   parse_weekday(std::istreambuf_iterator<charT>& sitr, 
              std::istreambuf_iterator<charT>& stream_end,
-             string_type format_str) const
+             string_type format) const
   {
     match_results mr;
-    return parse_weekday(sitr, stream_end, format_str, mr);
+    return parse_weekday(sitr, stream_end, format, mr);
   }
   day_of_week_type
   parse_weekday(std::istreambuf_iterator<charT>& sitr, 
              std::istreambuf_iterator<charT>& stream_end,
-             string_type format_str,
+             string_type format,
              match_results& mr) const
   {
     bool use_current_char = false;
     
     // skip leading whitespace
     while(std::isspace(*sitr) && sitr != stream_end) { ++sitr; } 
+    charT current_char = *sitr;
 
     short wkday(0);
     
-    const_itr itr(format_str.begin());
-    while (itr != format_str.end() && (sitr != stream_end)) {
+    const_itr itr(format.begin());
+    while (itr != format.end() && (sitr != stream_end)) {
       if (*itr == '%') {
-        if ( ++itr == format_str.end())
-        	break;
+        itr++;
         if (*itr != '%') {
           switch(*itr) {
           case 'a': 
@@ -592,6 +541,7 @@ class format_date_parser
               mr = m_weekday_short_names.match(sitr, stream_end);
               wkday = mr.current_match;
               if (mr.has_remaining()) {
+                current_char = mr.last_char();
                 use_current_char = true;
               }
               break;
@@ -605,6 +555,7 @@ class format_date_parser
               mr = m_weekday_long_names.match(sitr, stream_end);
               wkday = mr.current_match;
               if (mr.has_remaining()) {
+                current_char = mr.last_char();
                 use_current_char = true;
               }
               break;
@@ -631,6 +582,7 @@ class format_date_parser
         itr++;
         if (use_current_char) {
           use_current_char = false;
+          current_char = *sitr;
         }
         else {
           sitr++;
@@ -646,29 +598,31 @@ class format_date_parser
   year_type
   parse_year(std::istreambuf_iterator<charT>& sitr, 
              std::istreambuf_iterator<charT>& stream_end,
-             string_type format_str) const
+             string_type format) const
   {
     match_results mr;
-    return parse_year(sitr, stream_end, format_str, mr);
+    return parse_year(sitr, stream_end, format, mr);
   }
 
   //! throws bad_year if unable to parse
   year_type
   parse_year(std::istreambuf_iterator<charT>& sitr, 
              std::istreambuf_iterator<charT>& stream_end,
-             string_type format_str,
+             string_type format,
              match_results& mr) const
   {
+    bool use_current_char = false;
+    
     // skip leading whitespace
     while(std::isspace(*sitr) && sitr != stream_end) { ++sitr; } 
+    charT current_char = *sitr;
 
     unsigned short year(0);
     
-    const_itr itr(format_str.begin());
-    while (itr != format_str.end() && (sitr != stream_end)) {
+    const_itr itr(format.begin());
+    while (itr != format.end() && (sitr != stream_end)) {
       if (*itr == '%') {
-        if ( ++itr == format_str.end())
-        	break;
+        itr++;
         if (*itr != '%') {
           //match_results mr;
           switch(*itr) {
@@ -699,7 +653,13 @@ class format_date_parser
       }
       else {  //skip past chars in format and in buffer
         itr++;
-        sitr++;
+        if (use_current_char) {
+          use_current_char = false;
+          current_char = *sitr;
+        }
+        else {
+          sitr++;
+        }
       }
     }
     
@@ -719,6 +679,4 @@ class format_date_parser
 } } //namespace
 
 #endif
-
-
 

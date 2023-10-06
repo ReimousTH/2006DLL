@@ -1,19 +1,19 @@
-//  (C) Copyright Gennadiy Rozental 2001.
+//  (C) Copyright Gennadiy Rozental 2004-2005.
 //  Distributed under the Boost Software License, Version 1.0.
-//  (See accompanying file LICENSE_1_0.txt or copy at
+//  (See accompanying file LICENSE_1_0.txt or copy at 
 //  http://www.boost.org/LICENSE_1_0.txt)
 
 //  See http://www.boost.org/libs/test for the library home page.
 //
-//  File        : $RCSfile$
+//  File        : $RCSfile: token_iterator.hpp,v $
 //
-//  Version     : $Revision$
+//  Version     : $Revision: 1.8 $
 //
 //  Description : token iterator for string and range tokenization
 // ***************************************************************************
 
-#ifndef BOOST_TEST_UTILS_TOKEN_ITERATOR_HPP
-#define BOOST_TEST_UTILS_TOKEN_ITERATOR_HPP
+#ifndef BOOST_TOKEN_ITERATOR_HPP_071894GER
+#define BOOST_TOKEN_ITERATOR_HPP_071894GER
 
 // Boost
 #include <boost/config.hpp>
@@ -40,14 +40,14 @@ namespace std{ using ::ispunct; using ::isspace; }
 #endif
 
 namespace boost {
+
 namespace unit_test {
-namespace utils {
 
 // ************************************************************************** //
 // **************               ti_delimeter_type              ************** //
 // ************************************************************************** //
 
-enum ti_delimeter_type {
+enum ti_delimeter_type { 
     dt_char,        // character is delimeter if it among explicit list of some characters
     dt_ispunct,     // character is delimeter if it satisfies ispunct functor
     dt_isspace,     // character is delimeter if it satisfies isspace functor
@@ -82,21 +82,22 @@ class delim_policy {
     typedef basic_cstring<CharT const> cstring;
 public:
     // Constructor
-    explicit    delim_policy( ti_delimeter_type type_ = dt_char, cstring delimeters_ = cstring() )
-    : m_type( type_ )
+    explicit    delim_policy( ti_delimeter_type t = dt_char, cstring d = cstring() )
+    : m_type( t )
     {
-        set_delimeters( delimeters_ );
+        set_delimeters( d );
     }
 
-    void        set_delimeters( ti_delimeter_type type_ ) { m_type = type_; }
-    void        set_delimeters( cstring delimeters_ )
+    void        set_delimeters( ti_delimeter_type t ) { m_type = t; }
+    template<typename Src>
+    void        set_delimeters( Src d )
     {
-        m_delimeters = delimeters_;
-
+        nfp::optionally_assign( m_delimeters, d );
+        
         if( !m_delimeters.is_empty() )
             m_type = dt_char;
     }
-    void        set_delimeters( nfp::nil ) {}
+
     bool        operator()( CharT c )
     {
         switch( m_type ) {
@@ -134,7 +135,7 @@ struct token_assigner {
     template<typename Iterator, typename C, typename T>
     static void assign( Iterator b, Iterator e, std::basic_string<C,T>& t )
     { for( ; b != e; ++b ) t += *b; }
-
+    
     template<typename Iterator, typename C>
     static void assign( Iterator b, Iterator e, basic_cstring<C>& t )  { t.assign( b, e ); }
 #else
@@ -150,7 +151,7 @@ struct token_assigner {
 template<>
 struct token_assigner<single_pass_traversal_tag> {
     template<typename Iterator, typename Token>
-    static void assign( Iterator /*b*/, Iterator /*e*/, Token& /*t*/ )  {}
+    static void assign( Iterator b, Iterator e, Token& t )  {}
 
     template<typename Iterator, typename Token>
     static void append_move( Iterator& b, Token& t )        { t += *b; ++b; }
@@ -163,8 +164,8 @@ struct token_assigner<single_pass_traversal_tag> {
 // ************************************************************************** //
 
 namespace {
-nfp::keyword<struct dropped_delimeters_t >           dropped_delimeters;
-nfp::keyword<struct kept_delimeters_t >              kept_delimeters;
+nfp::keyword<struct dropped_delimeters_t > dropped_delimeters;
+nfp::keyword<struct kept_delimeters_t > kept_delimeters;
 nfp::typed_keyword<bool,struct keep_empty_tokens_t > keep_empty_tokens;
 nfp::typed_keyword<std::size_t,struct max_tokens_t > max_tokens;
 }
@@ -191,7 +192,7 @@ protected:
     : m_is_dropped( dt_isspace )
     , m_is_kept( dt_ispunct )
     , m_keep_empty_tokens( false )
-    , m_tokens_left( static_cast<std::size_t>(-1) )
+    , m_tokens_left( (std::size_t)-1 )
     , m_token_produced( false )
     {
     }
@@ -209,14 +210,14 @@ protected:
         if( m.has( keep_empty_tokens ) )
             m_keep_empty_tokens = true;
 
-        nfp::opt_assign( m_tokens_left, m, max_tokens );
+        nfp::optionally_assign( m_tokens_left, m, max_tokens );
     }
 
-    template<typename Iter>
+    template<typename Iter> 
     bool                    get( Iter& begin, Iter end )
     {
         typedef ut_detail::token_assigner<BOOST_DEDUCED_TYPENAME iterator_traversal<Iter>::type> Assigner;
-        Iter check_point;
+        Iter checkpoint;
 
         this->m_value.clear();
 
@@ -227,7 +228,7 @@ protected:
             if( begin == end )
                 return false;
 
-            check_point = begin;
+            checkpoint = begin;
 
             if( m_tokens_left == 1 )
                 while( begin != end )
@@ -239,27 +240,27 @@ protected:
                     Assigner::append_move( begin, this->m_value );
 
             --m_tokens_left;
-        }
+        } 
         else { // m_keep_empty_tokens is true
-            check_point = begin;
+            checkpoint = begin;
 
             if( begin == end ) {
-                if( m_token_produced )
+                if( m_token_produced ) 
                     return false;
 
                 m_token_produced = true;
             }
             if( m_is_kept( *begin ) ) {
-                if( m_token_produced )
+                if( m_token_produced ) 
                     Assigner::append_move( begin, this->m_value );
 
                 m_token_produced = !m_token_produced;
-            }
+            } 
             else if( !m_token_produced && m_is_dropped( *begin ) )
                 m_token_produced = true;
             else {
                 if( m_is_dropped( *begin ) )
-                    check_point = ++begin;
+                    checkpoint = ++begin;
 
                 while( begin != end && !m_is_dropped( *begin ) && !m_is_kept( *begin ) )
                     Assigner::append_move( begin, this->m_value );
@@ -268,7 +269,7 @@ protected:
             }
         }
 
-        Assigner::assign( check_point, begin, this->m_value );
+        Assigner::assign( checkpoint, begin, this->m_value );
 
         return true;
     }
@@ -300,12 +301,8 @@ public:
         this->init();
     }
 
-    // warning: making the constructor accept anything else than a cstring should
-    // ensure that no temporary object is created during string creation (previous
-    // definition was "template<typename Src, typename Modifier> basic_string_token_iterator( Src src ..."
-    // which may create a temporary string copy when called with an std::string.
-    template<typename Modifier>
-    basic_string_token_iterator( cstring src, Modifier const& m )
+    template<typename Src, typename Modifier>
+    basic_string_token_iterator( Src src, Modifier const& m )
     : m_src( src )
     {
         this->apply_modifier( m );
@@ -409,13 +406,48 @@ make_range_token_iterator( Iter begin, Iter end, Modifier const& m )
 
 //____________________________________________________________________________//
 
-} // namespace utils
 } // namespace unit_test
+
 } // namespace boost
 
 //____________________________________________________________________________//
 
 #include <boost/test/detail/enable_warnings.hpp>
 
-#endif // BOOST_TEST_UTILS_TOKEN_ITERATOR_HPP
+// ***************************************************************************
+//  Revision History :
+//  
+//  $Log: token_iterator.hpp,v $
+//  Revision 1.8  2005/06/16 05:58:26  rogeeff
+//  make default constructed range token iterator copyable according ot standard
+//
+//  Revision 1.7  2005/06/11 19:23:28  rogeeff
+//  1. Always use clear
+//  reorder field in constructor to eliminate warning
+//  remove cw workaround - doesn't seems to be needed
+//
+//  Revision 1.6  2005/06/05 16:07:51  grafik
+//  Work around CW-8 problem parsing the switch statement.
+//
+//  Revision 1.5  2005/04/12 06:46:42  rogeeff
+//  use named_param facilites
+//
+//  Revision 1.4  2005/02/20 08:27:09  rogeeff
+//  This a major update for Boost.Test framework. See release docs for complete list of fixes/updates
+//
+//  Revision 1.3  2005/02/01 06:40:08  rogeeff
+//  copyright update
+//  old log entries removed
+//  minor stylitic changes
+//  deprecated tools removed
+//
+//  Revision 1.2  2005/01/22 19:22:14  rogeeff
+//  implementation moved into headers section to eliminate dependency of included/minimal component on src directory
+//
+//  Revision 1.1  2005/01/22 18:21:40  rogeeff
+//  moved sharable staff into utils
+//
+// ***************************************************************************
+
+#endif // BOOST_TOKEN_ITERATOR_HPP_071894GER
 

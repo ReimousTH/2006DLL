@@ -10,9 +10,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/aux_/has_size.hpp,v $
+// $Date: 2004/09/02 15:40:43 $
+// $Revision: 1.6 $
 
 #include <boost/mpl/has_xxx.hpp>
 

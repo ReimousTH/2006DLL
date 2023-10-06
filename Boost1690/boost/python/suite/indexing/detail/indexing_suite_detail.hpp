@@ -11,7 +11,7 @@
 # include <boost/get_pointer.hpp>
 # include <boost/detail/binary_search.hpp>
 # include <boost/numeric/conversion/cast.hpp>
-# include <boost/python/detail/type_traits.hpp>
+# include <boost/type_traits/is_pointer.hpp>
 # include <vector>
 # include <map>
 #include <iostream>
@@ -465,14 +465,14 @@ namespace boost { namespace python { namespace detail {
 
         template <class DataType> 
         static object
-        base_get_item_helper(DataType const& p, detail::true_)
+        base_get_item_helper(DataType const& p, mpl::true_)
         { 
             return object(ptr(p));
         }
 
         template <class DataType> 
         static object
-        base_get_item_helper(DataType const& x, detail::false_)
+        base_get_item_helper(DataType const& x, mpl::false_)
         { 
             return object(x);
         }
@@ -490,20 +490,20 @@ namespace boost { namespace python { namespace detail {
 
         static void
         base_replace_indexes(
-            Container& /*container*/, Index /*from*/, 
-            Index /*to*/, Index /*n*/)
+            Container& container, Index from, 
+            Index to, Index n)
         {
         }
 
         template <class NoSlice>
         static void
         base_erase_index(
-            Container& /*container*/, Index /*i*/, NoSlice /*no_slice*/)
+            Container& container, Index i, NoSlice no_slice)
         {
         }
         
         static void
-        base_erase_indexes(Container& /*container*/, Index /*from*/, Index /*to*/)
+        base_erase_indexes(Container& container, Index from, Index to)
         {
         }
     };            
@@ -715,20 +715,20 @@ namespace boost { namespace python { namespace detail {
         }
         
         static object 
-        base_get_slice(Container& /*container*/, PySliceObject* /*slice*/)
+        base_get_slice(Container& container, PySliceObject* slice)
         { 
             slicing_not_suported();
             return object();
         }
    
         static void 
-        base_set_slice(Container& /*container*/, PySliceObject* /*slice*/, PyObject* /*v*/)
+        base_set_slice(Container& container, PySliceObject* slice, PyObject* v)
         {
             slicing_not_suported();
         }
         
         static void 
-        base_delete_slice(Container& /*container*/, PySliceObject* /*slice*/)
+        base_delete_slice(Container& container, PySliceObject* slice)
         { 
             slicing_not_suported();
         }  

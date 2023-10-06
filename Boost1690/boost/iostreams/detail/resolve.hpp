@@ -1,5 +1,4 @@
-// (C) Copyright 2008 CodeRage, LLC (turkanis at coderage dot com)
-// (C) Copyright 2003-2007 Jonathan Turkanis
+// (C) Copyright Jonathan Turkanis 2003.
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt.)
 
@@ -8,7 +7,7 @@
 #ifndef BOOST_IOSTREAMS_DETAIL_RESOLVE_HPP_INCLUDED
 #define BOOST_IOSTREAMS_DETAIL_RESOLVE_HPP_INCLUDED
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
 # pragma once
 #endif              
 
@@ -48,7 +47,10 @@ template<typename Mode, typename Ch, typename T>
 struct resolve_traits {
     typedef typename 
             mpl::if_<
-                boost::detail::is_incrementable<T>,
+                mpl::and_<
+                    boost::detail::is_incrementable<T>, // Must come first
+                    is_dereferenceable<T>               // for CW 9.[0-4]
+                >,
                 output_iterator_adapter<Mode, Ch, T>,
                 const T&
             >::type type;
@@ -65,8 +67,7 @@ resolve( const T& t
          // be correct, but I'm not sure why :(
          #if BOOST_WORKAROUND(BOOST_INTEL_CXX_VERSION, BOOST_TESTED_AT(810)) ||\
              BOOST_WORKAROUND(__MWERKS__, BOOST_TESTED_AT(0x3205)) || \
-             BOOST_WORKAROUND(BOOST_IOSTREAMS_GCC, BOOST_TESTED_AT(400)) ||\
-             BOOST_WORKAROUND(__IBMCPP__, BOOST_TESTED_AT(1110))
+             BOOST_WORKAROUND(BOOST_IOSTREAMS_GCC, BOOST_TESTED_AT(400)) \
              /**/
          , typename disable_if< is_iterator_range<T> >::type* = 0
          #endif
@@ -101,7 +102,7 @@ array_adapter<Mode, Ch> resolve(Ch (&array)[N])
 { return array_adapter<Mode, Ch>(array); }
 
 template<typename Mode, typename Ch, typename Iter>
-range_adapter< Mode, boost::iterator_range<Iter> >
+range_adapter< Mode, boost::iterator_range<Iter> > 
 resolve(const boost::iterator_range<Iter>& rng)
 { return range_adapter< Mode, boost::iterator_range<Iter> >(rng); }
 
@@ -162,7 +163,10 @@ struct resolve_traits {
                 mode_adapter<Mode, T>,
                 is_iterator_range<T>,
                 range_adapter<Mode, T>,
-                is_dereferenceable<T>,
+                mpl::and_<
+                    is_dereferenceable<T>,
+                    boost::detail::is_incrementable<T>
+                >,
                 output_iterator_adapter<Mode, Ch, T>,
                 is_array<T>,
                 array_adapter<Mode, T>,
@@ -197,6 +201,7 @@ resolve(const T& t BOOST_IOSTREAMS_DISABLE_IF_STREAM(T))
 { return resolve<Mode, Ch>(t, is_std_io<T>()); }
 
 # if !BOOST_WORKAROUND(__BORLANDC__, < 0x600) && \
+     !BOOST_WORKAROUND(BOOST_MSVC, <= 1300) && \
      !defined(__GNUC__) // ---------------------------------------------------//
 
 template<typename Mode, typename Ch, typename T>
@@ -220,7 +225,7 @@ typename resolve_traits<Mode, Ch, T>::type
 resolve(T& t BOOST_IOSTREAMS_ENABLE_IF_STREAM(T))
 { return resolve<Mode, Ch>(t, is_std_io<T>()); }
 
-# endif // Borland 5.x or GCC //--------------------------------//
+# endif // Borland 5.x, VC6-7.0 or GCC 2.9x //--------------------------------//
 #endif // #ifndef BOOST_IOSTREAMS_BROKEN_OVERLOAD_RESOLUTION //---------------//
 
 } } } // End namespaces detail, iostreams, boost.

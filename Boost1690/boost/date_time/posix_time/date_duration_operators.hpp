@@ -1,12 +1,12 @@
 #ifndef DATE_DURATION_OPERATORS_HPP___
 #define DATE_DURATION_OPERATORS_HPP___
-
+                                                                                
 /* Copyright (c) 2004 CrystalClear Software, Inc.
  * Subject to the Boost Software License, Version 1.0. 
- * (See accompanying file LICENSE_1_0.txt or 
- * http://www.boost.org/LICENSE_1_0.txt)
+ * (See accompanying file LICENSE-1.0 or 
+ * http://www.boost.org/LICENSE-1.0)
  * Author: Jeff Garland, Bart Garst
- * $Date$
+ * $Date: 2004/08/16 21:59:53 $
  */
 
 #include "boost/date_time/gregorian/greg_duration_types.hpp"

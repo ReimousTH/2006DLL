@@ -10,9 +10,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/list/aux_/begin_end.hpp,v $
+// $Date: 2004/09/02 15:40:58 $
+// $Revision: 1.4 $
 
 #include <boost/mpl/begin_end_fwd.hpp>
 #include <boost/mpl/list/aux_/iterator.hpp>

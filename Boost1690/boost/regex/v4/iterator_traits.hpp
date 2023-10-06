@@ -19,21 +19,14 @@
 #ifndef BOOST_REGEX_V4_ITERATOR_TRAITS_HPP
 #define BOOST_REGEX_V4_ITERATOR_TRAITS_HPP
 
-#ifdef BOOST_MSVC
-#pragma warning(push)
-#pragma warning(disable: 4103)
-#endif
 #ifdef BOOST_HAS_ABI_HEADERS
 #  include BOOST_ABI_PREFIX
 #endif
-#ifdef BOOST_MSVC
-#pragma warning(pop)
-#endif
 
 namespace boost{
-namespace BOOST_REGEX_DETAIL_NS{
+namespace re_detail{
 
-#if defined(BOOST_NO_STD_ITERATOR_TRAITS)
+#if defined(BOOST_NO_STD_ITERATOR_TRAITS) || defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
 
 template <class T>
 struct regex_iterator_traits 
@@ -78,17 +71,6 @@ template<>
 struct regex_iterator_traits<wchar_t*> : pointer_iterator_traits<wchar_t>{};
 template<>
 struct regex_iterator_traits<const wchar_t*> : const_pointer_iterator_traits<wchar_t>{};
-//
-// the follwoing are needed for ICU support:
-//
-template<>
-struct regex_iterator_traits<unsigned char*> : pointer_iterator_traits<char>{};
-template<>
-struct regex_iterator_traits<const unsigned char*> : const_pointer_iterator_traits<char>{};
-template<>
-struct regex_iterator_traits<int*> : pointer_iterator_traits<int>{};
-template<>
-struct regex_iterator_traits<const int*> : const_pointer_iterator_traits<int>{};
 
 #ifdef BOOST_REGEX_HAS_OTHER_WCHAR_T
 template<>
@@ -117,18 +99,11 @@ struct regex_iterator_traits : public std::iterator_traits<T> {};
 
 #endif
 
-} // namespace BOOST_REGEX_DETAIL_NS
+} // namespace re_detail
 } // namespace boost
 
-#ifdef BOOST_MSVC
-#pragma warning(push)
-#pragma warning(disable: 4103)
-#endif
 #ifdef BOOST_HAS_ABI_HEADERS
 #  include BOOST_ABI_SUFFIX
-#endif
-#ifdef BOOST_MSVC
-#pragma warning(pop)
 #endif
 
 #endif

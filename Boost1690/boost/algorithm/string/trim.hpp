@@ -1,12 +1,11 @@
 //  Boost string_algo library trim.hpp header file  ---------------------------//
 
-//  Copyright Pavol Droba 2002-2003.
-//
-// Distributed under the Boost Software License, Version 1.0.
-//    (See accompanying file LICENSE_1_0.txt or copy at
-//          http://www.boost.org/LICENSE_1_0.txt)
+//  Copyright Pavol Droba 2002-2003. Use, modification and
+//  distribution is subject to the Boost Software License, Version
+//  1.0. (See accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt)
 
-//  See http://www.boost.org/ for updates, documentation, and revision history.
+//  See http://www.boost.org for updates, documentation, and revision history.
 
 #ifndef BOOST_STRING_TRIM_HPP
 #define BOOST_STRING_TRIM_HPP
@@ -16,8 +15,6 @@
 #include <boost/range/begin.hpp>
 #include <boost/range/end.hpp>
 #include <boost/range/const_iterator.hpp>
-#include <boost/range/as_literal.hpp>
-#include <boost/range/iterator_range_core.hpp>
 
 #include <boost/algorithm/string/detail/trim.hpp>
 #include <boost/algorithm/string/classification.hpp>
@@ -50,7 +47,7 @@ namespace boost {
 
             \param Output An output iterator to which the result will be copied
             \param Input An input range
-            \param IsSpace A unary predicate identifying spaces
+            \param IsSpace An unary predicate identifying spaces
             \return 
                 An output iterator pointing just after the last inserted character or
                 a copy of the input
@@ -63,14 +60,12 @@ namespace boost {
             const RangeT& Input,
             PredicateT IsSpace)
         {
-            iterator_range<BOOST_STRING_TYPENAME range_const_iterator<RangeT>::type> lit_range(::boost::as_literal(Input));
-
             std::copy( 
                 ::boost::algorithm::detail::trim_begin( 
-                    ::boost::begin(lit_range), 
-                    ::boost::end(lit_range), 
+                    begin(Input), 
+                    end(Input), 
                     IsSpace ),
-                ::boost::end(lit_range),
+                end(Input),
                 Output);
 
             return Output;
@@ -85,10 +80,10 @@ namespace boost {
         {
             return SequenceT( 
                 ::boost::algorithm::detail::trim_begin( 
-                    ::boost::begin(Input), 
-                    ::boost::end(Input), 
+                    begin(Input), 
+                    end(Input), 
                     IsSpace ),
-                ::boost::end(Input));
+                end(Input));
         }
 
         //! Left trim - parametric
@@ -106,7 +101,7 @@ namespace boost {
         inline SequenceT trim_left_copy(const SequenceT& Input, const std::locale& Loc=std::locale())
         {
             return            
-                ::boost::algorithm::trim_left_copy_if(
+                trim_left_copy_if(
                     Input, 
                     is_space(Loc));
         }
@@ -118,16 +113,16 @@ namespace boost {
             The input sequence is modified in-place.
 
             \param Input An input sequence
-            \param IsSpace A unary predicate identifying spaces
+            \param IsSpace An unary predicate identifying spaces
         */
         template<typename SequenceT, typename PredicateT>
         inline void trim_left_if(SequenceT& Input, PredicateT IsSpace)
         {
             Input.erase( 
-                ::boost::begin(Input),
+                begin(Input),
                 ::boost::algorithm::detail::trim_begin( 
-                    ::boost::begin(Input), 
-                    ::boost::end(Input), 
+                    begin(Input), 
+                    end(Input), 
                     IsSpace));
         }
 
@@ -142,7 +137,7 @@ namespace boost {
         template<typename SequenceT>
         inline void trim_left(SequenceT& Input, const std::locale& Loc=std::locale())
         {
-            ::boost::algorithm::trim_left_if( 
+            trim_left_if( 
                 Input, 
                 is_space(Loc));
         }
@@ -158,7 +153,7 @@ namespace boost {
 
             \param Output An output iterator to which the result will be copied
             \param Input An input range
-            \param IsSpace A unary predicate identifying spaces
+            \param IsSpace An unary predicate identifying spaces
             \return 
                 An output iterator pointing just after the last inserted character or
                 a copy of the input
@@ -171,13 +166,11 @@ namespace boost {
             const RangeT& Input,
             PredicateT IsSpace )
         {
-            iterator_range<BOOST_STRING_TYPENAME range_const_iterator<RangeT>::type> lit_range(::boost::as_literal(Input));
-         
             std::copy( 
-                ::boost::begin(lit_range),
+                begin(Input),
                 ::boost::algorithm::detail::trim_end( 
-                    ::boost::begin(lit_range), 
-                    ::boost::end(lit_range), 
+                    begin(Input), 
+                    end(Input), 
                     IsSpace ),
                 Output );
 
@@ -192,10 +185,10 @@ namespace boost {
         inline SequenceT trim_right_copy_if(const SequenceT& Input, PredicateT IsSpace)
         {
             return SequenceT( 
-                ::boost::begin(Input),
+                begin(Input),
                 ::boost::algorithm::detail::trim_end( 
-                    ::boost::begin(Input), 
-                    ::boost::end(Input), 
+                    begin(Input), 
+                    end(Input), 
                     IsSpace)
                 );
         }
@@ -215,7 +208,7 @@ namespace boost {
         inline SequenceT trim_right_copy(const SequenceT& Input, const std::locale& Loc=std::locale())
         {
             return 
-                ::boost::algorithm::trim_right_copy_if( 
+                trim_right_copy_if( 
                     Input, 
                     is_space(Loc));
         }
@@ -228,17 +221,17 @@ namespace boost {
             The input sequence is modified in-place.
 
             \param Input An input sequence
-            \param IsSpace A unary predicate identifying spaces
+            \param IsSpace An unary predicate identifying spaces
         */
         template<typename SequenceT, typename PredicateT>
         inline void trim_right_if(SequenceT& Input, PredicateT IsSpace)
         {
             Input.erase(
                 ::boost::algorithm::detail::trim_end( 
-                    ::boost::begin(Input), 
-                    ::boost::end(Input), 
+                    begin(Input), 
+                    end(Input), 
                     IsSpace ),
-                ::boost::end(Input)
+                end(Input)
                 );
         }
 
@@ -254,7 +247,7 @@ namespace boost {
         template<typename SequenceT>
         inline void trim_right(SequenceT& Input, const std::locale& Loc=std::locale())
         {
-            ::boost::algorithm::trim_right_if(
+            trim_right_if(
                 Input, 
                 is_space(Loc) );
         }
@@ -270,7 +263,7 @@ namespace boost {
 
             \param Output An output iterator to which the result will be copied
             \param Input An input range
-            \param IsSpace A unary predicate identifying spaces
+            \param IsSpace An unary predicate identifying spaces
             \return 
                 An output iterator pointing just after the last inserted character or
                 a copy of the input
@@ -283,18 +276,16 @@ namespace boost {
             const RangeT& Input,
             PredicateT IsSpace)
         {
-            iterator_range<BOOST_STRING_TYPENAME range_const_iterator<RangeT>::type> lit_range(::boost::as_literal(Input));
-
             BOOST_STRING_TYPENAME 
                 range_const_iterator<RangeT>::type TrimEnd=
                 ::boost::algorithm::detail::trim_end( 
-                    ::boost::begin(lit_range), 
-                    ::boost::end(lit_range), 
+                    begin(Input), 
+                    end(Input), 
                     IsSpace);
 
             std::copy( 
                 detail::trim_begin( 
-                    ::boost::begin(lit_range), TrimEnd, IsSpace),
+                    begin(Input), TrimEnd, IsSpace),
                 TrimEnd,
                 Output
                 );
@@ -312,13 +303,13 @@ namespace boost {
             BOOST_STRING_TYPENAME 
                 range_const_iterator<SequenceT>::type TrimEnd=
                     ::boost::algorithm::detail::trim_end( 
-                        ::boost::begin(Input), 
-                        ::boost::end(Input), 
+                        begin(Input), 
+                        end(Input), 
                         IsSpace);
 
             return SequenceT( 
                 detail::trim_begin( 
-                    ::boost::begin(Input), 
+                    begin(Input), 
                     TrimEnd, 
                     IsSpace),
                 TrimEnd
@@ -340,7 +331,7 @@ namespace boost {
         inline SequenceT trim_copy( const SequenceT& Input, const std::locale& Loc=std::locale() )
         {
             return
-                ::boost::algorithm::trim_copy_if(
+                trim_copy_if(
                     Input, 
                     is_space(Loc) );
         }
@@ -352,13 +343,13 @@ namespace boost {
             The input sequence is modified in-place.
 
             \param Input An input sequence
-            \param IsSpace A unary predicate identifying spaces
+            \param IsSpace An unary predicate identifying spaces
         */
         template<typename SequenceT, typename PredicateT>
         inline void trim_if(SequenceT& Input, PredicateT IsSpace)
         {
-            ::boost::algorithm::trim_right_if( Input, IsSpace );
-            ::boost::algorithm::trim_left_if( Input, IsSpace );
+            trim_right_if( Input, IsSpace );
+            trim_left_if( Input, IsSpace );
         }
 
         //! Trim
@@ -372,7 +363,7 @@ namespace boost {
         template<typename SequenceT>
         inline void trim(SequenceT& Input, const std::locale& Loc=std::locale())
         {
-            ::boost::algorithm::trim_if(
+            trim_if(
                 Input, 
                 is_space( Loc ) );
         }

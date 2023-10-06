@@ -1,5 +1,5 @@
 // -- lambda.hpp -- Boost Lambda Library -----------------------------------
-// Copyright (C) 1999, 2000 Jaakko Jarvi (jaakko.jarvi@cs.utu.fi)
+// Copyright (C) 1999, 2000 Jaakko Järvi (jaakko.jarvi@cs.utu.fi)
 //
 // Distributed under the Boost Software License, Version 1.0. (See
 // accompanying file LICENSE_1_0.txt or copy at
@@ -24,6 +24,11 @@
 
 
 #include "boost/lambda/detail/operators.hpp"
+
+#ifndef BOOST_LAMBDA_FAILS_IN_TEMPLATE_KEYWORD_AFTER_SCOPE_OPER
+// sorry, member ptr does not work with gcc2.95
 #include "boost/lambda/detail/member_ptr.hpp"
+#endif
+
 
 #endif

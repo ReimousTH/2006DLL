@@ -12,9 +12,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/replace_if.hpp,v $
+// $Date: 2004/11/28 01:57:09 $
+// $Revision: 1.7 $
 
 #include <boost/mpl/transform.hpp>
 #include <boost/mpl/apply.hpp>

@@ -2,7 +2,7 @@
 #define BOOST_ARCHIVE_ITERATORS_ESCAPE_HPP
 
 // MS compatible compilers support #pragma once
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
 # pragma once
 #endif
 
@@ -16,9 +16,9 @@
 
 //  See http://www.boost.org for updates, documentation, and revision history.
 
-#include <boost/assert.hpp>
-#include <cstddef> // NULL
+#include <cassert>
 
+#include <boost/config.hpp> // for BOOST_DEDUCED_TYPENAME
 #include <boost/iterator/iterator_adaptor.hpp>
 #include <boost/iterator/iterator_traits.hpp>
 
@@ -34,16 +34,15 @@ class escape :
     public boost::iterator_adaptor<
         Derived, 
         Base, 
-        typename boost::iterator_value<Base>::type,
+        BOOST_DEDUCED_TYPENAME boost::iterator_value<Base>::type,
         single_pass_traversal_tag,
-        typename boost::iterator_value<Base>::type
-    >
-{
-    typedef typename boost::iterator_value<Base>::type base_value_type;
-    typedef typename boost::iterator_reference<Base>::type reference_type;
+        BOOST_DEDUCED_TYPENAME boost::iterator_value<Base>::type
+    >{
+    typedef BOOST_DEDUCED_TYPENAME boost::iterator_value<Base>::type base_value_type;
+    typedef BOOST_DEDUCED_TYPENAME boost::iterator_reference<Base>::type reference_type;
     friend class boost::iterator_core_access;
 
-    typedef typename boost::iterator_adaptor<
+    typedef BOOST_DEDUCED_TYPENAME boost::iterator_adaptor<
         Derived, 
         Base, 
         base_value_type,
@@ -53,32 +52,17 @@ class escape :
 
     typedef escape<Derived, Base> this_t;
 
-    void dereference_impl() {
-        m_current_value = static_cast<Derived *>(this)->fill(m_bnext, m_bend);
-        m_full = true;
+    bool equal(const this_t & rhs) const {
+        return 
+            NULL == m_bnext
+            && NULL == m_bend
+            && this->base_reference() == rhs.base_reference()
+        ;
     }
 
     //Access the value referred to 
     reference_type dereference() const {
-        if(!m_full)
-            const_cast<this_t *>(this)->dereference_impl();
         return m_current_value;
-    }
-
-    bool equal(const this_t & rhs) const {
-        if(m_full){
-            if(! rhs.m_full)
-                const_cast<this_t *>(& rhs)->dereference_impl();
-        }
-        else{
-            if(rhs.m_full)
-                const_cast<this_t *>(this)->dereference_impl();
-        }
-        if(m_bnext != rhs.m_bnext)
-            return false;
-        if(this->base_reference() != rhs.base_reference())
-            return false;
-        return true;
     }
 
    void increment(){
@@ -89,22 +73,21 @@ class escape :
         ++(this->base_reference());
         m_bnext = NULL;
         m_bend = NULL;
-        m_full = false;
+        m_current_value = (static_cast<Derived *>(this))->fill(m_bnext, m_bend);
     }
 
     // buffer to handle pending characters
     const base_value_type *m_bnext;
     const base_value_type *m_bend;
+    BOOST_DEDUCED_TYPENAME boost::iterator_value<Base>::type m_current_value;
     bool m_full;
-    base_value_type m_current_value;
 public:
     escape(Base base) : 
         super_t(base),
         m_bnext(NULL),
-        m_bend(NULL),
-        m_full(false),
-        m_current_value(0)
+        m_bend(NULL)
     {
+        m_current_value = static_cast<Derived *>(this)->fill(m_bnext, m_bend);
     }
 };
 

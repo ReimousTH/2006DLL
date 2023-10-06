@@ -2,7 +2,7 @@
 #define BOOST_ARCHIVE_ITERATORS_BASE64_FROM_BINARY_HPP
 
 // MS compatible compilers support #pragma once
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
 # pragma once
 #endif
 
@@ -16,14 +16,10 @@
 
 //  See http://www.boost.org for updates, documentation, and revision history.
 
-#include <boost/assert.hpp>
+#include <cassert>
 
-#include <cstddef> // size_t
-#if defined(BOOST_NO_STDC_NAMESPACE)
-namespace std{ 
-    using ::size_t; 
-} // namespace std
-#endif
+#include <boost/config.hpp> // for BOOST_DEDUCED_TYPENAME
+#include <boost/pfto.hpp>
 
 #include <boost/iterator/transform_iterator.hpp>
 #include <boost/archive/iterators/dataflow_exception.hpp>
@@ -41,20 +37,20 @@ template<class CharType>
 struct from_6_bit {
     typedef CharType result_type;
     CharType operator()(CharType t) const{
-        static const char * lookup_table =
+        const char * lookup_table = 
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
             "abcdefghijklmnopqrstuvwxyz"
             "0123456789"
             "+/";
-        BOOST_ASSERT(t < 64);
-        return lookup_table[static_cast<size_t>(t)];
+        assert(t < 64);
+        return lookup_table[t];
     }
 };
 
 } // namespace detail
 
 // note: what we would like to do is
-// template<class Base, class CharType = typename Base::value_type>
+// template<class Base, class CharType = BOOST_DEDUCED_TYPENAME Base::value_type>
 //  typedef transform_iterator<
 //      from_6_bit<CharType>,
 //      transform_width<Base, 6, sizeof(Base::value_type) * 8, CharType>
@@ -66,10 +62,10 @@ struct from_6_bit {
 // a templated constructor.  This makes it incompatible with the dataflow
 // ideal.  This is also addressed here.
 
-//template<class Base, class CharType = typename Base::value_type>
+//template<class Base, class CharType = BOOST_DEDUCED_TYPENAME Base::value_type>
 template<
     class Base, 
-    class CharType = typename boost::iterator_value<Base>::type
+    class CharType = BOOST_DEDUCED_TYPENAME boost::iterator_value<Base>::type
 >
 class base64_from_binary : 
     public transform_iterator<
@@ -79,16 +75,16 @@ class base64_from_binary :
 {
     friend class boost::iterator_core_access;
     typedef transform_iterator<
-        typename detail::from_6_bit<CharType>,
+        BOOST_DEDUCED_TYPENAME detail::from_6_bit<CharType>,
         Base
     > super_t;
 
 public:
     // make composible buy using templated constructor
     template<class T>
-    base64_from_binary(T start) :
+    base64_from_binary(BOOST_PFTO_WRAPPER(T) start) :
         super_t(
-            Base(static_cast< T >(start)),
+            Base(BOOST_MAKE_PFTO_WRAPPER(static_cast<T>(start))),
             detail::from_6_bit<CharType>()
         )
     {}

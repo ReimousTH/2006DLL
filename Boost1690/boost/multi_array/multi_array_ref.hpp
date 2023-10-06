@@ -25,13 +25,12 @@
 #include "boost/multi_array/subarray.hpp"
 #include "boost/multi_array/view.hpp"
 #include "boost/multi_array/algorithm.hpp"
-#include "boost/type_traits/is_integral.hpp"
-#include "boost/utility/enable_if.hpp"
 #include "boost/array.hpp"
 #include "boost/concept_check.hpp"
 #include "boost/functional.hpp"
 #include "boost/limits.hpp"
 #include <algorithm>
+#include <cassert>
 #include <cstddef>
 #include <functional>
 #include <numeric>
@@ -90,7 +89,7 @@ public:
   explicit const_multi_array_ref(TPtr base, const ExtentList& extents) :
     base_(base), storage_(c_storage_order()) {
     boost::function_requires<
-      CollectionConcept<ExtentList> >();
+      detail::multi_array::CollectionConcept<ExtentList> >();
 
     index_base_list_.assign(0);
     init_multi_array_ref(extents.begin());
@@ -101,7 +100,7 @@ public:
                        const general_storage_order<NumDims>& so) : 
     base_(base), storage_(so) {
     boost::function_requires<
-      CollectionConcept<ExtentList> >();
+      detail::multi_array::CollectionConcept<ExtentList> >();
 
     index_base_list_.assign(0);
     init_multi_array_ref(extents.begin());
@@ -138,15 +137,9 @@ public:
   }
 
   template <class BaseList>
-#ifdef BOOST_NO_SFINAE
-  void
-#else
-  typename
-  disable_if<typename boost::is_integral<BaseList>::type,void >::type
-#endif // BOOST_NO_SFINAE
-  reindex(const BaseList& values) {
+  void reindex(const BaseList& values) {
     boost::function_requires<
-      CollectionConcept<BaseList> >();
+      detail::multi_array::CollectionConcept<BaseList> >();
     boost::detail::multi_array::
       copy_n(values.begin(),num_dimensions(),index_base_list_.begin());
     origin_offset_ =
@@ -164,10 +157,10 @@ public:
   template <typename SizeList>
   void reshape(const SizeList& extents) {
     boost::function_requires<
-      CollectionConcept<SizeList> >();
-    BOOST_ASSERT(num_elements_ ==
-                 std::accumulate(extents.begin(),extents.end(),
-                                 size_type(1),std::multiplies<size_type>()));
+      detail::multi_array::CollectionConcept<SizeList> >();
+    assert(num_elements_ ==
+           std::accumulate(extents.begin(),extents.end(),
+                            size_type(1),std::multiplies<size_type>()));
 
     std::copy(extents.begin(),extents.end(),extent_list_.begin());
     this->compute_strides(stride_list_,extent_list_,storage_);
@@ -211,10 +204,10 @@ public:
   template <typename IndexList>
   const element& operator()(IndexList indices) const {
     boost::function_requires<
-      CollectionConcept<IndexList> >();
+      detail::multi_array::CollectionConcept<IndexList> >();
     return super_type::access_element(boost::type<const element&>(),
-                                      indices,origin(),
-                                      shape(),strides(),index_bases());
+                                      origin(),
+                                      indices,strides());
   }
 
   // Only allow const element access
@@ -225,7 +218,11 @@ public:
   }
 
   // see generate_array_view in base.hpp
+#if !defined(BOOST_MSVC) || BOOST_MSVC > 1300
   template <int NDims>
+#else
+  template <int NumDims, int NDims> // else ICE
+#endif // BOOST_MSVC
   typename const_array_view<NDims>::type 
   operator[](const detail::multi_array::
              index_gen<NumDims,NDims>& indices)
@@ -445,7 +442,7 @@ public:
   explicit multi_array_ref(T* base, const ExtentList& extents) :
     super_type(base,extents) {
     boost::function_requires<
-      CollectionConcept<ExtentList> >();
+      detail::multi_array::CollectionConcept<ExtentList> >();
   }
 
   template <class ExtentList>
@@ -453,7 +450,7 @@ public:
                            const general_storage_order<NumDims>& so) :
     super_type(base,extents,so) {
     boost::function_requires<
-      CollectionConcept<ExtentList> >();
+      detail::multi_array::CollectionConcept<ExtentList> >();
   }
 
 
@@ -475,13 +472,13 @@ public:
   template <typename ConstMultiArray>
   multi_array_ref& operator=(const ConstMultiArray& other) {
     function_requires< 
-      multi_array_concepts::
+      detail::multi_array::
       ConstMultiArrayConcept<ConstMultiArray,NumDims> >();
 
     // make sure the dimensions agree
-    BOOST_ASSERT(other.num_dimensions() == this->num_dimensions());
-    BOOST_ASSERT(std::equal(other.shape(),other.shape()+this->num_dimensions(),
-                            this->shape()));
+    assert(other.num_dimensions() == this->num_dimensions());
+    assert(std::equal(other.shape(),other.shape()+this->num_dimensions(),
+                      this->shape()));
     // iterator-based copy
     std::copy(other.begin(),other.end(),this->begin());
     return *this;
@@ -491,10 +488,9 @@ public:
     if (&other != this) {
       // make sure the dimensions agree
       
-      BOOST_ASSERT(other.num_dimensions() == this->num_dimensions());
-      BOOST_ASSERT(std::equal(other.shape(),
-                              other.shape()+this->num_dimensions(),
-                              this->shape()));
+      assert(other.num_dimensions() == this->num_dimensions());
+      assert(std::equal(other.shape(),other.shape()+this->num_dimensions(),
+                        this->shape()));
       // iterator-based copy
       std::copy(other.begin(),other.end(),this->begin());
     }
@@ -507,12 +503,11 @@ public:
 
   template <class IndexList>
   element& operator()(const IndexList& indices) {
-    boost::function_requires<
-      CollectionConcept<IndexList> >();
-    return super_type::access_element(boost::type<element&>(),
-                                      indices,origin(),
-                                      this->shape(),this->strides(),
-                                      this->index_bases());
+  boost::function_requires<
+    detail::multi_array::CollectionConcept<IndexList> >();
+  return super_type::access_element(boost::type<element&>(),
+                                      origin(),
+                                      indices,this->strides());
   }
 
 
@@ -525,7 +520,11 @@ public:
 
 
   // See note attached to generate_array_view in base.hpp
+#if !defined(BOOST_MSVC) || BOOST_MSVC > 1300
   template <int NDims>
+#else
+  template <int NumDims, int NDims> // else ICE
+#endif // BOOST_MSVC
   typename array_view<NDims>::type 
   operator[](const detail::multi_array::
              index_gen<NumDims,NDims>& indices) {
@@ -571,7 +570,7 @@ public:
   template <class IndexList>
   const element& operator()(const IndexList& indices) const {
     boost::function_requires<
-      CollectionConcept<IndexList> >();
+      detail::multi_array::CollectionConcept<IndexList> >();
     return super_type::operator()(indices);
   }
 
@@ -583,7 +582,11 @@ public:
   }
 
   // See note attached to generate_array_view in base.hpp
+#if !defined(BOOST_MSVC) || BOOST_MSVC > 1300
   template <int NDims>
+#else
+  template <int NumDims, int NDims> // else ICE
+#endif // BOOST_MSVC
   typename const_array_view<NDims>::type 
   operator[](const detail::multi_array::
              index_gen<NumDims,NDims>& indices)

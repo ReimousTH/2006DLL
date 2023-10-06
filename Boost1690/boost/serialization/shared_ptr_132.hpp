@@ -2,7 +2,7 @@
 #define BOOST_SERIALIZATION_SHARED_PTR_132_HPP
 
 // MS compatible compilers support #pragma once
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
 # pragma once
 #endif
 
@@ -23,16 +23,17 @@
 #include <boost/config.hpp>
 
 #include <list>
-#include <cstddef> // NULL
 
-#include <boost/serialization/assume_abstract.hpp>
+#include <boost/serialization/detail/shared_ptr_132.hpp>
+
+#include <boost/serialization/is_abstract.hpp>
 #include <boost/serialization/split_free.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/tracking.hpp>
 #include <boost/serialization/void_cast.hpp>
 
 // mark base class as an (uncreatable) base class
-#include <boost/serialization/detail/shared_ptr_132.hpp>
+BOOST_IS_ABSTRACT(boost_132::detail::sp_counted_base)
 
 /////////////////////////////////////////////////////////////
 // Maintain a couple of lists of loaded shared pointers of the old previous
@@ -44,6 +45,25 @@ namespace detail {
 
 struct null_deleter {
     void operator()(void const *) const {}
+};
+
+class shared_ptr_helper{
+    typedef std::list<shared_ptr<void> > collection_type;
+    typedef collection_type::iterator iterator_type;
+    // list of loaded pointers.  This is used to be sure that the pointers
+    // stay around long enough to be "matched" with other pointers loaded
+    // by the same archive.  These are created with a "null_deleter" so that
+    // when this list is destroyed - the underlaying raw pointers are not
+    // destroyed.  This has to be done because the pointers are also held by
+    // new system which is disjoint from this set.  This is implemented
+    // by a change in load_construct_data below.  It makes this file suitable
+    // only for loading pointers into a 1.33 or later boost system.
+    collection_type m_pointers;
+public:
+    void append(const boost_132::shared_ptr<void> & t){
+        m_pointers.push_back(t);
+    }
+    virtual ~shared_ptr_helper(){}
 };
 
 } // namespace detail
@@ -76,8 +96,7 @@ inline void serialize(
 template<class Archive, class P, class D>
 inline void save_construct_data(
     Archive & ar,
-    const 
-    boost_132::detail::sp_counted_base_impl<P, D> *t, 
+    const boost_132::detail::sp_counted_base_impl<P, D> *t, 
     const unsigned int /* file_version */
 ){
     // variables used for construction
@@ -92,8 +111,7 @@ inline void load_construct_data(
 ){
     P ptr_;
     ar >> boost::serialization::make_nvp("ptr", ptr_);
-    // ::new(t)boost_132::detail::sp_counted_base_impl<P, D>(ptr_,  D()); 
-    // placement
+//    ::new(t)boost_132::detail::sp_counted_base_impl<P, D>(ptr_,  D()); // placement
     // note: the original ::new... above is replaced by the one here.  This one
     // creates all new objects with a null_deleter so that after the archive
     // is finished loading and the shared_ptrs are destroyed - the underlying
@@ -147,7 +165,7 @@ inline void load(
 BOOST_SERIALIZATION_SPLIT_FREE(boost_132::detail::shared_count)
 
 /////////////////////////////////////////////////////////////
-// implement serialization for shared_ptr< T >
+// implement serialization for shared_ptr<T>
 
 namespace boost { 
 namespace serialization {
@@ -155,13 +173,13 @@ namespace serialization {
 template<class Archive, class T>
 inline void save(
     Archive & ar,
-    const boost_132::shared_ptr< T > &t,
+    const boost_132::shared_ptr<T> &t,
     const unsigned int /* file_version */
 ){
     // only the raw pointer has to be saved
     // the ref count is maintained automatically as shared pointers are loaded
     ar.register_type(static_cast<
-        boost_132::detail::sp_counted_base_impl<T *, boost::checked_deleter< T > > *
+        boost_132::detail::sp_counted_base_impl<T *, boost::checked_deleter<T> > *
     >(NULL));
     ar << boost::serialization::make_nvp("px", t.px);
     ar << boost::serialization::make_nvp("pn", t.pn);
@@ -170,13 +188,13 @@ inline void save(
 template<class Archive, class T>
 inline void load(
     Archive & ar,
-    boost_132::shared_ptr< T > &t,
+    boost_132::shared_ptr<T> &t,
     const unsigned int /* file_version */
 ){
     // only the raw pointer has to be saved
     // the ref count is maintained automatically as shared pointers are loaded
     ar.register_type(static_cast<
-        boost_132::detail::sp_counted_base_impl<T *, boost::checked_deleter< T > > *
+        boost_132::detail::sp_counted_base_impl<T *, boost::checked_deleter<T> > *
     >(NULL));
     ar >> boost::serialization::make_nvp("px", t.px);
     ar >> boost::serialization::make_nvp("pn", t.pn);
@@ -185,13 +203,13 @@ inline void load(
 template<class Archive, class T>
 inline void serialize(
     Archive & ar,
-    boost_132::shared_ptr< T > &t,
+    boost_132::shared_ptr<T> &t,
     const unsigned int file_version
 ){
     // correct shared_ptr serialization depends upon object tracking
     // being used.
     BOOST_STATIC_ASSERT(
-        boost::serialization::tracking_level< T >::value
+        boost::serialization::tracking_level<T>::value
         != boost::serialization::track_never
     );
     boost::serialization::split_free(ar, t, file_version);

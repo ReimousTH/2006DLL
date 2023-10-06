@@ -5,28 +5,22 @@
 /* Copyright (c) 2005 CrystalClear Software, Inc.
  * Use, modification and distribution is subject to the 
  * Boost Software License, Version 1.0. (See accompanying
- * file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+ * file LICENSE-1.0 or http://www.boost.org/LICENSE-1.0)
  * Author: Jeff Garland, Bart Garst
- * $Date$
+ * $Date: 
  */
 
+
+#include "boost/date_time/string_parse_tree.hpp"
+#include "boost/date_time/date_generators.hpp"
+#include "boost/date_time/format_date_parser.hpp"
 #include <string>
 #include <vector>
-#include <iterator> // istreambuf_iterator
-#include <boost/throw_exception.hpp>
-#include <boost/date_time/compiler_config.hpp>
-#include <boost/date_time/string_parse_tree.hpp>
-#include <boost/date_time/date_generators.hpp>
-#include <boost/date_time/format_date_parser.hpp>
 
 namespace boost { namespace date_time {
 
   //! Class for date_generator parsing 
-  /*! The elements of a date_generator "phrase" are parsed from the input stream in a 
-   *  particular order. All elements are required and the order in which they appear 
-   *  cannot change, however, the elements themselves can be changed. The default 
-   *  elements and their order are as follows:
-   *
+  /*! The elements of a date_generator "phrase" are parsed from the input stream in a particular order. All elements are required and the order in which they appear cannot change, however, the elements themselves can be changed. The default elements and their order are as follows:
    * - partial_date                     => "dd Month"
    * - nth_day_of_the_week_in_month     => "nth weekday of month"
    * - first_day_of_the_week_in_month   => "first weekday of month"
@@ -36,22 +30,24 @@ namespace boost { namespace date_time {
    *
    * Weekday and Month names and formats are handled via the date_input_facet. 
    *
+   * TODO: add doc-comments for which elements can be changed
    */
   template<class date_type, typename charT>
   class date_generator_parser
   {
    public:
     typedef std::basic_string<charT>        string_type;
+    //typedef std::basic_stringstream<charT>  stringstream_type;
     typedef std::istreambuf_iterator<charT> stream_itr_type;
-
-    typedef typename date_type::month_type       month_type;
+    //typedef typename string_type::const_iterator const_itr;
+    //typedef typename date_type::year_type  year_type;
+    typedef typename date_type::month_type month_type;
+    //typedef typename date_type::duration_type duration_type;
     typedef typename date_type::day_of_week_type day_of_week_type;
-    typedef typename date_type::day_type         day_type;
-
-    typedef string_parse_tree<charT>                          parse_tree_type;
+    typedef typename date_type::day_type day_type;
+    typedef string_parse_tree<charT> parse_tree_type;
     typedef typename parse_tree_type::parse_match_result_type match_results;
-    typedef std::vector<std::basic_string<charT> >            collection_type;
-
+    typedef std::vector<std::basic_string<charT> > collection_type;
     typedef partial_date<date_type>          partial_date_type;
     typedef nth_kday_of_month<date_type>     nth_kday_type;
     typedef first_kday_of_month<date_type>   first_kday_type;
@@ -68,61 +64,65 @@ namespace boost { namespace date_time {
     static const char_type last_string[5];
     static const char_type before_string[8];
     static const char_type after_string[6];
-    static const char_type of_string[3];
-
+    static const char_type of_string[3];  
+ 
     enum phrase_elements {first=0, second, third, fourth, fifth, last,
-                          before, after, of, number_of_phrase_elements};
+                          before, after, of, number_of_phrase_elements};   
 
     //! Creates a date_generator_parser with the default set of "element_strings"
     date_generator_parser()
     {
       element_strings(string_type(first_string),
-                      string_type(second_string),
-                      string_type(third_string),
-                      string_type(fourth_string),
-                      string_type(fifth_string),
-                      string_type(last_string),
-                      string_type(before_string),
-                      string_type(after_string),
-                      string_type(of_string));
+                  string_type(second_string),
+                  string_type(third_string),
+                  string_type(fourth_string),
+                  string_type(fifth_string),
+                  string_type(last_string),
+                  string_type(before_string),
+                  string_type(after_string),
+                  string_type(of_string));
     }
 
     //! Creates a date_generator_parser using a user defined set of element strings
-    date_generator_parser(const string_type& first_str,
-                          const string_type& second_str,
-                          const string_type& third_str,
-                          const string_type& fourth_str,
-                          const string_type& fifth_str,
-                          const string_type& last_str,
-                          const string_type& before_str,
-                          const string_type& after_str,
-                          const string_type& of_str)
+    date_generator_parser(const string_type& first,
+                          const string_type& second,
+                          const string_type& third,
+                          const string_type& fourth,
+                          const string_type& fifth,
+                          const string_type& last,
+                          const string_type& before,
+                          const string_type& after,
+                          const string_type& of)
     {
-      element_strings(first_str, second_str, third_str, fourth_str, fifth_str,
-                      last_str, before_str, after_str, of_str);
+      element_strings(first, second, third, fourth, fifth, last, before, after, of);
+    }
+
+    date_generator_parser(const date_generator_parser<date_type,charT>* dgp)
+    {
+      this->m_element_strings = dgp.m_element_strings;
     }
 
     //! Replace strings that determine nth week for generator
-    void element_strings(const string_type& first_str,
-                         const string_type& second_str,
-                         const string_type& third_str,
-                         const string_type& fourth_str,
-                         const string_type& fifth_str,
-                         const string_type& last_str,
-                         const string_type& before_str,
-                         const string_type& after_str,
-                         const string_type& of_str)
+    void element_strings(const string_type& first,
+                     const string_type& second,
+                     const string_type& third,
+                     const string_type& fourth,
+                     const string_type& fifth,
+                     const string_type& last,
+                     const string_type& before,
+                     const string_type& after,
+                     const string_type& of)
     {
       collection_type phrases;
-      phrases.push_back(first_str);
-      phrases.push_back(second_str);
-      phrases.push_back(third_str);
-      phrases.push_back(fourth_str);
-      phrases.push_back(fifth_str);
-      phrases.push_back(last_str);
-      phrases.push_back(before_str);
-      phrases.push_back(after_str);
-      phrases.push_back(of_str);
+      phrases.push_back(first);
+      phrases.push_back(second);
+      phrases.push_back(third);
+      phrases.push_back(fourth);
+      phrases.push_back(fifth);
+      phrases.push_back(last);
+      phrases.push_back(before);
+      phrases.push_back(after);
+      phrases.push_back(of);
       m_element_strings = parse_tree_type(phrases, this->first); // enum first
     }
 
@@ -130,18 +130,19 @@ namespace boost { namespace date_time {
     {
       m_element_strings = parse_tree_type(col, this->first); // enum first
     }
+                     
 
     //! returns partial_date parsed from stream
     template<class facet_type>
     partial_date_type
-    get_partial_date_type(stream_itr_type& sitr,
+    get_partial_date_type(stream_itr_type& sitr, 
                           stream_itr_type& stream_end,
-                          std::ios_base& a_ios,
+                          std::ios_base& a_ios, 
                           const facet_type& facet) const
     {
       // skip leading whitespace
-      while(std::isspace(*sitr) && sitr != stream_end) { ++sitr; }
-
+      while(std::isspace(*sitr) && sitr != stream_end) { ++sitr; } 
+      
       day_type d(1);
       month_type m(1);
       facet.get(sitr, stream_end, a_ios, d);
@@ -153,18 +154,18 @@ namespace boost { namespace date_time {
     //! returns nth_kday_of_week parsed from stream
     template<class facet_type>
     nth_kday_type
-    get_nth_kday_type(stream_itr_type& sitr,
+    get_nth_kday_type(stream_itr_type& sitr, 
                       stream_itr_type& stream_end,
-                      std::ios_base& a_ios,
+                      std::ios_base& a_ios, 
                       const facet_type& facet) const
     {
       // skip leading whitespace
-      while(std::isspace(*sitr) && sitr != stream_end) { ++sitr; }
- 
+      while(std::isspace(*sitr) && sitr != stream_end) { ++sitr; } 
+      
       typename nth_kday_type::week_num wn;
       day_of_week_type wd(0); // no default constructor
       month_type m(1);        // no default constructor
-
+     
       match_results mr = m_element_strings.match(sitr, stream_end);
       switch(mr.current_match) {
         case first  : { wn = nth_kday_type::first; break; }
@@ -174,98 +175,98 @@ namespace boost { namespace date_time {
         case fifth  : { wn = nth_kday_type::fifth; break; }
         default:
         {
-          boost::throw_exception(std::ios_base::failure("Parse failed. No match found for '" + mr.cache + "'"));
-          BOOST_DATE_TIME_UNREACHABLE_EXPRESSION(wn = nth_kday_type::first);
+          throw std::ios_base::failure("Parse failed. No match found for '" + mr.cache + "'");
+          break;
         }
       }                                         // week num
       facet.get(sitr, stream_end, a_ios, wd);   // day_of_week
       extract_element(sitr, stream_end, of);    // "of" element
       facet.get(sitr, stream_end, a_ios, m);    // month
-
+      
       return nth_kday_type(wn, wd, m);
     }
 
     //! returns first_kday_of_week parsed from stream
     template<class facet_type>
     first_kday_type
-    get_first_kday_type(stream_itr_type& sitr,
+    get_first_kday_type(stream_itr_type& sitr, 
                         stream_itr_type& stream_end,
-                        std::ios_base& a_ios,
+                        std::ios_base& a_ios, 
                         const facet_type& facet) const
     {
       // skip leading whitespace
-      while(std::isspace(*sitr) && sitr != stream_end) { ++sitr; }
-
+      while(std::isspace(*sitr) && sitr != stream_end) { ++sitr; } 
+      
       day_of_week_type wd(0); // no default constructor
       month_type m(1);        // no default constructor
-
+     
       extract_element(sitr, stream_end, first); // "first" element
       facet.get(sitr, stream_end, a_ios, wd);   // day_of_week
       extract_element(sitr, stream_end, of);    // "of" element
       facet.get(sitr, stream_end, a_ios, m);    // month
-
-
+      
+      
       return first_kday_type(wd, m);
     }
 
     //! returns last_kday_of_week parsed from stream
     template<class facet_type>
     last_kday_type
-    get_last_kday_type(stream_itr_type& sitr,
+    get_last_kday_type(stream_itr_type& sitr, 
                        stream_itr_type& stream_end,
-                       std::ios_base& a_ios,
+                       std::ios_base& a_ios, 
                        const facet_type& facet) const
     {
       // skip leading whitespace
-      while(std::isspace(*sitr) && sitr != stream_end) { ++sitr; }
-
+      while(std::isspace(*sitr) && sitr != stream_end) { ++sitr; } 
+      
       day_of_week_type wd(0); // no default constructor
       month_type m(1);        // no default constructor
- 
+     
       extract_element(sitr, stream_end, last); // "last" element
       facet.get(sitr, stream_end, a_ios, wd);  // day_of_week
       extract_element(sitr, stream_end, of);   // "of" element
       facet.get(sitr, stream_end, a_ios, m);   // month
-
-
+      
+      
       return last_kday_type(wd, m);
     }
 
     //! returns first_kday_of_week parsed from stream
     template<class facet_type>
     kday_before_type
-    get_kday_before_type(stream_itr_type& sitr,
+    get_kday_before_type(stream_itr_type& sitr, 
                          stream_itr_type& stream_end,
-                         std::ios_base& a_ios,
+                         std::ios_base& a_ios, 
                          const facet_type& facet) const
     {
       // skip leading whitespace
-      while(std::isspace(*sitr) && sitr != stream_end) { ++sitr; }
-
+      while(std::isspace(*sitr) && sitr != stream_end) { ++sitr; } 
+      
       day_of_week_type wd(0); // no default constructor
-
+     
       facet.get(sitr, stream_end, a_ios, wd);   // day_of_week
       extract_element(sitr, stream_end, before);// "before" element
-
+      
       return kday_before_type(wd);
     }
 
     //! returns first_kday_of_week parsed from stream
     template<class facet_type>
     kday_after_type
-    get_kday_after_type(stream_itr_type& sitr,
+    get_kday_after_type(stream_itr_type& sitr, 
                         stream_itr_type& stream_end,
-                        std::ios_base& a_ios,
+                        std::ios_base& a_ios, 
                         const facet_type& facet) const
     {
       // skip leading whitespace
-      while(std::isspace(*sitr) && sitr != stream_end) { ++sitr; }
-
+      while(std::isspace(*sitr) && sitr != stream_end) { ++sitr; } 
+      
       day_of_week_type wd(0); // no default constructor
-
+     
       facet.get(sitr, stream_end, a_ios, wd);   // day_of_week
       extract_element(sitr, stream_end, after); // "after" element
-
+      
       return kday_after_type(wd);
     }
 
@@ -278,13 +279,13 @@ namespace boost { namespace date_time {
                          typename date_generator_parser::phrase_elements ele) const
     {
       // skip leading whitespace
-      while(std::isspace(*sitr) && sitr != stream_end) { ++sitr; }
+      while(std::isspace(*sitr) && sitr != stream_end) { ++sitr; } 
       match_results mr = m_element_strings.match(sitr, stream_end);
       if(mr.current_match != ele) {
-        boost::throw_exception(std::ios_base::failure("Parse failed. No match found for '" + mr.cache + "'"));
+        throw std::ios_base::failure("Parse failed. No match found for '" + mr.cache + "'");
       }
     }
-
+    
   };
 
   template<class date_type, class CharT>

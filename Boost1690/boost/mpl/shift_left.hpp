@@ -11,9 +11,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/shift_left.hpp,v $
+// $Date: 2004/09/02 15:40:42 $
+// $Revision: 1.2 $
 
 #define AUX778076_OP_NAME shift_left
 #define AUX778076_OP_TOKEN <<

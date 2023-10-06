@@ -1,5 +1,4 @@
-// (C) Copyright 2008 CodeRage, LLC (turkanis at coderage dot com)
-// (C) Copyright 2003-2007 Jonathan Turkanis
+// (C) Copyright Jonathan Turkanis 2003.
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt.)
 
@@ -8,7 +7,7 @@
 #ifndef BOOST_IOSTREAMS_DETAIL_WRAP_UNWRAP_HPP_INCLUDED
 #define BOOST_IOSTREAMS_DETAIL_WRAP_UNWRAP_HPP_INCLUDED
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
 # pragma once
 #endif              
 
@@ -83,6 +82,8 @@ struct unwrap_ios
 
 //------------------Definition of unwrap--------------------------------------//
 
+#if !BOOST_WORKAROUND(BOOST_MSVC, < 1310) //----------------------------------//
+
 template<typename T>
 typename unwrapped_type<T>::type& 
 unwrap(const reference_wrapper<T>& ref) { return ref.get(); }
@@ -92,6 +93,33 @@ typename unwrapped_type<T>::type& unwrap(T& t) { return t; }
 
 template<typename T>
 const typename unwrapped_type<T>::type& unwrap(const T& t) { return t; }
+
+#else // #if !BOOST_WORKAROUND(BOOST_MSVC, < 1310) //-------------------------//
+
+// Since unwrap is a potential bottleneck, we avoid runtime tag dispatch.
+template<bool IsRefWrap>
+struct unwrap_impl;
+
+template<>
+struct unwrap_impl<true> {
+    template<typename T>
+    static typename unwrapped_type<T>::type& unwrap(const T& t) 
+    { return t.get(); }
+};
+
+template<>
+struct unwrap_impl<false> {
+    template<typename T>
+    static typename unwrapped_type<T>::type& unwrap(const T& t) 
+    { return const_cast<T&>(t); }
+};
+
+template<typename T>
+typename unwrapped_type<T>::type& 
+unwrap(const T& t) 
+{ return unwrap_impl<is_reference_wrapper<T>::value>::unwrap(t); }
+
+#endif // #if !BOOST_WORKAROUND(BOOST_MSVC, < 1310) //------------------------//
 
 } } } // End namespaces detail, iostreams, boost.
 

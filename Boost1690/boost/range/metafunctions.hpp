@@ -11,21 +11,18 @@
 #ifndef BOOST_RANGE_METAFUNCTIONS_HPP
 #define BOOST_RANGE_METAFUNCTIONS_HPP
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && (_MSC_VER >= 1200)
 # pragma once
 #endif
 
 #include <boost/range/iterator.hpp>
-#include <boost/range/has_range_iterator.hpp>
+#include <boost/range/const_iterator.hpp>
+#include <boost/range/value_type.hpp>
+#include <boost/range/size_type.hpp>
+#include <boost/range/difference_type.hpp>
 #include <boost/range/result_iterator.hpp>
 #include <boost/range/reverse_iterator.hpp>
 #include <boost/range/const_reverse_iterator.hpp>
 #include <boost/range/reverse_result_iterator.hpp>
-#include <boost/range/value_type.hpp>
-#include <boost/range/size_type.hpp>
-#include <boost/range/difference_type.hpp>
-#include <boost/range/category.hpp>
-#include <boost/range/reference.hpp>
-#include <boost/range/pointer.hpp>
 
 #endif

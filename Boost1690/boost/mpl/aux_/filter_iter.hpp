@@ -10,9 +10,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/aux_/filter_iter.hpp,v $
+// $Date: 2004/09/07 12:07:56 $
+// $Revision: 1.4 $
 
 #include <boost/mpl/find_if.hpp>
 #include <boost/mpl/iterator_range.hpp>

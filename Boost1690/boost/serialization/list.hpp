@@ -2,7 +2,7 @@
 #define BOOST_SERIALIZATION_LIST_HPP
 
 // MS compatible compilers support #pragma once
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
 # pragma once
 #endif
 
@@ -22,13 +22,15 @@
 
 #include <boost/serialization/collections_save_imp.hpp>
 #include <boost/serialization/collections_load_imp.hpp>
-
-#include <boost/archive/detail/basic_iarchive.hpp>
-#include <boost/serialization/access.hpp>
-#include <boost/serialization/nvp.hpp>
-#include <boost/serialization/collection_size_type.hpp>
-#include <boost/serialization/item_version_type.hpp>
 #include <boost/serialization/split_free.hpp>
+
+// function specializations must be defined in the appropriate
+// namespace - boost::serialization
+#if defined(__SGI_STL_PORT) || defined(_STLPORT_VERSION)
+#define STD _STLP_STD
+#else
+#define STD std
+#endif
 
 namespace boost { 
 namespace serialization {
@@ -36,7 +38,7 @@ namespace serialization {
 template<class Archive, class U, class Allocator>
 inline void save(
     Archive & ar,
-    const std::list<U, Allocator> &t,
+    const STD::list<U, Allocator> &t,
     const unsigned int /* file_version */
 ){
     boost::serialization::stl::save_collection<
@@ -48,20 +50,18 @@ inline void save(
 template<class Archive, class U, class Allocator>
 inline void load(
     Archive & ar,
-    std::list<U, Allocator> &t,
+    STD::list<U, Allocator> &t,
     const unsigned int /* file_version */
 ){
-    const boost::archive::library_version_type library_version(
-        ar.get_library_version()
-    );
-    // retrieve number of elements
-    item_version_type item_version(0);
-    collection_size_type count;
-    ar >> BOOST_SERIALIZATION_NVP(count);
-    if(boost::archive::library_version_type(3) < library_version){
-        ar >> BOOST_SERIALIZATION_NVP(item_version);
-    }
-    stl::collection_load_impl(ar, t, count, item_version);
+    boost::serialization::stl::load_collection<
+        Archive,
+        std::list<U, Allocator>,
+        boost::serialization::stl::archive_input_seq<
+            Archive, 
+            std::list<U, Allocator> 
+        >,
+        boost::serialization::stl::no_reserve_imp<STD::list<U, Allocator> >
+    >(ar, t);
 }
 
 // split non-intrusive serialization function member into separate
@@ -69,7 +69,7 @@ inline void load(
 template<class Archive, class U, class Allocator>
 inline void serialize(
     Archive & ar,
-    std::list<U, Allocator> & t,
+    STD::list<U, Allocator> & t,
     const unsigned int file_version
 ){
     boost::serialization::split_free(ar, t, file_version);
@@ -80,6 +80,7 @@ inline void serialize(
 
 #include <boost/serialization/collection_traits.hpp>
 
-BOOST_SERIALIZATION_COLLECTION_TRAITS(std::list)
+BOOST_SERIALIZATION_COLLECTION_TRAITS(STD::list)
+#undef STD
 
 #endif // BOOST_SERIALIZATION_LIST_HPP

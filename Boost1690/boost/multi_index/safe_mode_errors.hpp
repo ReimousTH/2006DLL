@@ -1,4 +1,4 @@
-/* Copyright 2003-2013 Joaquin M Lopez Munoz.
+/* Copyright 2003-2005 Joaquín M López Muñoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -9,7 +9,7 @@
 #ifndef BOOST_MULTI_INDEX_SAFE_MODE_ERRORS_HPP
 #define BOOST_MULTI_INDEX_SAFE_MODE_ERRORS_HPP
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER)&&(_MSC_VER>=1200)
 #pragma once
 #endif
 
@@ -35,7 +35,6 @@ enum error_code
   not_same_owner,
   invalid_range,
   inside_range,
-  out_of_bounds,
   same_container
 };
 

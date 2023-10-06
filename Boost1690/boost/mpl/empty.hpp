@@ -10,9 +10,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/empty.hpp,v $
+// $Date: 2004/09/02 15:40:41 $
+// $Revision: 1.4 $
 
 #include <boost/mpl/empty_fwd.hpp>
 #include <boost/mpl/sequence_tag.hpp>

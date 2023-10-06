@@ -11,22 +11,13 @@
 #ifndef BOOST_ASSIGN_PTR_LIST_INSERTER_HPP
 #define BOOST_ASSIGN_PTR_LIST_INSERTER_HPP
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
 # pragma once
 #endif
 
 #include <boost/assign/list_inserter.hpp>
 #include <boost/type_traits/remove_reference.hpp>
 #include <boost/type_traits/remove_pointer.hpp>
-#include <boost/move/utility.hpp>
-
-#if defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES) || defined(BOOST_NO_CXX11_RVALUE_REFERENCES)
-
-#include <boost/preprocessor/repetition/enum_binary_params.hpp>
-#include <boost/preprocessor/repetition/enum_params.hpp>
-#include <boost/preprocessor/iteration/local.hpp>
-
-#endif
 
 namespace boost
 {
@@ -53,8 +44,6 @@ namespace assign
         ptr_list_inserter( const ptr_list_inserter& r ) : insert_( r.insert_ )
         {}
 
-
-#if defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES) || defined(BOOST_NO_CXX11_RVALUE_REFERENCES)
         ptr_list_inserter& operator()()
         {
             insert_( new obj_type() );
@@ -88,17 +77,6 @@ namespace assign
         
 #include BOOST_PP_LOCAL_ITERATE()
 
-#else
-
-        template< class... Ts >
-        ptr_list_inserter& operator()(Ts&&... ts)
-        {
-            insert_(new obj_type(boost::forward<Ts>(ts)...));
-            return *this;
-        }
-
-#endif
-
     private:
         
         ptr_list_inserter& operator=( const ptr_list_inserter& );
@@ -120,18 +98,6 @@ namespace assign
         return make_ptr_list_inserter<BOOST_DEDUCED_TYPENAME C::reference>
                    ( assign_detail::call_push_back<C>( c ) ); 
     }
-
-#ifndef BOOST_NO_FUNCTION_TEMPLATE_ORDERING
-
-    template< class T, class C >
-    inline ptr_list_inserter< assign_detail::call_push_back<C>, T >
-    ptr_push_back( C& c )
-    {
-        return make_ptr_list_inserter<T>( 
-                    assign_detail::call_push_back<C>( c ) );
-    }
-
-#endif
     
     template< class C >
     inline ptr_list_inserter< assign_detail::call_push_front<C>,
@@ -142,18 +108,6 @@ namespace assign
                  ( assign_detail::call_push_front<C>( c ) );
     }
 
-#ifndef BOOST_NO_FUNCTION_TEMPLATE_ORDERING
-
-    template< class T, class C >
-    inline ptr_list_inserter< assign_detail::call_push_front<C>, T >
-    ptr_push_front( C& c )
-    {
-        return make_ptr_list_inserter<T>( 
-                    assign_detail::call_push_front<C>( c ) );
-    }
-
-#endif
-    
     template< class C >
     inline ptr_list_inserter< assign_detail::call_insert<C>, 
                           BOOST_DEDUCED_TYPENAME C::reference>
@@ -162,29 +116,13 @@ namespace assign
         return make_ptr_list_inserter<BOOST_DEDUCED_TYPENAME C::reference>
                     ( assign_detail::call_insert<C>( c ) );
     }
-
-#ifndef BOOST_NO_FUNCTION_TEMPLATE_ORDERING
-
-    template< class T, class C >
-    inline ptr_list_inserter< assign_detail::call_insert<C>, T >
-    ptr_insert( C& c )
-    {
-        return make_ptr_list_inserter<T>( assign_detail::call_insert<C>( c ) );
-    }
-
-#endif
-    
     
 } // namespace 'assign'
 } // namespace 'boost'
-
-#if defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES) || defined(BOOST_NO_CXX11_RVALUE_REFERENCES)
 
 #undef BOOST_ASSIGN_PARAMS1
 #undef BOOST_ASSIGN_PARAMS2
 #undef BOOST_ASSIGN_PARAMS3
 #undef BOOST_ASSIGN_MAX_PARAMETERS
-
-#endif
 
 #endif

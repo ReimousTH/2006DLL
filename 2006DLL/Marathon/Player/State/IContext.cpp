@@ -8,3 +8,4 @@ IContext::IContext(char* context_name):IPlugIn(context_name),IVarible(),IDynamic
 IContext::~IContext(void){
 	
 }
+

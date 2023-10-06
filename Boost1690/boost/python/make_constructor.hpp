@@ -23,7 +23,6 @@
 # include <boost/mpl/int.hpp>
 # include <boost/mpl/push_front.hpp>
 # include <boost/mpl/pop_front.hpp>
-# include <boost/mpl/assert.hpp>
 
 namespace boost { namespace python {
 
@@ -43,19 +42,14 @@ namespace detail
 
    private:
       template <class U>
-      void dispatch(U* x, detail::true_) const
+      void dispatch(U* x, mpl::true_) const
       {
-#if defined(BOOST_NO_CXX11_SMART_PTR)
-	std::auto_ptr<U> owner(x);
-	dispatch(owner, detail::false_());
-#else
-	std::unique_ptr<U> owner(x);
-	dispatch(std::move(owner), detail::false_());
-#endif
+          std::auto_ptr<U> owner(x);
+          dispatch(owner, mpl::false_());
       }
       
       template <class Ptr>
-      void dispatch(Ptr x, detail::false_) const
+      void dispatch(Ptr x, mpl::false_) const
       {
           typedef typename pointee<Ptr>::type value_type;
           typedef objects::pointer_holder<Ptr,value_type> holder;
@@ -63,11 +57,7 @@ namespace detail
 
           void* memory = holder::allocate(this->m_self, offsetof(instance_t, storage), sizeof(holder));
           try {
-#if defined(BOOST_NO_CXX11_SMART_PTR)
               (new (memory) holder(x))->install(this->m_self);
-#else
-              (new (memory) holder(std::move(x)))->install(this->m_self);
-#endif
           }
           catch(...) {
               holder::deallocate(this->m_self, memory);
@@ -113,14 +103,13 @@ namespace detail
       
       // If the BasePolicy_ supplied a result converter it would be
       // ignored; issue an error if it's not the default.
-      BOOST_MPL_ASSERT_MSG(
-         (is_same<
+      BOOST_STATIC_ASSERT((
+          is_same<
               typename BasePolicy_::result_converter
             , default_result_converter
-          >::value)
-        , MAKE_CONSTRUCTOR_SUPPLIES_ITS_OWN_RESULT_CONVERTER_THAT_WOULD_OVERRIDE_YOURS
-        , (typename BasePolicy_::result_converter)
-      );
+          >::value
+      ));
+      
       typedef constructor_result_converter result_converter;
       typedef offset_args<typename BasePolicy_::argument_package, mpl::int_<1> > argument_package;
   };
@@ -183,7 +172,7 @@ namespace detail
       
       typedef typename detail::error::more_keywords_than_function_arguments<
           NumKeywords::value, arity
-          >::too_many_keywords assertion BOOST_ATTRIBUTE_UNUSED;
+          >::too_many_keywords assertion;
     
       typedef typename outer_constructor_signature<Sig>::type outer_signature;
 

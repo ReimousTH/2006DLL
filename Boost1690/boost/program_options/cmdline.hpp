@@ -12,13 +12,13 @@ namespace boost { namespace program_options { namespace command_line_style {
     There are "long" options, which start with "--" and "short",
     which start with either "-" or "/". Both kinds can be allowed or
     disallowed, see allow_long and allow_short. The allowed character
-    for short options is also configurable.
+    for short option is also configurable.
 
-    Option's value can be specified in the same token as name
+    Option's value can be specified in the same token as value
     ("--foo=bar"), or in the next token.
 
-    It's possible to introduce long options by the same character as
-    short options, see allow_long_disguise.
+    It's possible to introduce long option by the same character as
+    long option, see allow_long_disguise.
 
     Finally, guessing (specifying only prefix of option) and case
     insensitive processing are supported.
@@ -26,7 +26,7 @@ namespace boost { namespace program_options { namespace command_line_style {
     enum style_t {
         /// Allow "--long_name" style
         allow_long = 1,
-        /// Allow "-<single character" style
+        /// Alow "-<single character" style
         allow_short = allow_long << 1,
         /// Allow "-" in short options
         allow_dash_for_short = allow_short << 1,
@@ -39,7 +39,7 @@ namespace boost { namespace program_options { namespace command_line_style {
             @endverbatim
         */
         long_allow_adjacent = allow_slash_for_short << 1,
-        /** Allow option parameter in the next token for
+        /** Allow option parameter in the same token for
             long options. */
         long_allow_next = long_allow_adjacent << 1,
         /** Allow option parameter in the same token for
@@ -59,22 +59,17 @@ namespace boost { namespace program_options { namespace command_line_style {
         /** Allow abbreviated spellings for long options,
             if they unambiguously identify long option. 
             No long option name should be prefix of other 
-            long option name if guessing is in effect.
+            long option name is guessing is in effect.
         */
         allow_guessing = allow_sticky << 1,
-        /** Ignore the difference in case for long options.
+        /** Ignore the difference in case for options. 
+            @todo Should this apply to long options only?
         */            
-        long_case_insensitive = allow_guessing << 1,        
-        /** Ignore the difference in case for short options.
-        */            
-        short_case_insensitive = long_case_insensitive << 1,
-        /** Ignore the difference in case for all options.
-        */        
-        case_insensitive = (long_case_insensitive | short_case_insensitive),        
+        case_insensitive = allow_guessing << 1,
         /** Allow long options with single option starting character,
             e.g <tt>-foo=10</tt>
         */
-        allow_long_disguise = short_case_insensitive << 1,
+        allow_long_disguise = case_insensitive << 1,
         /** The more-or-less traditional unix style. */
         unix_style = (allow_short | short_allow_adjacent | short_allow_next
                       | allow_long | long_allow_adjacent | long_allow_next

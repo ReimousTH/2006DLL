@@ -1,13 +1,16 @@
-//
-// Boost.Pointer Container
-//
-//  Copyright Thorsten Ottosen 2003-2008. Use, modification and
-//  distribution is subject to the Boost Software License, Version
-//  1.0. (See accompanying file LICENSE_1_0.txt or copy at
-//  http://www.boost.org/LICENSE_1_0.txt)
-//
-// For more information, see http://www.boost.org/libs/ptr_container/
-//
+/**
+ * Pointer Container Library
+ * (C) Thorsten Ottosen 2003-2005
+ * 
+ * Permission to copy, use, modify,
+ * sell and distribute this software is granted provided this
+ * copyright notice appears in all copies. This software is provided
+ * "as is" without express or implied warranty, and with no claim as
+ * to its suitability for any purpose.
+ *
+ * See http://www.boost.org/libs/ptr_container for documentation.
+ *
+ */
  
 #ifndef BOOST_PTR_CONTAINER_HPP
 #define BOOST_PTR_CONTAINER_HPP
@@ -16,16 +19,11 @@
 # pragma once
 #endif
 
-#include <boost/ptr_container/ptr_array.hpp>
 #include <boost/ptr_container/ptr_deque.hpp>
 #include <boost/ptr_container/ptr_list.hpp>
 #include <boost/ptr_container/ptr_map.hpp>
 #include <boost/ptr_container/ptr_set.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
-#include <boost/ptr_container/ptr_unordered_map.hpp>
-#include <boost/ptr_container/ptr_unordered_set.hpp>
-#include <boost/ptr_container/ptr_circular_buffer.hpp>
-#include <boost/ptr_container/ptr_inserter.hpp>
 
 #endif
 

@@ -10,9 +10,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/aux_/config/dmc_ambiguous_ctps.hpp,v $
+// $Date: 2004/09/02 15:40:45 $
+// $Revision: 1.2 $
 
 #include <boost/mpl/aux_/config/workaround.hpp>
 

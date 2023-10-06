@@ -11,9 +11,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/protect.hpp,v $
+// $Date: 2004/09/07 21:37:24 $
+// $Revision: 1.10 $
 
 #include <boost/mpl/aux_/arity.hpp>
 #include <boost/mpl/aux_/config/dtp.hpp>

@@ -1,12 +1,11 @@
 //  Boost string_algo library regex_find_format.hpp header file  ---------------------------//
 
-//  Copyright Pavol Droba 2002-2003.
-//
-// Distributed under the Boost Software License, Version 1.0.
-//    (See accompanying file LICENSE_1_0.txt or copy at
-//          http://www.boost.org/LICENSE_1_0.txt)
+//  Copyright Pavol Droba 2002-2003. Use, modification and
+//  distribution is subject to the Boost Software License, Version
+//  1.0. (See accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt)
 
-//  See http://www.boost.org/ for updates, documentation, and revision history.
+//  See http://www.boost.org for updates, documentation, and revision history.
 
 #ifndef BOOST_STRING_REGEX_FIND_FORMAT_HPP
 #define BOOST_STRING_REGEX_FIND_FORMAT_HPP
@@ -32,7 +31,7 @@ namespace boost {
             Construct the \c regex_finder. Finder uses the regex engine to search
             for a match.
             Result is given in \c regex_search_result. This is an extension
-            of the iterator_range. In addition it contains match results 
+            of the iterator_range. In addition it containes match results 
             from the \c regex_search algorithm.
 
             \param Rx A regular expression

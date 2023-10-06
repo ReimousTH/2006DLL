@@ -11,9 +11,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/print.hpp,v $
+// $Date: 2004/09/02 15:40:42 $
+// $Revision: 1.2 $
 
 #include <boost/mpl/aux_/config/msvc.hpp>
 #include <boost/mpl/identity.hpp>
@@ -37,7 +37,8 @@ namespace aux {
       static const unsigned value = 1;
   };
 #endif
-} // namespace aux
+} // namespace aux 
+
 
 template <class T>
 struct print
@@ -46,12 +47,7 @@ struct print
     , aux::print_base
 #endif 
 {
-#if defined(__clang__)
-# pragma clang diagnostic push
-# pragma clang diagnostic ignored "-Wc++11-extensions"
-    const int m_x = 1 / (sizeof(T) - sizeof(T));
-# pragma clang diagnostic pop
-#elif defined(BOOST_MSVC)
+#if defined(BOOST_MSVC)
     enum { n = sizeof(T) + -1 };
 #elif defined(__MWERKS__)
     void f(int);
@@ -61,7 +57,7 @@ struct print
 # if defined(__EDG_VERSION__)
            aux::dependent_unsigned<T>::value > -1
 # else 
-           sizeof(T) > -1
+           sizeof(T) > -1, 
 # endif 
         };
 #endif 

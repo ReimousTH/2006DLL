@@ -15,7 +15,7 @@ namespace boost { namespace program_options {
 
     /** Option found in input source.
         Contains a key and a value. The key, in turn, can be a string (name of
-        an option), or an integer (position in input source) \-- in case no name
+        an option), or an integer (position in input source) -- in case no name
         is specified. The latter is only possible for command line.
         The template parameter specifies the type of char used for storing the
         option's value.
@@ -23,18 +23,10 @@ namespace boost { namespace program_options {
     template<class charT>
     class basic_option {
     public:
-        basic_option() 
-        : position_key(-1)
-        , unregistered(false) 
-        , case_insensitive(false)
-        {}
-        basic_option(const std::string& xstring_key, 
-               const std::vector< std::string> &xvalue)
-        : string_key(xstring_key)
-        , position_key(-1)
-        , value(xvalue)
-        , unregistered(false)
-        , case_insensitive(false)
+        basic_option() : position_key(-1), unregistered(false) {}
+        basic_option(const std::string& string_key, 
+               const std::vector< std::string> &value) 
+        : string_key(string_key), value(value), unregistered(false)
         {}
 
         /** String key of this option. Intentionally independent of the template
@@ -49,19 +41,10 @@ namespace boost { namespace program_options {
         int position_key;
         /** Option's value */
         std::vector< std::basic_string<charT> > value;
-        /** The original unchanged tokens this option was
-            created from. */
-        std::vector< std::basic_string<charT> > original_tokens;
         /** True if option was not recognized. In that case,
             'string_key' and 'value' are results of purely
-            syntactic parsing of source. The original tokens can be
-            recovered from the "original_tokens" member.
-        */
+            syntactic parsing of source. */
         bool unregistered;
-        /** True if string_key has to be handled
-            case insensitive.
-        */
-        bool case_insensitive;
     };
     typedef basic_option<char> option;
     typedef basic_option<wchar_t> woption;

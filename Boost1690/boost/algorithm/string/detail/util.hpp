@@ -1,19 +1,18 @@
 //  Boost string_algo library util.hpp header file  ---------------------------//
 
-//  Copyright Pavol Droba 2002-2003.
-//
-// Distributed under the Boost Software License, Version 1.0.
-//    (See accompanying file LICENSE_1_0.txt or copy at
-//          http://www.boost.org/LICENSE_1_0.txt)
+//  Copyright Pavol Droba 2002-2003. Use, modification and
+//  distribution is subject to the Boost Software License, Version
+//  1.0. (See accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt)
 
-//  See http://www.boost.org/ for updates, documentation, and revision history.
+//  See http://www.boost.org for updates, documentation, and revision history.
 
 #ifndef BOOST_STRING_UTIL_DETAIL_HPP
 #define BOOST_STRING_UTIL_DETAIL_HPP
 
 #include <boost/algorithm/string/config.hpp>
 #include <functional>
-#include <boost/range/iterator_range_core.hpp>
+#include <boost/range/iterator_range.hpp>
 
 namespace boost {
     namespace algorithm {
@@ -89,10 +88,9 @@ namespace boost {
             template< 
                 typename SeqT, 
                 typename IteratorT=BOOST_STRING_TYPENAME SeqT::const_iterator >
-            struct copy_iterator_rangeF
+            struct copy_iterator_rangeF : 
+                public std::unary_function< iterator_range<IteratorT>, SeqT >
             {
-                typedef iterator_range<IteratorT> argument_type;
-                typedef SeqT result_type;
                 SeqT operator()( const iterator_range<IteratorT>& Range ) const
                 {
                     return copy_range<SeqT>(Range);

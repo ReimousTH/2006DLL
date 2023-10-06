@@ -65,6 +65,11 @@ namespace ChainJumpTest{
 }
 
 
+namespace WhiteGameRestored
+{
+	void GlobalInstall();
+}
+
 
 
 

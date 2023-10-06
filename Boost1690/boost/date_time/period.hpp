@@ -4,9 +4,9 @@
 /* Copyright (c) 2002,2003 CrystalClear Software, Inc.
  * Use, modification and distribution is subject to the 
  * Boost Software License, Version 1.0. (See accompanying
- * file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+ * file LICENSE-1.0 or http://www.boost.org/LICENSE-1.0)
  * Author: Jeff Garland, Bart Garst 
- * $Date$
+ * $Date: 2005/07/24 23:47:50 $
  */
 
 /*! \file period.hpp
@@ -17,8 +17,7 @@
 
 */
 
-#include <boost/operators.hpp>
-#include <boost/date_time/compiler_config.hpp>
+#include "boost/operators.hpp"
 
 
 namespace boost {
@@ -49,7 +48,7 @@ namespace date_time {
 
    */
   template<class point_rep, class duration_rep>
-  class BOOST_SYMBOL_VISIBLE period : private
+  class period : private
       boost::less_than_comparable<period<point_rep, duration_rep> 
     , boost::equality_comparable< period<point_rep, duration_rep> 
     > >
@@ -68,7 +67,6 @@ namespace date_time {
     bool operator==(const period& rhs) const;
     bool operator<(const period& rhs) const;
     void shift(const duration_rep& d);
-    void expand(const duration_rep& d);
     bool contains(const point_rep& point) const;
     bool contains(const period& other) const;
     bool intersects(const period& other) const;
@@ -174,33 +172,6 @@ namespace date_time {
   void period<point_rep,duration_rep>::shift(const duration_rep& d)
   {
     begin_ = begin_ + d;
-    last_  = last_  + d;
-  }
-
-  /** Expands the size of the period by the duration on both ends.
-   *
-   *So before expand 
-   *@code
-   *
-   *         [-------]
-   * ^   ^   ^   ^   ^   ^  ^
-   * 1   2   3   4   5   6  7
-   * 
-   *@endcode
-   * After expand(2)
-   *@code
-   *
-   * [----------------------]
-   * ^   ^   ^   ^   ^   ^  ^
-   * 1   2   3   4   5   6  7
-   * 
-   *@endcode
-   */
-  template<class point_rep, class duration_rep>
-  inline
-  void period<point_rep,duration_rep>::expand(const duration_rep& d)
-  {
-    begin_ = begin_ - d;
     last_  = last_  + d;
   }
 

@@ -11,9 +11,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/reverse_iter_fold.hpp,v $
+// $Date: 2004/09/02 15:40:42 $
+// $Revision: 1.2 $
 
 #include <boost/mpl/begin_end.hpp>
 #include <boost/mpl/O1_size.hpp>

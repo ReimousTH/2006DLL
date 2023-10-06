@@ -18,12 +18,6 @@
 
 #include <deque>
 #include <boost/ptr_container/ptr_sequence_adapter.hpp>
-#include <boost/ptr_container/detail/ptr_container_disable_deprecated.hpp>
-
-#if defined(BOOST_PTR_CONTAINER_DISABLE_DEPRECATED)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
 
 namespace boost
 {
@@ -32,15 +26,15 @@ namespace boost
     < 
         class T, 
         class CloneAllocator = heap_clone_allocator,
-        class Allocator      = std::allocator<typename ptr_container_detail::void_ptr<T>::type>
+        class Allocator      = std::allocator<void*>
     >
     class ptr_deque : public 
-        ptr_sequence_adapter< T, std::deque<
-            typename ptr_container_detail::void_ptr<T>::type,Allocator>,
+        ptr_sequence_adapter< T,
+                              std::deque<void*,Allocator>,     
                               CloneAllocator >
     {
-         typedef   ptr_sequence_adapter< T, std::deque<
-             typename ptr_container_detail::void_ptr<T>::type,Allocator>,     
+         typedef   ptr_sequence_adapter< T,
+                                         std::deque<void*,Allocator>,     
                                          CloneAllocator >
           base_class;
 
@@ -48,9 +42,9 @@ namespace boost
          
     public:
 
-      BOOST_PTR_CONTAINER_DEFINE_SEQEUENCE_MEMBERS( ptr_deque,
-                                                    base_class,
-                                                    this_type )
+      BOOST_PTR_CONTAINER_DEFINE_NON_INHERITED_MEMBERS( ptr_deque,
+                                                        base_class,
+                                                        this_type );
     };
 
     //////////////////////////////////////////////////////////////////////////////
@@ -72,8 +66,7 @@ namespace boost
     }
 }
 
-#if defined(BOOST_PTR_CONTAINER_DISABLE_DEPRECATED)
-#pragma GCC diagnostic pop
-#endif
+//#undef BOOST_FORWARD_TYPEDEF
+//#undef BOOST_PTR_CONTAINER_RELEASE_AND_CLONE
 
 #endif

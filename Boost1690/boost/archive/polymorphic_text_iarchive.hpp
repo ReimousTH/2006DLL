@@ -2,7 +2,7 @@
 #define BOOST_ARCHIVE_POLYMORPHIC_TEXT_IARCHIVE_HPP
 
 // MS compatible compilers support #pragma once
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
 # pragma once
 #endif
 
@@ -18,35 +18,21 @@
 
 #include <boost/config.hpp>
 #include <boost/archive/text_iarchive.hpp>
-#include <boost/archive/detail/polymorphic_iarchive_route.hpp>
-
-#ifdef BOOST_MSVC
-#  pragma warning(push)
-#  pragma warning(disable : 4511 4512)
-#endif
+#include <boost/archive/detail/polymorphic_iarchive_impl.hpp>
 
 namespace boost { 
 namespace archive {
 
-class BOOST_SYMBOL_VISIBLE polymorphic_text_iarchive : 
-    public detail::polymorphic_iarchive_route<text_iarchive>
-{
-public:
-    polymorphic_text_iarchive(std::istream & is, unsigned int flags = 0) :
-        detail::polymorphic_iarchive_route<text_iarchive>(is, flags)
-    {}
-    ~polymorphic_text_iarchive(){}
-};
+typedef detail::polymorphic_iarchive_impl<
+        text_iarchive_impl<text_iarchive> 
+> polymorphic_text_iarchive;
 
 } // namespace archive
 } // namespace boost
 
-#ifdef BOOST_MSVC
-#pragma warning(pop)
-#endif
-
-// required by export
-BOOST_SERIALIZATION_REGISTER_ARCHIVE(
+// required by smart_cast for compilers not implementing 
+// partial template specialization
+BOOST_BROKEN_COMPILER_TYPE_TRAITS_SPECIALIZATION(
     boost::archive::polymorphic_text_iarchive
 )
 

@@ -2,8 +2,12 @@
 #define BOOST_SERIALIZATION_VARIANT_HPP
 
 // MS compatible compilers support #pragma once
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
 # pragma once
+#endif
+
+#if defined(_MSC_VER) && (_MSC_VER <= 1020)
+#  pragma warning (disable : 4786) // too long name, harmless warning
 #endif
 
 /////////1/////////2/////////3/////////4/////////5/////////6/////////7/////////8
@@ -29,7 +33,7 @@
 #include <boost/mpl/size.hpp>
 #include <boost/mpl/empty.hpp>
 
-#include <boost/serialization/throw_exception.hpp>
+#include <boost/throw_exception.hpp>
 
 #include <boost/variant.hpp>
 
@@ -37,15 +41,12 @@
 
 #include <boost/serialization/split_free.hpp>
 #include <boost/serialization/serialization.hpp>
-#include <boost/serialization/nvp.hpp>
 
 namespace boost {
 namespace serialization {
 
 template<class Archive>
-struct variant_save_visitor :
-    boost::static_visitor<>
-{
+struct variant_save_visitor : boost::static_visitor<> {
     variant_save_visitor(Archive& ar) :
         m_ar(ar)
     {}
@@ -62,10 +63,11 @@ template<class Archive, BOOST_VARIANT_ENUM_PARAMS(/* typename */ class T)>
 void save(
     Archive & ar,
     boost::variant<BOOST_VARIANT_ENUM_PARAMS(T)> const & v,
-    unsigned int /*version*/
+    unsigned int version
 ){
     int which = v.which();
     ar << BOOST_SERIALIZATION_NVP(which);
+    typedef BOOST_DEDUCED_TYPENAME  boost::variant<BOOST_VARIANT_ENUM_PARAMS(T)>::types types;
     variant_save_visitor<Archive> visitor(ar);
     v.apply_visitor(visitor);
 }
@@ -76,10 +78,10 @@ struct variant_impl {
     struct load_null {
         template<class Archive, class V>
         static void invoke(
-            Archive & /*ar*/,
-            int /*which*/,
-            V & /*v*/,
-            const unsigned int /*version*/
+            Archive & ar,
+            int which,
+            V & v,
+            unsigned int version
         ){}
     };
 
@@ -89,22 +91,20 @@ struct variant_impl {
             Archive & ar,
             int which,
             V & v,
-            const unsigned int version
+            unsigned int version
         ){
             if(which == 0){
                 // note: A non-intrusive implementation (such as this one)
                 // necessary has to copy the value.  This wouldn't be necessary
                 // with an implementation that de-serialized to the address of the
                 // aligned storage included in the variant.
-                typedef typename mpl::front<S>::type head_type;
-                head_type value;
+                BOOST_DEDUCED_TYPENAME mpl::front<S>::type value;
                 ar >> BOOST_SERIALIZATION_NVP(value);
                 v = value;
-                head_type * new_address = & boost::get<head_type>(v);
-                ar.reset_object_address(new_address, & value);
+                ar.reset_object_address(& v, & value);
                 return;
             }
-            typedef typename mpl::pop_front<S>::type type;
+            typedef BOOST_DEDUCED_TYPENAME mpl::pop_front<S>::type type;
             variant_impl<type>::load(ar, which - 1, v, version);
         }
     };
@@ -114,9 +114,9 @@ struct variant_impl {
         Archive & ar,
         int which,
         V & v,
-        const unsigned int version
+        unsigned int version
     ){
-        typedef typename mpl::eval_if<mpl::empty<S>,
+        typedef BOOST_DEDUCED_TYPENAME mpl::eval_if<mpl::empty<S>,
             mpl::identity<load_null>,
             mpl::identity<load_impl>
         >::type typex;
@@ -129,14 +129,14 @@ template<class Archive, BOOST_VARIANT_ENUM_PARAMS(/* typename */ class T)>
 void load(
     Archive & ar, 
     boost::variant<BOOST_VARIANT_ENUM_PARAMS(T)>& v,
-    const unsigned int version
+    unsigned int version
 ){
     int which;
-    typedef typename boost::variant<BOOST_VARIANT_ENUM_PARAMS(T)>::types types;
+    typedef BOOST_DEDUCED_TYPENAME boost::variant<BOOST_VARIANT_ENUM_PARAMS(T)>::types types;
     ar >> BOOST_SERIALIZATION_NVP(which);
     if(which >=  mpl::size<types>::value)
         // this might happen if a type was removed from the list of variant types
-        boost::serialization::throw_exception(
+        boost::throw_exception(
             boost::archive::archive_exception(
                 boost::archive::archive_exception::unsupported_version
             )
@@ -148,7 +148,7 @@ template<class Archive,BOOST_VARIANT_ENUM_PARAMS(/* typename */ class T)>
 inline void serialize(
     Archive & ar,
     boost::variant<BOOST_VARIANT_ENUM_PARAMS(T)> & v,
-    const unsigned int file_version
+    unsigned int file_version
 ){
     split_free(ar,v,file_version);
 }
@@ -156,23 +156,5 @@ inline void serialize(
 } // namespace serialization
 } // namespace boost
 
-//template<typename T0_, BOOST_VARIANT_ENUM_SHIFTED_PARAMS(typename T)>
-
-#include <boost/serialization/tracking.hpp>
-
-namespace boost {
-    namespace serialization {
-        
-template<BOOST_VARIANT_ENUM_PARAMS(/* typename */ class T)>
-struct tracking_level<
-    variant<BOOST_VARIANT_ENUM_PARAMS(T)>
->{
-    typedef mpl::integral_c_tag tag;
-    typedef mpl::int_< ::boost::serialization::track_always> type;
-    BOOST_STATIC_CONSTANT(int, value = type::value);
-};
-
-} // namespace serialization
-} // namespace boost
-
 #endif //BOOST_SERIALIZATION_VARIANT_HPP
+

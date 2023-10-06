@@ -2,7 +2,7 @@
 #define BOOST_SERIALIZATION_TRAITS_HPP
 
 // MS compatible compilers support #pragma once
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
 # pragma once
 #endif
 
@@ -28,35 +28,31 @@
 #include <boost/static_assert.hpp>
 
 #include <boost/mpl/int.hpp>
-#include <boost/mpl/bool_fwd.hpp>
 #include <boost/serialization/level_enum.hpp>
 #include <boost/serialization/tracking_enum.hpp>
+#include <boost/serialization/type_info_implementation.hpp>
 
 namespace boost {
 namespace serialization {
 
 // common base class used to detect appended traits class
-struct basic_traits {};
-
-template <class T>
-struct extended_type_info_impl;
+struct basic_traits {
+};
 
 template<
     class T, 
     int Level, 
     int Tracking,
     unsigned int Version = 0,
-    class ETII = extended_type_info_impl< T >,
-    class Wrapper = mpl::false_
+    class ETII = BOOST_SERIALIZATION_EXTENDED_TYPE_INFO_STUB(T)
 >
 struct traits : public basic_traits {
     BOOST_STATIC_ASSERT(Version == 0 || Level >= object_class_info);
     BOOST_STATIC_ASSERT(Tracking == track_never || Level >= object_serializable);
-    typedef typename mpl::int_<Level> level;
-    typedef typename mpl::int_<Tracking> tracking;
-    typedef typename mpl::int_<Version> version;
+    typedef BOOST_DEDUCED_TYPENAME mpl::int_<Level> level;
+    typedef BOOST_DEDUCED_TYPENAME mpl::int_<Tracking> tracking;
+    typedef BOOST_DEDUCED_TYPENAME mpl::int_<Version> version;
     typedef ETII type_info_implementation;
-    typedef Wrapper is_wrapper;
 };
 
 } // namespace serialization

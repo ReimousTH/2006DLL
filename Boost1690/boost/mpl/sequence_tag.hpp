@@ -10,9 +10,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/sequence_tag.hpp,v $
+// $Date: 2004/09/02 15:40:42 $
+// $Revision: 1.8 $
 
 #include <boost/mpl/sequence_tag_fwd.hpp>
 #include <boost/mpl/aux_/has_tag.hpp>

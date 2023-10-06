@@ -10,9 +10,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/vector/aux_/O1_size.hpp,v $
+// $Date: 2004/09/04 01:33:47 $
+// $Revision: 1.5 $
 
 #include <boost/mpl/O1_size_fwd.hpp>
 #include <boost/mpl/minus.hpp>

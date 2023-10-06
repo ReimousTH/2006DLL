@@ -11,9 +11,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/set/set0.hpp,v $
+// $Date: 2004/09/02 15:41:02 $
+// $Revision: 1.5 $
 
 #include <boost/mpl/set/aux_/at_impl.hpp>
 #include <boost/mpl/set/aux_/clear_impl.hpp>
@@ -21,7 +21,6 @@
 #include <boost/mpl/set/aux_/size_impl.hpp>
 #include <boost/mpl/set/aux_/empty_impl.hpp>
 #include <boost/mpl/set/aux_/insert_impl.hpp>
-#include <boost/mpl/set/aux_/insert_range_impl.hpp>
 #include <boost/mpl/set/aux_/erase_impl.hpp>
 #include <boost/mpl/set/aux_/erase_key_impl.hpp>
 #include <boost/mpl/set/aux_/has_key_impl.hpp>

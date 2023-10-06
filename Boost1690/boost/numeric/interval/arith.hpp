@@ -1,7 +1,7 @@
 /* Boost interval/arith.hpp template implementation file
  *
  * Copyright 2000 Jens Maurer
- * Copyright 2002-2003 HervÃ© BrÃ¶nnimann, Guillaume Melquiond, Sylvain Pion
+ * Copyright 2002-2003 Hervé Brönnimann, Guillaume Melquiond, Sylvain Pion
  *
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or
@@ -250,7 +250,7 @@ interval<T, Policies> operator/(const interval<T, Policies>& x,
 {
   if (interval_lib::detail::test_input(x, y))
     return interval<T, Policies>::empty();
-  if (zero_in(y))
+  if (in_zero(y))
     if (!interval_lib::user::is_zero(y.lower()))
       if (!interval_lib::user::is_zero(y.upper()))
         return interval_lib::detail::div_zero(x);
@@ -270,7 +270,7 @@ interval<T, Policies> operator/(const T& x, const interval<T, Policies>& y)
 {
   if (interval_lib::detail::test_input(x, y))
     return interval<T, Policies>::empty();
-  if (zero_in(y))
+  if (in_zero(y))
     if (!interval_lib::user::is_zero(y.lower()))
       if (!interval_lib::user::is_zero(y.upper()))
         return interval_lib::detail::div_zero<T, Policies>(x);

@@ -2,23 +2,17 @@
     Boost.Wave: A Standard compliant C++ preprocessor library
 
     Grammar for universal character validation (see C++ standard: Annex E)
-
+    
     http://www.boost.org/
 
-    Copyright (c) 2001-2012 Hartmut Kaiser. Distributed under the Boost
+    Copyright (c) 2001-2005 Hartmut Kaiser. Distributed under the Boost
     Software License, Version 1.0. (See accompanying file
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 #if !defined(CONVERT_TRIGRAPHS_HK050403_INCLUDED)
 #define CONVERT_TRIGRAPHS_HK050403_INCLUDED
 
-#include <boost/wave/wave_config.hpp>
 #include <boost/wave/cpplexer/cpplexer_exceptions.hpp>
-
-// this must occur after all of the includes and before any code appears
-#ifdef BOOST_HAS_ABI_HEADERS
-#include BOOST_ABI_PREFIX
-#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace boost {
@@ -28,16 +22,16 @@ namespace impl {
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Test, whether the given string represents a valid trigraph sequence
+//
 //
 ///////////////////////////////////////////////////////////////////////////////
 template <typename StringT>
-inline bool
+inline bool 
 is_trigraph(StringT const& trigraph)
 {
     if (trigraph.size() < 3 || '?' != trigraph[0] || '?' != trigraph[1])
         return false;
-
+        
     switch (trigraph[2]) {
     case '\'': case '=': case '/': case '(':
     case ')':  case '<': case '>': case '!':
@@ -55,16 +49,17 @@ is_trigraph(StringT const& trigraph)
 //
 //  convert_trigraph
 //
-//    The function convert_trigraph() converts a single trigraph character
+//    The function convert_trigraph() converts a single trigraph character 
 //    sequence into the corresponding character.
 //
 //    If the given character sequence doesn't form a valid trigraph sequence
-//    no conversion is performed.
+//    no conversion is performed. 
 //
 ///////////////////////////////////////////////////////////////////////////////
 template <typename StringT>
 inline StringT
-convert_trigraph(StringT const &trigraph)
+convert_trigraph(StringT const &trigraph, int line, int column, 
+    StringT const &file_name)
 {
 StringT result (trigraph);
 
@@ -88,16 +83,17 @@ StringT result (trigraph);
 //
 //  convert_trigraphs
 //
-//    The function convert_trigraph() converts all trigraphs in the given
+//    The function convert_trigraph() converts all trigraphs in the given 
 //    string into the corresponding characters.
 //
-//    If one of the given character sequences doesn't form a valid trigraph
-//    sequence no conversion is performed.
+//    If one of the given character sequences doesn't form a valid trigraph 
+//    sequence no conversion is performed. 
 //
 ///////////////////////////////////////////////////////////////////////////////
 template <typename StringT>
 inline StringT
-convert_trigraphs(StringT const &value)
+convert_trigraphs(StringT const &value, int line, int column, 
+    StringT const &file_name)
 {
     StringT result;
     typename StringT::size_type pos = 0;
@@ -105,9 +101,9 @@ convert_trigraphs(StringT const &value)
     if (StringT::npos != pos1) {
         do {
             result += value.substr(pos, pos1-pos);
-            StringT trigraph (value.substr(pos1));
+            StringT trigraph (value.substr(pos1)); 
             if (is_trigraph(trigraph)) {
-                result += convert_trigraph(trigraph);
+                result += convert_trigraph(trigraph, line, column, file_name);
                 pos1 = value.find_first_of ("?", pos = pos1+3);
             }
             else {
@@ -124,15 +120,10 @@ convert_trigraphs(StringT const &value)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-}   // namespace impl
+}   // namespace impl           
 }   // namespace cpplexer
 }   // namespace wave
 }   // namespace boost
-
-// the suffix header occurs after all of the code
-#ifdef BOOST_HAS_ABI_HEADERS
-#include BOOST_ABI_SUFFIX
-#endif
 
 #endif // !defined(CONVERT_TRIGRAPHS_HK050403_INCLUDED)
 

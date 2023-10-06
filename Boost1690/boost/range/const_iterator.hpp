@@ -11,16 +11,16 @@
 #ifndef BOOST_RANGE_CONST_ITERATOR_HPP
 #define BOOST_RANGE_CONST_ITERATOR_HPP
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && (_MSC_VER >= 1200)
 # pragma once
 #endif
 
 #include <boost/range/config.hpp>
 
-#include <boost/range/range_fwd.hpp>
-#include <boost/range/detail/extract_optional_type.hpp>
-#include <boost/type_traits/remove_const.hpp>
-#include <boost/type_traits/remove_reference.hpp>
+#ifdef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
+#include <boost/range/detail/const_iterator.hpp>
+#else
+
 #include <cstddef>
 #include <utility>
 
@@ -30,47 +30,98 @@ namespace boost
     // default
     //////////////////////////////////////////////////////////////////////////
     
-    namespace range_detail
+    template< typename C >
+    struct range_const_iterator
     {
+        typedef BOOST_DEDUCED_TYPENAME C::const_iterator type;
+    };
+    
+    //////////////////////////////////////////////////////////////////////////
+    // pair
+    //////////////////////////////////////////////////////////////////////////
 
-BOOST_RANGE_EXTRACT_OPTIONAL_TYPE( const_iterator )
+    template< typename Iterator >
+    struct range_const_iterator< std::pair<Iterator,Iterator> >
+    {
+        typedef Iterator type;
+    };
+    
+    template< typename Iterator >
+    struct range_const_iterator< const std::pair<Iterator,Iterator> >
+    {
+        typedef Iterator type;
+    };
 
-template< typename C >
-struct range_const_iterator_helper
-        : extract_const_iterator<C>
-{};
+    //////////////////////////////////////////////////////////////////////////
+    // array
+    //////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////////
-// pair
-//////////////////////////////////////////////////////////////////////////
+    template< typename T, std::size_t sz >
+    struct range_const_iterator< T[sz] >
+    {
+        typedef const T* type;
+    };
 
-template< typename Iterator >
-struct range_const_iterator_helper<std::pair<Iterator,Iterator> >
-{
-    typedef Iterator type;
-};
+    template< typename T, std::size_t sz >
+    struct range_const_iterator< const T[sz] >
+    {
+        typedef const T* type;
+    };
 
-//////////////////////////////////////////////////////////////////////////
-// array
-//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
+    // string
+    //////////////////////////////////////////////////////////////////////////
 
-template< typename T, std::size_t sz >
-struct range_const_iterator_helper< T[sz] >
-{
-    typedef const T* type;
-};
+    template<>
+    struct range_const_iterator< char* >
+    {
+        typedef const char* type;
+    };
 
-    } // namespace range_detail
+    template<>
+    struct range_const_iterator< wchar_t* >
+    {
+        typedef const wchar_t* type;
+    };
 
-template<typename C, typename Enabler=void>
-struct range_const_iterator
-        : range_detail::range_const_iterator_helper<
-            BOOST_DEDUCED_TYPENAME remove_reference<C>::type
-        >
-{
-};
+    template<>
+    struct range_const_iterator< const char* >
+    {
+        typedef const char* type;
+    };
+
+    template<>
+    struct range_const_iterator< const wchar_t* >
+    {
+        typedef const wchar_t* type;
+    };
+
+    template<>
+    struct range_const_iterator< char* const >
+    {
+        typedef const char* type;
+    };
+
+    template<>
+    struct range_const_iterator< wchar_t* const >
+    {
+        typedef const wchar_t* type;
+    };
+
+    template<>
+    struct range_const_iterator< const char* const >
+    {
+        typedef const char* type;
+    };
+
+    template<>
+    struct range_const_iterator< const wchar_t* const >
+    {
+        typedef const wchar_t* type;
+    };
 
 } // namespace boost
 
+#endif // BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 
 #endif

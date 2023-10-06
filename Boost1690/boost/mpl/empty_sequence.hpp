@@ -11,9 +11,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/empty_sequence.hpp,v $
+// $Date: 2004/11/28 01:53:40 $
+// $Revision: 1.2 $
 
 #include <boost/mpl/size_fwd.hpp>
 #include <boost/mpl/int.hpp>
@@ -23,8 +23,7 @@ namespace boost { namespace mpl {
 
 struct empty_sequence
 {
-    struct tag;
-    typedef empty_sequence type;
+    struct tag; 
     struct begin { typedef random_access_iterator_tag category; };    
     typedef begin end;
 };

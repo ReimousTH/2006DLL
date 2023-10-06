@@ -22,36 +22,15 @@
 
 #ifdef _DEBUG
 # ifndef BOOST_DEBUG_PYTHON
-#  ifdef _MSC_VER  
-    // VC8.0 will complain if system headers are #included both with
-    // and without _DEBUG defined, so we have to #include all the
-    // system headers used by pyconfig.h right here.
-#   include <stddef.h>
-#   include <stdarg.h>
-#   include <stdio.h>
-#   include <stdlib.h>
-#   include <assert.h>
-#   include <errno.h>
-#   include <ctype.h>
-#   include <wchar.h>
-#   include <basetsd.h>
-#   include <io.h>
-#   include <limits.h>
-#   include <float.h>
-#   include <string.h>
-#   include <math.h>
-#   include <time.h>
-#  endif
 #  undef _DEBUG // Don't let Python force the debug library just because we're debugging.
 #  define DEBUG_UNDEFINED_FROM_WRAP_PYTHON_H
 # endif
 #endif
 
 # include <pyconfig.h>
-# if defined(_SGI_COMPILER_VERSION) && _SGI_COMPILER_VERSION >= 740
+# if defined(_SGI_COMPILER_VERSION) && _SGI_COMPILER_VERSION == 741
 #  undef _POSIX_C_SOURCE
 #  undef _XOPEN_SOURCE
-#  undef HAVE_STDINT_H // undo Python 2.5.1 define
 # endif
 
 //
@@ -85,22 +64,13 @@
 #if defined(_WIN32) || defined(__CYGWIN__)
 # if defined(__GNUC__) && defined(__CYGWIN__)
 
-#  if defined(__LP64__)
-#   define SIZEOF_LONG 8
-#  else
-#   define SIZEOF_LONG 4
-#  endif
-
+#  define SIZEOF_LONG 4
 
 #  if PY_MAJOR_VERSION < 2 || PY_MAJOR_VERSION == 2 && PY_MINOR_VERSION <= 2
 
 typedef int pid_t;
 
-#   if defined(__LP64__)
-#    define WORD_BIT 64
-#   else
-#    define WORD_BIT 32
-#   endif
+#   define WORD_BIT 32
 #   define hypot _hypot
 #   include <stdio.h>
 
@@ -127,7 +97,7 @@ typedef int pid_t;
 
 #   define HAVE_LONG_LONG 1
 #   define LONG_LONG long long
-#  endif
+#  endif 
 
 # elif defined(__MWERKS__)
 
@@ -173,29 +143,12 @@ typedef int pid_t;
 #ifdef DEBUG_UNDEFINED_FROM_WRAP_PYTHON_H
 # undef DEBUG_UNDEFINED_FROM_WRAP_PYTHON_H
 # define _DEBUG
-# ifdef _CRT_NOFORCE_MANIFEST_DEFINED_FROM_WRAP_PYTHON_H
-#  undef _CRT_NOFORCE_MANIFEST_DEFINED_FROM_WRAP_PYTHON_H
-#  undef _CRT_NOFORCE_MANIFEST
-# endif
 #endif
 
 #if !defined(PY_MAJOR_VERSION) || PY_MAJOR_VERSION < 2
 # define PyObject_INIT(op, typeobj) \
         ( (op)->ob_type = (typeobj), _Py_NewReference((PyObject *)(op)), (op) )
 #endif
-
-// Define Python 3 macros for Python 2.x
-#if PY_VERSION_HEX < 0x02060000
-
-# define Py_TYPE(o)    (((PyObject*)(o))->ob_type)
-# define Py_REFCNT(o)  (((PyObject*)(o))->ob_refcnt)
-# define Py_SIZE(o)    (((PyVarObject*)(o))->ob_size)
-
-# define PyVarObject_HEAD_INIT(type, size) \
-        PyObject_HEAD_INIT(type) size,
-
-#endif
-
 
 #ifdef __MWERKS__
 # pragma warn_possunwant off

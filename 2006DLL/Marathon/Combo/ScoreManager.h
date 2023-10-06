@@ -2,7 +2,7 @@
 
 #include <cstdlib>
 #include <iostream>
-#include <boost/aligned_storage.hpp>
+
 #include <boost/array.hpp>
 #include <boost/bind.hpp>
 #include <boost/enable_shared_from_this.hpp>
@@ -20,6 +20,7 @@ namespace SonicTeam{
 		public:
 			ScoreManager(void);
 			virtual ~ScoreManager(void);
+
 		};
 
 

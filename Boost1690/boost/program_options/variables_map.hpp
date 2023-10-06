@@ -16,11 +16,6 @@
 #include <map>
 #include <set>
 
-#if defined(BOOST_MSVC)
-#   pragma warning (push)
-#   pragma warning (disable:4251) // 'boost::program_options::variable_value::v' : class 'boost::any' needs to have dll-interface to be used by clients of class 'boost::program_options::variable_value
-#endif
-
 namespace boost { namespace program_options {
 
     template<class charT>
@@ -29,50 +24,22 @@ namespace boost { namespace program_options {
     class value_semantic;
     class variables_map;
 
-    // forward declaration
-
-    /** Stores in 'm' all options that are defined in 'options'.
-        If 'm' already has a non-defaulted value of an option, that value
-        is not changed, even if 'options' specify some value.
-    */
-    BOOST_PROGRAM_OPTIONS_DECL
-    void store(const basic_parsed_options<char>& options, variables_map& m,
-                    bool utf8 = false);
-
-    /** Stores in 'm' all options that are defined in 'options'.
-        If 'm' already has a non-defaulted value of an option, that value
-        is not changed, even if 'options' specify some value.
-        This is wide character variant.
-    */
-    BOOST_PROGRAM_OPTIONS_DECL
-    void store(const basic_parsed_options<wchar_t>& options,
-                    variables_map& m);
-
-
-    /** Runs all 'notify' function for options in 'm'. */
-    BOOST_PROGRAM_OPTIONS_DECL void notify(variables_map& m);
-
-    /** Class holding value of option. Contains details about how the
+    /** Class holding value of option. Contains details about how the 
         value is set and allows to conveniently obtain the value.
     */
     class BOOST_PROGRAM_OPTIONS_DECL variable_value {
     public:
         variable_value() : m_defaulted(false) {}
-        variable_value(const boost::any& xv, bool xdefaulted)
-        : v(xv), m_defaulted(xdefaulted)
+        variable_value(const boost::any& v, bool defaulted) 
+        : v(v), m_defaulted(defaulted) 
         {}
 
         /** If stored value if of type T, returns that value. Otherwise,
             throws boost::bad_any_cast exception. */
-       template<class T>
-       const T& as() const {
-           return boost::any_cast<const T&>(v);
-       }
-       /** @overload */
-       template<class T>
-       T& as() {
-           return boost::any_cast<T&>(v);
-       }
+        template<class T> const T& as() const;
+
+        /** @overload */
+        template<class T> T& as();
 
         /// Returns true if no value is stored.
         bool empty() const;
@@ -94,11 +61,10 @@ namespace boost { namespace program_options {
         // be easily accessible, so we need to store semantic here.
         shared_ptr<const value_semantic> m_value_semantic;
 
-        friend BOOST_PROGRAM_OPTIONS_DECL
-        void store(const basic_parsed_options<char>& options,
+        friend void BOOST_PROGRAM_OPTIONS_DECL 
+        store(const basic_parsed_options<char>& options, 
               variables_map& m, bool);
-
-        friend class BOOST_PROGRAM_OPTIONS_DECL variables_map;
+        friend void BOOST_PROGRAM_OPTIONS_DECL notify(variables_map& m);
     };
 
     /** Implements string->string mapping with convenient value casting
@@ -118,11 +84,11 @@ namespace boost { namespace program_options {
                 - otherwise, returns empty value
 
             - if there's defaulted value
-                - if there's next variable map, which has a non-defaulted
+                - if there's next varaible map, which has a non-defauled
                   value, return that
                 - otherwise, return value from *this
 
-            - if there's a non-defaulted value, returns it.
+            - if there's a non-defauled value, returns it.
         */
         const variable_value& operator[](const std::string& name) const;
 
@@ -138,11 +104,7 @@ namespace boost { namespace program_options {
         const abstract_variables_map* m_next;
     };
 
-    /** Concrete variables map which store variables in real map.
-
-        This class is derived from std::map<std::string, variable_value>,
-        so you can use all map operators to examine its content.
-    */
+    /** Concrete variables map which store variables in real map. */
     class BOOST_PROGRAM_OPTIONS_DECL variables_map : public abstract_variables_map,
                                public std::map<std::string, variable_value>
     {
@@ -154,31 +116,38 @@ namespace boost { namespace program_options {
         const variable_value& operator[](const std::string& name) const
         { return abstract_variables_map::operator[](name); }
 
-        // Override to clear some extra fields.
-        void clear();
-
-        void notify();
-
     private:
         /** Implementation of abstract_variables_map::get
             which does 'find' in *this. */
         const variable_value& get(const std::string& name) const;
 
-        /** Names of option with 'final' values \-- which should not
+        /** Names of option with 'final' values -- which should not
             be changed by subsequence assignments. */
         std::set<std::string> m_final;
 
-        friend BOOST_PROGRAM_OPTIONS_DECL
-        void store(const basic_parsed_options<char>& options,
+        friend void store(const basic_parsed_options<char>& options, 
                           variables_map& xm,
                           bool utf8);
-
-        /** Names of required options, filled by parser which has
-            access to options_description.
-            The map values are the "canonical" names for each corresponding option.
-            This is useful in creating diagnostic messages when the option is absent. */
-        std::map<std::string, std::string> m_required;
     };
+
+    /** Stores in 'm' all options that are defined in 'options'. 
+        If 'm' already has a non-defaulted value of an option, that value
+        is not changed, even if 'options' specify some value.        
+    */
+    BOOST_PROGRAM_OPTIONS_DECL void store(const basic_parsed_options<char>& options, variables_map& m,
+                    bool utf8 = false);
+
+    /** Stores in 'm' all options that are defined in 'options'. 
+        If 'm' already has a non-defaulted value of an option, that value
+        is not changed, even if 'options' specify some value.        
+        This is wide character variant.
+    */
+    BOOST_PROGRAM_OPTIONS_DECL void store(const basic_parsed_options<wchar_t>& options, 
+                    variables_map& m);
+
+
+    /** Runs all 'notify' function for options in 'm'. */
+    BOOST_PROGRAM_OPTIONS_DECL void notify(variables_map& m);
 
 
     /*
@@ -211,10 +180,18 @@ namespace boost { namespace program_options {
         return v;
     }
 
-}}
 
-#if defined(BOOST_MSVC)
-#   pragma warning (pop)
-#endif
+    template<class T>
+    const T&
+    variable_value::as() const {
+        return boost::any_cast<const T&>(v);
+    }
+
+    template<class T>
+    T&
+    variable_value::as() {
+        return boost::any_cast<T&>(v);
+    }
+}}
 
 #endif

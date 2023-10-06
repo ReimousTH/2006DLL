@@ -1,12 +1,11 @@
 //  Boost string_algo library find_regex.hpp header file  ---------------------------//
 
-//  Copyright Pavol Droba 2002-2003.
-//
-// Distributed under the Boost Software License, Version 1.0.
-//    (See accompanying file LICENSE_1_0.txt or copy at
-//          http://www.boost.org/LICENSE_1_0.txt)
+//  Copyright Pavol Droba 2002-2003. Use, modification and
+//  distribution is subject to the Boost Software License, Version
+//  1.0. (See accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt)
 
-//  See http://www.boost.org/ for updates, documentation, and revision history.
+//  See http://www.boost.org for updates, documentation, and revision history.
 
 #ifndef BOOST_STRING_FINDER_REGEX_DETAIL_HPP
 #define BOOST_STRING_FINDER_REGEX_DETAIL_HPP
@@ -14,7 +13,7 @@
 #include <boost/algorithm/string/config.hpp>
 #include <boost/regex.hpp>
 
-#include <boost/range/iterator_range_core.hpp>
+#include <boost/range/iterator_range.hpp>
 #include <boost/range/begin.hpp>
 #include <boost/range/end.hpp>
 
@@ -60,14 +59,14 @@ namespace boost {
                     return *this;
                 }
 
-                // Match result retrieval
+                // Match result retrival
                 const match_results_type& match_results() const
                 {
                     return m_MatchResults;
                 }
 
             private:
-                // Saved match result
+                // Saved matchresult
                 match_results_type m_MatchResults;
             };
 
@@ -98,7 +97,7 @@ namespace boost {
                     // instantiate match result
                     match_results<input_iterator_type> result;
                     // search for a match
-                    if ( ::boost::regex_search( Begin, End, result, m_Rx, m_MatchFlags ) )
+                    if ( regex_search( Begin, End, result, m_Rx, m_MatchFlags ) )
                     {
                         // construct a result
                         return result_type( result );

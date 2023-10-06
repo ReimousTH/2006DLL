@@ -1,5 +1,4 @@
-// (C) Copyright 2008 CodeRage, LLC (turkanis at coderage dot com)
-// (C) Copyright 2003-2007 Jonathan Turkanis
+// (C) Copyright Jonathan Turkanis 2003.
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt.)
 
@@ -8,7 +7,7 @@
 #ifndef BOOST_IOSTREAMS_INPUT_SEQUENCE_HPP_INCLUDED
 #define BOOST_IOSTREAMS_INPUT_SEQUENCE_HPP_INCLUDED
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
 # pragma once
 #endif
 
@@ -16,7 +15,6 @@
 #include <boost/config.hpp>  // DEDUCED_TYPENAME, MSVC.
 #include <boost/detail/workaround.hpp>
 #include <boost/iostreams/detail/wrap_unwrap.hpp>
-#include <boost/iostreams/operations_fwd.hpp>  // is_custom 
 #include <boost/iostreams/traits.hpp>
 #include <boost/mpl/if.hpp>
 

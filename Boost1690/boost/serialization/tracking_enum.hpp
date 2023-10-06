@@ -2,7 +2,7 @@
 #define BOOST_SERIALIZATION_TRACKING_ENUM_HPP
 
 // MS compatible compilers support #pragma once
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
 # pragma once
 #endif
 
@@ -30,7 +30,7 @@ enum tracking_type
     track_never = 0,
     // track objects of this type if the object is serialized through a 
     // pointer.
-    track_selectively = 1,
+    track_selectivly = 1,
     // always track this type
     track_always = 2
 };

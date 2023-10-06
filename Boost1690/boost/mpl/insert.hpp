@@ -10,9 +10,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/insert.hpp,v $
+// $Date: 2004/09/02 15:40:41 $
+// $Revision: 1.5 $
 
 #include <boost/mpl/insert_fwd.hpp>
 #include <boost/mpl/sequence_tag.hpp>

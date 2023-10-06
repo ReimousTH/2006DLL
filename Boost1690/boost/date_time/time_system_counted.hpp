@@ -4,9 +4,9 @@
 /* Copyright (c) 2002,2003 CrystalClear Software, Inc.
  * Use, modification and distribution is subject to the 
  * Boost Software License, Version 1.0. (See accompanying
- * file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+ * file LICENSE-1.0 or http://www.boost.org/LICENSE-1.0)
  * Author: Jeff Garland, Bart Garst
- * $Date$
+ * $Date: 2004/12/07 11:00:12 $
  */
 
 
@@ -31,15 +31,15 @@ namespace date_time {
     typedef typename config::time_duration_type time_duration_type;
     typedef typename config::resolution_traits   resolution_traits;
     
-    counted_time_rep(const date_type& d, const time_duration_type& time_of_day) 
+    counted_time_rep(const date_type& d, const time_duration_type& tod) 
       : time_count_(1)
     {
-      if(d.is_infinity() || d.is_not_a_date() || time_of_day.is_special()) {
-        time_count_ = time_of_day.get_rep() + d.day_count();
+      if(d.is_infinity() || d.is_not_a_date() || tod.is_special()) {
+        time_count_ = tod.get_rep() + d.day_count();
         //std::cout << time_count_ << std::endl;
       }
       else {    
-        time_count_ = (d.day_number() * frac_sec_per_day()) + time_of_day.ticks();
+        time_count_ = (d.day_number() * frac_sec_per_day()) + tod.ticks();
       }
     }
     explicit counted_time_rep(int_type count) :
@@ -54,7 +54,7 @@ namespace date_time {
         return date_type(time_count_.as_special());
       }
       else {
-        typename calendar_type::date_int_type dc = static_cast<typename calendar_type::date_int_type>(day_count());
+        typename calendar_type::date_int_type dc = day_count();
         //std::cout << "time_rep here:" << dc << std::endl;
         ymd_type ymd = calendar_type::from_day_number(dc);
         return date_type(ymd);

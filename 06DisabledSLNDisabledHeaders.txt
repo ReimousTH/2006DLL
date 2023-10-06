@@ -1,0 +1,2 @@
+__POWERPC__
+__ppc__

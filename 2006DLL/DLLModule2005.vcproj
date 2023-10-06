@@ -318,7 +318,7 @@
 				EnableIntrinsicFunctions="false"
 				FavorSizeOrSpeed="2"
 				AdditionalIncludeDirectories="..\Boost1690;..\ATG;..\LUA\src;ImGuiProject\ImGui"
-				PreprocessorDefinitions="NDEBUG;_XBOX;XBOX;XBOX_SAMPLE;_XBOX_CRT_DEPRECATE_INSECURE;_XENON;__POWERPC__;__ppc__;$(NOINHERIT)"
+				PreprocessorDefinitions="NDEBUG;_XBOX;XBOX;XBOX_SAMPLE;_XBOX_CRT_DEPRECATE_INSECURE;_XENON;_WIN32;$(NOINHERIT)"
 				StringPooling="false"
 				ExceptionHandling="1"
 				RuntimeLibrary="0"
@@ -507,6 +507,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\All06Functions.hpp"
+					>
+				</File>
+				<File
 					RelativePath=".\MPatches.cpp"
 					>
 					<FileConfiguration
@@ -587,6 +591,38 @@
 			Name="Marathon"
 			>
 			<File
+				RelativePath=".\Marathon\LuaNode.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Marathon\LuaNode.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Marathon\LuaNodeImp.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Marathon\LuaNodeImp.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Marathon\LuaSystem.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Marathon\LuaSystem.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Marathon\LuaSystemManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Marathon\LuaSystemManager.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Marathon\Marathon.cpp"
 				>
 			</File>
@@ -638,11 +674,27 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Marathon\Player\IScore.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Player\IScore.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Marathon\Player\IVarible.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\Marathon\Player\IVarible.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Player\Score.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Player\Score.h"
 					>
 				</File>
 				<Filter
@@ -654,6 +706,14 @@
 					</File>
 					<File
 						RelativePath=".\Marathon\Player\State\CommonContext.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Player\State\CommonObject.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Player\State\CommonObject.h"
 						>
 					</File>
 					<File
@@ -680,6 +740,74 @@
 						RelativePath=".\Marathon\Player\State\IContext.h"
 						>
 					</File>
+					<File
+						RelativePath=".\Marathon\Player\State\IMachine.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Player\State\IMachine.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Player\State\Machine2.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Player\State\Machine2.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Player\State\Object2.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Player\State\Object2.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Gauge"
+					>
+					<File
+						RelativePath=".\Marathon\Player\Gauge\IGauge.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Player\Gauge\IGauge.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Player\Gauge\SonicGauge.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Player\Gauge\SonicGauge.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="IStepable"
+					>
+					<File
+						RelativePath=".\Marathon\Player\IStepable\IStepable.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Player\IStepable\IStepable.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Input"
+					>
+					<File
+						RelativePath=".\Marathon\Player\Input\IListener.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Player\Input\IListener.h"
+						>
+					</File>
 				</Filter>
 			</Filter>
 			<Filter
@@ -701,6 +829,62 @@
 					RelativePath=".\Marathon\Combo\ScoreManager.h"
 					>
 				</File>
+			</Filter>
+			<Filter
+				Name="SoX"
+				>
+				<File
+					RelativePath=".\Marathon\Sox\IResource.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Sox\IResource.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Sox\IResource2.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Sox\IResource2.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Sox\IResourceMgr.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Sox\IResourceMgr.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Sox\Object.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Sox\Object.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Sox\StateMachine.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Sox\StateMachine.h"
+					>
+				</File>
+				<Filter
+					Name="AI"
+					>
+					<File
+						RelativePath=".\Marathon\Sox\AI\State.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Sox\AI\State.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter

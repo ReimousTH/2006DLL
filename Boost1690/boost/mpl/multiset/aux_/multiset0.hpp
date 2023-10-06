@@ -10,9 +10,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/multiset/aux_/multiset0.hpp,v $
+// $Date: 2004/09/02 15:41:02 $
+// $Revision: 1.2 $
 
 #include <boost/mpl/multiset/aux_/tag.hpp>
 #include <boost/mpl/int.hpp>

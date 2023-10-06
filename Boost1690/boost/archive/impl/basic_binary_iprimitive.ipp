@@ -8,8 +8,8 @@
 
 //  See http://www.boost.org for updates, documentation, and revision history.
 
-#include <boost/assert.hpp>
-#include <cstddef> // size_t, NULL
+#include <cassert>
+#include <cstddef> // size_t
 #include <cstring> // memcpy
 
 #include <boost/config.hpp>
@@ -20,10 +20,14 @@ namespace std{
 } // namespace std
 #endif
 
-#include <boost/serialization/throw_exception.hpp>
-#include <boost/core/no_exceptions_support.hpp>
+#include <boost/detail/workaround.hpp> // fixup for RogueWave
+
+#include <boost/throw_exception.hpp>
+#include <boost/scoped_ptr.hpp>
+
 #include <boost/archive/archive_exception.hpp>
-#include <boost/archive/basic_binary_iprimitive.hpp> 
+#include <boost/archive/codecvt_null.hpp>
+#include <boost/archive/add_facet.hpp>
 
 namespace boost {
 namespace archive {
@@ -31,9 +35,9 @@ namespace archive {
 //////////////////////////////////////////////////////////////////////
 // implementation of basic_binary_iprimitive
 
-template<class Archive, class Elem, class Tr>
-BOOST_ARCHIVE_OR_WARCHIVE_DECL void
-basic_binary_iprimitive<Archive, Elem, Tr>::init()
+template<class Archive, class IStream>
+BOOST_ARCHIVE_OR_WARCHIVE_DECL(void)
+basic_binary_iprimitive<Archive, IStream>::init()
 {
     // Detect  attempts to pass native binary archives across
     // incompatible platforms. This is not fool proof but its
@@ -41,66 +45,47 @@ basic_binary_iprimitive<Archive, Elem, Tr>::init()
     unsigned char size;
     this->This()->load(size);
     if(sizeof(int) != size)
-        boost::serialization::throw_exception(
-            archive_exception(
-                archive_exception::incompatible_native_format,
-                "size of int"
-            )
+        boost::throw_exception(
+            archive_exception(archive_exception::incompatible_native_format)
         );
     this->This()->load(size);
     if(sizeof(long) != size)
-        boost::serialization::throw_exception(
-            archive_exception(
-                archive_exception::incompatible_native_format,
-                "size of long"
-            )
+        boost::throw_exception(
+            archive_exception(archive_exception::incompatible_native_format)
         );
     this->This()->load(size);
     if(sizeof(float) != size)
-        boost::serialization::throw_exception(
-            archive_exception(
-                archive_exception::incompatible_native_format,
-                "size of float"
-            )
+        boost::throw_exception(
+            archive_exception(archive_exception::incompatible_native_format)
         );
     this->This()->load(size);
     if(sizeof(double) != size)
-        boost::serialization::throw_exception(
-            archive_exception(
-                archive_exception::incompatible_native_format,
-                "size of double"
-            )
+        boost::throw_exception(
+            archive_exception(archive_exception::incompatible_native_format)
         );
 
     // for checking endian
     int i;
     this->This()->load(i);
     if(1 != i)
-        boost::serialization::throw_exception(
-            archive_exception(
-                archive_exception::incompatible_native_format,
-                "endian setting"
-            )
+        boost::throw_exception(
+            archive_exception(archive_exception::incompatible_native_format)
         );
 }
 
-#ifndef BOOST_NO_CWCHAR
-#ifndef BOOST_NO_INTRINSIC_WCHAR_T
-template<class Archive, class Elem, class Tr>
-BOOST_ARCHIVE_OR_WARCHIVE_DECL void
-basic_binary_iprimitive<Archive, Elem, Tr>::load(wchar_t * ws)
+template<class Archive, class IStream>
+BOOST_ARCHIVE_OR_WARCHIVE_DECL(void)
+basic_binary_iprimitive<Archive, IStream>::load(wchar_t * ws)
 {
-    std::size_t l; // number of wchar_t !!!
+    std::size_t l;
     this->This()->load(l);
-    load_binary(ws, l * sizeof(wchar_t) / sizeof(char));
-    ws[l] = L'\0';
+    load_binary(ws, l);
+    ws[l / sizeof(wchar_t)] = L'\0';
 }
-#endif
-#endif
 
-template<class Archive, class Elem, class Tr>
-BOOST_ARCHIVE_OR_WARCHIVE_DECL void
-basic_binary_iprimitive<Archive, Elem, Tr>::load(std::string & s)
+template<class Archive, class IStream>
+BOOST_ARCHIVE_OR_WARCHIVE_DECL(void)
+basic_binary_iprimitive<Archive, IStream>::load(std::string & s)
 {
     std::size_t l;
     this->This()->load(l);
@@ -110,24 +95,25 @@ basic_binary_iprimitive<Archive, Elem, Tr>::load(std::string & s)
     #endif
         s.resize(l);
     // note breaking a rule here - could be a problem on some platform
-    if(0 < l)
-        load_binary(&(*s.begin()), l);
+    load_binary(const_cast<char *>(s.data()), l);
 }
 
-template<class Archive, class Elem, class Tr>
-BOOST_ARCHIVE_OR_WARCHIVE_DECL void
-basic_binary_iprimitive<Archive, Elem, Tr>::load(char * s)
+#ifndef BOOST_NO_CWCHAR
+template<class Archive, class IStream>
+BOOST_ARCHIVE_OR_WARCHIVE_DECL(void)
+basic_binary_iprimitive<Archive, IStream>::load(char * s)
 {
     std::size_t l;
     this->This()->load(l);
     load_binary(s, l);
     s[l] = '\0';
 }
+#endif
 
 #ifndef BOOST_NO_STD_WSTRING
-template<class Archive, class Elem, class Tr>
-BOOST_ARCHIVE_OR_WARCHIVE_DECL void
-basic_binary_iprimitive<Archive, Elem, Tr>::load(std::wstring & ws)
+template<class Archive, class IStream>
+BOOST_ARCHIVE_OR_WARCHIVE_DECL(void)
+basic_binary_iprimitive<Archive, IStream>::load(std::wstring & ws)
 {
     std::size_t l;
     this->This()->load(l);
@@ -141,33 +127,33 @@ basic_binary_iprimitive<Archive, Elem, Tr>::load(std::wstring & ws)
 }
 #endif
 
-template<class Archive, class Elem, class Tr>
-BOOST_ARCHIVE_OR_WARCHIVE_DECL
-basic_binary_iprimitive<Archive, Elem, Tr>::basic_binary_iprimitive(
-    std::basic_streambuf<Elem, Tr> & sb, 
+template<class Archive, class IStream>
+BOOST_ARCHIVE_OR_WARCHIVE_DECL(BOOST_PP_EMPTY())
+basic_binary_iprimitive<Archive, IStream>::basic_binary_iprimitive(
+    IStream &is_, 
     bool no_codecvt
 ) :
-#ifndef BOOST_NO_STD_LOCALE
-    m_sb(sb),
-    codecvt_null_facet(1),
-    locale_saver(m_sb),
-    archive_locale(sb.getloc(), & codecvt_null_facet)
+    is(is_),
+    archive_locale(NULL),
+    locale_saver(is)
 {
     if(! no_codecvt){
-        m_sb.pubsync();
-        m_sb.pubimbue(archive_locale);
+        archive_locale.reset(
+            boost::archive::add_facet(
+                std::locale::classic(),
+                new codecvt_null<BOOST_DEDUCED_TYPENAME IStream::char_type>
+            )
+        );
+        is.imbue(* archive_locale);
     }
 }
-#else
-    m_sb(sb)
-{}
-#endif
 
-// scoped_ptr requires that g be a complete type at time of
+// scoped_ptr requires that archive_locale be a complete type at time of
 // destruction so define destructor here rather than in the header
-template<class Archive, class Elem, class Tr>
-BOOST_ARCHIVE_OR_WARCHIVE_DECL
-basic_binary_iprimitive<Archive, Elem, Tr>::~basic_binary_iprimitive(){}
+template<class Archive, class IStream>
+BOOST_ARCHIVE_OR_WARCHIVE_DECL(BOOST_PP_EMPTY())
+basic_binary_iprimitive<Archive, IStream>::~basic_binary_iprimitive(){
+}
 
 } // namespace archive
 } // namespace boost

@@ -11,9 +11,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/sort.hpp,v $
+// $Date: 2004/11/28 01:58:03 $
+// $Revision: 1.4 $
 
 #include <boost/mpl/aux_/sort_impl.hpp>
 #include <boost/mpl/aux_/inserter_algorithm.hpp>

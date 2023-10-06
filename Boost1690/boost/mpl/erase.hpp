@@ -10,9 +10,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/erase.hpp,v $
+// $Date: 2004/11/28 01:54:10 $
+// $Revision: 1.5 $
 
 #include <boost/mpl/erase_fwd.hpp>
 #include <boost/mpl/sequence_tag.hpp>

@@ -1,5 +1,4 @@
-// (C) Copyright 2008 CodeRage, LLC (turkanis at coderage dot com)
-// (C) Copyright 2003-2007 Jonathan Turkanis
+// (C) Copyright Jonathan Turkanis 2003.
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt.)
 
@@ -8,12 +7,12 @@
 #ifndef BOOST_IOSTREAMS_INVERT_HPP_INCLUDED
 #define BOOST_IOSTREAMS_INVERT_HPP_INCLUDED
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
 # pragma once
 #endif              
 
 #include <algorithm>                             // copy, min.  
-#include <boost/assert.hpp>
+#include <cassert>
 #include <boost/config.hpp>                      // BOOST_DEDUCED_TYPENAME.       
 #include <boost/detail/workaround.hpp>           // default_filter_buffer_size.
 #include <boost/iostreams/char_traits.hpp>
@@ -22,8 +21,6 @@
 #include <boost/iostreams/device/array.hpp>
 #include <boost/iostreams/detail/buffer.hpp>
 #include <boost/iostreams/detail/counted_array.hpp>
-#include <boost/iostreams/detail/execute.hpp>
-#include <boost/iostreams/detail/functional.hpp> // clear_flags, call_reset
 #include <boost/mpl/if.hpp>
 #include <boost/ref.hpp>
 #include <boost/shared_ptr.hpp>
@@ -36,15 +33,13 @@ namespace boost { namespace iostreams {
 
 //
 // Template name: inverse.
-// Template parameters:
-//      Filter - A model of InputFilter or OutputFilter.
-// Description: Generates an InputFilter from an OutputFilter or
-//      vice versa.
+// Template paramters:
+//      Filter - A filter adapter which 
+// Description: Returns an instance of an appropriate specialization of inverse.
 //
 template<typename Filter>
 class inverse {
 private:
-    BOOST_STATIC_ASSERT(is_filter<Filter>::value);
     typedef typename category_of<Filter>::type   base_category;
     typedef reference_wrapper<Filter>            filter_ref;
 public:
@@ -73,12 +68,12 @@ public:
         { }
 
     template<typename Source>
-    std::streamsize read(Source& src, char_type* s, std::streamsize n)
+    std::streamsize read(Source& src, char* s, std::streamsize n)
     {
         typedef detail::counted_array_sink<char_type>  array_sink;
         typedef composite<filter_ref, array_sink>      filtered_array_sink;
 
-        BOOST_ASSERT((flags() & f_write) == 0);
+        assert((flags() & f_write) == 0);
         if (flags() == 0) {
             flags() = f_read;
             buf().set(0, 0);
@@ -101,12 +96,12 @@ public:
     }
 
     template<typename Sink>
-    std::streamsize write(Sink& dest, const char_type* s, std::streamsize n)
+    std::streamsize write(Sink& dest, const char* s, std::streamsize n)
     {
         typedef detail::counted_array_source<char_type>  array_source;
         typedef composite<filter_ref, array_source>      filtered_array_source;
 
-        BOOST_ASSERT((flags() & f_read) == 0);
+        assert((flags() & f_read) == 0);
         if (flags() == 0) {
             flags() = f_write;
             buf().set(0, 0);
@@ -121,13 +116,13 @@ public:
     }
 
     template<typename Device>
-    void close(Device& dev)
+    void close( Device& dev, 
+                BOOST_IOS::openmode which = 
+                    BOOST_IOS::in | BOOST_IOS::out )
     {
-        detail::execute_all(
-            detail::flush_buffer(buf(), dev, (flags() & f_write) != 0),
-            detail::call_close_all(pimpl_->filter_, dev),
-            detail::clear_flags(flags())
-        );
+        if ((which & BOOST_IOS::out) != 0 && (flags() & f_write) != 0)
+            buf().flush(dev);
+        flags() = 0;
     }
 private:
     filter_ref filter() { return boost::ref(pimpl_->filter_); }
@@ -151,7 +146,7 @@ private:
 
 //
 // Template name: invert.
-// Template parameters:
+// Template paramters:
 //      Filter - A model of InputFilter or OutputFilter.
 // Description: Returns an instance of an appropriate specialization of inverse.
 //

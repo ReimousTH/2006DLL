@@ -18,12 +18,6 @@
 
 #include <vector>
 #include <boost/ptr_container/ptr_sequence_adapter.hpp>
-#include <boost/ptr_container/detail/ptr_container_disable_deprecated.hpp>
-
-#if defined(BOOST_PTR_CONTAINER_DISABLE_DEPRECATED)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
 
 namespace boost
 {
@@ -32,15 +26,15 @@ namespace boost
     < 
         class T, 
         class CloneAllocator = heap_clone_allocator,
-        class Allocator      = std::allocator<typename ptr_container_detail::void_ptr<T>::type>
+        class Allocator      = std::allocator<void*>
     >
     class ptr_vector : public 
-        ptr_sequence_adapter< T, std::vector<
-            typename ptr_container_detail::void_ptr<T>::type,Allocator>, 
+        ptr_sequence_adapter< T, 
+                              std::vector<void*,Allocator>, 
                               CloneAllocator >
     {  
-        typedef ptr_sequence_adapter< T, std::vector<
-            typename ptr_container_detail::void_ptr<T>::type,Allocator>, 
+        typedef ptr_sequence_adapter< T, 
+                                      std::vector<void*,Allocator>, 
                                       CloneAllocator > 
             base_class;
 
@@ -48,16 +42,18 @@ namespace boost
         
     public:
 
-        BOOST_PTR_CONTAINER_DEFINE_SEQEUENCE_MEMBERS( ptr_vector, 
-                                                      base_class,
-                                                      this_type )
-        
-        explicit ptr_vector( size_type n,
-                             const allocator_type& alloc = allocator_type() )
+        BOOST_PTR_CONTAINER_DEFINE_NON_INHERITED_MEMBERS( ptr_vector, 
+                                                          base_class,
+                                                          this_type );
+
+        ptr_vector( BOOST_DEDUCED_TYPENAME base_class::size_type n,
+                    const allocator_type& alloc = allocator_type() )
           : base_class(alloc)
         {
-            this->base().reserve( n );
-        }        
+            this->c_private().reserve( n );
+        }
+
+
     };
 
     //////////////////////////////////////////////////////////////////////////////
@@ -79,9 +75,5 @@ namespace boost
     }
     
 }
-
-#if defined(BOOST_PTR_CONTAINER_DISABLE_DEPRECATED)
-#pragma GCC diagnostic pop
-#endif
 
 #endif

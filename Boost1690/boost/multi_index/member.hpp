@@ -1,4 +1,4 @@
-/* Copyright 2003-2015 Joaquin M Lopez Munoz.
+/* Copyright 2003-2005 Joaquín M López Muñoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -9,19 +9,14 @@
 #ifndef BOOST_MULTI_INDEX_MEMBER_HPP
 #define BOOST_MULTI_INDEX_MEMBER_HPP
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER)&&(_MSC_VER>=1200)
 #pragma once
 #endif
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <boost/mpl/if.hpp>
 #include <boost/type_traits/is_const.hpp>
-#include <boost/utility/enable_if.hpp>
 #include <cstddef>
-
-#if !defined(BOOST_NO_SFINAE)
-#include <boost/type_traits/is_convertible.hpp>
-#endif
 
 namespace boost{
 
@@ -38,7 +33,17 @@ namespace detail{
  * a type P  such that, given a p of Type P
  *   *...n...*x is convertible to T&, for some n>=1.
  * Examples of chained pointers are raw and smart pointers, iterators and
- * arbitrary combinations of these (vg. T** or unique_ptr<T*>.)
+ * arbitrary combinations of these (vg. T** or auto_ptr<T*>.)
+ */
+
+/* NB. Some overloads of operator() have an extra dummy parameter int=0.
+ * This disambiguator serves several purposes:
+ *  - Without it, MSVC++ 6.0 incorrectly regards some overloads as
+ *    specializations of a previous member function template.
+ *  - MSVC++ 6.0/7.0 seem to incorrectly treat some different memfuns
+ *    as if they have the same signature.
+ *  - If remove_const is broken due to lack of PTS, int=0 avoids the
+ *    declaration of memfuns with identical signature.
  */
 
 template<class Class,typename Type,Type Class::*PtrToMember>
@@ -47,15 +52,7 @@ struct const_member_base
   typedef Type result_type;
 
   template<typename ChainedPtr>
-
-#if !defined(BOOST_NO_SFINAE)
-  typename disable_if<
-    is_convertible<const ChainedPtr&,const Class&>,Type&>::type
-#else
-  Type&
-#endif
-  
-  operator()(const ChainedPtr& x)const
+  Type& operator()(const ChainedPtr& x)const
   {
     return operator()(*x);
   }
@@ -70,7 +67,7 @@ struct const_member_base
     return operator()(x.get());
   }
 
-  Type& operator()(const reference_wrapper<Class>& x)const
+  Type& operator()(const reference_wrapper<Class> x,int=0)const
   { 
     return operator()(x.get());
   }
@@ -82,20 +79,12 @@ struct non_const_member_base
   typedef Type result_type;
 
   template<typename ChainedPtr>
-
-#if !defined(BOOST_NO_SFINAE)
-  typename disable_if<
-    is_convertible<const ChainedPtr&,const Class&>,Type&>::type
-#else
-  Type&
-#endif
-
-  operator()(const ChainedPtr& x)const
+  Type& operator()(const ChainedPtr& x)const
   {
     return operator()(*x);
   }
 
-  const Type& operator()(const Class& x)const
+  const Type& operator()(const Class& x,int=0)const
   {
     return x.*PtrToMember;
   }
@@ -105,7 +94,7 @@ struct non_const_member_base
     return x.*PtrToMember;
   }
 
-  const Type& operator()(const reference_wrapper<const Class>& x)const
+  const Type& operator()(const reference_wrapper<const Class>& x,int=0)const
   {
     return operator()(x.get());
   }
@@ -142,9 +131,6 @@ namespace detail{
  * Surprisingly enough, other compilers, like Intel C++ 7.0/7.1 and
  * Visual Age 6.0, have similar bugs. This replacement of member<>
  * can be used for them too.
- *
- * Support for such old compilers is dropped and
- * [non_]const_member_offset_base is deprecated.
  */
 
 template<class Class,typename Type,std::size_t OffsetOfMember>
@@ -153,15 +139,7 @@ struct const_member_offset_base
   typedef Type result_type;
 
   template<typename ChainedPtr>
-
-#if !defined(BOOST_NO_SFINAE)
-  typename disable_if<
-    is_convertible<const ChainedPtr&,const Class&>,Type&>::type
-#else
-  Type&
-#endif 
-    
-  operator()(const ChainedPtr& x)const
+  Type& operator()(const ChainedPtr& x)const
   {
     return operator()(*x);
   }
@@ -179,7 +157,7 @@ struct const_member_offset_base
     return operator()(x.get());
   }
 
-  Type& operator()(const reference_wrapper<Class>& x)const
+  Type& operator()(const reference_wrapper<Class>& x,int=0)const
   {
     return operator()(x.get());
   }
@@ -191,20 +169,12 @@ struct non_const_member_offset_base
   typedef Type result_type;
 
   template<typename ChainedPtr>
-
-#if !defined(BOOST_NO_SFINAE)
-  typename disable_if<
-    is_convertible<const ChainedPtr&,const Class&>,Type&>::type
-#else
-  Type&
-#endif 
-  
-  operator()(const ChainedPtr& x)const
+  Type& operator()(const ChainedPtr& x)const
   {
     return operator()(*x);
   }
 
-  const Type& operator()(const Class& x)const
+  const Type& operator()(const Class& x,int=0)const
   {
     return *static_cast<const Type*>(
       static_cast<const void*>(
@@ -219,7 +189,7 @@ struct non_const_member_offset_base
         static_cast<char*>(static_cast<void *>(&x))+OffsetOfMember));
   }
 
-  const Type& operator()(const reference_wrapper<const Class>& x)const
+  const Type& operator()(const reference_wrapper<const Class>& x,int=0)const
   {
     return operator()(x.get());
   }
@@ -249,10 +219,10 @@ struct member_offset:
 
 #if defined(BOOST_NO_POINTER_TO_MEMBER_TEMPLATE_PARAMETERS)
 #define BOOST_MULTI_INDEX_MEMBER(Class,Type,MemberName) \
-::boost::multi_index::member_offset< Class,Type,offsetof(Class,MemberName) >
+::boost::multi_index::member_offset<Class,Type,offsetof(Class,MemberName)>
 #else
 #define BOOST_MULTI_INDEX_MEMBER(Class,Type,MemberName) \
-::boost::multi_index::member< Class,Type,&Class::MemberName >
+::boost::multi_index::member<Class,Type,&Class::MemberName>
 #endif
 
 } /* namespace multi_index */

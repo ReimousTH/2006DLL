@@ -11,9 +11,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/aux_/fold_impl_body.hpp,v $
+// $Date: 2004/10/24 08:18:03 $
+// $Revision: 1.8 $
 
 #   include <boost/mpl/limits/unrolling.hpp>
 #   include <boost/mpl/aux_/preprocessor/repeat.hpp>

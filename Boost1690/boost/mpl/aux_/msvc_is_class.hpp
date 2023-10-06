@@ -10,9 +10,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/aux_/msvc_is_class.hpp,v $
+// $Date: 2004/09/28 13:56:59 $
+// $Revision: 1.4 $
 
 #include <boost/mpl/if.hpp>
 #include <boost/mpl/bool.hpp>

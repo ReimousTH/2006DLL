@@ -1,5 +1,4 @@
-// (C) Copyright 2008 CodeRage, LLC (turkanis at coderage dot com)
-// (C) Copyright 2003-2007 Jonathan Turkanis
+// (C) Copyright Jonathan Turkanis 2003.
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt.)
 
@@ -8,7 +7,7 @@
 #ifndef BOOST_IOSTREAMS_CONCEPTS_HPP_INCLUDED
 #define BOOST_IOSTREAMS_CONCEPTS_HPP_INCLUDED
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
 # pragma once
 #endif
 
@@ -25,7 +24,7 @@ namespace boost { namespace iostreams {
 
 //--------------Definitions of helper templates for device concepts-----------//
 
-template<typename Mode, typename Ch = char>
+template<typename Mode, typename Ch = BOOST_IOSTREAMS_DEFAULT_ARG(char)>
 struct device {
     typedef Ch char_type;
     struct category
@@ -51,7 +50,7 @@ struct device {
     void imbue(const Locale&) { }
 };
 
-template<typename Mode, typename Ch = wchar_t>
+template<typename Mode, typename Ch = BOOST_IOSTREAMS_DEFAULT_ARG(wchar_t)>
 struct wdevice : device<Mode, Ch> { };
 
 typedef device<input>    source;
@@ -61,7 +60,7 @@ typedef wdevice<output>  wsink;
 
 //--------------Definitions of helper templates for simple filter concepts----//
 
-template<typename Mode, typename Ch = char>
+template<typename Mode, typename Ch = BOOST_IOSTREAMS_DEFAULT_ARG(char)>
 struct filter {
     typedef Ch char_type;
     struct category
@@ -93,7 +92,7 @@ struct filter {
     void imbue(const Locale&) { }
 };
 
-template<typename Mode, typename Ch = wchar_t>
+template<typename Mode, typename Ch = BOOST_IOSTREAMS_DEFAULT_ARG(wchar_t)>
 struct wfilter : filter<Mode, Ch> { };
 
 typedef filter<input>      input_filter;
@@ -115,12 +114,12 @@ struct multichar_filter : filter<Mode, Ch> {
 template<typename Mode, typename Ch = wchar_t>
 struct multichar_wfilter : multichar_filter<Mode, Ch> { };
 
-typedef multichar_filter<input>      multichar_input_filter;
-typedef multichar_wfilter<input>     multichar_input_wfilter;
-typedef multichar_filter<output>     multichar_output_filter;
-typedef multichar_wfilter<output>    multichar_output_wfilter;
-typedef multichar_filter<dual_use>   multichar_dual_use_filter;
-typedef multichar_wfilter<dual_use>  multichar_dual_use_wfilter;
+typedef multichar_filter<input>     multichar_input_filter;
+typedef multichar_filter<input>     multichar_input_wfilter;
+typedef multichar_filter<output>    multichar_output_filter;
+typedef multichar_filter<output>    multichar_output_wfilter;
+typedef multichar_filter<dual_use>  multichar_dual_use_filter;
+typedef multichar_filter<dual_use>  multichar_dual_use_wfilter;
 
 //----------------------------------------------------------------------------//
 

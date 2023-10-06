@@ -12,7 +12,7 @@
 // implementation of basic_text_iprimitive overrides for the combination
 // of template parameters used to implement a text_iprimitive
 
-#include <cstddef> // size_t, NULL
+#include <cstddef> // size_t
 #include <boost/config.hpp>
 #if defined(BOOST_NO_STDC_NAMESPACE)
 namespace std{ 
@@ -28,7 +28,7 @@ namespace boost {
 namespace archive {
 
 template<class Archive>
-BOOST_ARCHIVE_DECL void
+BOOST_ARCHIVE_DECL(void)
 text_iarchive_impl<Archive>::load(char *s)
 {
     std::size_t size;
@@ -41,7 +41,7 @@ text_iarchive_impl<Archive>::load(char *s)
 }
 
 template<class Archive>
-BOOST_ARCHIVE_DECL void
+BOOST_ARCHIVE_DECL(void)
 text_iarchive_impl<Archive>::load(std::string &s)
 {
     std::size_t size;
@@ -53,14 +53,13 @@ text_iarchive_impl<Archive>::load(std::string &s)
     if(NULL != s.data())
     #endif
         s.resize(size);
-    if(0 < size)
-        is.read(&(*s.begin()), size);
+    is.read(const_cast<char *>(s.data()), size);
 }
 
 #ifndef BOOST_NO_CWCHAR
 #ifndef BOOST_NO_INTRINSIC_WCHAR_T
 template<class Archive>
-BOOST_ARCHIVE_DECL void
+BOOST_ARCHIVE_DECL(void)
 text_iarchive_impl<Archive>::load(wchar_t *ws)
 {
     std::size_t size;
@@ -74,7 +73,7 @@ text_iarchive_impl<Archive>::load(wchar_t *ws)
 
 #ifndef BOOST_NO_STD_WSTRING
 template<class Archive>
-BOOST_ARCHIVE_DECL void
+BOOST_ARCHIVE_DECL(void)
 text_iarchive_impl<Archive>::load(std::wstring &ws)
 {
     std::size_t size;
@@ -93,19 +92,7 @@ text_iarchive_impl<Archive>::load(std::wstring &ws)
 #endif // BOOST_NO_CWCHAR
 
 template<class Archive>
-BOOST_ARCHIVE_DECL void
-text_iarchive_impl<Archive>::load_override(class_name_type & t){
-    basic_text_iarchive<Archive>::load_override(t);
-}
-
-template<class Archive>
-BOOST_ARCHIVE_DECL void
-text_iarchive_impl<Archive>::init(){
-    basic_text_iarchive<Archive>::init();
-}
-
-template<class Archive>
-BOOST_ARCHIVE_DECL 
+BOOST_ARCHIVE_DECL(BOOST_PP_EMPTY()) 
 text_iarchive_impl<Archive>::text_iarchive_impl(
     std::istream & is, 
     unsigned int flags

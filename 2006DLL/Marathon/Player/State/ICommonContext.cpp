@@ -49,10 +49,10 @@ void ICommonContext::ICOnInputTick(float a2)
 
 		if (this->LockInputTime > 0.0){
 			if (this->LockInputTime  - a2 >= 0.0){
-
-				this->LockInputTime = 0.0f;
+				this->LockInputTime = this->LockInputTime -a2;
 			}
-			this->LockInputTime = this->LockInputTime -a2;
+			else this->LockInputTime = 0.0;
+			
 		}
 
 }

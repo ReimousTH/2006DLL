@@ -11,9 +11,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/arg_fwd.hpp,v $
+// $Date: 2004/09/28 13:56:58 $
+// $Revision: 1.6 $
 
 #include <boost/mpl/aux_/adl_barrier.hpp>
 #include <boost/mpl/aux_/nttp_decl.hpp>

@@ -7,15 +7,15 @@
 #ifndef BOOST_FILTER_ITERATOR_23022003THW_HPP
 #define BOOST_FILTER_ITERATOR_23022003THW_HPP
 
+#include <boost/iterator.hpp>
 #include <boost/iterator/iterator_adaptor.hpp>
 #include <boost/iterator/iterator_categories.hpp>
 
 #include <boost/type_traits/is_class.hpp>
 #include <boost/static_assert.hpp>
 
-namespace boost {
-namespace iterators {
-
+namespace boost
+{
   template <class Predicate, class Iterator>
   class filter_iterator;
 
@@ -39,7 +39,7 @@ namespace iterators {
         > type;
     };
   }
-
+  
   template <class Predicate, class Iterator>
   class filter_iterator
     : public detail::filter_iterator_base<Predicate, Iterator>::type
@@ -53,14 +53,14 @@ namespace iterators {
    public:
       filter_iterator() { }
 
-      filter_iterator(Predicate f, Iterator x, Iterator end_ = Iterator())
-          : super_t(x), m_predicate(f), m_end(end_)
+      filter_iterator(Predicate f, Iterator x, Iterator end = Iterator())
+          : super_t(x), m_predicate(f), m_end(end)
       {
           satisfy_predicate();
       }
 
-      filter_iterator(Iterator x, Iterator end_ = Iterator())
-        : super_t(x), m_predicate(), m_end(end_)
+      filter_iterator(Iterator x, Iterator end = Iterator())
+        : super_t(x), m_predicate(), m_end(end)
       {
         // Pro8 is a little too aggressive about instantiating the
         // body of this function.
@@ -68,7 +68,7 @@ namespace iterators {
           // Don't allow use of this constructor if Predicate is a
           // function pointer type, since it will be 0.
           BOOST_STATIC_ASSERT(is_class<Predicate>::value);
-#endif
+#endif 
           satisfy_predicate();
       }
 
@@ -108,28 +108,27 @@ namespace iterators {
   };
 
   template <class Predicate, class Iterator>
-  inline filter_iterator<Predicate,Iterator>
+  filter_iterator<Predicate,Iterator>
   make_filter_iterator(Predicate f, Iterator x, Iterator end = Iterator())
   {
       return filter_iterator<Predicate,Iterator>(f,x,end);
   }
 
   template <class Predicate, class Iterator>
-  inline filter_iterator<Predicate,Iterator>
+  filter_iterator<Predicate,Iterator>
   make_filter_iterator(
       typename iterators::enable_if<
           is_class<Predicate>
         , Iterator
       >::type x
-    , Iterator end = Iterator())
+    , Iterator end = Iterator()
+#if BOOST_WORKAROUND(BOOST_MSVC, == 1200)
+    , Predicate* = 0
+#endif 
+  )
   {
       return filter_iterator<Predicate,Iterator>(x,end);
   }
-
-} // namespace iterators
-
-using iterators::filter_iterator;
-using iterators::make_filter_iterator;
 
 } // namespace boost
 

@@ -1,7 +1,7 @@
 //  (C) Copyright Herve Bronnimann 2004.
-//
-// Distributed under the Boost Software License, Version 1.0. (See accompanying
-// file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+//  Use, modification and distribution are subject to the
+//  Boost Software License, Version 1.0. (See accompanying file
+//  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 /*
  Revision history:
@@ -99,10 +99,8 @@ namespace boost {
 
       // if odd number of elements, treat last element
       if (first != last) { // odd number of elements
-        if (comp(first, min_result)) {
-          min_result = first;
-          potential_min_result = last;
-          }
+        if (comp(first, min_result))
+          min_result = first, potential_min_result = last;
         else if (comp(max_result, first))
           max_result = first;
       }

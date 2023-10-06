@@ -22,15 +22,8 @@
 
 namespace boost{
 
-#ifdef BOOST_MSVC
-#pragma warning(push)
-#pragma warning(disable: 4103)
-#endif
 #ifdef BOOST_HAS_ABI_HEADERS
 #  include BOOST_ABI_PREFIX
-#endif
-#ifdef BOOST_MSVC
-#pragma warning(pop)
 #endif
 
 template <class BidiIterator, class Allocator, class charT, class traits>
@@ -39,20 +32,10 @@ bool regex_search(BidiIterator first, BidiIterator last,
                   const basic_regex<charT, traits>& e, 
                   match_flag_type flags = match_default)
 {
-   return regex_search(first, last, m, e, flags, first);
-}
-
-template <class BidiIterator, class Allocator, class charT, class traits>
-bool regex_search(BidiIterator first, BidiIterator last, 
-                  match_results<BidiIterator, Allocator>& m, 
-                  const basic_regex<charT, traits>& e, 
-                  match_flag_type flags,
-                  BidiIterator base)
-{
    if(e.flags() & regex_constants::failbit)
       return false;
 
-   BOOST_REGEX_DETAIL_NS::perl_matcher<BidiIterator, Allocator, traits> matcher(first, last, m, e, flags, base);
+   re_detail::perl_matcher<BidiIterator, Allocator, traits> matcher(first, last, m, e, flags);
    return matcher.find();
 }
 
@@ -141,7 +124,7 @@ bool regex_search(BidiIterator first, BidiIterator last,
 
    match_results<BidiIterator> m;
    typedef typename match_results<BidiIterator>::allocator_type match_alloc_type;
-   BOOST_REGEX_DETAIL_NS::perl_matcher<BidiIterator, match_alloc_type, traits> matcher(first, last, m, e, flags | regex_constants::match_any, first);
+   re_detail::perl_matcher<BidiIterator, match_alloc_type, traits> matcher(first, last, m, e, flags | regex_constants::match_any);
    return matcher.find();
 }
 
@@ -199,15 +182,8 @@ inline bool regex_search(const std::basic_string<wchar_t>& s,
 
 #endif // partial overload
 
-#ifdef BOOST_MSVC
-#pragma warning(push)
-#pragma warning(disable: 4103)
-#endif
 #ifdef BOOST_HAS_ABI_HEADERS
 #  include BOOST_ABI_SUFFIX
-#endif
-#ifdef BOOST_MSVC
-#pragma warning(pop)
 #endif
 
 } // namespace boost

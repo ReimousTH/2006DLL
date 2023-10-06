@@ -4,13 +4,12 @@
 /* Copyright (c) 2002,2003 CrystalClear Software, Inc.
  * Use, modification and distribution is subject to the 
  * Boost Software License, Version 1.0. (See accompanying
- * file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+ * file LICENSE-1.0 or http://www.boost.org/LICENSE-1.0)
  * Author: Jeff Garland 
- * $Date$
+ * $Date: 2003/11/23 02:27:09 $
  */
 
-#include <boost/date_time/constrained_value.hpp>
-#include <boost/date_time/compiler_config.hpp>
+#include "boost/date_time/constrained_value.hpp"
 #include <stdexcept>
 #include <string>
 
@@ -18,7 +17,7 @@ namespace boost {
 namespace gregorian {
 
   //! Exception type for day of year (1..366)
-  struct BOOST_SYMBOL_VISIBLE bad_day_of_year : public std::out_of_range
+  struct bad_day_of_year : public std::out_of_range
   {
     bad_day_of_year() : 
       std::out_of_range(std::string("Day of year value is out of range 1..366")) 

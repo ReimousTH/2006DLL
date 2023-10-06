@@ -9,9 +9,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/list/aux_/numbered_c.hpp,v $
+// $Date: 2004/11/28 01:48:53 $
+// $Revision: 1.5 $
 
 #if defined(BOOST_PP_IS_ITERATING)
 

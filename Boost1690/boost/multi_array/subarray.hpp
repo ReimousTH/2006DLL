@@ -79,15 +79,17 @@ public:
   
   template <typename IndexList>
   const element& operator()(const IndexList& indices) const {
-    boost::function_requires<
-      CollectionConcept<IndexList> >();
     return super_type::access_element(boost::type<const element&>(),
-                                      indices,origin(),
-                                      shape(),strides(),index_bases());
+                                      origin(),
+                                      indices,strides());
   }
 
   // see generate_array_view in base.hpp
+#if !defined(BOOST_MSVC) || BOOST_MSVC > 1300
   template <int NDims>
+#else
+  template <int NumDims, int NDims> // else ICE
+#endif // BOOST_MSVC
   typename const_array_view<NDims>::type 
   operator[](const boost::detail::multi_array::
              index_gen<NumDims,NDims>& indices)
@@ -227,13 +229,13 @@ public:
   // Assignment from other ConstMultiArray types.
   template <typename ConstMultiArray>
   sub_array& operator=(const ConstMultiArray& other) {
-    function_requires< boost::multi_array_concepts::ConstMultiArrayConcept< 
+    function_requires< boost::detail::multi_array::ConstMultiArrayConcept< 
         ConstMultiArray, NumDims> >();
 
     // make sure the dimensions agree
-    BOOST_ASSERT(other.num_dimensions() == this->num_dimensions());
-    BOOST_ASSERT(std::equal(other.shape(),other.shape()+this->num_dimensions(),
-                            this->shape()));
+    assert(other.num_dimensions() == this->num_dimensions());
+    assert(std::equal(other.shape(),other.shape()+this->num_dimensions(),
+                      this->shape()));
     // iterator-based copy
     std::copy(other.begin(),other.end(),begin());
     return *this;
@@ -243,10 +245,9 @@ public:
   sub_array& operator=(const sub_array& other) {
     if (&other != this) {
       // make sure the dimensions agree
-      BOOST_ASSERT(other.num_dimensions() == this->num_dimensions());
-      BOOST_ASSERT(std::equal(other.shape(),
-                              other.shape()+this->num_dimensions(),
-                              this->shape()));
+      assert(other.num_dimensions() == this->num_dimensions());
+      assert(std::equal(other.shape(),other.shape()+this->num_dimensions(),
+                        this->shape()));
       // iterator-based copy
       std::copy(other.begin(),other.end(),begin());
     }
@@ -263,7 +264,11 @@ public:
   }
 
   // see generate_array_view in base.hpp
+#if !defined(BOOST_MSVC) || BOOST_MSVC > 1300
   template <int NDims>
+#else
+  template <int NumDims, int NDims> // else ICE
+#endif // BOOST_MSVC
   typename array_view<NDims>::type 
   operator[](const boost::detail::multi_array::
              index_gen<NumDims,NDims>& indices) {
@@ -279,12 +284,9 @@ public:
 
   template <class IndexList>
   element& operator()(const IndexList& indices) {
-    boost::function_requires<
-      CollectionConcept<IndexList> >();
     return super_type::access_element(boost::type<element&>(),
-                                      indices,origin(),
-                                      this->shape(),this->strides(),
-                                      this->index_bases());
+                                      origin(),
+                                      indices,this->strides());
   }
 
   iterator begin() {
@@ -314,8 +316,6 @@ public:
 
   template <class IndexList>
   const element& operator()(const IndexList& indices) const {
-    boost::function_requires<
-      CollectionConcept<IndexList> >();
     return super_type::operator()(indices);
   }
 
@@ -324,7 +324,11 @@ public:
   }
 
   // see generate_array_view in base.hpp
+#if !defined(BOOST_MSVC) || BOOST_MSVC > 1300
   template <int NDims>
+#else
+  template <int NumDims, int NDims> // else ICE
+#endif // BOOST_MSVC
   typename const_array_view<NDims>::type 
   operator[](const boost::detail::multi_array::
              index_gen<NumDims,NDims>& indices)

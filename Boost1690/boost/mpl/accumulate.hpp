@@ -11,9 +11,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/accumulate.hpp,v $
+// $Date: 2005/01/19 15:20:21 $
+// $Revision: 1.2 $
 
 #include <boost/mpl/fold.hpp>
 #include <boost/mpl/aux_/na_spec.hpp>

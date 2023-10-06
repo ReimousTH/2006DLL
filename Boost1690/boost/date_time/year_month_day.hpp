@@ -4,19 +4,17 @@
 /* Copyright (c) 2002,2003 CrystalClear Software, Inc.
  * Use, modification and distribution is subject to the 
  * Boost Software License, Version 1.0. (See accompanying
- * file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+ * file LICENSE-1.0 or http://www.boost.org/LICENSE-1.0)
  * Author: Jeff Garland 
- * $Date$
+ * $Date: 2003/11/23 03:31:27 $
  */
-
-#include <boost/date_time/compiler_config.hpp>
 
 namespace boost {
 namespace date_time {
 
   //! Allow rapid creation of ymd triples of different types
   template<typename YearType, typename MonthType, typename DayType>
-  struct BOOST_SYMBOL_VISIBLE year_month_day_base {
+  struct year_month_day_base {
     year_month_day_base(YearType  year, 
                         MonthType month,
                         DayType   day);

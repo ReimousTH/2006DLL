@@ -2,12 +2,12 @@
 #define BOOST_ARCHIVE_ITERATORS_REMOVE_WHITESPACE_HPP
 
 // MS compatible compilers support #pragma once
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
 # pragma once
 #endif
 
 /////////1/////////2/////////3/////////4/////////5/////////6/////////7/////////8
-// remove_whitespace.hpp
+// binary_from_base64.hpp
 
 // (C) Copyright 2002 Robert Ramey - http://www.rrsd.com . 
 // Use, modification and distribution is subject to the Boost Software
@@ -16,11 +16,17 @@
 
 //  See http://www.boost.org for updates, documentation, and revision history.
 
-#include <boost/assert.hpp>
+#include <cassert>
+
+#include <boost/config.hpp> // for BOOST_DEDUCED_TYPENAME
+
+#include <boost/pfto.hpp>
 
 #include <boost/iterator/iterator_adaptor.hpp>
 #include <boost/iterator/filter_iterator.hpp>
-#include <boost/iterator/iterator_traits.hpp>
+
+//#include <boost/detail/workaround.hpp>
+//#if ! BOOST_WORKAROUND(BOOST_MSVC, <=1300)
 
 // here is the default standard implementation of the functor used
 // by the filter iterator to remove spaces.  Unfortunately usage
@@ -46,6 +52,8 @@ namespace std{ using ::isspace; }
 #undef iswspace
 #endif
 
+//#endif // BOOST_WORKAROUND
+
 namespace { // anonymous
 
 template<class CharType>
@@ -54,7 +62,7 @@ struct remove_whitespace_predicate;
 template<>
 struct remove_whitespace_predicate<char>
 {
-    bool operator()(unsigned char t){
+    bool operator()(char t){
         return ! std::isspace(t);
     }
 };
@@ -91,14 +99,14 @@ class filter_iterator
     >
 {
     friend class boost::iterator_core_access;
-    typedef typename boost::iterator_adaptor<
+    typedef BOOST_DEDUCED_TYPENAME boost::iterator_adaptor<
         filter_iterator<Predicate, Base>,
         Base,
         use_default,
         single_pass_traversal_tag
     > super_t;
     typedef filter_iterator<Predicate, Base> this_t;
-    typedef typename super_t::reference reference_type;
+    typedef BOOST_DEDUCED_TYPENAME super_t::reference reference_type;
 
     reference_type dereference_impl(){
         if(! m_full){
@@ -132,27 +140,21 @@ public:
 template<class Base>
 class remove_whitespace : 
     public filter_iterator<
-        remove_whitespace_predicate<
-            typename boost::iterator_value<Base>::type
-            //typename Base::value_type
-        >,
+        remove_whitespace_predicate<BOOST_DEDUCED_TYPENAME Base::value_type>,
         Base
     >
 {
     friend class boost::iterator_core_access;
     typedef filter_iterator<
-        remove_whitespace_predicate<
-            typename boost::iterator_value<Base>::type
-            //typename Base::value_type
-        >,
+        remove_whitespace_predicate<BOOST_DEDUCED_TYPENAME Base::value_type>,
         Base
     > super_t;
 public:
 //    remove_whitespace(){} // why is this needed?
     // make composible buy using templated constructor
     template<class T>
-    remove_whitespace(T start) :
-        super_t(Base(static_cast< T >(start)))
+    remove_whitespace(BOOST_PFTO_WRAPPER(T) start) :
+        super_t(Base(BOOST_MAKE_PFTO_WRAPPER(static_cast<T>(start))))
     {}
     // intel 7.1 doesn't like default copy constructor
     remove_whitespace(const remove_whitespace & rhs) : 

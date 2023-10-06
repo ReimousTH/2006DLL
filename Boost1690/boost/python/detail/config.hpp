@@ -29,11 +29,14 @@
 # endif
 
 # if defined(BOOST_MSVC)
+#  if _MSC_VER <= 1200
+#   define BOOST_MSVC6_OR_EARLIER 1
+#  endif
 
-#  pragma warning (disable : 4786) // disable truncated debug symbols
-#  pragma warning (disable : 4251) // disable exported dll function
-#  pragma warning (disable : 4800) //'int' : forcing value to bool 'true' or 'false'
-#  pragma warning (disable : 4275) // non dll-interface class
+# pragma warning (disable : 4786) // disable truncated debug symbols
+# pragma warning (disable : 4251) // disable exported dll function
+# pragma warning (disable : 4800) //'int' : forcing value to bool 'true' or 'false'
+# pragma warning (disable : 4275) // non dll-interface class
 
 # elif defined(__ICL) && __ICL < 600 // Intel C++ 5
 
@@ -64,18 +67,31 @@
 #endif
 
 #if defined(BOOST_PYTHON_DYNAMIC_LIB)
-#  if defined(BOOST_SYMBOL_EXPORT)
+
+#  if !defined(_WIN32) && !defined(__CYGWIN__)                  \
+    && defined(__GNUC__) && __GNUC__ >= 3 && __GNUC_MINOR__ >=5 \
+    && !defined(BOOST_PYTHON_GCC_SYMBOL_VISIBILITY)
+#    define BOOST_PYTHON_USE_GCC_SYMBOL_VISIBILITY
+#  endif 
+
+#  if defined(BOOST_PYTHON_USE_GCC_SYMBOL_VISIBILITY)
 #     if defined(BOOST_PYTHON_SOURCE)
-#        define BOOST_PYTHON_DECL           BOOST_SYMBOL_EXPORT
-#        define BOOST_PYTHON_DECL_FORWARD   BOOST_SYMBOL_FORWARD_EXPORT
-#        define BOOST_PYTHON_DECL_EXCEPTION BOOST_EXCEPTION_EXPORT
+#        define BOOST_PYTHON_DECL __attribute__ ((visibility("default")))
 #        define BOOST_PYTHON_BUILD_DLL
 #     else
-#        define BOOST_PYTHON_DECL           BOOST_SYMBOL_IMPORT
-#        define BOOST_PYTHON_DECL_FORWARD   BOOST_SYMBOL_FORWARD_IMPORT
-#        define BOOST_PYTHON_DECL_EXCEPTION BOOST_EXCEPTION_IMPORT
+#        define BOOST_PYTHON_DECL
+#     endif
+#     define BOOST_PYTHON_DECL_FORWARD
+#     define BOOST_PYTHON_DECL_EXCEPTION __attribute__ ((visibility("default")))
+#  elif (defined(_WIN32) || defined(__CYGWIN__))
+#     if defined(BOOST_PYTHON_SOURCE)
+#        define BOOST_PYTHON_DECL __declspec(dllexport)
+#        define BOOST_PYTHON_BUILD_DLL
+#     else
+#        define BOOST_PYTHON_DECL __declspec(dllimport)
 #     endif
 #  endif
+
 #endif
 
 #ifndef BOOST_PYTHON_DECL
@@ -83,11 +99,11 @@
 #endif
 
 #ifndef BOOST_PYTHON_DECL_FORWARD
-#  define BOOST_PYTHON_DECL_FORWARD
+#  define BOOST_PYTHON_DECL_FORWARD BOOST_PYTHON_DECL
 #endif
 
 #ifndef BOOST_PYTHON_DECL_EXCEPTION
-#  define BOOST_PYTHON_DECL_EXCEPTION
+#  define BOOST_PYTHON_DECL_EXCEPTION BOOST_PYTHON_DECL
 #endif
 
 #if BOOST_WORKAROUND(__DECCXX_VER, BOOST_TESTED_AT(60590042))
@@ -96,39 +112,6 @@
         ((size_t)__INTADDR__(&(((s_name *)0)->s_member)))
 #else
 # define BOOST_PYTHON_OFFSETOF offsetof
-#endif
-
-//  enable automatic library variant selection  ------------------------------// 
-
-#if !defined(BOOST_PYTHON_SOURCE) && !defined(BOOST_ALL_NO_LIB) && !defined(BOOST_PYTHON_NO_LIB)
-//
-// Set the name of our library, this will get undef'ed by auto_link.hpp
-// once it's done with it:
-//
-#define _BOOST_PYTHON_CONCAT(N, M, m) N ## M ## m
-#define BOOST_PYTHON_CONCAT(N, M, m) _BOOST_PYTHON_CONCAT(N, M, m)
-#define BOOST_LIB_NAME BOOST_PYTHON_CONCAT(boost_python, PY_MAJOR_VERSION, PY_MINOR_VERSION)
-//
-// If we're importing code from a dll, then tell auto_link.hpp about it:
-//
-#ifdef BOOST_PYTHON_DYNAMIC_LIB
-#  define BOOST_DYN_LINK
-#endif
-//
-// And include the header that does the work:
-//
-#include <boost/config/auto_link.hpp>
-#endif  // auto-linking disabled
-
-#undef BOOST_PYTHON_CONCAT
-#undef _BOOST_PYTHON_CONCAT
-
-#ifndef BOOST_PYTHON_NO_PY_SIGNATURES
-#define BOOST_PYTHON_SUPPORTS_PY_SIGNATURES // enables smooth transition
-#endif
-
-#if !defined(BOOST_ATTRIBUTE_UNUSED) && defined(__GNUC__) && (__GNUC__ >= 4)
-#  define BOOST_ATTRIBUTE_UNUSED __attribute__((unused))
 #endif
 
 #endif // CONFIG_DWA052200_H_

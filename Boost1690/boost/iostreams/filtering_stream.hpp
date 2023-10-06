@@ -1,5 +1,4 @@
-// (C) Copyright 2008 CodeRage, LLC (turkanis at coderage dot com)
-// (C) Copyright 2004-2007 Jonathan Turkanis
+// (C) Copyright Jonathan Turkanis 2004
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt.)
 
@@ -8,7 +7,7 @@
 #ifndef BOOST_IOSTREAMS_FILTER_STREAM_HPP_INCLUDED
 #define BOOST_IOSTREAMS_FILTER_STREAM_HPP_INCLUDED
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
 # pragma once
 #endif              
 
@@ -47,26 +46,8 @@ struct filtering_stream_traits {
                 BOOST_IOSTREAMS_BASIC_ISTREAM(Ch, Tr),
                 else_,        
                 BOOST_IOSTREAMS_BASIC_OSTREAM(Ch, Tr)
-            >::type stream_type;
-    typedef typename
-            iostreams::select< // Dismbiguation required for Tru64.
-                mpl::and_<
-                    is_convertible<Mode, input>,
-                    is_convertible<Mode, output>
-                >,
-                iostream_tag,
-                is_convertible<Mode, input>,
-                istream_tag,
-                else_,
-                ostream_tag
-            >::type stream_tag;
+            >::type type;
 };
-
-#if defined(BOOST_MSVC) && (BOOST_MSVC == 1700)
-# pragma warning(push)
-// https://connect.microsoft.com/VisualStudio/feedback/details/733720/
-# pragma warning(disable: 4250)
-#endif
 
 template<typename Chain, typename Access>
 class filtering_stream_base 
@@ -78,7 +59,7 @@ class filtering_stream_base
                  typename Chain::mode, 
                  typename Chain::char_type, 
                  typename Chain::traits_type
-             >::stream_type
+             >::type
 {
 public:
     typedef Chain                                         chain_type;
@@ -92,21 +73,17 @@ protected:
                  typename Chain::mode, 
                  typename Chain::char_type, 
                  typename Chain::traits_type
-            >::stream_type                                stream_type;
+            >::type                                       stream_type;
     filtering_stream_base() : stream_type(0) { this->set_chain(&chain_); }
 private:
     void notify() { this->rdbuf(chain_.empty() ? 0 : &chain_.front()); }
     Chain chain_;
 };
 
-#if defined(BOOST_MSVC) && (BOOST_MSVC == 1700)
-# pragma warning(pop)
-#endif
-
 } // End namespace detail.
 
 //
-// Macro: BOOST_IOSTREAMS_DEFINE_FILTER_STREAM(name_, chain_type_, default_char_)
+// Macro: BOOST_IOSTREAMS_DEFINE_FILTER_STERAM(name_, chain_type_, default_char_)
 // Description: Defines a template derived from std::basic_streambuf which uses
 //      a chain to perform i/o. The template has the following parameters:
 //      Mode - the i/o mode.
@@ -133,11 +110,6 @@ private:
     { \
     public: \
         typedef Ch                                char_type; \
-        struct category \
-            : Mode, \
-              closable_tag, \
-              detail::filtering_stream_traits<Mode, Ch, Tr>::stream_tag \
-            { }; \
         BOOST_IOSTREAMS_STREAMBUF_TYPEDEFS(Tr) \
         typedef Mode                              mode; \
         typedef chain_type_<Mode, Ch, Tr, Alloc>  chain_type; \
@@ -159,19 +131,8 @@ private:
         { client_type::push(t BOOST_IOSTREAMS_PUSH_ARGS()); } \
     }; \
     /**/    
-
-#if defined(BOOST_MSVC) && (BOOST_MSVC == 1700)
-# pragma warning(push)
-// https://connect.microsoft.com/VisualStudio/feedback/details/733720/
-# pragma warning(disable: 4250)
-#endif
-
 BOOST_IOSTREAMS_DEFINE_FILTER_STREAM(filtering_stream, boost::iostreams::chain, char)
-BOOST_IOSTREAMS_DEFINE_FILTER_STREAM(wfiltering_stream, boost::iostreams::chain, wchar_t)
-
-#if defined(BOOST_MSVC) && (BOOST_MSVC == 1700)
-# pragma warning(pop)
-#endif
+BOOST_IOSTREAMS_DEFINE_FILTER_STREAM(wfiltering_stream, boost::iostreams::chain, wchar_t)  
 
 typedef filtering_stream<input>    filtering_istream;
 typedef filtering_stream<output>   filtering_ostream;

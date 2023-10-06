@@ -2,9 +2,13 @@
 //  Copyright (c) 2000-2002
 //  Joerg Walter, Mathias Koch
 //
-//  Distributed under the Boost Software License, Version 1.0. (See
-//  accompanying file LICENSE_1_0.txt or copy at
-//  http://www.boost.org/LICENSE_1_0.txt)
+//  Permission to use, copy, modify, distribute and sell this software
+//  and its documentation for any purpose is hereby granted without fee,
+//  provided that the above copyright notice appear in all copies and
+//  that both that copyright notice and this permission notice appear
+//  in supporting documentation.  The authors make no representations
+//  about the suitability of this software for any purpose.
+//  It is provided "as is" without express or implied warranty.
 //
 //  The authors gratefully acknowledge the support of
 //  GeNeSys mbH & Co. KG in producing this work.
@@ -16,10 +20,10 @@
 #include <cassert>
 #include <cstddef>
 #include <algorithm>
-#include <limits>
 
 #include <boost/config.hpp>
 #include <boost/static_assert.hpp>
+#include <boost/limits.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/mpl/if.hpp>
 #include <boost/mpl/and.hpp>
@@ -28,23 +32,14 @@
 #include <boost/type_traits/is_const.hpp>
 #include <boost/type_traits/remove_reference.hpp>
 
-// C++11
-#if defined(__cplusplus) && __cplusplus >= 201103L
-
-#define BOOST_UBLAS_CPP_GE_2011
-
-#elif BOOST_MSVC >= 1800
-
-#define BOOST_UBLAS_CPP_GE_2011
-
-#else
-
-#undef BOOST_UBLAS_CPP_GE_2011 // Make sure no one defined it
-
-#endif
 
 // Microsoft Visual C++
 #if defined (BOOST_MSVC) && ! defined (BOOST_STRICT_CONFIG)
+
+// Version 6.0 and 7.0
+#if BOOST_MSVC <= 1300
+#define BOOST_UBLAS_UNSUPPORTED_COMPILER
+#endif
 
 // Version 7.1
 #if BOOST_MSVC == 1310
@@ -68,7 +63,7 @@
 #endif
 
 #if __GNUC__ < 3
-#define BOOST_UBLAS_UNSUPPORTED_COMPILER 1
+#define BOOST_UBLAS_UNSUPPORTED_COMPILER
 #endif
 
 #endif
@@ -83,7 +78,7 @@
 #endif
 
 #if (BOOST_INTEL < 700)
-#define BOOST_UBLAS_UNSUPPORTED_COMPILER 1
+#define BOOST_UBLAS_UNSUPPORTED_COMPILER
 #endif
 
 // Define swap for index_pair and triple.
@@ -132,10 +127,6 @@ namespace std {
 
 #endif
 
-// PGI compiler
-#ifdef __PGIC__
-#define BOOST_UBLAS_UNSUPPORTED_COMPILER 0
-#endif
 
 //  HP aCC C++ compiler
 #if defined (__HP_aCC) && ! defined (BOOST_STRICT_CONFIG)
@@ -165,28 +156,26 @@ namespace std {
 
 // 8.x
 #if __MWERKS__ <= 0x3003
-#define BOOST_UBLAS_UNSUPPORTED_COMPILER 1
+#define BOOST_UBLAS_UNSUPPORTED_COMPILER
 #endif
 
 #endif
 
 
-// Detect other compilers with serious defects - override by defineing BOOST_UBLAS_UNSUPPORTED_COMPILER=0
-#ifndef BOOST_UBLAS_UNSUPPORTED_COMPILER
-#if defined(BOOST_NO_FUNCTION_TEMPLATE_ORDERING) || defined(BOOST_NO_SFINAE) || defined(BOOST_NO_STDC_NAMESPACE)
-#define BOOST_UBLAS_UNSUPPORTED_COMPILER 1
-#endif
+// Detect other compilers with serious defects
+#if defined(BOOST_NO_FUNCTION_TEMPLATE_ORDERING) || defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION) || defined(BOOST_NO_SFINAE) || defined(BOOST_NO_STDC_NAMESPACE)
+#define BOOST_UBLAS_UNSUPPORTED_COMPILER
 #endif
 
 // Cannot continue with an unsupported compiler
-#if defined(BOOST_UBLAS_UNSUPPORTED_COMPILER) && (BOOST_UBLAS_UNSUPPORTED_COMPILER != 0)
-#error Your compiler and/or configuration is unsupported by this verions of uBLAS. Define BOOST_UBLAS_UNSUPPORTED_COMPILER=0 to override this message. Boost 1.32.0 includes uBLAS with support for many older compilers.
+#ifdef BOOST_UBLAS_UNSUPPORTED_COMPILER
+#error Your compiler is unsupported by this verions of uBLAS. Boost 1.32.0 includes uBLAS with support for many old compilers.
 #endif
 
 
 
 // Enable performance options in RELEASE mode
-#if defined (NDEBUG) || defined (BOOST_UBLAS_NDEBUG)
+#ifdef NDEBUG
 
 #ifndef BOOST_UBLAS_INLINE
 #define BOOST_UBLAS_INLINE inline
@@ -241,10 +230,10 @@ template <class Dummy>
 bool disable_type_check<Dummy>::value = false;
 #endif
 #ifndef BOOST_UBLAS_TYPE_CHECK_EPSILON
-#define BOOST_UBLAS_TYPE_CHECK_EPSILON (type_traits<real_type>::type_sqrt (std::numeric_limits<real_type>::epsilon ()))
+#define BOOST_UBLAS_TYPE_CHECK_EPSILON (type_traits<real_type>::sqrt (std::numeric_limits<real_type>::epsilon ()))
 #endif
 #ifndef BOOST_UBLAS_TYPE_CHECK_MIN
-#define BOOST_UBLAS_TYPE_CHECK_MIN (type_traits<real_type>::type_sqrt ( (std::numeric_limits<real_type>::min) ()))
+#define BOOST_UBLAS_TYPE_CHECK_MIN (type_traits<real_type>::sqrt ( (std::numeric_limits<real_type>::min) ()))
 #endif
 
 
@@ -301,4 +290,3 @@ bool disable_type_check<Dummy>::value = false;
 
 
 #endif
-

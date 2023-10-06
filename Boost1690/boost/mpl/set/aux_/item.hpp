@@ -2,7 +2,7 @@
 #ifndef BOOST_MPL_SET_AUX_ITEM_HPP_INCLUDED
 #define BOOST_MPL_SET_AUX_ITEM_HPP_INCLUDED
 
-// Copyright Aleksey Gurtovoy 2003-2007
+// Copyright Aleksey Gurtovoy 2003-2004
 // Copyright David Abrahams 2003-2004
 //
 // Distributed under the Boost Software License, Version 1.0. 
@@ -11,9 +11,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/set/aux_/item.hpp,v $
+// $Date: 2005/06/18 22:03:09 $
+// $Revision: 1.7 $
 
 #include <boost/mpl/long.hpp>
 #include <boost/mpl/void.hpp>
@@ -31,9 +31,10 @@ struct s_item
 {
     typedef s_item<T,Base> item_;
     typedef void_       last_masked_;
+    typedef Base        next_;
     typedef T           item_type_;
-    typedef typename Base::item_ base;
-    typedef s_item type;
+    typedef item_type_  type;
+    typedef Base        base;
     
     typedef typename next< typename Base::size >::type  size;
     typedef typename next< typename Base::order >::type order;
@@ -56,9 +57,8 @@ struct s_mask
     typedef s_mask<T,Base> item_;
     typedef T       last_masked_;
     typedef void_   item_type_;
-    typedef typename Base::item_ base;
+    typedef Base    base;
     typedef typename prior< typename Base::size >::type  size;
-    typedef s_mask type;
 
     BOOST_MPL_AUX_SET_OVERLOAD( aux::yes_tag, IS_MASKED, s_mask, aux::type_wrapper<T>* );
 };
@@ -71,7 +71,7 @@ struct s_unmask
     typedef s_unmask<T,Base> item_;
     typedef void_   last_masked_;
     typedef T       item_type_;
-    typedef typename Base::item_ base;
+    typedef Base    base;
     typedef typename next< typename Base::size >::type  size;
 
     BOOST_MPL_AUX_SET_OVERLOAD( aux::no_tag, IS_MASKED, s_unmask, aux::type_wrapper<T>* );

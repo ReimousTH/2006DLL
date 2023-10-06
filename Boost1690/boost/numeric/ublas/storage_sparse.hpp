@@ -2,9 +2,13 @@
 //  Copyright (c) 2000-2002
 //  Joerg Walter, Mathias Koch
 //
-//  Distributed under the Boost Software License, Version 1.0. (See
-//  accompanying file LICENSE_1_0.txt or copy at
-//  http://www.boost.org/LICENSE_1_0.txt)
+//  Permission to use, copy, modify, distribute and sell this software
+//  and its documentation for any purpose is hereby granted without fee,
+//  provided that the above copyright notice appear in all copies and
+//  that both that copyright notice and this permission notice appear
+//  in supporting documentation.  The authors make no representations
+//  about the suitability of this software for any purpose.
+//  It is provided "as is" without express or implied warranty.
 //
 //  The authors gratefully acknowledge the support of
 //  GeNeSys mbH & Co. KG in producing this work.
@@ -14,11 +18,6 @@
 #define _BOOST_UBLAS_STORAGE_SPARSE_
 
 #include <map>
-#include <boost/serialization/collection_size_type.hpp>
-#include <boost/serialization/nvp.hpp>
-#include <boost/serialization/array.hpp>
-#include <boost/serialization/map.hpp>
-#include <boost/serialization/base_object.hpp>
 
 #include <boost/numeric/ublas/storage.hpp>
 
@@ -198,15 +197,7 @@ namespace boost { namespace numeric { namespace ublas {
     // FIXME should use ALLOC for map but std::allocator of std::pair<const I, T> and std::pair<I,T> fail to compile
     template<class I, class T, class ALLOC>
     class map_std : public std::map<I, T /*, ALLOC */> {
-    public:
-         // Serialization
-        template<class Archive>
-        void serialize(Archive & ar, const unsigned int /* file_version */){
-            ar & serialization::make_nvp("base", boost::serialization::base_object< std::map<I, T /*, ALLOC */> >(*this));
-        }
     };
-
-    
 
 
     // Map array
@@ -308,7 +299,6 @@ namespace boost { namespace numeric { namespace ublas {
             BOOST_UBLAS_CHECK (size_ <= capacity_, internal_logic ());
         }
 
-        // Random Access Container
         BOOST_UBLAS_INLINE
         size_type size () const {
             return size_;
@@ -317,16 +307,7 @@ namespace boost { namespace numeric { namespace ublas {
         size_type capacity () const {
             return capacity_;
         }
-        BOOST_UBLAS_INLINE
-        size_type max_size () const {
-            return 0; //TODO
-        }
-       
-        BOOST_UBLAS_INLINE
-        bool empty () const {
-            return size_ == 0;
-        }
-            
+
         // Element access
         BOOST_UBLAS_INLINE
         data_reference operator [] (key_type i) {
@@ -387,9 +368,10 @@ namespace boost { namespace numeric { namespace ublas {
         // BOOST_UBLAS_INLINE This function seems to be big. So we do not let the compiler inline it.    
         std::pair<iterator,bool> insert (const value_type &p) {
             iterator it = detail::lower_bound (begin (), end (), p, detail::less_pair<value_type> ());
-            if (it != end () && it->first == p.first)
+            if (it->first == p.first)
                 return std::make_pair (it, false);
             difference_type n = it - begin ();
+            BOOST_UBLAS_CHECK (size () == 0 || size () == size_type (n), external_logic ());
             resize (size () + 1);
             it = begin () + n;    // allow for invalidation
             std::copy_backward (it, end () - 1, end ());
@@ -409,7 +391,6 @@ namespace boost { namespace numeric { namespace ublas {
         }
         // BOOST_UBLAS_INLINE This function seems to be big. So we do not let the compiler inline it.    
         void erase (iterator it1, iterator it2) {
-            if (it1 == it2) return /* nothing to erase */;
             BOOST_UBLAS_CHECK (begin () <= it1 && it1 < it2 && it2 <= end (), bad_index ());
             std::copy (it2, end (), it1);
             resize (size () - (it2 - it1));
@@ -448,16 +429,8 @@ namespace boost { namespace numeric { namespace ublas {
             return data_;
         }
         BOOST_UBLAS_INLINE
-        const_iterator cbegin () const {
-            return begin ();
-        }
-        BOOST_UBLAS_INLINE
         const_iterator end () const {
             return data_ + size_;
-        }
-        BOOST_UBLAS_INLINE
-        const_iterator cend () const {
-            return end ();
         }
 
         BOOST_UBLAS_INLINE
@@ -478,18 +451,9 @@ namespace boost { namespace numeric { namespace ublas {
             return const_reverse_iterator (end ());
         }
         BOOST_UBLAS_INLINE
-        const_reverse_iterator crbegin () const {
-            return rbegin ();
-        }
-        BOOST_UBLAS_INLINE
         const_reverse_iterator rend () const {
             return const_reverse_iterator (begin ());
         }
-        BOOST_UBLAS_INLINE
-        const_reverse_iterator crend () const {
-            return rend ();
-        }
-
         BOOST_UBLAS_INLINE
         reverse_iterator rbegin () {
             return reverse_iterator (end ());
@@ -502,17 +466,6 @@ namespace boost { namespace numeric { namespace ublas {
         // Allocator
         allocator_type get_allocator () {
             return alloc_;
-        }
-
-         // Serialization
-        template<class Archive>
-        void serialize(Archive & ar, const unsigned int /* file_version */){
-            serialization::collection_size_type s (size_);
-            ar & serialization::make_nvp("size",s);
-            if (Archive::is_loading::value) {
-                resize(s);
-            }
-            ar & serialization::make_array(data_, s);
         }
 
     private:

@@ -2,26 +2,22 @@
 #define DATE_TIME_TIME_DURATION_HPP___
 
 /* Copyright (c) 2002,2003 CrystalClear Software, Inc.
- * Use, modification and distribution is subject to the
+ * Use, modification and distribution is subject to the 
  * Boost Software License, Version 1.0. (See accompanying
- * file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+ * file LICENSE-1.0 or http://www.boost.org/LICENSE-1.0)
  * Author: Jeff Garland, Bart Garst
- * $Date$
+ * $Date: 2005/04/04 11:05:30 $
  */
 
-#include <boost/core/enable_if.hpp>
-#include <boost/cstdint.hpp>
-#include <boost/date_time/compiler_config.hpp>
-#include <boost/date_time/special_defs.hpp>
-#include <boost/date_time/time_defs.hpp>
-#include <boost/operators.hpp>
-#include <boost/static_assert.hpp>
-#include <boost/type_traits/is_integral.hpp>
+#include "boost/operators.hpp"
+#include "boost/date_time/time_defs.hpp"
+#include "boost/date_time/special_defs.hpp"
+#include "boost/date_time/compiler_config.hpp"
 
 namespace boost {
 namespace date_time {
 
-
+  
   //! Represents some amount of elapsed time measure to a given resolution
   /*! This class represents a standard set of capabilities for all
       counted time durations.  Time duration implementations should derive
@@ -33,19 +29,17 @@ namespace date_time {
       @param rep_type The time resolution traits for this duration type.
   */
   template<class T, typename rep_type>
-  class BOOST_SYMBOL_VISIBLE time_duration : private
-      boost::less_than_comparable<T
+  class time_duration : private
+      boost::less_than_comparable<T 
     , boost::equality_comparable<T
     > >
   /* dividable, addable, and subtractable operator templates
-   * won't work with this class (MSVC++ 6.0). return type
-   * from '+=' is different than expected return type
-   * from '+'. multipliable probably wont work
+   * won't work with this class (MSVC++ 6.0). return type 
+   * from '+=' is different than expected return type 
+   * from '+'. multipliable probably wont work 
    * either (haven't tried) */
   {
   public:
-    // A tag for type categorization. Can be used to detect Boost.DateTime duration types in generic code.
-    typedef void _is_boost_date_time_duration;
     typedef T duration_type;  //the subclass
     typedef rep_type traits_type;
     typedef typename rep_type::day_type  day_type;
@@ -56,12 +50,12 @@ namespace date_time {
     typedef typename rep_type::tick_type tick_type;
     typedef typename rep_type::impl_type impl_type;
 
-    time_duration() : ticks_(0) {}
-    time_duration(hour_type hours_in,
-                  min_type minutes_in,
-                  sec_type seconds_in=0,
-                  fractional_seconds_type frac_sec_in = 0) :
-      ticks_(rep_type::to_tick_count(hours_in,minutes_in,seconds_in,frac_sec_in))
+    time_duration() : ticks_(0) {} 
+    time_duration(hour_type hours, 
+                  min_type minutes, 
+                  sec_type seconds=0,
+                  fractional_seconds_type frac_sec = 0) :
+      ticks_(rep_type::to_tick_count(hours,minutes,seconds,frac_sec)) 
     {}
     // copy constructor required for dividable<>
     //! Construct from another time_duration (Copy constructor)
@@ -142,17 +136,17 @@ namespace date_time {
     }
     duration_type invert_sign() const
     {
-      return duration_type(ticks_ * (-1));
-    }
+      return duration_type(ticks_ * (-1)); 
+    }    
     bool is_negative() const
     {
       return ticks_ < 0;
-    }
-    bool operator<(const time_duration& rhs)  const
+    }    
+    bool operator<(const time_duration& rhs)  const 
     {
       return ticks_ <  rhs.ticks_;
     }
-    bool operator==(const time_duration& rhs)  const
+    bool operator==(const time_duration& rhs)  const 
     {
       return ticks_ ==  rhs.ticks_;
     }
@@ -184,7 +178,7 @@ namespace date_time {
       return duration_type(ticks_);
     }
     //! Division operations on a duration with an integer.
-    duration_type operator/=(int divisor)
+    duration_type operator/=(int divisor) 
     {
       ticks_ = ticks_ / divisor;
       return duration_type(ticks_);
@@ -194,13 +188,13 @@ namespace date_time {
     {
       return duration_type(ticks_ * rhs);
     }
-    duration_type operator*=(int divisor)
+    duration_type operator*=(int divisor) 
     {
       ticks_ = ticks_ * divisor;
       return duration_type(ticks_);
     }
-    tick_type ticks() const
-    {
+    tick_type ticks() const 
+    { 
       return traits_type::as_number(ticks_);
     }
 
@@ -256,7 +250,7 @@ namespace date_time {
     }
 
   protected:
-    explicit time_duration(impl_type in) : ticks_(in) {}
+    explicit time_duration(impl_type in) : ticks_(in) {};
     impl_type ticks_;
   };
 
@@ -264,31 +258,20 @@ namespace date_time {
 
   //! Template for instantiating derived adjusting durations
   /* These templates are designed to work with multiples of
-   * 10 for frac_of_second and resolution adjustment
+   * 10 for frac_of_second and resoultion adjustment 
    */
-  template<class base_duration, boost::int64_t frac_of_second>
-  class BOOST_SYMBOL_VISIBLE subsecond_duration : public base_duration
+   template<class base_duration, boost::int64_t frac_of_second>
+  class subsecond_duration : public base_duration
   {
   public:
-    typedef typename base_duration::impl_type impl_type;
     typedef typename base_duration::traits_type traits_type;
-
-  private:
-    // To avoid integer overflow we precompute the duration resolution conversion coefficient (ticket #3471)
-    BOOST_STATIC_ASSERT_MSG((traits_type::ticks_per_second >= frac_of_second ? traits_type::ticks_per_second % frac_of_second : frac_of_second % traits_type::ticks_per_second) == 0,\
-      "The base duration resolution must be a multiple of the subsecond duration resolution");
-    BOOST_STATIC_CONSTANT(boost::int64_t, adjustment_ratio = (traits_type::ticks_per_second >= frac_of_second ? traits_type::ticks_per_second / frac_of_second : frac_of_second / traits_type::ticks_per_second));
-
-  public:
-    // The argument (ss) must be an integral type
-    template <typename T>
-    explicit subsecond_duration(T const& ss,
-                                typename boost::enable_if<boost::is_integral<T>, void>::type* = BOOST_DATE_TIME_NULLPTR) :
-      base_duration(impl_type(traits_type::ticks_per_second >= frac_of_second ? ss * adjustment_ratio : ss / adjustment_ratio))
-    {
-    }
+    explicit subsecond_duration(boost::int64_t ss) :
+      base_duration(0,0,0,ss*traits_type::res_adjust()/frac_of_second)
+    {}
   };
 
+  
+  
 } } //namespace date_time
 
 

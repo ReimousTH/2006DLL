@@ -10,9 +10,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/aux_/fold_pred.hpp,v $
+// $Date: 2004/09/02 15:40:43 $
+// $Revision: 1.4 $
 
 #include <boost/mpl/same_as.hpp>
 #include <boost/mpl/apply.hpp>

@@ -11,9 +11,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/map/aux_/clear_impl.hpp,v $
+// $Date: 2004/09/02 15:41:00 $
+// $Revision: 1.2 $
 
 #include <boost/mpl/clear_fwd.hpp>
 #include <boost/mpl/map/aux_/map0.hpp>

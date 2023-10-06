@@ -10,9 +10,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/pop_back_fwd.hpp,v $
+// $Date: 2004/09/02 15:40:42 $
+// $Revision: 1.4 $
 
 namespace boost { namespace mpl {
 

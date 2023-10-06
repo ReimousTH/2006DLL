@@ -1,5 +1,4 @@
-// (C) Copyright 2008 CodeRage, LLC (turkanis at coderage dot com)
-// (C) Copyright 2004-2007 Jonathan Turkanis
+// (C) Copyright Jonathan Turkanis 2004.
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt.)
 
@@ -8,7 +7,7 @@
 #ifndef BOOST_IOSTREAMS_ARRAY_HPP_INCLUDED
 #define BOOST_IOSTREAMS_ARRAY_HPP_INCLUDED
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
 # pragma once
 #endif
 
@@ -40,10 +39,12 @@ public:
     array_adapter(char_type* begin, std::size_t length);
     array_adapter(const char_type* begin, const char_type* end);
     array_adapter(const char_type* begin, std::size_t length);
+#if !BOOST_WORKAROUND(BOOST_MSVC, < 1300)
     template<int N>
     array_adapter(char_type (&ar)[N])
         : begin_(ar), end_(ar + N) 
         { }
+#endif
     pair_type input_sequence();
     pair_type output_sequence();
 private:
@@ -53,6 +54,16 @@ private:
 
 } // End namespace detail.
 
+// Local macros, #undef'd below.
+#if !BOOST_WORKAROUND(BOOST_MSVC, <= 1300)
+# define BOOST_IOSTREAMS_ARRAY_CTOR(name, ch) \
+    template<int N> \
+    BOOST_PP_CAT(basic_, name)(ch (&ar)[N]) \
+        : base_type(ar) { } \
+    /**/
+#else
+# define BOOST_IOSTREAMS_ARRAY_CTOR(name, ch)
+#endif
 #define BOOST_IOSTREAMS_ARRAY(name, mode) \
     template<typename Ch> \
     struct BOOST_PP_CAT(basic_, name) : detail::array_adapter<mode, Ch> { \
@@ -69,9 +80,7 @@ private:
             : base_type(begin, end) { } \
         BOOST_PP_CAT(basic_, name)(const char_type* begin, std::size_t length) \
             : base_type(begin, length) { } \
-        template<int N> \
-        BOOST_PP_CAT(basic_, name)(Ch (&ar)[N]) \
-            : base_type(ar) { } \
+        BOOST_IOSTREAMS_ARRAY_CTOR(name, Ch) \
     }; \
     typedef BOOST_PP_CAT(basic_, name)<char>     name; \
     typedef BOOST_PP_CAT(basic_, name)<wchar_t>  BOOST_PP_CAT(w, name); \
@@ -79,6 +88,7 @@ private:
 BOOST_IOSTREAMS_ARRAY(array_source, input_seekable)
 BOOST_IOSTREAMS_ARRAY(array_sink, output_seekable)
 BOOST_IOSTREAMS_ARRAY(array, seekable)
+#undef BOOST_IOSTREAMS_ARRAY_CTOR
 #undef BOOST_IOSTREAMS_ARRAY
 
 

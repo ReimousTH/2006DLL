@@ -3,27 +3,16 @@
 // accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef BOOST_PARAMETER_VOID_050329_HPP
-#define BOOST_PARAMETER_VOID_050329_HPP
+#ifndef VOID_050329_HPP
+#define VOID_050329_HPP
 
-namespace boost { namespace parameter { 
+namespace boost { namespace parameter { namespace aux {
 
 // A placemarker for "no argument passed."
 // MAINTAINER NOTE: Do not make this into a metafunction
 struct void_ {}; 
 
-namespace aux 
-{
+}}} // namespace boost::parameter::aux
 
-  inline void_& void_reference()
-  {
-      static void_ instance;
-      return instance;
-  }
-
-} // namespace aux
-
-}} // namespace boost::parameter
-
-#endif // BOOST_PARAMETER_VOID_050329_HPP
+#endif // VOID_050329_HPP
 

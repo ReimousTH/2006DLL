@@ -11,17 +11,15 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/aux_/unwrap.hpp,v $
+// $Date: 2004/09/02 15:40:44 $
+// $Revision: 1.3 $
 
 #include <boost/ref.hpp>
-#include <boost/mpl/aux_/config/gpu.hpp>
 
 namespace boost { namespace mpl { namespace aux {
 
 template< typename F >
-BOOST_MPL_CFG_GPU_ENABLED
 inline
 F& unwrap(F& f, long)
 {
@@ -29,7 +27,6 @@ F& unwrap(F& f, long)
 }
 
 template< typename F >
-BOOST_MPL_CFG_GPU_ENABLED
 inline
 F&
 unwrap(reference_wrapper<F>& f, int)
@@ -38,7 +35,6 @@ unwrap(reference_wrapper<F>& f, int)
 }
 
 template< typename F >
-BOOST_MPL_CFG_GPU_ENABLED
 inline
 F&
 unwrap(reference_wrapper<F> const& f, int)

@@ -10,11 +10,10 @@
 #define BOOST_RELAXED_HEAP_HEADER
 
 #include <functional>
-#include <boost/property_map/property_map.hpp>
+#include <boost/property_map.hpp>
+#include <cmath>
 #include <boost/optional.hpp>
 #include <vector>
-#include <climits> // for CHAR_BIT
-#include <boost/none.hpp>
 
 #ifdef BOOST_RELAXED_HEAP_DEBUG
 #  include <iostream>
@@ -88,37 +87,23 @@ private:
     group**               children;
   };
 
-  size_type log_base_2(size_type n) // log2 is a macro on some platforms
-  {
-    size_type leading_zeroes = 0;
-    do {
-      size_type next = n << 1;
-      if (n == (next >> 1)) {
-        ++leading_zeroes;
-        n = next;
-      } else {
-        break;
-      }
-    } while (true);
-    return sizeof(size_type) * CHAR_BIT - leading_zeroes - 1;
-  }
-
 public:
   relaxed_heap(size_type n, const Compare& compare = Compare(),
                const ID& id = ID())
     : compare(compare), id(id), root(smallest_key), groups(n),
       smallest_value(0)
   {
-    if (n == 0) {
-      root.children = new group*[1];
-      return;
-    }
+#ifndef BOOST_NO_STDC_NAMESPACE
+    using std::log;
+#endif // BOOST_NO_STDC_NAMESPACE
 
-    log_n = log_base_2(n);
+    if (n == 0) return;
+
+    log_n = static_cast<size_type>(log((double)n) / log(2.0));
     if (log_n == 0) log_n = 1;
     size_type g = n / log_n;
     if (n % log_n > 0) ++g;
-    size_type log_g = log_base_2(g);
+    size_type log_g = static_cast<size_type>(log((double)g) / log(2.0));
     size_type r = log_g;
 
     // Reserve an appropriate amount of space for data structures, so
@@ -135,7 +120,7 @@ public:
       root.children[r] = &index_to_group[idx];
       idx = build_tree(root, idx, r, log_g + 1);
       if (idx != g)
-        r = static_cast<size_type>(log_base_2(g-idx));
+        r = static_cast<size_type>(log((double)(g - idx)) / log(2.0));
     }
   }
 
@@ -163,7 +148,7 @@ public:
   void remove(const value_type& x)
   {
     group* a = &index_to_group[get(id, x) / log_n];
-    assert(groups[get(id, x)]);
+    assert(groups[get(id, x)] != 0);
     a->value = x;
     a->kind = smallest_key;
     promote(a);
@@ -174,14 +159,14 @@ public:
   value_type& top()
   {
     find_smallest();
-    assert(smallest_value->value != none);
+    assert(smallest_value->value != 0);
     return *smallest_value->value;
   }
 
   const value_type& top() const
   {
     find_smallest();
-    assert(smallest_value->value != none);
+    assert(smallest_value->value != 0);
     return *smallest_value->value;
   }
 
@@ -191,9 +176,7 @@ public:
     return !smallest_value || (smallest_value->kind == largest_key);
   }
 
-  bool contains(const value_type& x) const {
-    return static_cast<bool>(groups[get(id, x)]);
-  }
+  bool contains(const value_type& x) const { return groups[get(id, x)]; }
 
   void pop()
   {
@@ -206,7 +189,7 @@ public:
     rank_type r = x->rank;
     group* p = x->parent;
     {
-      assert(x->value != none);
+      assert(x->value != 0);
 
       // Find x's group
       size_type start = get(id, *x->value) - get(id, *x->value) % log_n;
@@ -632,7 +615,7 @@ private:
    */
   mutable group* smallest_value;
 
-  /// Cached value log_base_2(n)
+  /// Cached value log2(n)
   size_type log_n;
 };
 

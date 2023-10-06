@@ -15,9 +15,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/bind.hpp,v $
+// $Date: 2004/10/26 14:51:04 $
+// $Revision: 1.13 $
 
 #if !defined(BOOST_MPL_PREPROCESSING_MODE)
 #   include <boost/mpl/bind_fwd.hpp>
@@ -361,10 +361,7 @@ BOOST_MPL_AUX_TEMPLATE_ARITY_SPEC(
 
 ///// iteration, depth == 1
 
-// For gcc 4.4 compatability, we must include the
-// BOOST_PP_ITERATION_DEPTH test inside an #else clause.
-#else // BOOST_PP_IS_ITERATING
-#if BOOST_PP_ITERATION_DEPTH() == 1
+#elif BOOST_PP_ITERATION_DEPTH() == 1
 
 #   define i_ BOOST_PP_FRAME_ITERATION(1)
 
@@ -547,5 +544,4 @@ struct bind_chooser<i_>
 #   endif
 #   undef j_
 
-#endif // BOOST_PP_ITERATION_DEPTH()
 #endif // BOOST_PP_IS_ITERATING

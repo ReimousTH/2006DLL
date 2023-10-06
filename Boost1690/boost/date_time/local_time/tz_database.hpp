@@ -3,9 +3,9 @@
 
 /* Copyright (c) 2003-2004 CrystalClear Software, Inc.
  * Subject to the Boost Software License, Version 1.0. 
- * (See accompanying file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+ * (See accompanying file LICENSE-1.0 or http://www.boost.org/LICENSE-1.0)
  * Author: Jeff Garland, Bart Garst
- * $Date$
+ * $Date: 2005/05/03 14:27:53 $
  */
 
 #include <string>

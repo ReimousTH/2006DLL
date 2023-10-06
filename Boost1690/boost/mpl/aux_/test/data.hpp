@@ -10,9 +10,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/aux_/test/data.hpp,v $
+// $Date: 2004/09/02 15:40:57 $
+// $Revision: 1.3 $
 
 #include <boost/noncopyable.hpp>
 

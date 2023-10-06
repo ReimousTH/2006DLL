@@ -1,5 +1,4 @@
-// (C) Copyright 2008 CodeRage, LLC (turkanis at coderage dot com)
-// (C) Copyright 2003-2007 Jonathan Turkanis
+// (C) Copyright Jonathan Turkanis 2003.
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt.)
 
@@ -8,7 +7,7 @@
 #ifndef BOOST_IOSTREAMS_DETAIL_DIRECT_ADAPTER_HPP_INCLUDED
 #define BOOST_IOSTREAMS_DETAIL_DIRECT_ADAPTER_HPP_INCLUDED
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
 # pragma once
 #endif              
 
@@ -30,7 +29,6 @@
 #include <boost/preprocessor/repetition/enum_binary_params.hpp>
 #include <boost/preprocessor/repetition/enum_params.hpp>
 #include <boost/static_assert.hpp>
-#include <boost/throw_exception.hpp>
 #include <boost/type_traits/is_convertible.hpp>
 
 // Must come last.
@@ -44,10 +42,9 @@ namespace boost { namespace iostreams { namespace detail {
 template<typename Direct>
 class direct_adapter_base {
 public:
-    typedef typename char_type_of<Direct>::type  char_type;
-    typedef typename mode_of<Direct>::type       mode_type;
+    typedef typename char_type_of<Direct>::type char_type;
     struct category 
-        : mode_type,
+        : mode_of<Direct>::type,
           device_tag,
           closable_tag
           #ifndef BOOST_IOSTREAMS_NO_LOCALE
@@ -58,7 +55,6 @@ protected:
     explicit direct_adapter_base(const Direct& d);
     typedef is_convertible<category, two_sequence> is_double;
     struct pointers {
-        pointers() : beg(0), ptr(0), end(0) { }
         char_type *beg, *ptr, *end;
     };
     void init_input(mpl::true_);
@@ -115,8 +111,8 @@ public:
 
     std::streamsize read(char_type* s, std::streamsize n);
     std::streamsize write(const char_type* s, std::streamsize n);
-    std::streampos seek( stream_offset, BOOST_IOS::seekdir,
-                         BOOST_IOS::openmode = BOOST_IOS::in | BOOST_IOS::out );
+    stream_offset seek( stream_offset, BOOST_IOS::seekdir,
+                        BOOST_IOS::openmode = BOOST_IOS::in | BOOST_IOS::out );
     void close();
     void close(BOOST_IOS::openmode which);
 #ifndef BOOST_IOSTREAMS_NO_LOCALE
@@ -196,9 +192,9 @@ inline std::streamsize direct_adapter<Direct>::read
 {
     using namespace std;
     pointers& get = ptrs_.first();
-    std::streamsize avail = 
-        static_cast<std::streamsize>(get.end - get.ptr);
-    std::streamsize result = (std::min)(n, avail);
+    streamsize avail = 
+        static_cast<streamsize>(get.end - get.ptr);
+    streamsize result = (std::min)(n, avail);
     std::copy(get.ptr, get.ptr + result, s);
     get.ptr += result;
     return result != 0 ? result : -1;
@@ -210,15 +206,15 @@ inline std::streamsize direct_adapter<Direct>::write
 {
     using namespace std;
     pointers& put = ptrs_.second();
-    if (n > static_cast<std::streamsize>(put.end - put.ptr))
-        boost::throw_exception(write_area_exhausted());
+    if (n > static_cast<streamsize>(put.end - put.ptr))
+        throw write_area_exhausted();
     std::copy(s, s + n, put.ptr);
     put.ptr += n;
     return n;
 }
 
 template<typename Direct>
-inline std::streampos direct_adapter<Direct>::seek
+inline stream_offset direct_adapter<Direct>::seek
     ( stream_offset off, BOOST_IOS::seekdir way, 
       BOOST_IOS::openmode which )
 {
@@ -226,7 +222,7 @@ inline std::streampos direct_adapter<Direct>::seek
     pointers& get = ptrs_.first();
     pointers& put = ptrs_.second();
     if (way == BOOST_IOS::cur && get.ptr != put.ptr)
-       boost::throw_exception(bad_seek());
+       bad_seek();
     ptrdiff_t next = 0;
     if ((which & BOOST_IOS::in) || !is_double::value) {
         if (way == BOOST_IOS::beg)
@@ -235,10 +231,10 @@ inline std::streampos direct_adapter<Direct>::seek
             next = get.ptr - get.beg + off; 
         else
             next = get.end - get.beg + off; 
-        if (next >= 0 && next <= get.end - get.beg)
+        if (next >= 0 && next < get.end - get.beg)
             get.ptr = get.beg + next;
         else
-            boost::throw_exception(bad_seek());
+            bad_seek();
     }
     if ((which & BOOST_IOS::out) && is_double::value) {
         if (way == BOOST_IOS::beg)
@@ -247,19 +243,19 @@ inline std::streampos direct_adapter<Direct>::seek
             next = put.ptr - put.beg + off; 
         else
             next = put.end - put.beg + off; 
-        if (next >= 0 && next <= put.end - put.beg)
+        if (next >= 0 && next < put.end - put.beg)
             put.ptr = put.beg + next;
         else
-            boost::throw_exception(bad_seek());
+            bad_seek();
     }
-    return offset_to_position(next);
+    return static_cast<stream_offset>(next);
 }
 
 template<typename Direct>
 void direct_adapter<Direct>::close() 
 { 
     BOOST_STATIC_ASSERT((!is_convertible<category, two_sequence>::value));
-    detail::close_all(d_);
+    boost::iostreams::close(d_, BOOST_IOS::in | BOOST_IOS::out);
 }
 
 template<typename Direct>

@@ -19,13 +19,8 @@
 # include <boost/python/detail/copy_ctor_mutates_rhs.hpp>
 # include <boost/python/detail/void_ptr.hpp>
 # include <boost/python/detail/void_return.hpp>
+# include <boost/utility.hpp>
 # include <boost/call_traits.hpp>
-
-#if BOOST_WORKAROUND(BOOST_INTEL_WIN, <= 900)
-# define BOOST_EXTRACT_WORKAROUND ()
-#else
-# define BOOST_EXTRACT_WORKAROUND
-#endif
 
 namespace boost { namespace python {
 

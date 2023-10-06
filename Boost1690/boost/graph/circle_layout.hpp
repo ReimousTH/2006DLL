@@ -1,20 +1,16 @@
 // Copyright 2004 The Trustees of Indiana University.
 
-// Distributed under the Boost Software License, Version 1.0.
-// (See accompanying file LICENSE_1_0.txt or copy at
+// Use, modification and distribution is subject to the Boost Software
+// License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
 //  Authors: Douglas Gregor
 //           Andrew Lumsdaine
 #ifndef BOOST_GRAPH_CIRCLE_LAYOUT_HPP
 #define BOOST_GRAPH_CIRCLE_LAYOUT_HPP
-#include <boost/config/no_tr1/cmath.hpp>
-#include <boost/math/constants/constants.hpp>
+#include <cmath>
 #include <utility>
 #include <boost/graph/graph_traits.hpp>
-#include <boost/graph/iteration_macros.hpp>
-#include <boost/graph/topology.hpp>
-#include <boost/static_assert.hpp>
 
 namespace boost {
   /** 
@@ -32,8 +28,7 @@ namespace boost {
   circle_graph_layout(const VertexListGraph& g, PositionMap position,
                       Radius radius)
   {
-    BOOST_STATIC_ASSERT (property_traits<PositionMap>::value_type::dimensions >= 2);
-    const double pi = boost::math::constants::pi<double>();
+    const double pi = 3.14159;
 
 #ifndef BOOST_NO_STDC_NAMESPACE
     using std::sin;
@@ -45,12 +40,14 @@ namespace boost {
 
     vertices_size_type n = num_vertices(g);
     
+    typedef typename graph_traits<VertexListGraph>::vertex_iterator 
+      vertex_iterator;
+
     vertices_size_type i = 0;
-    double two_pi_over_n = 2. * pi / n;
-    BGL_FORALL_VERTICES_T(v, g, VertexListGraph) {
-      position[v][0] = radius * cos(i * two_pi_over_n);
-      position[v][1] = radius * sin(i * two_pi_over_n);
-      ++i;
+    for(std::pair<vertex_iterator, vertex_iterator> v = vertices(g); 
+        v.first != v.second; ++v.first, ++i) {
+      position[*v.first].x = radius * cos(i * 2 * pi / n);
+      position[*v.first].y = radius * sin(i * 2 * pi / n);
     }
   }
 } // end namespace boost

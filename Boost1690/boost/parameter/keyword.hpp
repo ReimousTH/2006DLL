@@ -9,6 +9,7 @@
 #include <boost/parameter/aux_/unwrap_cv_reference.hpp>
 #include <boost/parameter/aux_/tag.hpp>
 #include <boost/parameter/aux_/default.hpp>
+#include <boost/noncopyable.hpp>
 
 namespace boost { namespace parameter {
 
@@ -28,10 +29,10 @@ namespace boost { namespace parameter {
 //    f(rate = 1, skew = 2.4);
 //
 template <class Tag>
-struct keyword
+struct keyword : noncopyable
 {
     template <class T>
-    typename aux::tag<Tag, T>::type const
+    typename aux::tag<Tag, T>::type
     operator=(T& x) const
     {
         typedef typename aux::tag<Tag, T>::type result;
@@ -52,17 +53,23 @@ struct keyword
         return aux::lazy_default<Tag, Default>(default_);
     }
 
+#if !BOOST_WORKAROUND(BOOST_MSVC, <= 1200)  // avoid partial ordering bugs
     template <class T>
-    typename aux::tag<Tag, T const>::type const
+    typename aux::tag<Tag, T const>::type
     operator=(T const& x) const
     {
         typedef typename aux::tag<Tag, T const>::type result;
         return result(x);
     }
+#endif 
 
+#if !BOOST_WORKAROUND(BOOST_MSVC, == 1200)  // avoid partial ordering bugs
     template <class Default>
     aux::default_<Tag, const Default>
     operator|(const Default& default_) const
+#if BOOST_WORKAROUND(BOOST_MSVC, == 1300)
+        volatile
+#endif 
     {
         return aux::default_<Tag, const Default>(default_);
     }
@@ -70,9 +77,13 @@ struct keyword
     template <class Default>
     aux::lazy_default<Tag, Default>
     operator||(Default const& default_) const
+#if BOOST_WORKAROUND(BOOST_MSVC, == 1300)
+        volatile
+#endif 
     {
         return aux::lazy_default<Tag, Default>(default_);
     }
+#endif
 
  public: // Insurance against ODR violations
     
@@ -81,40 +92,26 @@ struct keyword
     // every instantiation of a function template is the same object.
     // We provide a reference to a common instance of each keyword
     // object and prevent construction by users.
-    static keyword<Tag> const instance;
-
-    // This interface is deprecated
+    
     static keyword<Tag>& get()
     {
-        return const_cast<keyword<Tag>&>(instance);
+        static keyword<Tag> result;
+        return result;
     }
+    
+ private:
+    keyword() {}
 };
-
-template <class Tag>
-keyword<Tag> const keyword<Tag>::instance = {};
 
 // Reduces boilerplate required to declare and initialize keywords
 // without violating ODR.  Declares a keyword tag type with the given
-// name in namespace tag_namespace, and declares and initializes a
-// reference in an anonymous namespace to a singleton instance of that
-// type.
+// name in namespace tag_namespace, and declares and initializes a 
+// 
+#define BOOST_PARAMETER_KEYWORD(tag_namespace,name)             \
+   namespace tag_namespace { struct name; }                     \
+   ::boost::parameter::keyword<tag_namespace::name>& name       \
+   = ::boost::parameter::keyword<tag_namespace::name>::get();
 
-#define BOOST_PARAMETER_KEYWORD(tag_namespace,name)                 \
-    namespace tag_namespace                                         \
-    {                                                               \
-      struct name                                                   \
-      {                                                             \
-          static char const* keyword_name()                         \
-          {                                                         \
-              return #name;                                         \
-          }                                                         \
-      };                                                            \
-    }                                                               \
-    namespace                                                       \
-    {                                                               \
-       ::boost::parameter::keyword<tag_namespace::name> const& name \
-       = ::boost::parameter::keyword<tag_namespace::name>::instance;\
-    }
 
 }} // namespace boost::parameter
 

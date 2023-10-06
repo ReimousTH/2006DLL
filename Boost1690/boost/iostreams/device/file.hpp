@@ -1,14 +1,21 @@
-// (C) Copyright 2008 CodeRage, LLC (turkanis at coderage dot com)
-// (C) Copyright 2003-2007 Jonathan Turkanis
+// (C) Copyright Jonathan Turkanis 2003.
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt.)
 
 // See http://www.boost.org/libs/iostreams for documentation.
 
+//
+// Contains wrappers for standard file buffers, together
+// with convenience typedefs:
+//      - basic_file_source
+//      - basic_file_sink
+//      - basic_file
+//
+
 #ifndef BOOST_IOSTREAMS_FILE_HPP_INCLUDED
 #define BOOST_IOSTREAMS_FILE_HPP_INCLUDED
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
 # pragma once
 #endif
 
@@ -35,8 +42,7 @@ public:
     struct category
         : public seekable_device_tag,
           public closable_tag,
-          public localizable_tag,
-          public flushable_tag
+          public localizable_tag
         { };
     basic_file( const std::string& path,
                 BOOST_IOS::openmode mode =
@@ -44,19 +50,11 @@ public:
                 BOOST_IOS::openmode base_mode =
                     BOOST_IOS::in | BOOST_IOS::out );
     std::streamsize read(char_type* s, std::streamsize n);
-    bool putback(char_type c);
     std::streamsize write(const char_type* s, std::streamsize n);
-    std::streampos seek( stream_offset off, BOOST_IOS::seekdir way, 
-                         BOOST_IOS::openmode which = 
-                             BOOST_IOS::in | BOOST_IOS::out );
-    void open( const std::string& path,
-               BOOST_IOS::openmode mode =
-                   BOOST_IOS::in | BOOST_IOS::out,
-               BOOST_IOS::openmode base_mode =
-                   BOOST_IOS::in | BOOST_IOS::out );
-    bool is_open() const;
+    stream_offset seek( stream_offset off, BOOST_IOS::seekdir way, 
+                        BOOST_IOS::openmode which = 
+                            BOOST_IOS::in | BOOST_IOS::out );
     void close();
-    bool flush();
 #ifndef BOOST_IOSTREAMS_NO_LOCALE
     void imbue(const std::locale& loc) { pimpl_->file_.pubimbue(loc);  }
 #endif
@@ -82,20 +80,13 @@ struct basic_file_source : private basic_file<Ch> {
           closable_tag
         { };
     using basic_file<Ch>::read;
-    using basic_file<Ch>::putback;
     using basic_file<Ch>::seek;
-    using basic_file<Ch>::is_open;
     using basic_file<Ch>::close;
     basic_file_source( const std::string& path,
                        BOOST_IOS::openmode mode = 
                            BOOST_IOS::in )
-        : basic_file<Ch>(path, mode & ~BOOST_IOS::out, BOOST_IOS::in)
+        : basic_file<Ch>(path, mode & ~BOOST_IOS::out, BOOST_IOS::in) 
         { }
-    void open( const std::string& path,
-               BOOST_IOS::openmode mode = BOOST_IOS::in )
-    {
-        basic_file<Ch>::open(path, mode & ~BOOST_IOS::out, BOOST_IOS::in);
-    }
 };
 
 typedef basic_file_source<char>     file_source;
@@ -107,23 +98,15 @@ struct basic_file_sink : private basic_file<Ch> {
     struct category
         : output_seekable,
           device_tag,
-          closable_tag,
-          flushable_tag
+          closable_tag
         { };
     using basic_file<Ch>::write;
     using basic_file<Ch>::seek;
-    using basic_file<Ch>::is_open;
     using basic_file<Ch>::close;
-    using basic_file<Ch>::flush;
     basic_file_sink( const std::string& path,
                      BOOST_IOS::openmode mode = BOOST_IOS::out )
-        : basic_file<Ch>(path, mode & ~BOOST_IOS::in, BOOST_IOS::out)
+        : basic_file<Ch>(path, mode & ~BOOST_IOS::in, BOOST_IOS::out) 
         { }
-    void open( const std::string& path,
-               BOOST_IOS::openmode mode = BOOST_IOS::out )
-    {
-        basic_file<Ch>::open(path, mode & ~BOOST_IOS::in, BOOST_IOS::out);
-    }
 };
 
 typedef basic_file_sink<char>     file_sink;
@@ -135,9 +118,7 @@ template<typename Ch>
 basic_file<Ch>::basic_file
     ( const std::string& path, BOOST_IOS::openmode mode, 
       BOOST_IOS::openmode base_mode )
-{ 
-    open(path, mode, base_mode);
-}
+    : pimpl_(new impl(path, mode | base_mode)) { }
 
 template<typename Ch>
 inline std::streamsize basic_file<Ch>::read
@@ -148,39 +129,18 @@ inline std::streamsize basic_file<Ch>::read
 }
 
 template<typename Ch>
-inline bool basic_file<Ch>::putback(char_type c)
-{ 
-    return !!pimpl_->file_.sputbackc(c); 
-}
-
-template<typename Ch>
 inline std::streamsize basic_file<Ch>::write
     (const char_type* s, std::streamsize n)
 { return pimpl_->file_.sputn(s, n); }
 
 template<typename Ch>
-std::streampos basic_file<Ch>::seek
+stream_offset basic_file<Ch>::seek
     ( stream_offset off, BOOST_IOS::seekdir way, 
       BOOST_IOS::openmode )
 { return iostreams::seek(pimpl_->file_, off, way); }
 
 template<typename Ch>
-void basic_file<Ch>::open
-    ( const std::string& path, BOOST_IOS::openmode mode, 
-      BOOST_IOS::openmode base_mode )
-{ 
-    pimpl_.reset(new impl(path, mode | base_mode));
-}
-
-template<typename Ch>
-bool basic_file<Ch>::is_open() const { return pimpl_->file_.is_open(); }
-
-template<typename Ch>
 void basic_file<Ch>::close() { pimpl_->file_.close(); }
-
-template<typename Ch>
-bool basic_file<Ch>::flush()
-{ return pimpl_->file_.BOOST_IOSTREAMS_PUBSYNC() == 0; }
 
 //----------------------------------------------------------------------------//
 

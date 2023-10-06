@@ -11,9 +11,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/order.hpp,v $
+// $Date: 2004/09/02 15:40:42 $
+// $Revision: 1.3 $
 
 #include <boost/mpl/order_fwd.hpp>
 #include <boost/mpl/sequence_tag.hpp>

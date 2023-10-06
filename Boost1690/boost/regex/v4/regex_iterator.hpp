@@ -23,15 +23,8 @@
 
 namespace boost{
 
-#ifdef BOOST_MSVC
-#pragma warning(push)
-#pragma warning(disable: 4103)
-#endif
 #ifdef BOOST_HAS_ABI_HEADERS
 #  include BOOST_ABI_PREFIX
-#endif
-#ifdef BOOST_MSVC
-#pragma warning(pop)
 #endif
 
 template <class BidirectionalIterator, 
@@ -64,15 +57,15 @@ public:
    { return what; }
    bool next()
    {
-      //if(what.prefix().first != what[0].second)
-      //   flags |= match_prev_avail;
+      if(what.prefix().first != what[0].second)
+         flags |= match_prev_avail;
       BidirectionalIterator next_start = what[0].second;
       match_flag_type f(flags);
-      if(!what.length() || (f & regex_constants::match_posix))
+      if(!what.length())
          f |= regex_constants::match_not_initial_null;
-      //if(base != next_start)
-      //   f |= regex_constants::match_not_bob;
-      bool result = regex_search(next_start, end, what, re, f, base);
+      if(base != next_start)
+         f |= regex_constants::match_not_bob;
+      bool result = regex_search(next_start, end, what, re, f);
       if(result)
          what.set_base(base);
       return result;
@@ -82,9 +75,17 @@ private:
 };
 
 template <class BidirectionalIterator, 
-          class charT = BOOST_DEDUCED_TYPENAME BOOST_REGEX_DETAIL_NS::regex_iterator_traits<BidirectionalIterator>::value_type,
+          class charT = BOOST_DEDUCED_TYPENAME re_detail::regex_iterator_traits<BidirectionalIterator>::value_type,
           class traits = regex_traits<charT> >
 class regex_iterator 
+#ifndef BOOST_NO_STD_ITERATOR
+   : public std::iterator<
+         std::forward_iterator_tag, 
+         match_results<BidirectionalIterator>,
+         typename re_detail::regex_iterator_traits<BidirectionalIterator>::difference_type,
+         const match_results<BidirectionalIterator>*,
+         const match_results<BidirectionalIterator>& >         
+#endif
 {
 private:
    typedef regex_iterator_implementation<BidirectionalIterator, charT, traits> impl;
@@ -92,7 +93,7 @@ private:
 public:
    typedef          basic_regex<charT, traits>                   regex_type;
    typedef          match_results<BidirectionalIterator>                    value_type;
-   typedef typename BOOST_REGEX_DETAIL_NS::regex_iterator_traits<BidirectionalIterator>::difference_type 
+   typedef typename re_detail::regex_iterator_traits<BidirectionalIterator>::difference_type 
                                                                             difference_type;
    typedef          const value_type*                                       pointer;
    typedef          const value_type&                                       reference; 
@@ -176,15 +177,8 @@ inline regex_iterator<typename std::basic_string<charT, ST, SA>::const_iterator,
    return regex_iterator<typename std::basic_string<charT, ST, SA>::const_iterator, charT, traits>(p.begin(), p.end(), e, m);
 }
 
-#ifdef BOOST_MSVC
-#pragma warning(push)
-#pragma warning(disable: 4103)
-#endif
 #ifdef BOOST_HAS_ABI_HEADERS
 #  include BOOST_ABI_SUFFIX
-#endif
-#ifdef BOOST_MSVC
-#pragma warning(pop)
 #endif
 
 } // namespace boost

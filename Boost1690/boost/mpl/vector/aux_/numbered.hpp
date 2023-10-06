@@ -11,9 +11,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/vector/aux_/numbered.hpp,v $
+// $Date: 2004/09/02 15:41:19 $
+// $Revision: 1.8 $
 
 #include <boost/preprocessor/enum_params.hpp>
 #include <boost/preprocessor/enum_shifted_params.hpp>

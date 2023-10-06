@@ -1,5 +1,4 @@
-// (C) Copyright 2008 CodeRage, LLC (turkanis at coderage dot com)
-// (C) Copyright 2003-2007 Jonathan Turkanis
+// (C) Copyright Jonathan Turkanis 2003.
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt.)
 
@@ -8,7 +7,7 @@
 #ifndef BOOST_IOSTREAMS_CHAR_TRAITS_HPP_INCLUDED
 #define BOOST_IOSTREAMS_CHAR_TRAITS_HPP_INCLUDED
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
 # pragma once
 #endif 
 
@@ -27,15 +26,6 @@ namespace std { using ::wint_t; }
 #endif
 
 namespace boost { namespace iostreams {
-
-// Dinkumware that comes with QNX Momentics 6.3.0, 4.0.2, incorrectly defines
-// the EOF and WEOF macros to not std:: qualify the wint_t type (and so does
-// Sun C++ 5.8 + STLport 4). Fix by placing the def in this scope.
-// NOTE: Use BOOST_WORKAROUND?
-#if (defined(__QNX__) && defined(BOOST_DINKUMWARE_STDLIB))  \
-    || defined(__SUNPRO_CC)
-using ::std::wint_t;
-#endif
 
 const int WOULD_BLOCK = (int) (EOF - 1);
 

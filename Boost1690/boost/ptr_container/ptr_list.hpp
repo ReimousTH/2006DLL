@@ -17,13 +17,7 @@
 #endif
 
 #include <boost/ptr_container/ptr_sequence_adapter.hpp>
-#include <boost/ptr_container/detail/ptr_container_disable_deprecated.hpp>
 #include <list>
-
-#if defined(BOOST_PTR_CONTAINER_DISABLE_DEPRECATED)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
 
 namespace boost
 {
@@ -32,65 +26,49 @@ namespace boost
     < 
         class T, 
         class CloneAllocator = heap_clone_allocator,
-        class Allocator      = std::allocator<typename ptr_container_detail::void_ptr<T>::type>
+        class Allocator      = std::allocator<void*>
     >
     class ptr_list : public 
-        ptr_sequence_adapter< T, std::list<
-            typename ptr_container_detail::void_ptr<T>::type,Allocator>, 
+        ptr_sequence_adapter< T, 
+                              std::list<void*,Allocator>, 
                               CloneAllocator >
     {
-        typedef    ptr_sequence_adapter< T, std::list<
-            typename ptr_container_detail::void_ptr<T>::type,Allocator>, 
+        typedef    ptr_sequence_adapter< T, 
+                                         std::list<void*,Allocator>, 
                                          CloneAllocator >
             base_class;
 
-        typedef ptr_list<T,CloneAllocator,Allocator>  this_type;
-        typedef BOOST_DEDUCED_TYPENAME boost::remove_nullable<T>::type U;
+        typedef ptr_list<T,CloneAllocator,Allocator> this_type;
         
     public:
-        BOOST_PTR_CONTAINER_DEFINE_SEQEUENCE_MEMBERS( ptr_list, 
-                                                      base_class,
-                                                      this_type )
-
-        typedef BOOST_DEDUCED_TYPENAME base_class::value_type value_type;
+        BOOST_PTR_CONTAINER_DEFINE_NON_INHERITED_MEMBERS( ptr_list, 
+                                                          base_class,
+                                                          this_type );
         
     public:
         using base_class::merge;
         
         void merge( ptr_list& x )                                 
         {
-            merge( x, std::less<U>() );
+            merge( x, std::less<T>() );
         }
 
         template< typename Compare > 
         void merge( ptr_list& x, Compare comp )                   
         {
-            this->base().merge( x.base(), void_ptr_indirect_fun<Compare,U>( comp ) ); }
+            this->c_private().merge( x.c_private(), void_ptr_indirect_fun<Compare,T>( comp ) );
+        }
 
         void sort()                                                    
         { 
-            sort( std::less<U>() ); 
+            sort( std::less<T>() ); 
         };
 
         template< typename Compare > 
         void sort( Compare comp )                             
         {
-            this->base().sort( void_ptr_indirect_fun<Compare,U>( comp ) );
+            this->c_private().sort( void_ptr_indirect_fun<Compare,T>( comp ) );
         }
-
-        template< class Pred >
-        void erase_if( iterator first, iterator last, Pred pred )
-        {
-            base_class::erase_if( first, last, pred );
-        }
-        
-        template< class Pred >
-        void erase_if( Pred pred )
-        {
-            this->base().remove_if( BOOST_DEDUCED_TYPENAME base_class:: 
-                    BOOST_NESTED_TEMPLATE void_ptr_delete_if<Pred,value_type>
-                                    (pred) );
-        } 
 
     }; // class 'ptr_list'
 
@@ -113,8 +91,5 @@ namespace boost
     }
 }
 
-#if defined(BOOST_PTR_CONTAINER_DISABLE_DEPRECATED)
-#pragma GCC diagnostic pop
-#endif
 
 #endif

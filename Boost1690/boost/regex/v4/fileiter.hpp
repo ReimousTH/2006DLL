@@ -46,19 +46,13 @@
 
 #if defined(BOOST_REGEX_FI_WIN32_DIR)
 
-#include <cstddef>
-
 namespace boost{
-   namespace BOOST_REGEX_DETAIL_NS{
+   namespace re_detail{
 
-#ifndef BOOST_NO_ANSI_APIS
 typedef WIN32_FIND_DATAA _fi_find_data;
-#else
-typedef WIN32_FIND_DATAW _fi_find_data;
-#endif
 typedef HANDLE _fi_find_handle;
 
-   } // namespace BOOST_REGEX_DETAIL_NS
+   } // namespace re_detail
 
 } // namespace boost
 
@@ -67,7 +61,6 @@ typedef HANDLE _fi_find_handle;
 
 #elif defined(BOOST_REGEX_FI_POSIX_DIR)
 
-#include <cstddef>
 #include <cstdio>
 #include <cctype>
 #include <iterator>
@@ -84,7 +77,7 @@ using std::list;
 #endif
 
 namespace boost{
-   namespace BOOST_REGEX_DETAIL_NS{
+   namespace re_detail{
 
 #ifdef BOOST_HAS_ABI_HEADERS
 #  include BOOST_ABI_PREFIX
@@ -110,7 +103,7 @@ bool _fi_FindClose(_fi_find_handle hFindFile);
 #  include BOOST_ABI_SUFFIX
 #endif
 
-   } // namespace BOOST_REGEX_DETAIL_NS
+   } // namespace re_detail
 } // namespace boost
 
 #ifdef FindFirstFile
@@ -130,7 +123,7 @@ bool _fi_FindClose(_fi_find_handle hFindFile);
 #endif
 
 namespace boost{
-   namespace BOOST_REGEX_DETAIL_NS{
+   namespace re_detail{
 
 #ifdef BOOST_HAS_ABI_HEADERS
 #  include BOOST_ABI_PREFIX
@@ -195,6 +188,9 @@ public:
 };
 
 class BOOST_REGEX_DECL mapfile_iterator
+#if !defined(BOOST_NO_STD_ITERATOR) || defined(BOOST_MSVC_STD_ITERATOR)
+: public std::iterator<std::random_access_iterator_tag, char>
+#endif
 {
    typedef mapfile::pointer internal_pointer;
    internal_pointer* node;
@@ -222,11 +218,11 @@ public:
    mapfile_iterator() { node = 0; file = 0; offset = 0; }
    mapfile_iterator(const mapfile* f, long arg_position)
    {
-      BOOST_ASSERT(f);
       file = f;
       node = f->_first + arg_position / mapfile::buf_size;
       offset = arg_position % mapfile::buf_size;
-      file->lock(node);
+      if(file)
+         file->lock(node);
    }
    mapfile_iterator(const mapfile_iterator& i)
    {
@@ -424,10 +420,10 @@ inline bool operator < (const directory_iterator&, const directory_iterator&)
 #endif
 
 
-} // namespace BOOST_REGEX_DETAIL_NS
-using boost::BOOST_REGEX_DETAIL_NS::directory_iterator;
-using boost::BOOST_REGEX_DETAIL_NS::file_iterator;
-using boost::BOOST_REGEX_DETAIL_NS::mapfile;
+} // namespace re_detail
+using boost::re_detail::directory_iterator;
+using boost::re_detail::file_iterator;
+using boost::re_detail::mapfile;
 } // namespace boost
 
 #endif     // BOOST_REGEX_NO_FILEITER

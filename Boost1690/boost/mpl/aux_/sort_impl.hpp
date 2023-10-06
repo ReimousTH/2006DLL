@@ -10,9 +10,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/aux_/sort_impl.hpp,v $
+// $Date: 2004/11/28 01:47:44 $
+// $Revision: 1.5 $
 
 #include <boost/mpl/partition.hpp>
 #include <boost/mpl/copy.hpp>

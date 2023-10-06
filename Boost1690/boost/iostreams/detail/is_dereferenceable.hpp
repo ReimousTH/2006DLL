@@ -1,6 +1,5 @@
-// (C) Copyright 2008 CodeRage, LLC (turkanis at coderage dot com)
-// (C) Copyright 2005-2007 Jonathan Turkanis
 // (C) Copyright David Abrahams 2004.
+// (C) Copyright Jonathan Turkanis 2005.
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt.)
 
@@ -9,6 +8,8 @@
 #ifndef BOOST_IOSTREAMS_DETAIL_IS_DEREFERENCEABLE_HPP_INCLUDED
 #define BOOST_IOSTREAMS_DETAIL_IS_DEREFERENCEABLE_HPP_INCLUDED
 
+# include <boost/type_traits/detail/bool_trait_def.hpp>
+# include <boost/type_traits/detail/template_arity_spec.hpp>
 # include <boost/type_traits/remove_cv.hpp>
 # include <boost/mpl/aux_/lambda_support.hpp>
 # include <boost/mpl/bool.hpp>
@@ -37,7 +38,8 @@ namespace is_dereferenceable_
   // This is a last-resort operator* for when none other is found
   tag operator*(any const&);
 
-# if BOOST_WORKAROUND(__MWERKS__, BOOST_TESTED_AT(0x3202))
+# if BOOST_WORKAROUND(__MWERKS__, BOOST_TESTED_AT(0x3202)) \
+    || BOOST_WORKAROUND(BOOST_MSVC, <= 1300)
 #  define BOOST_comma(a,b) (a)
 # else 
   // In case an operator++ is found that returns void, we'll use ++x,0
@@ -46,10 +48,10 @@ namespace is_dereferenceable_
 # endif 
   
   // two check overloads help us identify which operator++ was picked
-  char (& check_increment(tag) )[2];
+  char (& check(tag) )[2];
   
   template <class T>
-  char check_increment(T const&);
+  char check(T const&);
   
   template <class T>
   struct impl
@@ -58,7 +60,7 @@ namespace is_dereferenceable_
 
       BOOST_STATIC_CONSTANT(
           bool
-        , value = sizeof(is_dereferenceable_::check_increment(BOOST_comma(*x,0))) == 1
+        , value = sizeof(is_dereferenceable_::check(BOOST_comma(*x,0))) == 1
       );
   };
 }
@@ -67,13 +69,15 @@ namespace is_dereferenceable_
 
 template<typename T> 
 struct is_dereferenceable 
-    : public ::boost::integral_constant<bool, is_dereferenceable_::impl<T>::value >
+    BOOST_TT_AUX_BOOL_C_BASE(is_dereferenceable_::impl<T>::value)
 { 
+    BOOST_TT_AUX_BOOL_TRAIT_VALUE_DECL(is_dereferenceable_::impl<T>::value)
     BOOST_MPL_AUX_LAMBDA_SUPPORT(1,is_dereferenceable,(T))
 };
 
 } } 
 
+BOOST_TT_AUX_TEMPLATE_ARITY_SPEC(1, ::boost::iostreams::detail::is_dereferenceable)
 
 } // End namespaces detail, iostreams, boost.
 

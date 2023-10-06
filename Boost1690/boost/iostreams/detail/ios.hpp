@@ -1,5 +1,4 @@
-// (C) Copyright 2008 CodeRage, LLC (turkanis at coderage dot com)
-// (C) Copyright 2003-2007 Jonathan Turkanis
+// (C) Copyright Jonathan Turkanis 2003.
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt.)
 
@@ -8,7 +7,7 @@
 #ifndef BOOST_IOSTREAMS_DETAIL_IOS_HPP_INCLUDED
 #define BOOST_IOSTREAMS_DETAIL_IOS_HPP_INCLUDED
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
 # pragma once
 #endif              
                  
@@ -32,7 +31,8 @@ namespace boost { namespace iostreams { namespace detail {
 #ifndef BOOST_IOSTREAMS_NO_STREAM_TEMPLATES //--------------------------------//
 # define BOOST_IOSTREAMS_BASIC_IOS(ch, tr)  std::basic_ios< ch, tr >
 # if !BOOST_WORKAROUND(__MWERKS__, <= 0x3003) && \
-     !BOOST_WORKAROUND(__BORLANDC__, < 0x600) \
+     !BOOST_WORKAROUND(__BORLANDC__, < 0x600) && \
+     !BOOST_WORKAROUND(BOOST_MSVC, < 1300) \
      /**/
 
 #define BOOST_IOS                std::ios

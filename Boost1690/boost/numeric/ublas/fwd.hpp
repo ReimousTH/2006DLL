@@ -1,25 +1,23 @@
 //
-//  Copyright (c) 2000-2010
-//  Joerg Walter, Mathias Koch, David Bellot
+//  Copyright (c) 2000-2002
+//  Joerg Walter, Mathias Koch
 //
-//  Distributed under the Boost Software License, Version 1.0. (See
-//  accompanying file LICENSE_1_0.txt or copy at
-//  http://www.boost.org/LICENSE_1_0.txt)
+//  Permission to use, copy, modify, distribute and sell this software
+//  and its documentation for any purpose is hereby granted without fee,
+//  provided that the above copyright notice appear in all copies and
+//  that both that copyright notice and this permission notice appear
+//  in supporting documentation.  The authors make no representations
+//  about the suitability of this software for any purpose.
+//  It is provided "as is" without express or implied warranty.
 //
 //  The authors gratefully acknowledge the support of
 //  GeNeSys mbH & Co. KG in producing this work.
 //
 
-/// \file fwd.hpp is essentially used to forward declare the main types
-
 #ifndef BOOST_UBLAS_FWD_H
 #define BOOST_UBLAS_FWD_H
 
 #include <memory>
-
-#ifdef BOOST_UBLAS_CPP_GE_2011
-#include <array>
-#endif
 
 namespace boost { namespace numeric { namespace ublas {
 
@@ -66,44 +64,34 @@ namespace boost { namespace numeric { namespace ublas {
     template<class E>
     class matrix_reference;
 
-    template<class V>
+    template<class E>
     class vector_range;
-    template<class V>
+    template<class E>
     class vector_slice;
-    template<class V, class IA = indirect_array<> >
+    template<class E, class IA = indirect_array<> >
     class vector_indirect;
 
-    template<class M>
+    template<class E>
     class matrix_row;
-    template<class M>
+    template<class E>
     class matrix_column;
-    template<class M>
-    class matrix_vector_range;
-    template<class M>
-    class matrix_vector_slice;
-    template<class M, class IA = indirect_array<> >
-    class matrix_vector_indirect;
-    template<class M>
+    template<class E>
     class matrix_range;
-    template<class M>
+    template<class E>
     class matrix_slice;
-    template<class M, class IA = indirect_array<> >
+    template<class E, class IA = indirect_array<> >
     class matrix_indirect;
 
     template<class T, class A = unbounded_array<T> >
     class vector;
-#ifdef BOOST_UBLAS_CPP_GE_2011
-    template<class T, std::size_t N, class A = std::array<T, N> >
-    class fixed_vector;
-#endif
     template<class T, std::size_t N>
     class bounded_vector;
 
-    template<class T = int, class ALLOC = std::allocator<T> >
+    template<class T = int>
     class unit_vector;
-    template<class T = int, class ALLOC = std::allocator<T> >
+    template<class T = int>
     class zero_vector;
-    template<class T = int, class ALLOC = std::allocator<T> >
+    template<class T = int>
     class scalar_vector;
 
     template<class T, std::size_t N>
@@ -133,18 +121,14 @@ namespace boost { namespace numeric { namespace ublas {
 
     template<class T, class L = row_major, class A = unbounded_array<T> >
     class matrix;
-#ifdef BOOST_UBLAS_CPP_GE_2011
-    template<class T, std::size_t M, std::size_t N, class L = row_major, class A = std::array<T, M*N> >
-    class fixed_matrix;
-#endif
     template<class T, std::size_t M, std::size_t N, class L = row_major>
     class bounded_matrix;
 
-    template<class T = int, class ALLOC = std::allocator<T> >
+    template<class T = int>
     class identity_matrix;
-    template<class T = int, class ALLOC = std::allocator<T> >
+    template<class T = int>
     class zero_matrix;
-    template<class T = int, class ALLOC = std::allocator<T> >
+    template<class T = int>
     class scalar_matrix;
 
     template<class T, std::size_t M, std::size_t N>
@@ -152,9 +136,6 @@ namespace boost { namespace numeric { namespace ublas {
 
     template<class T, class L = row_major, class A = unbounded_array<unbounded_array<T> > >
     class vector_of_vector;
-
-    template<class T, class L = row_major, class A = vector<compressed_vector<T> > >
-    class generalized_vector_of_vector;
 
     // Triangular matrix type
     struct lower_tag {};

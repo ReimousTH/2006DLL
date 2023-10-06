@@ -2,9 +2,13 @@
 //  Copyright (c) 2000-2002
 //  Joerg Walter, Mathias Koch
 //
-//  Distributed under the Boost Software License, Version 1.0. (See
-//  accompanying file LICENSE_1_0.txt or copy at
-//  http://www.boost.org/LICENSE_1_0.txt)
+//  Permission to use, copy, modify, distribute and sell this software
+//  and its documentation for any purpose is hereby granted without fee,
+//  provided that the above copyright notice appear in all copies and
+//  that both that copyright notice and this permission notice appear
+//  in supporting documentation.  The authors make no representations
+//  about the suitability of this software for any purpose.
+//  It is provided "as is" without express or implied warranty.
 //
 //  The authors gratefully acknowledge the support of
 //  GeNeSys mbH & Co. KG in producing this work.
@@ -21,15 +25,7 @@
 
 namespace boost { namespace numeric { namespace ublas {
 
-    /** \brief A vector referencing a continuous subvector of elements of vector \c v containing all elements specified by \c range.
-     *
-     * A vector range can be used as a normal vector in any expression. 
-     * If the specified range falls outside that of the index range of the vector, then
-     * the \c vector_range is not a well formed \i Vector \i Expression and access to an 
-     * element outside of index range of the vector is \b undefined.
-     *
-     * \tparam V the type of vector referenced (for example \c vector<double>)
-     */
+    // Vector based range class
     template<class V>
     class vector_range:
         public vector_expression<vector_range<V> > {
@@ -278,7 +274,7 @@ namespace boost { namespace numeric { namespace ublas {
             const_iterator (const self_type &vr, const const_subiterator_type &it):
                 container_const_reference<self_type> (vr), it_ (it) {}
             BOOST_UBLAS_INLINE
-            const_iterator (const typename self_type::iterator &it):  // ISSUE self_type:: stops VC8 using std::iterator here
+            const_iterator (const iterator &it):
                 container_const_reference<self_type> (it ()), it_ (it.it_) {}
 
             // Arithmetic
@@ -313,10 +309,6 @@ namespace boost { namespace numeric { namespace ublas {
             const_reference operator * () const {
                 BOOST_UBLAS_CHECK (index () < (*this) ().size (), bad_index ());
                 return *it_;
-            }
-            BOOST_UBLAS_INLINE
-            const_reference operator [] (difference_type n) const {
-                return *(*this + n);
             }
 
             // Index
@@ -355,16 +347,8 @@ namespace boost { namespace numeric { namespace ublas {
             return find (0);
         }
         BOOST_UBLAS_INLINE
-        const_iterator cbegin () const {
-            return begin ();
-        }
-        BOOST_UBLAS_INLINE
         const_iterator end () const {
             return find (size ());
-        }
-        BOOST_UBLAS_INLINE
-        const_iterator cend () const {
-            return end ();
         }
 
 #ifndef BOOST_UBLAS_USE_INDEXED_ITERATOR
@@ -419,10 +403,6 @@ namespace boost { namespace numeric { namespace ublas {
                 BOOST_UBLAS_CHECK (index () < (*this) ().size (), bad_index ());
                 return *it_;
             }
-            BOOST_UBLAS_INLINE
-            reference operator [] (difference_type n) const {
-                return *(*this + n);
-            }
 
             // Index
             BOOST_UBLAS_INLINE
@@ -475,18 +455,9 @@ namespace boost { namespace numeric { namespace ublas {
             return const_reverse_iterator (end ());
         }
         BOOST_UBLAS_INLINE
-        const_reverse_iterator crbegin () const {
-            return rbegin ();
-        }
-        BOOST_UBLAS_INLINE
         const_reverse_iterator rend () const {
             return const_reverse_iterator (begin ());
         }
-        BOOST_UBLAS_INLINE
-        const_reverse_iterator crend () const {
-            return rend ();
-        }
-
         BOOST_UBLAS_INLINE
         reverse_iterator rbegin () {
             return reverse_iterator (end ());
@@ -501,27 +472,13 @@ namespace boost { namespace numeric { namespace ublas {
         range_type r_;
     };
 
-    // ------------------
     // Simple Projections
-    // ------------------
-
-    /** \brief Return a \c vector_range on a specified vector, a start and stop index.
-     * Return a \c vector_range on a specified vector, a start and stop index. The resulting \c vector_range can be manipulated like a normal vector.
-     * If the specified range falls outside that of of the index range of the vector, then the resulting \c vector_range is not a well formed
-     * Vector Expression and access to an element outside of index range of the vector is \b undefined.
-     */
     template<class V>
     BOOST_UBLAS_INLINE
     vector_range<V> subrange (V &data, typename V::size_type start, typename V::size_type stop) {
         typedef basic_range<typename V::size_type, typename V::difference_type> range_type;
         return vector_range<V> (data, range_type (start, stop));
     }
-
-    /** \brief Return a \c const \c vector_range on a specified vector, a start and stop index.
-     * Return a \c const \c vector_range on a specified vector, a start and stop index. The resulting \c const \c vector_range can be manipulated like a normal vector.
-     *If the specified range falls outside that of of the index range of the vector, then the resulting \c vector_range is not a well formed
-     * Vector Expression and access to an element outside of index range of the vector is \b undefined.
-     */
     template<class V>
     BOOST_UBLAS_INLINE
     vector_range<const V> subrange (const V &data, typename V::size_type start, typename V::size_type stop) {
@@ -529,49 +486,23 @@ namespace boost { namespace numeric { namespace ublas {
         return vector_range<const V> (data, range_type (start, stop));
     }
 
-    // -------------------
     // Generic Projections
-    // -------------------
-    
-    /** \brief Return a \c const \c vector_range on a specified vector and \c range
-     * Return a \c const \c vector_range on a specified vector and \c range. The resulting \c vector_range can be manipulated like a normal vector.
-     * If the specified range falls outside that of of the index range of the vector, then the resulting \c vector_range is not a well formed
-     * Vector Expression and access to an element outside of index range of the vector is \b undefined.
-     */
     template<class V>
     BOOST_UBLAS_INLINE
     vector_range<V> project (V &data, typename vector_range<V>::range_type const &r) {
         return vector_range<V> (data, r);
     }
-
-    /** \brief Return a \c vector_range on a specified vector and \c range
-     * Return a \c vector_range on a specified vector and \c range. The resulting \c vector_range can be manipulated like a normal vector.
-     * If the specified range falls outside that of of the index range of the vector, then the resulting \c vector_range is not a well formed
-     * Vector Expression and access to an element outside of index range of the vector is \b undefined.
-     */
     template<class V>
     BOOST_UBLAS_INLINE
     const vector_range<const V> project (const V &data, typename vector_range<V>::range_type const &r) {
         // ISSUE was: return vector_range<V> (const_cast<V &> (data), r);
         return vector_range<const V> (data, r);
-   }
-
-    /** \brief Return a \c const \c vector_range on a specified vector and const \c range
-     * Return a \c const \c vector_range on a specified vector and const \c range. The resulting \c vector_range can be manipulated like a normal vector.
-     * If the specified range falls outside that of of the index range of the vector, then the resulting \c vector_range is not a well formed
-     * Vector Expression and access to an element outside of index range of the vector is \b undefined.
-     */
+    }
     template<class V>
     BOOST_UBLAS_INLINE
     vector_range<V> project (vector_range<V> &data, const typename vector_range<V>::range_type &r) {
         return data.project (r);
     }
-
-    /** \brief Return a \c vector_range on a specified vector and const \c range
-     * Return a \c vector_range on a specified vector and const \c range. The resulting \c vector_range can be manipulated like a normal vector.
-     * If the specified range falls outside that of of the index range of the vector, then the resulting \c vector_range is not a well formed
-     * Vector Expression and access to an element outside of index range of the vector is \b undefined.
-     */
     template<class V>
     BOOST_UBLAS_INLINE
     const vector_range<V> project (const vector_range<V> &data, const typename vector_range<V>::range_type &r) {
@@ -582,25 +513,9 @@ namespace boost { namespace numeric { namespace ublas {
     template <class V>
     struct vector_temporary_traits< vector_range<V> >
     : vector_temporary_traits< V > {} ;
-    template <class V>
-    struct vector_temporary_traits< const vector_range<V> >
-    : vector_temporary_traits< V > {} ;
 
 
-    /** \brief A vector referencing a non continuous subvector of elements of vector v containing all elements specified by \c slice.
-     *
-     * A vector slice can be used as a normal vector in any expression.
-     * If the specified slice falls outside that of the index slice of the vector, then
-     * the \c vector_slice is not a well formed \i Vector \i Expression and access to an 
-     * element outside of index slice of the vector is \b undefined.
-     *
-     * A slice is a generalization of a range. In a range going from \f$a\f$ to \f$b\f$, 
-     * all elements belong to the range. In a slice, a \i \f$step\f$ can be specified meaning to
-     * take one element over \f$step\f$ in the range specified from \f$a\f$ to \f$b\f$.
-     * Obviously, a slice with a \f$step\f$ of 1 is equivalent to a range.
-     *
-     * \tparam V the type of vector referenced (for example \c vector<double>)
-     */
+    // Vector based slice class
     template<class V>
     class vector_slice:
         public vector_expression<vector_slice<V> > {
@@ -855,7 +770,7 @@ namespace boost { namespace numeric { namespace ublas {
             const_iterator (const self_type &vs, const const_subiterator_type &it):
                 container_const_reference<self_type> (vs), it_ (it) {}
             BOOST_UBLAS_INLINE
-            const_iterator (const typename self_type::iterator &it):  // ISSUE self_type:: stops VC8 using std::iterator here
+            const_iterator (const iterator &it):
                 container_const_reference<self_type> (it ()), it_ (it.it_) {}
 
             // Arithmetic
@@ -891,10 +806,6 @@ namespace boost { namespace numeric { namespace ublas {
                 // FIXME replace find with at_element
                 BOOST_UBLAS_CHECK (index () < (*this) ().size (), bad_index ());
                 return (*this) ().data_ (*it_);
-            }
-            BOOST_UBLAS_INLINE
-            const_reference operator [] (difference_type n) const {
-                return *(*this + n);
             }
 
             // Index
@@ -933,16 +844,8 @@ namespace boost { namespace numeric { namespace ublas {
             return find (0);
         }
         BOOST_UBLAS_INLINE
-        const_iterator cbegin () const {
-            return begin ();
-        }
-        BOOST_UBLAS_INLINE
         const_iterator end () const {
             return find (size ());
-        }
-        BOOST_UBLAS_INLINE
-        const_iterator cend () const {
-            return end ();
         }
 
 #ifndef BOOST_UBLAS_USE_INDEXED_ITERATOR
@@ -998,11 +901,6 @@ namespace boost { namespace numeric { namespace ublas {
                 BOOST_UBLAS_CHECK (index () < (*this) ().size (), bad_index ());
                 return (*this) ().data_ (*it_);
             }
-            BOOST_UBLAS_INLINE
-            reference operator [] (difference_type n) const {
-                return *(*this + n);
-            }
-
 
             // Index
             BOOST_UBLAS_INLINE
@@ -1055,16 +953,8 @@ namespace boost { namespace numeric { namespace ublas {
             return const_reverse_iterator (end ());
         }
         BOOST_UBLAS_INLINE
-        const_reverse_iterator crbegin () const {
-            return rbegin ();
-        }
-        BOOST_UBLAS_INLINE
         const_reverse_iterator rend () const {
             return const_reverse_iterator (begin ());
-        }
-        BOOST_UBLAS_INLINE
-        const_reverse_iterator crend () const {
-            return rend ();
         }
         BOOST_UBLAS_INLINE
         reverse_iterator rbegin () {
@@ -1083,13 +973,13 @@ namespace boost { namespace numeric { namespace ublas {
     // Simple Projections
     template<class V>
     BOOST_UBLAS_INLINE
-    vector_slice<V> subslice (V &data, typename V::size_type start, typename V::difference_type stride, typename V::size_type size) {
+    vector_slice<V> subslice (V &data, typename V::size_type_t start, typename V::differenece_type stride, typename V::size_type size) {
         typedef basic_slice<typename V::size_type, typename V::difference_type> slice_type;
         return vector_slice<V> (data, slice_type (start, stride, size));
     }
     template<class V>
     BOOST_UBLAS_INLINE
-    vector_slice<const V> subslice (const V &data, typename V::size_type start, typename V::difference_type stride, typename V::size_type size)  {
+    vector_slice<const V> subslice (const V &data, typename V::size_type start, typename V::differenece_type stride, typename V::size_type size)  {
         typedef basic_slice<typename V::size_type, typename V::difference_type> slice_type;
         return vector_slice<const V> (data, slice_type (start, stride, size));
     }
@@ -1132,34 +1022,11 @@ namespace boost { namespace numeric { namespace ublas {
     template <class V>
     struct vector_temporary_traits< vector_slice<V> >
     : vector_temporary_traits< V > {} ;
-    template <class V>
-    struct vector_temporary_traits< const vector_slice<V> >
-    : vector_temporary_traits< V > {} ;
 
 
     // Vector based indirection class
     // Contributed by Toon Knapen.
     // Extended and optimized by Kresimir Fresl.
-
-    /** \brief A vector referencing a non continuous subvector of elements given another vector of indices.
-     *
-     * It is the most general version of any subvectors because it uses another vector of indices to reference
-     * the subvector. 
-     *
-     * The vector of indices can be of any type with the restriction that its elements must be
-     * type-compatible with the size_type \c of the container. In practice, the following are good candidates:
-     * - \c boost::numeric::ublas::indirect_array<A> where \c A can be \c int, \c size_t, \c long, etc...
-     * - \c std::vector<A> where \c A can \c int, \c size_t, \c long, etc...
-     * - \c boost::numeric::ublas::vector<int> can work too (\c int can be replaced by another integer type)
-     * - etc...
-     *
-     * An indirect vector can be used as a normal vector in any expression. If the specified indirect vector 
-     * falls outside that of the indices of the vector, then the \c vector_indirect is not a well formed 
-     * \i Vector \i Expression and access to an element outside of indices of the vector is \b undefined.
-     *
-     * \tparam V the type of vector referenced (for example \c vector<double>)
-     * \tparam IA the type of index vector. Default is \c ublas::indirect_array<>
-     */
     template<class V, class IA>
     class vector_indirect:
         public vector_expression<vector_indirect<V, IA> > {
@@ -1336,8 +1203,8 @@ namespace boost { namespace numeric { namespace ublas {
 
         // Closure comparison
         BOOST_UBLAS_INLINE
-        bool same_closure (const vector_indirect &/*vr*/) const {
-            return true;
+        bool same_closure (const vector_indirect &vr) const {
+return true;
         }
 
         // Comparison
@@ -1416,7 +1283,7 @@ namespace boost { namespace numeric { namespace ublas {
             const_iterator (const self_type &vi, const const_subiterator_type &it):
                 container_const_reference<self_type> (vi), it_ (it) {}
             BOOST_UBLAS_INLINE
-            const_iterator (const typename self_type::iterator &it):  // ISSUE self_type:: stops VC8 using std::iterator here
+            const_iterator (const iterator &it):
                 container_const_reference<self_type> (it ()), it_ (it.it_) {}
 
             // Arithmetic
@@ -1452,10 +1319,6 @@ namespace boost { namespace numeric { namespace ublas {
                 // FIXME replace find with at_element
                 BOOST_UBLAS_CHECK (index () < (*this) ().size (), bad_index ());
                 return (*this) ().data_ (*it_);
-            }
-            BOOST_UBLAS_INLINE
-            const_reference operator [] (difference_type n) const {
-                return *(*this + n);
             }
 
             // Index
@@ -1494,16 +1357,8 @@ namespace boost { namespace numeric { namespace ublas {
             return find (0);
         }
         BOOST_UBLAS_INLINE
-        const_iterator cbegin () const {
-            return begin ();
-        }
-        BOOST_UBLAS_INLINE
         const_iterator end () const {
             return find (size ());
-        }
-        BOOST_UBLAS_INLINE
-        const_iterator cend () const {
-            return end ();
         }
 
 #ifndef BOOST_UBLAS_USE_INDEXED_ITERATOR
@@ -1559,10 +1414,6 @@ namespace boost { namespace numeric { namespace ublas {
                 BOOST_UBLAS_CHECK (index () < (*this) ().size (), bad_index ());
                 return (*this) ().data_ (*it_);
             }
-            BOOST_UBLAS_INLINE
-            reference operator [] (difference_type n) const {
-                return *(*this + n);
-            }
 
             // Index
             BOOST_UBLAS_INLINE
@@ -1615,18 +1466,9 @@ namespace boost { namespace numeric { namespace ublas {
             return const_reverse_iterator (end ());
         }
         BOOST_UBLAS_INLINE
-        const_reverse_iterator crbegin () const {
-            return rbegin ();
-        }
-        BOOST_UBLAS_INLINE
         const_reverse_iterator rend () const {
             return const_reverse_iterator (begin ());
         }
-        BOOST_UBLAS_INLINE
-        const_reverse_iterator crend () const {
-            return rend ();
-        }
-
         BOOST_UBLAS_INLINE
         reverse_iterator rbegin () {
             return reverse_iterator (end ());
@@ -1687,9 +1529,6 @@ namespace boost { namespace numeric { namespace ublas {
     // Specialization of temporary_traits
     template <class V>
     struct vector_temporary_traits< vector_indirect<V> >
-    : vector_temporary_traits< V > {} ;
-    template <class V>
-    struct vector_temporary_traits< const vector_indirect<V> >
     : vector_temporary_traits< V > {} ;
 
 }}}

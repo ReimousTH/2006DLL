@@ -19,19 +19,12 @@
 #ifndef BOOST_REGEX_V4_STATES_HPP
 #define BOOST_REGEX_V4_STATES_HPP
 
-#ifdef BOOST_MSVC
-#pragma warning(push)
-#pragma warning(disable: 4103)
-#endif
 #ifdef BOOST_HAS_ABI_HEADERS
 #  include BOOST_ABI_PREFIX
 #endif
-#ifdef BOOST_MSVC
-#pragma warning(pop)
-#endif
 
 namespace boost{
-namespace BOOST_REGEX_DETAIL_NS{
+namespace re_detail{
 
 /*** mask_type *******************************************************
 Whenever we have a choice of two alternatives, we use an array of bytes
@@ -118,14 +111,7 @@ enum syntax_element_type
    syntax_element_backstep = syntax_element_long_set_rep + 1,
    // an assertion that a mark was matched:
    syntax_element_assert_backref = syntax_element_backstep + 1,
-   syntax_element_toggle_case = syntax_element_assert_backref + 1,
-   // a recursive expression:
-   syntax_element_recurse = syntax_element_toggle_case + 1,
-   // Verbs:
-   syntax_element_fail = syntax_element_recurse + 1,
-   syntax_element_accept = syntax_element_fail + 1,
-   syntax_element_commit = syntax_element_accept + 1,
-   syntax_element_then = syntax_element_commit + 1
+   syntax_element_toggle_case = syntax_element_assert_backref + 1
 };
 
 #ifdef BOOST_REGEX_DEBUG
@@ -163,7 +149,6 @@ struct re_brace : public re_syntax_base
    // The index to match, can be zero (don't mark the sub-expression)
    // or negative (for perl style (?...) extentions):
    int index;
-   bool icase;
 };
 
 /*** struct re_dot **************************************************
@@ -212,7 +197,6 @@ struct re_set_long : public re_syntax_base
 {
    unsigned int            csingles, cranges, cequivalents;
    mask_type               cclasses;
-   mask_type               cnclasses;
    bool                    isnot;
    bool                    singleton;
 };
@@ -248,32 +232,9 @@ Repeat a section of the machine
 struct re_repeat : public re_alt
 {
    std::size_t   min, max;  // min and max allowable repeats
-   int           state_id;        // Unique identifier for this repeat
+   int           id;        // Unique identifier for this repeat
    bool          leading;   // True if this repeat is at the start of the machine (lets us optimize some searches)
    bool          greedy;    // True if this is a greedy repeat
-};
-
-/*** struct re_recurse ************************************************
-Recurse to a particular subexpression.
-**********************************************************************/
-struct re_recurse : public re_jump
-{
-   int state_id;             // identifier of first nested repeat within the recursion.
-};
-
-/*** struct re_commit *************************************************
-Used for the PRUNE, SKIP and COMMIT verbs which basically differ only in what happens
-if no match is found and we start searching forward.
-**********************************************************************/
-enum commit_type
-{
-   commit_prune,
-   commit_skip,
-   commit_commit
-};
-struct re_commit : public re_syntax_base
-{
-   commit_type action;
 };
 
 /*** enum re_jump_size_type *******************************************
@@ -301,19 +262,12 @@ iterator BOOST_REGEX_CALL re_is_set_member(iterator next,
                           const re_set_long<char_classT>* set_, 
                           const regex_data<charT, traits_type>& e, bool icase);
 
-} // namespace BOOST_REGEX_DETAIL_NS
+} // namespace re_detail
 
 } // namespace boost
 
-#ifdef BOOST_MSVC
-#pragma warning(push)
-#pragma warning(disable: 4103)
-#endif
 #ifdef BOOST_HAS_ABI_HEADERS
 #  include BOOST_ABI_SUFFIX
-#endif
-#ifdef BOOST_MSVC
-#pragma warning(pop)
 #endif
 
 #endif

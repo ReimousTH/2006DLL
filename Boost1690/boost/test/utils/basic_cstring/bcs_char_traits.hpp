@@ -1,19 +1,19 @@
-//  (C) Copyright Gennadiy Rozental 2001.
+//  (C) Copyright Gennadiy Rozental 2004-2005.
 //  Distributed under the Boost Software License, Version 1.0.
-//  (See accompanying file LICENSE_1_0.txt or copy at
+//  (See accompanying file LICENSE_1_0.txt or copy at 
 //  http://www.boost.org/LICENSE_1_0.txt)
 
 //  See http://www.boost.org/libs/test for the library home page.
 //
-//  File        : $RCSfile$
+//  File        : $RCSfile: bcs_char_traits.hpp,v $
 //
-//  Version     : $Revision$
+//  Version     : $Revision: 1.3 $
 //
 //  Description : generic char traits class; wraps std::char_traits
 // ***************************************************************************
 
-#ifndef BOOST_TEST_UTILS_BCS_CHAR_TRAITS_HPP
-#define BOOST_TEST_UTILS_BCS_CHAR_TRAITS_HPP
+#ifndef BOOST_TEST_BCS_CHAR_TRAITS_HPP_071894GER
+#define BOOST_TEST_BCS_CHAR_TRAITS_HPP_071894GER
 
 // Boost
 #include <boost/config.hpp>
@@ -119,11 +119,11 @@ struct char_traits_with_find : std::string_char_traits<CharT> {
     }
 };
 
-template<> struct bcs_char_traits_impl<char> : public char_traits_with_find<char> {};
-template<> struct bcs_char_traits_impl<wchar_t> : public char_traits_with_find<wchar_t> {};
+template<> struct bcs_char_traits_impl<char> : char_traits_with_find<char> {};
+template<> struct bcs_char_traits_impl<wchar_t> : char_traits_with_find<wchar_t> {};
 #else
-template<> struct bcs_char_traits_impl<char> : public std::char_traits<char> {};
-template<> struct bcs_char_traits_impl<wchar_t> : public std::char_traits<wchar_t> {};
+template<> struct bcs_char_traits_impl<char> : std::char_traits<char> {};
+template<> struct bcs_char_traits_impl<wchar_t> : std::char_traits<wchar_t> {};
 #endif
 
 template<typename CharT>
@@ -147,4 +147,22 @@ public:
 
 #include <boost/test/detail/enable_warnings.hpp>
 
-#endif // BOOST_TEST_UTILS_BCS_CHAR_TRAITS_HPP
+// ***************************************************************************
+//  Revision History :
+//  
+//  $Log: bcs_char_traits.hpp,v $
+//  Revision 1.3  2005/02/20 08:27:09  rogeeff
+//  This a major update for Boost.Test framework. See release docs for complete list of fixes/updates
+//
+//  Revision 1.2  2005/02/01 06:40:08  rogeeff
+//  copyright update
+//  old log entries removed
+//  minor stilistic changes
+//  depricated tools removed
+//
+//  Revision 1.1  2005/01/22 18:21:40  rogeeff
+//  moved sharable staff into utils
+//
+// ***************************************************************************
+
+#endif // BOOST_TEST_BCS_CHAR_TRAITS_HPP_071894GER

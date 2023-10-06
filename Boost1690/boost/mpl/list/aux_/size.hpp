@@ -10,9 +10,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/list/aux_/size.hpp,v $
+// $Date: 2004/09/02 15:40:59 $
+// $Revision: 1.4 $
 
 #include <boost/mpl/size_fwd.hpp>
 #include <boost/mpl/list/aux_/tag.hpp>

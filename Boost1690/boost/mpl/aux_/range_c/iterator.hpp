@@ -10,9 +10,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/aux_/range_c/iterator.hpp,v $
+// $Date: 2004/12/20 17:52:43 $
+// $Revision: 1.8 $
 
 #include <boost/mpl/iterator_tags.hpp>
 #include <boost/mpl/advance_fwd.hpp>

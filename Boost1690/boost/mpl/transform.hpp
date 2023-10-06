@@ -11,9 +11,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/transform.hpp,v $
+// $Date: 2004/12/20 17:18:17 $
+// $Revision: 1.10 $
 
 #include <boost/mpl/fold.hpp>
 #include <boost/mpl/reverse_fold.hpp>

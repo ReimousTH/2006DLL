@@ -1,4 +1,4 @@
-/* Copyright 2003-2013 Joaquin M Lopez Munoz.
+/* Copyright 2003-2005 Joaquín M López Muñoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -11,7 +11,8 @@
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <boost/detail/workaround.hpp>
-#include <boost/detail/select_type.hpp>
+#include <boost/mpl/aux_/msvc_never_true.hpp>
+#include <boost/mpl/eval_if.hpp>
 #include <boost/type_traits/is_same.hpp>
 #include <cstddef>
 #include <memory>
@@ -29,21 +30,13 @@ namespace detail{
 namespace allocator{
 
 /* partial_std_allocator_wrapper inherits the functionality of a std
- * allocator while providing a templatized ctor and other bits missing
- * in some stdlib implementation or another.
+ * allocator while providing a templatized ctor.
  */
 
 template<typename Type>
 class partial_std_allocator_wrapper:public std::allocator<Type>
 {
 public:
-  /* Oddly enough, STLport does not define std::allocator<void>::value_type
-   * when configured to work without partial template specialization.
-   * No harm in supplying the definition here unconditionally.
-   */
-
-  typedef Type value_type;
-
   partial_std_allocator_wrapper(){};
 
   template<typename Other>
@@ -115,21 +108,40 @@ struct partial_std_allocator_rebind_to
 
 /* rebind operation in all other cases */
 
+#if BOOST_WORKAROUND(BOOST_MSVC,<1300)
+/* Workaround for a problem in MSVC with dependent template typedefs
+ * when doing rebinding of allocators.
+ * Modeled after <boost/mpl/aux_/msvc_dtw.hpp> (thanks, Aleksey!)
+ */
+
+template<typename Allocator>
+struct rebinder
+{
+  template<bool> struct fake_allocator:Allocator{};
+  template<> struct fake_allocator<true>
+  {
+    template<typename Type> struct rebind{};
+  };
+
+  template<typename Type>
+  struct result:
+    fake_allocator<mpl::aux::msvc_never_true<Allocator>::value>::
+      template rebind<Type>
+  {
+  };
+};
+#else
 template<typename Allocator>
 struct rebinder
 {
   template<typename Type>
   struct result
   {
-#ifdef BOOST_NO_CXX11_ALLOCATOR
-      typedef typename Allocator::BOOST_NESTED_TEMPLATE
+      typedef typename Allocator::BOOST_NESTED_TEMPLATE 
           rebind<Type>::other other;
-#else
-      typedef typename std::allocator_traits<Allocator>::BOOST_NESTED_TEMPLATE
-          rebind_alloc<Type> other;
-#endif
   };
 };
+#endif
 
 template<typename Allocator,typename Type>
 struct compliant_allocator_rebind_to
@@ -142,12 +154,11 @@ struct compliant_allocator_rebind_to
 
 template<typename Allocator,typename Type>
 struct rebind_to:
-  boost::detail::if_true<
-    is_partial_std_allocator<Allocator>::value
-  >::template then<
+  mpl::eval_if_c<
+    is_partial_std_allocator<Allocator>::value,
     partial_std_allocator_rebind_to<Allocator,Type>,
     compliant_allocator_rebind_to<Allocator,Type>
-  >::type
+  >
 {
 };
 
@@ -159,30 +170,11 @@ void construct(void* p,const Type& t)
   new (p) Type(t);
 }
 
-#if BOOST_WORKAROUND(BOOST_MSVC,BOOST_TESTED_AT(1500))
-/* MSVC++ issues spurious warnings about unreferencend formal parameters
- * in destroy<Type> when Type is a class with trivial dtor.
- */
-
-#pragma warning(push)
-#pragma warning(disable:4100)
-#endif
-
 template<typename Type>
 void destroy(const Type* p)
 {
-
-#if BOOST_WORKAROUND(__SUNPRO_CC,BOOST_TESTED_AT(0x590))
-  const_cast<Type*>(p)->~Type();
-#else
   p->~Type();
-#endif
-
 }
-
-#if BOOST_WORKAROUND(BOOST_MSVC,BOOST_TESTED_AT(1500))
-#pragma warning(pop)
-#endif
 
 } /* namespace boost::detail::allocator */
 

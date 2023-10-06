@@ -10,9 +10,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/equal.hpp,v $
+// $Date: 2004/09/02 15:40:41 $
+// $Revision: 1.6 $
 
 #include <boost/mpl/aux_/iter_fold_if_impl.hpp>
 #include <boost/mpl/aux_/iter_apply.hpp>

@@ -15,9 +15,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/placeholders.hpp,v $
+// $Date: 2004/09/16 14:08:46 $
+// $Revision: 1.4 $
 
 
 #if !defined(BOOST_MPL_PREPROCESSING_MODE)

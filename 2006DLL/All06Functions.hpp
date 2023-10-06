@@ -23,6 +23,20 @@ FUNCTION_PTR(int,__fastcall,CellLoadSprite,0x824CE670,int* a1,int a2,int a3);
 FUNCTION_PTR(int,__fastcall,sub_824EAF9C,0x824EAF9C,int* a1,int* a2,int* a3);
 
 
+FUNCTION_PTR(int,__fastcall,CellLoadSpriteWithAnim,0x824CE670,int* XNCP_CELL,char* Scene_Name,char* Scene_Cast_Name);
+
+//XNCP SOME
+FUNCTION_PTR(int,__fastcall,sub_825CC718,0x825CC718,_DWORD **a1, int a2, int a3);
+FUNCTION_PTR(int,__fastcall,sub_82209018,0x82209018,int a1, int a2);
+FUNCTION_PTR(int,__fastcall,StoreMaturityValue,0x825C9510,int a1, double a2);
+FUNCTION_PTR(int,__fastcall,sub_825C9548,0x825C9548,int a1);
+FUNCTION_PTR(int,__fastcall,sub_824DD3B8,0x824DD3B8,int a1,int a2);
+FUNCTION_PTR(int,__fastcall,sub_825C7328,0x825C7328,_DWORD *result);
+
+FUNCTION_PTR(int,__fastcall,sub_825CEBF8,0x825CEBF8,int a1, int a2, int a3, int a4);
+FUNCTION_PTR(int,__fastcall,sub_8249FE20,0x8249FE20,_DWORD **result, int *a2);
+FUNCTION_PTR(int,__fastcall,sub_825CDFF8,0x825CDFF8,int a1, int a2);
+
 
 //Selector
 
@@ -38,6 +52,7 @@ FUNCTION_PTR(int,__fastcall,State_Base_Switcher,0x8220A938,int *a1); //Basics 06
 FUNCTION_PTR(int,__fastcall,State_Base_FallSwitcher,0x8220AAF8,int *a1); // State_Base_Switcher + some code with fall detection
 
 
+FUNCTION_PTR(int,__fastcall,StateCommonGroundFlagsListenerForStates,0x8220AAF8,int* a1,double delta);
 
 
 ///TEMPLATED FUNCTIONS 

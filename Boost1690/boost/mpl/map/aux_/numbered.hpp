@@ -11,9 +11,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/map/aux_/numbered.hpp,v $
+// $Date: 2004/12/14 14:05:32 $
+// $Revision: 1.4 $
 
 #else
 

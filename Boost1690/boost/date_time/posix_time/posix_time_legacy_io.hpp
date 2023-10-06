@@ -4,9 +4,9 @@
 /* Copyright (c) 2002-2004 CrystalClear Software, Inc.
  * Use, modification and distribution is subject to the 
  * Boost Software License, Version 1.0. (See accompanying
- * file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+ * file LICENSE-1.0 or http://www.boost.org/LICENSE-1.0)
  * Author: Jeff Garland, Bart Garst 
- * $Date$
+ * $Date: 2005/05/09 03:37:09 $
  */
 
 /*! @file posix_time_pre133_operators.hpp
@@ -80,7 +80,7 @@ namespace posix_time {
     // any marker (such as '\0').
     typename std::basic_string<charT>::iterator e = inp_s.end();
     while(b != e){
-      out_ss << is.narrow(*b, 0);
+      out_ss << out_ss.narrow(*b, 0);
       ++b;
     }
 

@@ -10,9 +10,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/lambda_fwd.hpp,v $
+// $Date: 2004/09/02 15:40:41 $
+// $Revision: 1.7 $
 
 #include <boost/mpl/void_fwd.hpp>
 #include <boost/mpl/aux_/na.hpp>

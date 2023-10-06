@@ -10,9 +10,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/vector/aux_/at.hpp,v $
+// $Date: 2004/12/20 19:35:33 $
+// $Revision: 1.6 $
 
 #include <boost/mpl/at_fwd.hpp>
 #include <boost/mpl/vector/aux_/tag.hpp>

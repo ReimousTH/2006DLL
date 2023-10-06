@@ -10,9 +10,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/aux_/adl_barrier.hpp,v $
+// $Date: 2004/09/28 13:56:59 $
+// $Revision: 1.4 $
 
 #include <boost/mpl/aux_/config/adl.hpp>
 #include <boost/mpl/aux_/config/gcc.hpp>

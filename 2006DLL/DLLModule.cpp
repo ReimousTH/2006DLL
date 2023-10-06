@@ -77,13 +77,17 @@ extern "C" void OnDLLStart(){
 		}
 	}
 
+	WhiteGameRestored::GlobalInstall();
+
+
+	
 	ShowXenonMessage(L"LoadedDLLPatches",Loaded.c_str());
 	Loaded.clear();
 
 
 	//TestProject::GlobalInstall();
 
-//	ImGUI::GlobalInstall();
+	ImGUI::GlobalInstall();
 	//ChainJumpTest::GlobalInstall();
 
 
@@ -92,9 +96,18 @@ new SonicTeam::Player::State::CommonContext();
 
 new SonicTeam::Combo::AttackManager();
 	
-	
 
-	
+new SonicTeam::Player::SonicGauge();
+
+SonicTeam::Player::State::Machine2* t = new SonicTeam::Player::State::Machine2();
+
+//SonicTeam::Player::State::CommonObject* v = new SonicTeam::Player::State::CommonObject((SonicTeam::Player::State::IMachine*)t);
+
+
+
+
+t->GetMashineContext();
+
 
 
 

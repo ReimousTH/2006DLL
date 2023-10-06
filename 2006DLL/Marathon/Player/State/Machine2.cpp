@@ -1,0 +1,59 @@
+#include "Machine2.h"
+
+using namespace SonicTeam::Player::State;
+
+Machine2::Machine2(void):IMachine()
+{
+
+}
+
+Machine2::~Machine2(void)
+{
+
+}
+
+void Machine2::OnMashineTick(float)
+{
+
+}
+
+
+unsigned int Machine2::ChangeMashineState(int)
+{
+return 0;
+}
+
+unsigned int Machine2::AlternativeChangeMashineState(int)
+{
+
+	return 0;
+}
+
+void Machine2::ResetStateFlagsA()
+{
+
+}
+
+void Machine2::ResetStateFlagsB()
+{
+
+}
+
+unsigned int Machine2::CompleteChangeMashineState(int)
+{
+
+	return 0;
+}
+
+unsigned int Machine2::GetCurrentMashineStateID()
+{
+ return 0;
+}
+
+boost::shared_ptr<SonicTeam::Player::State::IContext> Machine2::GetMashineContext()
+{
+
+	
+	return this->MashineContext;
+	
+}

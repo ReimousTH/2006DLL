@@ -1,5 +1,4 @@
-// (C) Copyright 2008 CodeRage, LLC (turkanis at coderage dot com)
-// (C) Copyright 2003-2007 Jonathan Turkanis
+// (C) Copyright Jonathan Turkanis 2003.
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt.)
 
@@ -37,19 +36,19 @@
 #ifndef BOOST_IOSTREAMS_SYMMETRIC_FILTER_HPP_INCLUDED
 #define BOOST_IOSTREAMS_SYMMETRIC_FILTER_HPP_INCLUDED
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
 # pragma once
 #endif
 
-#include <boost/assert.hpp>
-#include <memory>                               // allocator.
+#include <cassert>
+#include <memory>                               // allocator, auto_ptr.
 #include <boost/config.hpp>                     // BOOST_DEDUCED_TYPENAME.
 #include <boost/iostreams/char_traits.hpp>
 #include <boost/iostreams/constants.hpp>        // buffer size.
 #include <boost/iostreams/detail/buffer.hpp>
 #include <boost/iostreams/detail/char_traits.hpp>
+#include <boost/iostreams/detail/closer.hpp>
 #include <boost/iostreams/detail/config/limits.hpp>
-#include <boost/iostreams/detail/ios.hpp>  // streamsize.
 #include <boost/iostreams/detail/template_params.hpp>
 #include <boost/iostreams/traits.hpp>
 #include <boost/iostreams/operations.hpp>       // read, write.
@@ -72,9 +71,8 @@ template< typename SymmetricFilter,
               > >
 class symmetric_filter {
 public:
-    typedef typename char_type_of<SymmetricFilter>::type      char_type;
-    typedef BOOST_IOSTREAMS_CHAR_TRAITS(char_type)            traits_type;
-    typedef std::basic_string<char_type, traits_type, Alloc>  string_type;
+    typedef typename char_type_of<SymmetricFilter>::type  char_type;
+    typedef std::basic_string<char_type>                  string_type;
     struct category
         : dual_use,
           filter_tag,
@@ -86,11 +84,11 @@ public:
     #define BOOST_PP_LOCAL_MACRO(n) \
         BOOST_IOSTREAMS_TEMPLATE_PARAMS(n, T) \
         explicit symmetric_filter( \
-              std::streamsize buffer_size BOOST_PP_COMMA_IF(n) \
+              int buffer_size BOOST_PP_COMMA_IF(n) \
               BOOST_PP_ENUM_BINARY_PARAMS(n, const T, &t) ) \
             : pimpl_(new impl(buffer_size BOOST_PP_COMMA_IF(n) \
                      BOOST_PP_ENUM_PARAMS(n, t))) \
-            { BOOST_ASSERT(buffer_size > 0); } \
+            { } \
         /**/
     #define BOOST_PP_LOCAL_LIMITS (0, BOOST_IOSTREAMS_MAX_FORWARDING_ARITY)
     #include BOOST_PP_LOCAL_ITERATE()
@@ -118,17 +116,15 @@ public:
                     !filter().filter(next, buf.eptr(), next_s, end_s, flush);
                 buf.ptr() = buf.data() + (next - buf.data());
                 if (done)
-                    return detail::check_eof(
-                               static_cast<std::streamsize>(next_s - s)
-                           );
+                    return detail::check_eof(static_cast<streamsize>(next_s - s));
             }
 
             // If no more characters are available without blocking, or
             // if read request has been satisfied, return.
-            if ( (status == f_would_block && buf.ptr() == buf.eptr()) ||
+            if ( status == f_would_block && buf.ptr() == buf.eptr() ||
                  next_s == end_s )
             {
-                return static_cast<std::streamsize>(next_s - s);
+                return static_cast<streamsize>(next_s - s);
             }
 
             // Fill buffer.
@@ -148,41 +144,34 @@ public:
         for (next_s = s, end_s = s + n; next_s != end_s; ) {
             if (buf.ptr() == buf.eptr() && !flush(snk))
                 break;
-            if(!filter().filter(next_s, end_s, buf.ptr(), buf.eptr(), false)) {
-                flush(snk);
-                break;
-            }
+            filter().filter(next_s, end_s, buf.ptr(), buf.eptr(), false);
         }
         return static_cast<std::streamsize>(next_s - s);
     }
 
-    template<typename Sink>
-    void close(Sink& snk, BOOST_IOS::openmode mode)
-    {
-        if (mode == BOOST_IOS::out) {
+    // Give detail::closer<> permission to call close().
+    typedef symmetric_filter<SymmetricFilter, Alloc> self;
+    friend struct detail::closer<self>;
 
-            if (!(state() & f_write))
-                begin_write();
+    template<typename Sink>
+    void close(Sink& snk, BOOST_IOS::openmode which)
+    {
+        using namespace std;
+        if ((state() & f_read) && (which & BOOST_IOS::in))
+            close();
+        if ((state() & f_write) && (which & BOOST_IOS::out)) {
 
             // Repeatedly invoke filter() with no input.
-            try {
-                buffer_type&     buf = pimpl_->buf_;
-                char_type        dummy;
-                const char_type* end = &dummy;
-                bool             again = true;
-                while (again) {
-                    if (buf.ptr() != buf.eptr())
-                        again = filter().filter( end, end, buf.ptr(),
-                                                 buf.eptr(), true );
-                    flush(snk);
-                }
-            } catch (...) {
-                try { close_impl(); } catch (...) { }
-                throw;
+            detail::closer<self>  closer(*this);
+            buffer_type&          buf = pimpl_->buf_;
+            char                  dummy;
+            const char*           end = &dummy;
+            bool                  again = true;
+            while (again) {
+                if (buf.ptr() != buf.eptr())
+                    again = filter().filter(end, end, buf.ptr(), buf.eptr(), true);
+                flush(snk);
             }
-            close_impl();
-        } else {
-            close_impl();
         }
     }
     SymmetricFilter& filter() { return *pimpl_; }
@@ -209,7 +198,7 @@ private:
             return f_eof;
         }
         buf().set(0, amt);
-        return amt != 0 ? f_good : f_would_block;
+        return amt == buf().size() ? f_good : f_would_block;
     }
 
     // Attempts to write the contents of the buffer the given Sink.
@@ -225,9 +214,11 @@ private:
     template<typename Sink>
     bool flush(Sink& snk, mpl::true_)
     {
-        std::streamsize amt =
-            static_cast<std::streamsize>(buf().ptr() - buf().data());
-        std::streamsize result =
+        using std::streamsize;
+        typedef char_traits<char_type> traits_type;
+        streamsize amt =
+            static_cast<streamsize>(buf().ptr() - buf().data());
+        streamsize result =
             boost::iostreams::write(snk, buf().data(), amt);
         if (result < amt && result > 0)
             traits_type::move(buf().data(), buf().data() + result, amt - result);
@@ -236,11 +227,11 @@ private:
     }
 
     template<typename Sink>
-    bool flush(Sink&, mpl::false_) { return true;}
+    bool flush(Sink& snk, mpl::false_) { return true;}
 
-    void close_impl();
+    void close();
 
-    enum flag_type {
+    enum {
         f_read   = 1,
         f_write  = f_read << 1,
         f_eof    = f_write << 1,
@@ -253,7 +244,7 @@ private:
     // Expands to a sequence of ctors which forward to SymmetricFilter.
     #define BOOST_PP_LOCAL_MACRO(n) \
         BOOST_IOSTREAMS_TEMPLATE_PARAMS(n, T) \
-        impl( std::streamsize buffer_size BOOST_PP_COMMA_IF(n) \
+        impl( int buffer_size BOOST_PP_COMMA_IF(n) \
               BOOST_PP_ENUM_BINARY_PARAMS(n, const T, &t) ) \
             : SymmetricFilter(BOOST_PP_ENUM_PARAMS(n, t)), \
               buf_(buffer_size), state_(0) \
@@ -276,7 +267,7 @@ BOOST_IOSTREAMS_PIPABLE(symmetric_filter, 2)
 template<typename SymmetricFilter, typename Alloc>
 void symmetric_filter<SymmetricFilter, Alloc>::begin_read()
 {
-    BOOST_ASSERT(!(state() & f_write));
+    assert(!(state() & f_write));
     state() |= f_read;
     buf().set(0, 0);
 }
@@ -284,13 +275,13 @@ void symmetric_filter<SymmetricFilter, Alloc>::begin_read()
 template<typename SymmetricFilter, typename Alloc>
 void symmetric_filter<SymmetricFilter, Alloc>::begin_write()
 {
-    BOOST_ASSERT(!(state() & f_read));
+    assert(!(state() & f_read));
     state() |= f_write;
     buf().set(0, buf().size());
 }
 
 template<typename SymmetricFilter, typename Alloc>
-void symmetric_filter<SymmetricFilter, Alloc>::close_impl()
+void symmetric_filter<SymmetricFilter, Alloc>::close()
 {
     state() = 0;
     buf().set(0, 0);

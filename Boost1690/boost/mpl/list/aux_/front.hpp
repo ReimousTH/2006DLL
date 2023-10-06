@@ -10,9 +10,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/list/aux_/front.hpp,v $
+// $Date: 2004/09/02 15:40:58 $
+// $Revision: 1.4 $
 
 #include <boost/mpl/front_fwd.hpp>
 #include <boost/mpl/list/aux_/tag.hpp>

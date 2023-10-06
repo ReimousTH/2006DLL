@@ -2,7 +2,7 @@
 #define BOOST_ARCHIVE_POLYMORPHIC_XML_WIARCHIVE_HPP
 
 // MS compatible compilers support #pragma once
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
 # pragma once
 #endif
 
@@ -22,26 +22,21 @@
 #else
 
 #include <boost/archive/xml_wiarchive.hpp>
-#include <boost/archive/detail/polymorphic_iarchive_route.hpp>
+#include <boost/archive/detail/polymorphic_iarchive_impl.hpp>
 
 namespace boost { 
 namespace archive {
 
-class BOOST_SYMBOL_VISIBLE polymorphic_xml_wiarchive : 
-    public detail::polymorphic_iarchive_route<xml_wiarchive>
-{
-public:
-    polymorphic_xml_wiarchive(std::wistream & is, unsigned int flags = 0) :
-        detail::polymorphic_iarchive_route<xml_wiarchive>(is, flags)
-    {}
-    ~polymorphic_xml_wiarchive(){}
-};
+typedef detail::polymorphic_iarchive_impl<
+        xml_wiarchive_impl<xml_wiarchive> 
+> polymorphic_xml_wiarchive;
 
 } // namespace archive
 } // namespace boost
 
-// required by export
-BOOST_SERIALIZATION_REGISTER_ARCHIVE(
+// required by smart_cast for compilers not implementing 
+// partial template specialization
+BOOST_BROKEN_COMPILER_TYPE_TRAITS_SPECIALIZATION(
     boost::archive::polymorphic_xml_wiarchive
 )
 

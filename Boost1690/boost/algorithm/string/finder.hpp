@@ -1,19 +1,18 @@
 //  Boost string_algo library finder.hpp header file  ---------------------------//
 
-//  Copyright Pavol Droba 2002-2006.
-//
-// Distributed under the Boost Software License, Version 1.0.
-//    (See accompanying file LICENSE_1_0.txt or copy at
-//          http://www.boost.org/LICENSE_1_0.txt)
+//  Copyright Pavol Droba 2002-2003. Use, modification and
+//  distribution is subject to the Boost Software License, Version
+//  1.0. (See accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt)
 
-//  See http://www.boost.org/ for updates, documentation, and revision history.
+//  See http://www.boost.org for updates, documentation, and revision history.
 
 #ifndef BOOST_STRING_FINDER_HPP
 #define BOOST_STRING_FINDER_HPP
 
 #include <boost/algorithm/string/config.hpp>
 
-#include <boost/range/iterator_range_core.hpp>
+#include <boost/range/iterator_range.hpp>
 #include <boost/range/begin.hpp>
 #include <boost/range/end.hpp>
 #include <boost/range/iterator.hpp>
@@ -43,37 +42,38 @@ namespace boost {
             The result is given as an \c iterator_range delimiting the match.
 
             \param Search A substring to be searched for.
+            \param Comp An element comparison predicate
             \return An instance of the \c first_finder object
         */
-        template<typename RangeT>
+        template<typename ContainerT>
         inline detail::first_finderF<
-            BOOST_STRING_TYPENAME range_const_iterator<RangeT>::type,
+            BOOST_STRING_TYPENAME range_const_iterator<ContainerT>::type,
             is_equal>
-        first_finder( const RangeT& Search )
+        first_finder( const ContainerT& Search )
         {
             return 
                 detail::first_finderF<
                     BOOST_STRING_TYPENAME 
-                        range_const_iterator<RangeT>::type,
-                        is_equal>( ::boost::as_literal(Search), is_equal() ) ;
+                        range_const_iterator<ContainerT>::type,
+                    is_equal>( Search, is_equal() ) ;
         }
 
         //! "First" finder
         /*!
             \overload
         */
-        template<typename RangeT,typename PredicateT>
+        template<typename ContainerT,typename PredicateT>
         inline detail::first_finderF<
-            BOOST_STRING_TYPENAME range_const_iterator<RangeT>::type,
+            BOOST_STRING_TYPENAME range_const_iterator<ContainerT>::type,
             PredicateT>
         first_finder( 
-            const RangeT& Search, PredicateT Comp )
+            const ContainerT& Search, PredicateT Comp )
         {
             return 
                 detail::first_finderF<
                     BOOST_STRING_TYPENAME 
-                        range_const_iterator<RangeT>::type,
-                    PredicateT>( ::boost::as_literal(Search), Comp );
+                        range_const_iterator<ContainerT>::type,
+                    PredicateT>( Search, Comp );
         }
 
         //! "Last" finder
@@ -83,35 +83,36 @@ namespace boost {
             The result is given as an \c iterator_range delimiting the match.
 
             \param Search A substring to be searched for.
+            \param Comp An element comparison predicate
             \return An instance of the \c last_finder object
         */
-        template<typename RangeT>
+        template<typename ContainerT>
         inline detail::last_finderF<
-            BOOST_STRING_TYPENAME range_const_iterator<RangeT>::type,
+            BOOST_STRING_TYPENAME range_const_iterator<ContainerT>::type,
             is_equal>
-        last_finder( const RangeT& Search )
+        last_finder( const ContainerT& Search )
         {
             return 
                 detail::last_finderF<
                     BOOST_STRING_TYPENAME 
-                        range_const_iterator<RangeT>::type,
-                    is_equal>( ::boost::as_literal(Search), is_equal() );
+                        range_const_iterator<ContainerT>::type,
+                    is_equal>( Search, is_equal() );
         }
         //! "Last" finder
         /*!
             \overload
         */
-        template<typename RangeT, typename PredicateT>
+        template<typename ContainerT, typename PredicateT>
         inline detail::last_finderF<
-            BOOST_STRING_TYPENAME range_const_iterator<RangeT>::type,
+            BOOST_STRING_TYPENAME range_const_iterator<ContainerT>::type,
             PredicateT>
-        last_finder( const RangeT& Search, PredicateT Comp )
+        last_finder( const ContainerT& Search, PredicateT Comp )
         {
             return 
                 detail::last_finderF<
                     BOOST_STRING_TYPENAME 
-                        range_const_iterator<RangeT>::type,
-                    PredicateT>( ::boost::as_literal(Search), Comp ) ;
+                        range_const_iterator<ContainerT>::type,
+                    PredicateT>( Search, Comp ) ;
         }
 
         //! "Nth" finder
@@ -122,40 +123,41 @@ namespace boost {
 
             \param Search A substring to be searched for.
             \param Nth An index of the match to be find
+            \param Comp An element comparison predicate
             \return An instance of the \c nth_finder object
         */
-        template<typename RangeT>
+        template<typename ContainerT>
         inline detail::nth_finderF<
-            BOOST_STRING_TYPENAME range_const_iterator<RangeT>::type,
+            BOOST_STRING_TYPENAME range_const_iterator<ContainerT>::type,
             is_equal>
         nth_finder( 
-            const RangeT& Search, 
-            int Nth)
+            const ContainerT& Search, 
+            unsigned int Nth)
         {
             return 
                 detail::nth_finderF<
                     BOOST_STRING_TYPENAME 
-                        range_const_iterator<RangeT>::type,
-                    is_equal>( ::boost::as_literal(Search), Nth, is_equal() ) ;
+                        range_const_iterator<ContainerT>::type,
+                    is_equal>( Search, Nth, is_equal() ) ;
         }
         //! "Nth" finder
         /*!
             \overload
         */
-        template<typename RangeT, typename PredicateT>
+        template<typename ContainerT, typename PredicateT>
         inline detail::nth_finderF<
-            BOOST_STRING_TYPENAME range_const_iterator<RangeT>::type,
+            BOOST_STRING_TYPENAME range_const_iterator<ContainerT>::type,
             PredicateT>
         nth_finder( 
-            const RangeT& Search, 
-            int Nth, 
+            const ContainerT& Search, 
+            unsigned int Nth, 
             PredicateT Comp )
         {
             return 
                 detail::nth_finderF<
                     BOOST_STRING_TYPENAME 
-                        range_const_iterator<RangeT>::type,
-                    PredicateT>( ::boost::as_literal(Search), Nth, Comp );
+                        range_const_iterator<ContainerT>::type,
+                    PredicateT>( Search, Nth, Comp );
         }
 
         //! "Head" finder
@@ -170,7 +172,7 @@ namespace boost {
             \return An instance of the \c head_finder object
         */
         inline detail::head_finderF
-        head_finder( int N )
+        head_finder( unsigned int N )
         {
             return detail::head_finderF(N);
         }
@@ -187,7 +189,7 @@ namespace boost {
             \return An instance of the \c tail_finder object
         */
         inline detail::tail_finderF
-        tail_finder( int N )
+        tail_finder( unsigned int N )
         {
             return detail::tail_finderF(N);
         }
@@ -227,6 +229,7 @@ namespace boost {
 
             \param Begin Beginning of the range
             \param End End of the range
+            \param Range The range.
             \return An instance of the \c range_finger object
         */
         template< typename ForwardIteratorT >

@@ -4,22 +4,15 @@
 /* Copyright (c) 2004-2005 CrystalClear Software, Inc.
  * Use, modification and distribution is subject to the
  * Boost Software License, Version 1.0. (See accompanying
- * file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+ * file LICENSE-1.0 or http://www.boost.org/LICENSE-1.0)
  * Author: Jeff Garland, Bart Garst
- * $Date$
+ * $Date: 2005/06/28 13:11:45 $
  */
 
-#include <locale>
+#include "boost/date_time/date_facet.hpp"
+#include "boost/io/ios_state.hpp"
 #include <iostream>
-#include <iterator> // i/ostreambuf_iterator
-#include <boost/io/ios_state.hpp>
-#include <boost/date_time/date_facet.hpp>
-#include <boost/date_time/period_parser.hpp>
-#include <boost/date_time/period_formatter.hpp>
-#include <boost/date_time/special_values_parser.hpp>
-#include <boost/date_time/special_values_formatter.hpp>
-#include <boost/date_time/gregorian/gregorian_types.hpp>
-#include <boost/date_time/gregorian/conversion.hpp> // to_tm will be needed in the facets
+#include <locale>
 
 namespace boost {
 namespace gregorian {
@@ -48,9 +41,9 @@ namespace gregorian {
   operator<<(std::basic_ostream<CharT, TraitsT>& os, const boost::gregorian::date& d) {
     boost::io::ios_flags_saver iflags(os);
     typedef boost::date_time::date_facet<date, CharT> custom_date_facet;
-    std::ostreambuf_iterator<CharT> output_itr(os);
+    std::ostreambuf_iterator<CharT> oitr(os);
     if (std::has_facet<custom_date_facet>(os.getloc()))
-      std::use_facet<custom_date_facet>(os.getloc()).put(output_itr, os, os.fill(), d);
+      std::use_facet<custom_date_facet>(os.getloc()).put(oitr, os, os.fill(), d);
     else {
       //instantiate a custom facet for dealing with dates since the user
       //has not put one in the stream so far.  This is for efficiency 
@@ -59,10 +52,11 @@ namespace gregorian {
       //if the user imbues at some later point.  With the default settings
       //for the facet the resulting format will be the same as the
       //std::time_facet settings.
+      std::ostreambuf_iterator<CharT> oitr(os);
       custom_date_facet* f = new custom_date_facet();
       std::locale l = std::locale(os.getloc(), f);
       os.imbue(l);
-      f->put(output_itr, os, os.fill(), d);
+      f->put(oitr, os, os.fill(), d);
     }
     return os;
   }
@@ -77,14 +71,14 @@ namespace gregorian {
     typename std::basic_istream<CharT, Traits>::sentry strm_sentry(is, false); 
     if (strm_sentry) {
       try {
-        typedef typename date_time::date_input_facet<date, CharT> date_input_facet_local;
+        typedef typename date_time::date_input_facet<date, CharT> date_input_facet;
         
         std::istreambuf_iterator<CharT,Traits> sit(is), str_end;
-        if(std::has_facet<date_input_facet_local>(is.getloc())) {
-          std::use_facet<date_input_facet_local>(is.getloc()).get(sit, str_end, is, d);
+        if(std::has_facet<date_input_facet>(is.getloc())) {
+          std::use_facet<date_input_facet>(is.getloc()).get(sit, str_end, is, d);
         }
         else {
-          date_input_facet_local* f = new date_input_facet_local();
+          date_input_facet* f = new date_input_facet();
           std::locale l = std::locale(is.getloc(), f);
           is.imbue(l);
           f->get(sit, str_end, is, d);
@@ -115,14 +109,15 @@ namespace gregorian {
   operator<<(std::basic_ostream<CharT, TraitsT>& os, const boost::gregorian::date_duration& dd) {
     boost::io::ios_flags_saver iflags(os);
     typedef boost::date_time::date_facet<date, CharT> custom_date_facet;
-    std::ostreambuf_iterator<CharT> output_itr(os);
+    std::ostreambuf_iterator<CharT> oitr(os);
     if (std::has_facet<custom_date_facet>(os.getloc()))
-      std::use_facet<custom_date_facet>(os.getloc()).put(output_itr, os, os.fill(), dd);
+      std::use_facet<custom_date_facet>(os.getloc()).put(oitr, os, os.fill(), dd);
     else {
+      std::ostreambuf_iterator<CharT> oitr(os);
       custom_date_facet* f = new custom_date_facet();
       std::locale l = std::locale(os.getloc(), f);
       os.imbue(l);
-      f->put(output_itr, os, os.fill(), dd);
+      f->put(oitr, os, os.fill(), dd);
 
     }
     return os;
@@ -138,14 +133,14 @@ namespace gregorian {
     typename std::basic_istream<CharT, Traits>::sentry strm_sentry(is, false); 
     if (strm_sentry) {
       try {
-        typedef typename date_time::date_input_facet<date, CharT> date_input_facet_local;
+        typedef typename date_time::date_input_facet<date, CharT> date_input_facet;
         
         std::istreambuf_iterator<CharT,Traits> sit(is), str_end;
-        if(std::has_facet<date_input_facet_local>(is.getloc())) {
-          std::use_facet<date_input_facet_local>(is.getloc()).get(sit, str_end, is, dd);
+        if(std::has_facet<date_input_facet>(is.getloc())) {
+          std::use_facet<date_input_facet>(is.getloc()).get(sit, str_end, is, dd);
         }
         else {
-          date_input_facet_local* f = new date_input_facet_local();
+          date_input_facet* f = new date_input_facet();
           std::locale l = std::locale(is.getloc(), f);
           is.imbue(l);
           f->get(sit, str_end, is, dd);
@@ -172,9 +167,9 @@ namespace gregorian {
   operator<<(std::basic_ostream<CharT, TraitsT>& os, const boost::gregorian::date_period& dp) {
     boost::io::ios_flags_saver iflags(os);
     typedef boost::date_time::date_facet<date, CharT> custom_date_facet;
-    std::ostreambuf_iterator<CharT> output_itr(os);
+    std::ostreambuf_iterator<CharT> oitr(os);
     if (std::has_facet<custom_date_facet>(os.getloc()))
-      std::use_facet<custom_date_facet>(os.getloc()).put(output_itr, os, os.fill(), dp);
+      std::use_facet<custom_date_facet>(os.getloc()).put(oitr, os, os.fill(), dp);
     else {
       //instantiate a custom facet for dealing with date periods since the user
       //has not put one in the stream so far.  This is for efficiency 
@@ -183,10 +178,11 @@ namespace gregorian {
       //if the user imbues at some later point.  With the default settings
       //for the facet the resulting format will be the same as the
       //std::time_facet settings.
+      std::ostreambuf_iterator<CharT> oitr(os);
       custom_date_facet* f = new custom_date_facet();
       std::locale l = std::locale(os.getloc(), f);
       os.imbue(l);
-      f->put(output_itr, os, os.fill(), dp);
+      f->put(oitr, os, os.fill(), dp);
 
     }
     return os;
@@ -202,14 +198,14 @@ namespace gregorian {
     typename std::basic_istream<CharT, Traits>::sentry strm_sentry(is, false); 
     if (strm_sentry) {
       try {
-        typedef typename date_time::date_input_facet<date, CharT> date_input_facet_local;
+        typedef typename date_time::date_input_facet<date, CharT> date_input_facet;
 
         std::istreambuf_iterator<CharT,Traits> sit(is), str_end;
-        if(std::has_facet<date_input_facet_local>(is.getloc())) {
-          std::use_facet<date_input_facet_local>(is.getloc()).get(sit, str_end, is, dp);
+        if(std::has_facet<date_input_facet>(is.getloc())) {
+          std::use_facet<date_input_facet>(is.getloc()).get(sit, str_end, is, dp);
         }
         else {
-          date_input_facet_local* f = new date_input_facet_local();
+          date_input_facet* f = new date_input_facet();
           std::locale l = std::locale(is.getloc(), f);
           is.imbue(l);
           f->get(sit, str_end, is, dp);
@@ -238,15 +234,16 @@ namespace gregorian {
   operator<<(std::basic_ostream<CharT, TraitsT>& os, const boost::gregorian::greg_month& gm) {
     boost::io::ios_flags_saver iflags(os);
     typedef boost::date_time::date_facet<date, CharT> custom_date_facet;
-    std::ostreambuf_iterator<CharT> output_itr(os);
+    std::ostreambuf_iterator<CharT> oitr(os);
     if (std::has_facet<custom_date_facet>(os.getloc()))
-      std::use_facet<custom_date_facet>(os.getloc()).put(output_itr, os, os.fill(), gm);
+      std::use_facet<custom_date_facet>(os.getloc()).put(oitr, os, os.fill(), gm);
     else {
+      std::ostreambuf_iterator<CharT> oitr(os);
       custom_date_facet* f = new custom_date_facet();//-> 10/1074199752/32 because year & day not initialized in put(...)
       //custom_date_facet* f = new custom_date_facet("%B");
       std::locale l = std::locale(os.getloc(), f);
       os.imbue(l);
-      f->put(output_itr, os, os.fill(), gm);
+      f->put(oitr, os, os.fill(), gm);
     }
     return os;
   }
@@ -261,14 +258,14 @@ namespace gregorian {
     typename std::basic_istream<CharT, Traits>::sentry strm_sentry(is, false); 
     if (strm_sentry) {
       try {
-        typedef typename date_time::date_input_facet<date, CharT> date_input_facet_local;
+        typedef typename date_time::date_input_facet<date, CharT> date_input_facet;
 
         std::istreambuf_iterator<CharT,Traits> sit(is), str_end;
-        if(std::has_facet<date_input_facet_local>(is.getloc())) {
-          std::use_facet<date_input_facet_local>(is.getloc()).get(sit, str_end, is, m);
+        if(std::has_facet<date_input_facet>(is.getloc())) {
+          std::use_facet<date_input_facet>(is.getloc()).get(sit, str_end, is, m);
         }
         else {
-          date_input_facet_local* f = new date_input_facet_local();
+          date_input_facet* f = new date_input_facet();
           std::locale l = std::locale(is.getloc(), f);
           is.imbue(l);
           f->get(sit, str_end, is, m);
@@ -296,14 +293,15 @@ namespace gregorian {
   operator<<(std::basic_ostream<CharT, TraitsT>& os, const boost::gregorian::greg_weekday& gw) {
     boost::io::ios_flags_saver iflags(os);
     typedef boost::date_time::date_facet<date, CharT> custom_date_facet;
-    std::ostreambuf_iterator<CharT> output_itr(os);
+    std::ostreambuf_iterator<CharT> oitr(os);
     if (std::has_facet<custom_date_facet>(os.getloc()))
-      std::use_facet<custom_date_facet>(os.getloc()).put(output_itr, os, os.fill(), gw);
+      std::use_facet<custom_date_facet>(os.getloc()).put(oitr, os, os.fill(), gw);
     else {
+      std::ostreambuf_iterator<CharT> oitr(os);
       custom_date_facet* f = new custom_date_facet();
       std::locale l = std::locale(os.getloc(), f);
       os.imbue(l);
-      f->put(output_itr, os, os.fill(), gw);
+      f->put(oitr, os, os.fill(), gw);
     }
     return os;
   }
@@ -318,14 +316,14 @@ namespace gregorian {
     typename std::basic_istream<CharT, Traits>::sentry strm_sentry(is, false); 
     if (strm_sentry) {
       try {
-        typedef typename date_time::date_input_facet<date, CharT> date_input_facet_local;
+        typedef typename date_time::date_input_facet<date, CharT> date_input_facet;
 
         std::istreambuf_iterator<CharT,Traits> sit(is), str_end;
-        if(std::has_facet<date_input_facet_local>(is.getloc())) {
-          std::use_facet<date_input_facet_local>(is.getloc()).get(sit, str_end, is, wd);
+        if(std::has_facet<date_input_facet>(is.getloc())) {
+          std::use_facet<date_input_facet>(is.getloc()).get(sit, str_end, is, wd);
         }
         else {
-          date_input_facet_local* f = new date_input_facet_local();
+          date_input_facet* f = new date_input_facet();
           std::locale l = std::locale(is.getloc(), f);
           is.imbue(l);
           f->get(sit, str_end, is, wd);
@@ -359,14 +357,14 @@ namespace gregorian {
     typename std::basic_istream<CharT, Traits>::sentry strm_sentry(is, false); 
     if (strm_sentry) {
       try {
-        typedef typename date_time::date_input_facet<date, CharT> date_input_facet_local;
+        typedef typename date_time::date_input_facet<date, CharT> date_input_facet;
 
         std::istreambuf_iterator<CharT,Traits> sit(is), str_end;
-        if(std::has_facet<date_input_facet_local>(is.getloc())) {
-          std::use_facet<date_input_facet_local>(is.getloc()).get(sit, str_end, is, gd);
+        if(std::has_facet<date_input_facet>(is.getloc())) {
+          std::use_facet<date_input_facet>(is.getloc()).get(sit, str_end, is, gd);
         }
         else {
-          date_input_facet_local* f = new date_input_facet_local();
+          date_input_facet* f = new date_input_facet();
           std::locale l = std::locale(is.getloc(), f);
           is.imbue(l);
           f->get(sit, str_end, is, gd);
@@ -400,14 +398,14 @@ namespace gregorian {
     typename std::basic_istream<CharT, Traits>::sentry strm_sentry(is, false); 
     if (strm_sentry) {
       try {
-        typedef typename date_time::date_input_facet<date, CharT> date_input_facet_local;
+        typedef typename date_time::date_input_facet<date, CharT> date_input_facet;
 
         std::istreambuf_iterator<CharT,Traits> sit(is), str_end;
-        if(std::has_facet<date_input_facet_local>(is.getloc())) {
-          std::use_facet<date_input_facet_local>(is.getloc()).get(sit, str_end, is, gy);
+        if(std::has_facet<date_input_facet>(is.getloc())) {
+          std::use_facet<date_input_facet>(is.getloc()).get(sit, str_end, is, gy);
         }
         else {
-          date_input_facet_local* f = new date_input_facet_local();
+          date_input_facet* f = new date_input_facet();
           std::locale l = std::locale(is.getloc(), f);
           is.imbue(l);
           f->get(sit, str_end, is, gy);
@@ -436,14 +434,15 @@ namespace gregorian {
   operator<<(std::basic_ostream<CharT, TraitsT>& os, const boost::gregorian::partial_date& pd) {
     boost::io::ios_flags_saver iflags(os);
     typedef boost::date_time::date_facet<date, CharT> custom_date_facet;
-    std::ostreambuf_iterator<CharT> output_itr(os);
+    std::ostreambuf_iterator<CharT> oitr(os);
     if (std::has_facet<custom_date_facet>(os.getloc()))
-      std::use_facet<custom_date_facet>(os.getloc()).put(output_itr, os, os.fill(), pd);
+      std::use_facet<custom_date_facet>(os.getloc()).put(oitr, os, os.fill(), pd);
     else {
+      std::ostreambuf_iterator<CharT> oitr(os);
       custom_date_facet* f = new custom_date_facet();
       std::locale l = std::locale(os.getloc(), f);
       os.imbue(l);
-      f->put(output_itr, os, os.fill(), pd);
+      f->put(oitr, os, os.fill(), pd);
     }
     return os;
   }
@@ -458,14 +457,14 @@ namespace gregorian {
     typename std::basic_istream<CharT, Traits>::sentry strm_sentry(is, false); 
     if (strm_sentry) {
       try {
-        typedef typename date_time::date_input_facet<date, CharT> date_input_facet_local;
+        typedef typename date_time::date_input_facet<date, CharT> date_input_facet;
 
         std::istreambuf_iterator<CharT,Traits> sit(is), str_end;
-        if(std::has_facet<date_input_facet_local>(is.getloc())) {
-          std::use_facet<date_input_facet_local>(is.getloc()).get(sit, str_end, is, pd);
+        if(std::has_facet<date_input_facet>(is.getloc())) {
+          std::use_facet<date_input_facet>(is.getloc()).get(sit, str_end, is, pd);
         }
         else {
-          date_input_facet_local* f = new date_input_facet_local();
+          date_input_facet* f = new date_input_facet();
           std::locale l = std::locale(is.getloc(), f);
           is.imbue(l);
           f->get(sit, str_end, is, pd);
@@ -492,14 +491,15 @@ namespace gregorian {
   operator<<(std::basic_ostream<CharT, TraitsT>& os, const boost::gregorian::nth_day_of_the_week_in_month& nkd) {
     boost::io::ios_flags_saver iflags(os);
     typedef boost::date_time::date_facet<date, CharT> custom_date_facet;
-    std::ostreambuf_iterator<CharT> output_itr(os);
+    std::ostreambuf_iterator<CharT> oitr(os);
     if (std::has_facet<custom_date_facet>(os.getloc()))
-      std::use_facet<custom_date_facet>(os.getloc()).put(output_itr, os, os.fill(), nkd);
+      std::use_facet<custom_date_facet>(os.getloc()).put(oitr, os, os.fill(), nkd);
     else {
+      std::ostreambuf_iterator<CharT> oitr(os);
       custom_date_facet* f = new custom_date_facet();
       std::locale l = std::locale(os.getloc(), f);
       os.imbue(l);
-      f->put(output_itr, os, os.fill(), nkd);
+      f->put(oitr, os, os.fill(), nkd);
     }
     return os;
   }
@@ -515,14 +515,14 @@ namespace gregorian {
     typename std::basic_istream<CharT, Traits>::sentry strm_sentry(is, false); 
     if (strm_sentry) {
       try {
-        typedef typename date_time::date_input_facet<date, CharT> date_input_facet_local;
+        typedef typename date_time::date_input_facet<date, CharT> date_input_facet;
 
         std::istreambuf_iterator<CharT,Traits> sit(is), str_end;
-        if(std::has_facet<date_input_facet_local>(is.getloc())) {
-          std::use_facet<date_input_facet_local>(is.getloc()).get(sit, str_end, is, nday);
+        if(std::has_facet<date_input_facet>(is.getloc())) {
+          std::use_facet<date_input_facet>(is.getloc()).get(sit, str_end, is, nday);
         }
         else {
-          date_input_facet_local* f = new date_input_facet_local();
+          date_input_facet* f = new date_input_facet();
           std::locale l = std::locale(is.getloc(), f);
           is.imbue(l);
           f->get(sit, str_end, is, nday);
@@ -550,14 +550,15 @@ namespace gregorian {
   operator<<(std::basic_ostream<CharT, TraitsT>& os, const boost::gregorian::first_day_of_the_week_in_month& fkd) {
     boost::io::ios_flags_saver iflags(os);
     typedef boost::date_time::date_facet<date, CharT> custom_date_facet;
-    std::ostreambuf_iterator<CharT> output_itr(os);
+    std::ostreambuf_iterator<CharT> oitr(os);
     if (std::has_facet<custom_date_facet>(os.getloc()))
-      std::use_facet<custom_date_facet>(os.getloc()).put(output_itr, os, os.fill(), fkd);
+      std::use_facet<custom_date_facet>(os.getloc()).put(oitr, os, os.fill(), fkd);
     else {
+      std::ostreambuf_iterator<CharT> oitr(os);
       custom_date_facet* f = new custom_date_facet();
       std::locale l = std::locale(os.getloc(), f);
       os.imbue(l);
-      f->put(output_itr, os, os.fill(), fkd);
+      f->put(oitr, os, os.fill(), fkd);
     }
     return os;
   }
@@ -573,14 +574,14 @@ namespace gregorian {
     typename std::basic_istream<CharT, Traits>::sentry strm_sentry(is, false); 
     if (strm_sentry) {
       try {
-        typedef typename date_time::date_input_facet<date, CharT> date_input_facet_local;
+        typedef typename date_time::date_input_facet<date, CharT> date_input_facet;
 
         std::istreambuf_iterator<CharT,Traits> sit(is), str_end;
-        if(std::has_facet<date_input_facet_local>(is.getloc())) {
-          std::use_facet<date_input_facet_local>(is.getloc()).get(sit, str_end, is, fkd);
+        if(std::has_facet<date_input_facet>(is.getloc())) {
+          std::use_facet<date_input_facet>(is.getloc()).get(sit, str_end, is, fkd);
         }
         else {
-          date_input_facet_local* f = new date_input_facet_local();
+          date_input_facet* f = new date_input_facet();
           std::locale l = std::locale(is.getloc(), f);
           is.imbue(l);
           f->get(sit, str_end, is, fkd);
@@ -608,14 +609,15 @@ namespace gregorian {
   operator<<(std::basic_ostream<CharT, TraitsT>& os, const boost::gregorian::last_day_of_the_week_in_month& lkd) {
     boost::io::ios_flags_saver iflags(os);
     typedef boost::date_time::date_facet<date, CharT> custom_date_facet;
-    std::ostreambuf_iterator<CharT> output_itr(os);
+    std::ostreambuf_iterator<CharT> oitr(os);
     if (std::has_facet<custom_date_facet>(os.getloc()))
-      std::use_facet<custom_date_facet>(os.getloc()).put(output_itr, os, os.fill(), lkd);
+      std::use_facet<custom_date_facet>(os.getloc()).put(oitr, os, os.fill(), lkd);
     else {
+      std::ostreambuf_iterator<CharT> oitr(os);
       custom_date_facet* f = new custom_date_facet();
       std::locale l = std::locale(os.getloc(), f);
       os.imbue(l);
-      f->put(output_itr, os, os.fill(), lkd);
+      f->put(oitr, os, os.fill(), lkd);
     }
     return os;
   }
@@ -631,14 +633,14 @@ namespace gregorian {
     typename std::basic_istream<CharT, Traits>::sentry strm_sentry(is, false); 
     if (strm_sentry) {
       try {
-        typedef typename date_time::date_input_facet<date, CharT> date_input_facet_local;
+        typedef typename date_time::date_input_facet<date, CharT> date_input_facet;
 
         std::istreambuf_iterator<CharT,Traits> sit(is), str_end;
-        if(std::has_facet<date_input_facet_local>(is.getloc())) {
-          std::use_facet<date_input_facet_local>(is.getloc()).get(sit, str_end, is, lkd);
+        if(std::has_facet<date_input_facet>(is.getloc())) {
+          std::use_facet<date_input_facet>(is.getloc()).get(sit, str_end, is, lkd);
         }
         else {
-          date_input_facet_local* f = new date_input_facet_local();
+          date_input_facet* f = new date_input_facet();
           std::locale l = std::locale(is.getloc(), f);
           is.imbue(l);
           f->get(sit, str_end, is, lkd);
@@ -666,15 +668,16 @@ namespace gregorian {
   operator<<(std::basic_ostream<CharT, TraitsT>& os, const boost::gregorian::first_day_of_the_week_after& fda) {
     boost::io::ios_flags_saver iflags(os);
     typedef boost::date_time::date_facet<date, CharT> custom_date_facet;
-    std::ostreambuf_iterator<CharT> output_itr(os);
+    std::ostreambuf_iterator<CharT> oitr(os);
     if (std::has_facet<custom_date_facet>(os.getloc())) {
-      std::use_facet<custom_date_facet>(os.getloc()).put(output_itr, os, os.fill(), fda);
+      std::use_facet<custom_date_facet>(os.getloc()).put(oitr, os, os.fill(), fda);
     } 
     else {
+      std::ostreambuf_iterator<CharT> oitr(os);
       custom_date_facet* f = new custom_date_facet();
       std::locale l = std::locale(os.getloc(), f);
       os.imbue(l);
-      f->put(output_itr, os, os.fill(), fda);
+      f->put(oitr, os, os.fill(), fda);
     }
     return os;
   }
@@ -690,14 +693,14 @@ namespace gregorian {
     typename std::basic_istream<CharT, Traits>::sentry strm_sentry(is, false); 
     if (strm_sentry) {
       try {
-        typedef typename date_time::date_input_facet<date, CharT> date_input_facet_local;
+        typedef typename date_time::date_input_facet<date, CharT> date_input_facet;
 
         std::istreambuf_iterator<CharT,Traits> sit(is), str_end;
-        if(std::has_facet<date_input_facet_local>(is.getloc())) {
-          std::use_facet<date_input_facet_local>(is.getloc()).get(sit, str_end, is, fka);
+        if(std::has_facet<date_input_facet>(is.getloc())) {
+          std::use_facet<date_input_facet>(is.getloc()).get(sit, str_end, is, fka);
         }
         else {
-          date_input_facet_local* f = new date_input_facet_local();
+          date_input_facet* f = new date_input_facet();
           std::locale l = std::locale(is.getloc(), f);
           is.imbue(l);
           f->get(sit, str_end, is, fka);
@@ -725,15 +728,16 @@ namespace gregorian {
   operator<<(std::basic_ostream<CharT, TraitsT>& os, const boost::gregorian::first_day_of_the_week_before& fdb) {
     boost::io::ios_flags_saver iflags(os);
     typedef boost::date_time::date_facet<date, CharT> custom_date_facet;
-    std::ostreambuf_iterator<CharT> output_itr(os);
+    std::ostreambuf_iterator<CharT> oitr(os);
     if (std::has_facet<custom_date_facet>(os.getloc())) {
-      std::use_facet<custom_date_facet>(os.getloc()).put(output_itr, os, os.fill(), fdb);
+      std::use_facet<custom_date_facet>(os.getloc()).put(oitr, os, os.fill(), fdb);
     }
     else {
+      std::ostreambuf_iterator<CharT> oitr(os);
       custom_date_facet* f = new custom_date_facet();
       std::locale l = std::locale(os.getloc(), f);
       os.imbue(l);
-      f->put(output_itr, os, os.fill(), fdb);
+      f->put(oitr, os, os.fill(), fdb);
     }
     return os;
   }
@@ -749,14 +753,14 @@ namespace gregorian {
     typename std::basic_istream<CharT, Traits>::sentry strm_sentry(is, false); 
     if (strm_sentry) {
       try {
-        typedef typename date_time::date_input_facet<date, CharT> date_input_facet_local;
+        typedef typename date_time::date_input_facet<date, CharT> date_input_facet;
 
         std::istreambuf_iterator<CharT,Traits> sit(is), str_end;
-        if(std::has_facet<date_input_facet_local>(is.getloc())) {
-          std::use_facet<date_input_facet_local>(is.getloc()).get(sit, str_end, is, fkb);
+        if(std::has_facet<date_input_facet>(is.getloc())) {
+          std::use_facet<date_input_facet>(is.getloc()).get(sit, str_end, is, fkb);
         }
         else {
-          date_input_facet_local* f = new date_input_facet_local();
+          date_input_facet* f = new date_input_facet();
           std::locale l = std::locale(is.getloc(), f);
           is.imbue(l);
           f->get(sit, str_end, is, fkb);

@@ -11,15 +11,7 @@
 #define BOOST_SINC_HPP
 
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
-#include <boost/math/tools/config.hpp>
-#include <boost/math/tools/precision.hpp>
-#include <boost/math/policies/policy.hpp>
-#include <boost/math/special_functions/math_fwd.hpp>
-#include <boost/config/no_tr1/cmath.hpp>
+#include <cmath>
 #include <boost/limits.hpp>
 #include <string>
 #include <stdexcept>
@@ -34,52 +26,88 @@ namespace boost
 {
     namespace math
     {
-       namespace detail
-       {
+#if        defined(__GNUC__) && (__GNUC__ < 3)
+        // gcc 2.x ignores function scope using declarations,
+        // put them in the scope of the enclosing namespace instead:
+
+        using    ::std::abs;
+        using    ::std::sqrt;
+        using    ::std::sin;
+
+        using    ::std::numeric_limits;
+#endif    /* defined(__GNUC__) && (__GNUC__ < 3) */
+
         // This is the "Sinus Cardinal" of index Pi.
 
         template<typename T>
-        inline T    sinc_pi_imp(const T x)
+        inline T    sinc_pi(const T x)
         {
-            BOOST_MATH_STD_USING
+#ifdef    BOOST_NO_STDC_NAMESPACE
+            using    ::abs;
+            using    ::sin;
+            using    ::sqrt;
+#else    /* BOOST_NO_STDC_NAMESPACE */
+            using    ::std::abs;
+            using    ::std::sin;
+            using    ::std::sqrt;
+#endif    /* BOOST_NO_STDC_NAMESPACE */
 
-            if    (abs(x) >= 3.3 * tools::forth_root_epsilon<T>())
+            using    ::std::numeric_limits;
+
+            static T const    taylor_0_bound = numeric_limits<T>::epsilon();
+            static T const    taylor_2_bound = sqrt(taylor_0_bound);
+            static T const    taylor_n_bound = sqrt(taylor_2_bound);
+
+            if    (abs(x) >= taylor_n_bound)
             {
                 return(sin(x)/x);
             }
             else
             {
-                // |x| < (eps*120)^(1/4)
-                return 1 - x * x / 6;
+                // approximation by taylor series in x at 0 up to order 0
+                T    result = static_cast<T>(1);
+
+                if    (abs(x) >= taylor_0_bound)
+                {
+                    T    x2 = x*x;
+
+                    // approximation by taylor series in x at 0 up to order 2
+                    result -= x2/static_cast<T>(6);
+
+                    if    (abs(x) >= taylor_2_bound)
+                    {
+                        // approximation by taylor series in x at 0 up to order 4
+                        result += (x2*x2)/static_cast<T>(120);
+                    }
+                }
+
+                return(result);
             }
         }
 
-       } // namespace detail
 
-       template <class T>
-       inline typename tools::promote_args<T>::type sinc_pi(T x)
-       {
-          typedef typename tools::promote_args<T>::type result_type;
-          return detail::sinc_pi_imp(static_cast<result_type>(x));
-       }
-
-       template <class T, class Policy>
-       inline typename tools::promote_args<T>::type sinc_pi(T x, const Policy&)
-       {
-          typedef typename tools::promote_args<T>::type result_type;
-          return detail::sinc_pi_imp(static_cast<result_type>(x));
-       }
-
-#ifndef    BOOST_NO_TEMPLATE_TEMPLATES
+#ifdef    BOOST_NO_TEMPLATE_TEMPLATES
+#else    /* BOOST_NO_TEMPLATE_TEMPLATES */
         template<typename T, template<typename> class U>
         inline U<T>    sinc_pi(const U<T> x)
         {
-            BOOST_MATH_STD_USING
+#if defined(BOOST_FUNCTION_SCOPE_USING_DECLARATION_BREAKS_ADL) || defined(__GNUC__)
+            using namespace std;
+#elif    defined(BOOST_NO_STDC_NAMESPACE)
+            using    ::abs;
+            using    ::sin;
+            using    ::sqrt;
+#else    /* BOOST_NO_STDC_NAMESPACE */
+            using    ::std::abs;
+            using    ::std::sin;
+            using    ::std::sqrt;
+#endif    /* BOOST_NO_STDC_NAMESPACE */
+
             using    ::std::numeric_limits;
 
-            T const    taylor_0_bound = tools::epsilon<T>();
-            T const    taylor_2_bound = tools::root_epsilon<T>();
-            T const    taylor_n_bound = tools::forth_root_epsilon<T>();
+            static T const    taylor_0_bound = numeric_limits<T>::epsilon();
+            static T const    taylor_2_bound = sqrt(taylor_0_bound);
+            static T const    taylor_n_bound = sqrt(taylor_2_bound);
 
             if    (abs(x) >= taylor_n_bound)
             {
@@ -111,15 +139,8 @@ namespace boost
                 return(result);
             }
         }
-
-        template<typename T, template<typename> class U, class Policy>
-        inline U<T>    sinc_pi(const U<T> x, const Policy&)
-        {
-           return sinc_pi(x);
-        }
 #endif    /* BOOST_NO_TEMPLATE_TEMPLATES */
     }
 }
 
 #endif /* BOOST_SINC_HPP */
-

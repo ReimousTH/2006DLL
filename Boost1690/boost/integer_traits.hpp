@@ -5,7 +5,7 @@
  * accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
  *
- * $Id$
+ * $Id: integer_traits.hpp,v 1.27 2005/05/07 13:14:07 dgregor Exp $
  *
  * Idea by Beman Dawes, Ed Brey, Steve Cleary, and Nathan Myers
  */
@@ -21,23 +21,12 @@
 
 // These are an implementation detail and not part of the interface
 #include <limits.h>
-// we need wchar.h for WCHAR_MAX/MIN but not all platforms provide it,
+// we need wchar.h for WCHAR_MAX/MIN but not all platforms provide it, 
 // and some may have <wchar.h> but not <cwchar> ...
-#if !defined(BOOST_NO_INTRINSIC_WCHAR_T) && (!defined(BOOST_NO_CWCHAR) || defined(sun) || defined(__sun) || defined(__QNX__))
+#if !defined(BOOST_NO_INTRINSIC_WCHAR_T) && (!defined(BOOST_NO_CWCHAR) || defined(sun) || defined(__sun))
 #include <wchar.h>
 #endif
 
-//
-// We simply cannot include this header on gcc without getting copious warnings of the kind:
-//
-// ../../../boost/integer_traits.hpp:164:66: warning: use of C99 long long integer constant
-//
-// And yet there is no other reasonable implementation, so we declare this a system header
-// to suppress these warnings.
-//
-#if defined(__GNUC__) && (__GNUC__ >= 4)
-#pragma GCC system_header
-#endif
 
 namespace boost {
 template<class T>
@@ -111,7 +100,6 @@ class integer_traits<wchar_t>
     || (defined(__OpenBSD__) && defined(__GNUC__))\
     || (defined(__NetBSD__) && defined(__GNUC__))\
     || (defined(__FreeBSD__) && defined(__GNUC__))\
-    || (defined(__DragonFly__) && defined(__GNUC__))\
     || (defined(__hpux) && defined(__GNUC__) && (__GNUC__ == 3) && !defined(__SGI_STL_PORT))
     // No WCHAR_MIN and WCHAR_MAX, wchar_t has the same range as int.
     //  - SGI MIPSpro with native library
@@ -119,6 +107,11 @@ class integer_traits<wchar_t>
     //  - Mac OS X with native library
     //  - gcc on FreeBSD, OpenBSD and NetBSD
     public detail::integer_traits_base<wchar_t, INT_MIN, INT_MAX>
+#elif defined(__hpux) && defined(__GNUC__) && (__GNUC__ == 2) && !defined(__SGI_STL_PORT)
+    // No WCHAR_MIN and WCHAR_MAX, wchar_t has the same range as unsigned int.
+    //  - gcc 2.95.x on HP-UX
+    // (also, std::numeric_limits<wchar_t> appears to return the wrong values).
+    public detail::integer_traits_base<wchar_t, 0, UINT_MAX>
 #else
 #error No WCHAR_MIN and WCHAR_MAX present, please adjust integer_traits<> for your compiler.
 #endif
@@ -222,27 +215,13 @@ class integer_traits< ::boost::ulong_long_type>
 template<>
 class integer_traits< ::boost::long_long_type>
   : public std::numeric_limits< ::boost::long_long_type>,
-    public detail::integer_traits_base< ::boost::long_long_type, (1LL << (sizeof(::boost::long_long_type) * CHAR_BIT - 1)), ~(1LL << (sizeof(::boost::long_long_type) * CHAR_BIT - 1))>
+    public detail::integer_traits_base< ::boost::long_long_type, (1LL << (sizeof(::boost::long_long_type) - 1)), ~(1LL << (sizeof(::boost::long_long_type) - 1))>
 { };
 
 template<>
 class integer_traits< ::boost::ulong_long_type>
   : public std::numeric_limits< ::boost::ulong_long_type>,
     public detail::integer_traits_base< ::boost::ulong_long_type, 0, ~0uLL>
-{ };
-
-#elif defined(BOOST_HAS_MS_INT64)
-
-template<>
-class integer_traits< __int64>
-  : public std::numeric_limits< __int64>,
-    public detail::integer_traits_base< __int64, _I64_MIN, _I64_MAX>
-{ };
-
-template<>
-class integer_traits< unsigned __int64>
-  : public std::numeric_limits< unsigned __int64>,
-    public detail::integer_traits_base< unsigned __int64, 0, _UI64_MAX>
 { };
 
 #endif

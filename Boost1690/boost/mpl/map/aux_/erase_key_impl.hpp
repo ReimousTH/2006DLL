@@ -11,9 +11,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/map/aux_/erase_key_impl.hpp,v $
+// $Date: 2004/09/05 09:42:58 $
+// $Revision: 1.3 $
 
 #include <boost/mpl/erase_key_fwd.hpp>
 #include <boost/mpl/map/aux_/has_key_impl.hpp>

@@ -11,9 +11,11 @@
 #ifndef BOOST_GRAPH_DETAIL_EDGE_HPP
 #define BOOST_GRAPH_DETAIL_EDGE_HPP
 
+#if __GNUC__ < 3
+#include <iostream>
+#else
 #include <iosfwd>
-
-#include <boost/functional/hash.hpp>
+#endif
 
 namespace boost {
 
@@ -47,7 +49,7 @@ namespace boost {
       //  protected:
       property_type* m_eproperty;
     };
-
+    
     template <class D, class V>
     inline bool
     operator==(const detail::edge_desc_impl<D,V>& a, 
@@ -63,41 +65,20 @@ namespace boost {
       return ! (a.get_property() == b.get_property());
     }
 
-    // Order edges according to the address of their property object
-    template <class D, class V>
-    inline bool
-    operator<(const detail::edge_desc_impl<D,V>& a, 
-               const detail::edge_desc_impl<D,V>& b)
-    {
-      return a.get_property() < b.get_property();
-    }
-    template <class D, class V>
-    inline bool
-    operator<=(const detail::edge_desc_impl<D,V>& a, 
-               const detail::edge_desc_impl<D,V>& b)
-    {
-      return a.get_property() <= b.get_property();
-    }
-    template <class D, class V>
-    inline bool
-    operator>(const detail::edge_desc_impl<D,V>& a, 
-               const detail::edge_desc_impl<D,V>& b)
-    {
-      return a.get_property() > b.get_property();
-    }
-    template <class D, class V>
-    inline bool
-    operator>=(const detail::edge_desc_impl<D,V>& a, 
-               const detail::edge_desc_impl<D,V>& b)
-    {
-      return a.get_property() >= b.get_property();
-    }
-
   } //namespace detail
   
 } // namespace boost
 
 namespace std {
+
+#if __GNUC__ < 3
+  template <class D, class V>
+  std::ostream& 
+  operator<<(std::ostream& os, const boost::detail::edge_desc_impl<D,V>& e)
+  {
+    return os << "(" << e.m_source << "," << e.m_target << ")";
+  }
+#else
   template <class Char, class Traits, class D, class V>
   std::basic_ostream<Char, Traits>& 
   operator<<(std::basic_ostream<Char, Traits>& os,
@@ -105,16 +86,8 @@ namespace std {
   {
     return os << "(" << e.m_source << "," << e.m_target << ")";
   }
-}
+#endif
 
-// Boost's functional/hash
-namespace boost {
-  template<typename D, typename V>
-  struct hash<boost::detail::edge_desc_impl<D, V> >
-  {
-    std::size_t operator()(const boost::detail::edge_desc_impl<D, V> & x) const
-    { return hash_value(x.get_property()); }
-  };
 }
 
 

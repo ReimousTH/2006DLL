@@ -2,9 +2,13 @@
 //  Copyright (c) 2000-2002
 //  Joerg Walter, Mathias Koch
 //
-//  Distributed under the Boost Software License, Version 1.0. (See
-//  accompanying file LICENSE_1_0.txt or copy at
-//  http://www.boost.org/LICENSE_1_0.txt)
+//  Permission to use, copy, modify, distribute and sell this software
+//  and its documentation for any purpose is hereby granted without fee,
+//  provided that the above copyright notice appear in all copies and
+//  that both that copyright notice and this permission notice appear
+//  in supporting documentation.  The authors make no representations
+//  about the suitability of this software for any purpose.
+//  It is provided "as is" without express or implied warranty.
 //
 //  The authors gratefully acknowledge the support of
 //  GeNeSys mbH & Co. KG in producing this work.
@@ -25,10 +29,10 @@
 
 namespace boost { namespace numeric { namespace ublas {
 
-    template<class V, class T1, class L1, class IA1, class TA1, class E2>
+    template<class V, class T1, class IA1, class TA1, class E2>
     BOOST_UBLAS_INLINE
     V &
-    axpy_prod (const compressed_matrix<T1, L1, 0, IA1, TA1> &e1,
+    axpy_prod (const compressed_matrix<T1, row_major, 0, IA1, TA1> &e1,
                const vector_expression<E2> &e2,
                V &v, row_major_tag) {
         typedef typename V::size_type size_type;
@@ -45,10 +49,10 @@ namespace boost { namespace numeric { namespace ublas {
         return v;
     }
 
-    template<class V, class T1, class L1, class IA1, class TA1, class E2>
+    template<class V, class T1, class IA1, class TA1, class E2>
     BOOST_UBLAS_INLINE
     V &
-    axpy_prod (const compressed_matrix<T1, L1, 0, IA1, TA1> &e1,
+    axpy_prod (const compressed_matrix<T1, column_major, 0, IA1, TA1> &e1,
                const vector_expression<E2> &e2,
                V &v, column_major_tag) {
         typedef typename V::size_type size_type;
@@ -115,8 +119,8 @@ namespace boost { namespace numeric { namespace ublas {
         }
 
         for (size_type i = 0; i < e1.nnz(); ++i) {
-            size_type row_index = layout_type::index_M( e1.index1_data () [i], e1.index2_data () [i] );
-            size_type col_index = layout_type::index_m( e1.index1_data () [i], e1.index2_data () [i] );
+            size_type row_index = layout_type::element1( e1.index1_data () [i], size1, e1.index2_data () [i], size2 );
+            size_type col_index = layout_type::element2( e1.index1_data () [i], size1, e1.index2_data () [i], size2 );
             v( row_index ) += e1.value_data () [i] * e2 () (col_index);
         }
         return v;
@@ -129,6 +133,7 @@ namespace boost { namespace numeric { namespace ublas {
                const vector_expression<E2> &e2,
                V &v, packed_random_access_iterator_tag, row_major_tag) {
         typedef const E1 expression1_type;
+        typedef const E2 expression2_type;
         typedef typename V::size_type size_type;
 
         typename expression1_type::const_iterator1 it1 (e1 ().begin1 ());
@@ -158,6 +163,7 @@ namespace boost { namespace numeric { namespace ublas {
                const vector_expression<E2> &e2,
                V &v, packed_random_access_iterator_tag, column_major_tag) {
         typedef const E1 expression1_type;
+        typedef const E2 expression2_type;
         typedef typename V::size_type size_type;
 
         typename expression1_type::const_iterator2 it2 (e1 ().begin2 ());
@@ -186,7 +192,9 @@ namespace boost { namespace numeric { namespace ublas {
     axpy_prod (const matrix_expression<E1> &e1,
                const vector_expression<E2> &e2,
                V &v, sparse_bidirectional_iterator_tag) {
+        typedef const E1 expression1_type;
         typedef const E2 expression2_type;
+        typedef typename V::size_type size_type;
 
         typename expression2_type::const_iterator it (e2 ().begin ());
         typename expression2_type::const_iterator it_end (e2 ().end ());
@@ -346,6 +354,7 @@ namespace boost { namespace numeric { namespace ublas {
     axpy_prod (const vector_expression<E1> &e1,
                const matrix_expression<E2> &e2,
                V &v, packed_random_access_iterator_tag, column_major_tag) {
+        typedef const E1 expression1_type;
         typedef const E2 expression2_type;
         typedef typename V::size_type size_type;
 
@@ -375,6 +384,7 @@ namespace boost { namespace numeric { namespace ublas {
     axpy_prod (const vector_expression<E1> &e1,
                const matrix_expression<E2> &e2,
                V &v, packed_random_access_iterator_tag, row_major_tag) {
+        typedef const E1 expression1_type;
         typedef const E2 expression2_type;
         typedef typename V::size_type size_type;
 
@@ -405,6 +415,8 @@ namespace boost { namespace numeric { namespace ublas {
                const matrix_expression<E2> &e2,
                V &v, sparse_bidirectional_iterator_tag) {
         typedef const E1 expression1_type;
+        typedef const E2 expression2_type;
+        typedef typename V::size_type size_type;
 
         typename expression1_type::const_iterator it (e1 ().begin ());
         typename expression1_type::const_iterator it_end (e1 ().end ());
@@ -493,11 +505,13 @@ namespace boost { namespace numeric { namespace ublas {
                const matrix_expression<E2> &e2,
                M &m, TRI,
                dense_proxy_tag, row_major_tag) {
-
+        typedef M matrix_type;
+        typedef const E1 expression1_type;
+        typedef const E2 expression2_type;
         typedef typename M::size_type size_type;
+        typedef typename M::value_type value_type;
 
 #if BOOST_UBLAS_TYPE_CHECK
-        typedef typename M::value_type value_type;
         matrix<value_type, row_major> cm (m);
         typedef typename type_traits<value_type>::real_type real_type;
         real_type merrorbound (norm_1 (m) + norm_1 (e1) * norm_1 (e2));
@@ -520,13 +534,14 @@ namespace boost { namespace numeric { namespace ublas {
                const matrix_expression<E2> &e2,
                M &m, TRI,
                sparse_proxy_tag, row_major_tag) {
-
+        typedef M matrix_type;
         typedef TRI triangular_restriction;
         typedef const E1 expression1_type;
         typedef const E2 expression2_type;
+        typedef typename M::size_type size_type;
+        typedef typename M::value_type value_type;
 
 #if BOOST_UBLAS_TYPE_CHECK
-        typedef typename M::value_type value_type;
         matrix<value_type, row_major> cm (m);
         typedef typename type_traits<value_type>::real_type real_type;
         real_type merrorbound (norm_1 (m) + norm_1 (e1) * norm_1 (e2));
@@ -569,10 +584,13 @@ namespace boost { namespace numeric { namespace ublas {
                const matrix_expression<E2> &e2,
                M &m, TRI,
                dense_proxy_tag, column_major_tag) {
+        typedef M matrix_type;
+        typedef const E1 expression1_type;
+        typedef const E2 expression2_type;
         typedef typename M::size_type size_type;
+        typedef typename M::value_type value_type;
 
 #if BOOST_UBLAS_TYPE_CHECK
-        typedef typename M::value_type value_type;
         matrix<value_type, column_major> cm (m);
         typedef typename type_traits<value_type>::real_type real_type;
         real_type merrorbound (norm_1 (m) + norm_1 (e1) * norm_1 (e2));
@@ -595,13 +613,14 @@ namespace boost { namespace numeric { namespace ublas {
                const matrix_expression<E2> &e2,
                M &m, TRI,
                sparse_proxy_tag, column_major_tag) {
+        typedef M matrix_type;
         typedef TRI triangular_restriction;
         typedef const E1 expression1_type;
         typedef const E2 expression2_type;
-
+        typedef typename M::size_type size_type;
+        typedef typename M::value_type value_type;
 
 #if BOOST_UBLAS_TYPE_CHECK
-        typedef typename M::value_type value_type;
         matrix<value_type, column_major> cm (m);
         typedef typename type_traits<value_type>::real_type real_type;
         real_type merrorbound (norm_1 (m) + norm_1 (e1) * norm_1 (e2));
@@ -623,8 +642,8 @@ namespace boost { namespace numeric { namespace ublas {
                 typename matrix_column<expression1_type>::const_iterator itc (mc.begin ());
                 typename matrix_column<expression1_type>::const_iterator itc_end (mc.end ());
                 while (itc != itc_end) {
-                    if(triangular_restriction::other (itc.index (), it2.index2 ()))
-                       m (itc.index (), it2.index2 ()) += *it1 * *itc;
+                    if (triangular_restriction::functor_type ().other (itc.index (), it2.index2 ()))
+                        m (itc.index (), it2.index2 ()) += *it1 * *itc;
                     ++ itc;
                 }
                 ++ it1;
@@ -723,6 +742,9 @@ namespace boost { namespace numeric { namespace ublas {
               const matrix_expression<E2> &e2,
               M &m,
               dense_proxy_tag, row_major_tag) {
+        typedef M matrix_type;
+        typedef const E1 expression1_type;
+        typedef const E2 expression2_type;
         typedef typename M::size_type size_type;
         typedef typename M::value_type value_type;
 
@@ -751,6 +773,9 @@ namespace boost { namespace numeric { namespace ublas {
               const matrix_expression<E2> &e2,
               M &m,
               dense_proxy_tag, column_major_tag) {
+        typedef M matrix_type;
+        typedef const E1 expression1_type;
+        typedef const E2 expression2_type;
         typedef typename M::size_type size_type;
         typedef typename M::value_type value_type;
 

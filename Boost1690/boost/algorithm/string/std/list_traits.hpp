@@ -1,12 +1,11 @@
 //  Boost string_algo library list_traits.hpp header file  ---------------------------//
 
-//  Copyright Pavol Droba 2002-2003.
-//
-// Distributed under the Boost Software License, Version 1.0.
-//    (See accompanying file LICENSE_1_0.txt or copy at
-//          http://www.boost.org/LICENSE_1_0.txt)
+//  Copyright Pavol Droba 2002-2003. Use, modification and
+//  distribution is subject to the Boost Software License, Version
+//  1.0. (See accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt)
 
-//  See http://www.boost.org/ for updates, documentation, and revision history.
+//  See http://www.boost.org for updates, documentation, and revision history.
 
 #ifndef BOOST_STRING_STD_LIST_TRAITS_HPP
 #define BOOST_STRING_STD_LIST_TRAITS_HPP
@@ -20,6 +19,22 @@ namespace boost {
 
 //  std::list<> traits  -----------------------------------------------//
 
+#ifdef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
+
+        // stable iterators tester
+        template<typename T, typename AllocT>
+        yes_type has_stable_iterators_tester( const ::std::list<T,AllocT>* );
+
+        // const time insert tester
+        template<typename T, typename AllocT>
+        yes_type has_const_time_insert_tester( const ::std::list<T,AllocT>* );
+
+        // const time erase tester
+        template<typename T, typename AllocT>
+        yes_type has_const_time_erase_tester( const ::std::list<T,AllocT>* );
+
+
+#else // BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 
         // stable iterators trait
         template<typename T, typename AllocT>
@@ -59,6 +74,7 @@ namespace boost {
 #endif // BOOST_WORKAROUND( __IBMCPP__, <= 600 )
             typedef mpl::bool_<has_const_time_erase<T>::value> type;
         };
+#endif
 
 
     } // namespace algorithm

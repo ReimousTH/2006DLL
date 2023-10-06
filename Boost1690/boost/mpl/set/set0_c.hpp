@@ -11,9 +11,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/set/set0_c.hpp,v $
+// $Date: 2004/11/28 01:51:10 $
+// $Revision: 1.2 $
 
 #include <boost/mpl/set/set0.hpp>
 #include <boost/mpl/integral_c.hpp>

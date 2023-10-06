@@ -11,9 +11,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/bitwise.hpp,v $
+// $Date: 2004/09/02 15:40:41 $
+// $Revision: 1.2 $
 
 #include <boost/mpl/bitand.hpp>
 #include <boost/mpl/bitor.hpp>

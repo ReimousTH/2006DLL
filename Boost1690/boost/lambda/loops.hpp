@@ -1,6 +1,6 @@
 // Boost Lambda Library -- loops.hpp ----------------------------------------
 
-// Copyright (C) 1999, 2000 Jaakko Jarvi (jaakko.jarvi@cs.utu.fi)
+// Copyright (C) 1999, 2000 Jaakko Järvi (jaakko.jarvi@cs.utu.fi)
 // Copyright (C) 2000 Gary Powell (powellg@amazon.com)
 // Copyright (c) 2001-2002 Joel de Guzman
 //
@@ -348,7 +348,7 @@ while_(CondT const& cond)
 //      While the condition (an lambda_functor) evaluates to true, statement
 //      (another lambda_functor) is executed. The statement is executed at least
 //      once. The result type of this is void. Note the trailing
-//      underscore after do_ and the leading dot and the trailing
+//      underscore after do_ and the the leading dot and the trailing
 //      underscore before and after .while_.
 //
 ///////////////////////////////////////////////////////////////////////////////

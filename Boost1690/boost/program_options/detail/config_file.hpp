@@ -17,7 +17,9 @@
 #include <boost/program_options/eof_iterator.hpp>
 
 #include <boost/detail/workaround.hpp>
+#if BOOST_WORKAROUND(__MWERKS__, BOOST_TESTED_AT(0x3202))
 #include <boost/program_options/detail/convert.hpp>
+#endif
 
 #if BOOST_WORKAROUND(__DECCXX_VER, BOOST_TESTED_AT(60590042))
 #include <istream> // std::getline
@@ -26,11 +28,6 @@
 #include <boost/static_assert.hpp>
 #include <boost/type_traits/is_same.hpp>
 #include <boost/shared_ptr.hpp>
-
-#ifdef BOOST_MSVC
-# pragma warning(push)
-# pragma warning(disable: 4251) // class XYZ needs to have dll-interface to be used by clients of class XYZ
-#endif
 
 
 
@@ -67,14 +64,13 @@ namespace boost { namespace program_options { namespace detail {
          TODO: maybe, we should just accept a pointer to options_description
          class.
      */    
-    class BOOST_PROGRAM_OPTIONS_DECL common_config_file_iterator
+    class common_config_file_iterator 
         : public eof_iterator<common_config_file_iterator, option>
     {
     public:
         common_config_file_iterator() { found_eof(); }
         common_config_file_iterator(
-            const std::set<std::string>& allowed_options,
-            bool allow_unregistered = false);
+            const std::set<std::string>& allowed_options);
 
         virtual ~common_config_file_iterator() {}
 
@@ -82,11 +78,6 @@ namespace boost { namespace program_options { namespace detail {
         
         void get();
         
-#if BOOST_WORKAROUND(_MSC_VER, <= 1900)
-        void decrement() {}
-        void advance(difference_type) {}
-#endif
-
     protected: // Stubs for derived classes
 
         // Obtains next line from the config file
@@ -112,7 +103,6 @@ namespace boost { namespace program_options { namespace detail {
         // Invariant: no element is prefix of other element.
         std::set<std::string> allowed_prefixes;
         std::string m_prefix;
-        bool m_allow_unregistered;
     };
 
     template<class charT>
@@ -126,8 +116,7 @@ namespace boost { namespace program_options { namespace detail {
         /** Creates a config file parser for the specified stream.            
         */
         basic_config_file_iterator(std::basic_istream<charT>& is, 
-                                   const std::set<std::string>& allowed_options,
-                                   bool allow_unregistered = false); 
+                                   const std::set<std::string>& allowed_options); 
 
     private: // base overrides
 
@@ -150,9 +139,8 @@ namespace boost { namespace program_options { namespace detail {
     template<class charT>
     basic_config_file_iterator<charT>::
     basic_config_file_iterator(std::basic_istream<charT>& is, 
-                               const std::set<std::string>& allowed_options,
-                               bool allow_unregistered)
-    : common_config_file_iterator(allowed_options, allow_unregistered)
+                               const std::set<std::string>& allowed_options)
+    : common_config_file_iterator(allowed_options)
     {
         this->is.reset(&is, null_deleter());                 
         get();
@@ -186,9 +174,5 @@ namespace boost { namespace program_options { namespace detail {
     
 
 }}}
-
-#ifdef BOOST_MSVC
-# pragma warning(pop)
-#endif
 
 #endif

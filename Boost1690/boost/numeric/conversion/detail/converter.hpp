@@ -1,4 +1,4 @@
-//  (c) Copyright Fernando Luis Cacciola Carballal 2000-2004
+//  © Copyright Fernando Luis Cacciola Carballal 2000-2004
 //  Use, modification, and distribution is subject to the Boost Software
 //  License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
@@ -6,7 +6,7 @@
 //  See library home page at http://www.boost.org/libs/numeric/conversion
 //
 // Contact the author at: fernando_cacciola@hotmail.com
-//
+// 
 #ifndef BOOST_NUMERIC_CONVERSION_DETAIL_CONVERTER_FLC_12NOV2002_HPP
 #define BOOST_NUMERIC_CONVERSION_DETAIL_CONVERTER_FLC_12NOV2002_HPP
 
@@ -230,12 +230,12 @@ namespace boost { namespace numeric { namespace convdetail
     struct combine
     {
       typedef applyBoth<PredA,PredB> Both ;
-      typedef void                   NNone ; // 'None' is defined as a macro in (/usr/X11R6/include/X11/X.h)
+      typedef void                   None ;
 
       typedef typename PredA::do_apply do_applyA ;
       typedef typename PredB::do_apply do_applyB ;
 
-      typedef typename for_both<do_applyA, do_applyB, Both, PredA, PredB, NNone>::type type ;
+      typedef typename for_both<do_applyA, do_applyB, Both, PredA, PredB, None>::type type ;
     } ;
 
 
@@ -263,7 +263,7 @@ namespace boost { namespace numeric { namespace convdetail
   struct dummy_range_checker
   {
     typedef typename Traits::argument_type argument_type ;
-
+    
     static range_check_result out_of_range ( argument_type ) { return cInRange ; }
     static void validate_range ( argument_type ) {}
   } ;
@@ -279,10 +279,10 @@ namespace boost { namespace numeric { namespace convdetail
   template<class Traits, class IsNegOverflow, class IsPosOverflow, class OverflowHandler>
   struct generic_range_checker
   {
-    typedef OverflowHandler overflow_handler ;
+    typedef OverflowHandler overflow_handler ; 
 
     typedef typename Traits::argument_type argument_type ;
-
+    
     static range_check_result out_of_range ( argument_type s )
     {
       typedef typename combine<IsNegOverflow,IsPosOverflow>::type Predicate ;
@@ -450,10 +450,13 @@ namespace boost { namespace numeric { namespace convdetail
   // Trivial Converter : used when (cv-unqualified) T == (cv-unqualified)  S
   //
   template<class Traits>
-  struct trivial_converter_impl : public dummy_range_checker<Traits>
+  struct trivial_converter_impl : public std::unary_function<  BOOST_DEDUCED_TYPENAME Traits::argument_type
+                                                              ,BOOST_DEDUCED_TYPENAME Traits::result_type
+                                                            >
+                                 ,public dummy_range_checker<Traits>
   {
     typedef Traits traits ;
-    
+
     typedef typename Traits::source_type   source_type   ;
     typedef typename Traits::argument_type argument_type ;
     typedef typename Traits::result_type   result_type   ;
@@ -468,7 +471,10 @@ namespace boost { namespace numeric { namespace convdetail
   // Rounding Converter : used for float to integral conversions.
   //
   template<class Traits,class RangeChecker,class RawConverter,class Float2IntRounder>
-  struct rounding_converter : public RangeChecker
+  struct rounding_converter : public std::unary_function<  BOOST_DEDUCED_TYPENAME Traits::argument_type
+                                                          ,BOOST_DEDUCED_TYPENAME Traits::result_type
+                                                        >
+                             ,public RangeChecker
                              ,public Float2IntRounder
                              ,public RawConverter
   {
@@ -495,7 +501,10 @@ namespace boost { namespace numeric { namespace convdetail
   // Non-Rounding Converter : used for all other conversions.
   //
   template<class Traits,class RangeChecker,class RawConverter>
-  struct non_rounding_converter : public RangeChecker
+  struct non_rounding_converter : public std::unary_function< BOOST_DEDUCED_TYPENAME Traits::argument_type
+                                                             ,BOOST_DEDUCED_TYPENAME Traits::result_type
+                                                           >
+                                 ,public RangeChecker
                                  ,public RawConverter
   {
     typedef RangeChecker RangeCheckerBase ;

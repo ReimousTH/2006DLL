@@ -61,6 +61,7 @@
 #define POWERPC_ORI(rS, rA, UIMM)   (UINT32)( POWERPC_OPCODE_ORI | ( rS << POWERPC_BIT32( 10 ) ) | ( rA << POWERPC_BIT32( 15 ) ) | UIMM )
 #define POWERPC_BCCTR(BO, BI, LK)   (UINT32)( POWERPC_OPCODE_BCCTR | ( BO << POWERPC_BIT32( 10 ) ) | ( BI << POWERPC_BIT32( 15 ) ) | ( LK & 1 ) | POWERPC_EXOPCODE_BCCTR )
 #define POWERPC_STD(rS, DS, rA)     (UINT32)( POWERPC_OPCODE_STD | ( rS << POWERPC_BIT32( 10 ) ) | ( rA << POWERPC_BIT32( 15 ) ) | ( (INT16)DS & 0xFFFF ) )
+#define POWERPC_STW(rS, DS, rA)     (UINT32)( POWERPC_OPCODE_STW | ( rS << POWERPC_BIT32( 10 ) ) | ( rA << POWERPC_BIT32( 15 ) ) | ( (INT16)DS & 0xFFFF ) )
 #define POWERPC_LD(rS, DS, rA)      (UINT32)( POWERPC_OPCODE_LD | ( rS << POWERPC_BIT32( 10 ) ) | ( rA << POWERPC_BIT32( 15 ) ) | ( (INT16)DS & 0xFFFF ) )
 
 //
@@ -74,7 +75,7 @@
 
 
 #ifndef _BOOST_
-#include <boost/make_shared.hpp>
+
 #endif
 
 #ifndef  _XTL_
@@ -102,6 +103,15 @@
 #include "Marathon/Player/State/CommonContext.h"
 #include "Marathon/Combo/AttackManager.h"
 #include "Marathon/Combo/ScoreManager.h"
+
+#include "Marathon/Player/Gauge/SonicGauge.h"
+#include "Marathon/Player/State/Machine2.h"
+
+
+#include "Marathon/Player/State/CommonObject.h"
+#include "Marathon/Sox/Object.h"
+
+
 
 
 

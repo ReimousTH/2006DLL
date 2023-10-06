@@ -4,9 +4,9 @@
 /* Copyright (c) 2002,2003 CrystalClear Software, Inc.
  * Use, modification and distribution is subject to the 
  * Boost Software License, Version 1.0. (See accompanying
- * file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+ * file LICENSE-1.0 or http://www.boost.org/LICENSE-1.0)
  * Author: Jeff Garland 
- * $Date$
+ * $Date: 2003/11/23 02:37:57 $
  */
 
 #include "boost/date_time/gregorian/gregorian.hpp"
@@ -33,10 +33,6 @@ namespace posix_time {
 
   inline ptime from_iso_string(const std::string& s) {
     return date_time::parse_iso_time<ptime>(s, 'T');
-  }
-
-  inline ptime from_iso_extended_string(const std::string& s) {
-    return date_time::parse_delimited_time<ptime>(s, 'T');
   }
 
 

@@ -1,5 +1,4 @@
-// (C) Copyright 2008 CodeRage, LLC (turkanis at coderage dot com)
-// (C) Copyright 2005-2007 Jonathan Turkanis
+// (C) Copyright Jonathan Turkanis 2005.
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt.)
 
@@ -14,14 +13,12 @@
 #include <boost/iostreams/categories.hpp>
 #include <boost/iostreams/detail/dispatch.hpp>
 #include <boost/iostreams/detail/error.hpp>
-#include <boost/iostreams/detail/config/unreachable_return.hpp>
 #include <boost/iostreams/get.hpp>
 #include <boost/iostreams/put.hpp>
 #include <boost/iostreams/read.hpp>
 #include <boost/iostreams/seek.hpp>
 #include <boost/iostreams/traits.hpp>
 #include <boost/iostreams/write.hpp>
-#include <boost/throw_exception.hpp>
 
 // Must come last.
 #include <boost/iostreams/detail/config/disable_warnings.hpp>  // MSVC.
@@ -95,28 +92,24 @@ struct read_write_if_impl<input> {
 
     template<typename T>
     static bool put(T&, typename char_type_of<T>::type)
-    { boost::throw_exception(cant_write());
-      BOOST_IOSTREAMS_UNREACHABLE_RETURN(false) }
+    { throw cant_write(); }
 
     template<typename T>
     static std::streamsize 
     write(T&, const typename char_type_of<T>::type*, std::streamsize)
-    { boost::throw_exception(cant_write());
-      BOOST_IOSTREAMS_UNREACHABLE_RETURN(0) }
+    { throw cant_write(); }
 };
 
 template<>
 struct read_write_if_impl<output> {
     template<typename T>
     static typename int_type_of<T>::type get(T&)
-    { boost::throw_exception(cant_read());
-      BOOST_IOSTREAMS_UNREACHABLE_RETURN(0) }
+    { throw cant_read(); }
 
     template<typename T>
     static std::streamsize
     read(T&, typename char_type_of<T>::type*, std::streamsize)
-    { boost::throw_exception(cant_read());
-      BOOST_IOSTREAMS_UNREACHABLE_RETURN(0) }
+    { throw cant_read(); }
 
     template<typename T>
     static bool put(T& t, typename char_type_of<T>::type c)
@@ -134,7 +127,7 @@ struct read_write_if_impl<output> {
 template<>
 struct seek_if_impl<random_access> {
     template<typename T>
-    static std::streampos 
+    static stream_offset 
     seek( T& t, stream_offset off, BOOST_IOS::seekdir way, 
           BOOST_IOS::openmode which )
     { return iostreams::seek(t, off, way, which); }
@@ -143,10 +136,9 @@ struct seek_if_impl<random_access> {
 template<>
 struct seek_if_impl<any_tag> {
     template<typename T>
-    static std::streampos 
+    static stream_offset 
     seek(T&, stream_offset, BOOST_IOS::seekdir, BOOST_IOS::openmode)
-    { boost::throw_exception(cant_seek());
-      BOOST_IOSTREAMS_UNREACHABLE_RETURN(std::streampos()) }
+    { throw cant_seek(); }
 };
 
 } // End namespace detail.

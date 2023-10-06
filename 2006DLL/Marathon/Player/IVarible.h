@@ -1,6 +1,7 @@
 #pragma once
 
 
+#include "../LuaSystem.h"
 namespace SonicTeam{
 	namespace Player{
 
@@ -10,8 +11,8 @@ namespace SonicTeam{
 		public:
 			IVarible(void);
 			static const char* varible;
-			virtual void OnVarible(void) = 0;
-
+			virtual void OnVarible(LuaSystem**) = 0; // args (DWORD[3], 0 = LuaSystemMarathon, 1 = UnkPointerIDK, 2 =  Sonicteam::Spanverse::CustomEssenceModel
+			
 			
 		};
 

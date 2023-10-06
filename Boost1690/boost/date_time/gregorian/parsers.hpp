@@ -4,9 +4,9 @@
 /* Copyright (c) 2002,2003,2005 CrystalClear Software, Inc.
  * Use, modification and distribution is subject to the 
  * Boost Software License, Version 1.0. (See accompanying
- * file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+ * file LICENSE-1.0 or http://www.boost.org/LICENSE-1.0)
  * Author: Jeff Garland, Bart Garst
- * $Date$
+ * $Date: 2005/06/21 03:33:15 $
  */
 
 #include "boost/date_time/gregorian/gregorian_types.hpp"
@@ -23,7 +23,7 @@ namespace gregorian {
   /*! Return special_value from string argument. If argument is 
    * not one of the special value names (defined in src/gregorian/names.hpp), 
    * return 'not_special' */
-  BOOST_DATE_TIME_DECL special_values special_value_from_string(const std::string& s);
+  special_values special_value_from_string(const std::string& s);
 
   //! Deprecated: Use from_simple_string
   inline date from_string(std::string s) {
@@ -71,20 +71,20 @@ namespace gregorian {
   }
 #endif //BOOST_NO_STD_ITERATOR_TRAITS
   
-#if (defined(_MSC_VER) && (_MSC_VER < 1300))
+#if (defined(_MSC_VER) && (_MSC_VER <= 1200))
     // This function cannot be compiled with MSVC 6.0 due to internal compiler shorcomings
 #else
   //! Function to parse a date_period from a string (eg: [2003-Oct-31/2003-Dec-25])
   inline date_period date_period_from_string(const std::string& s){
     return date_time::from_simple_string_type<date,char>(s);
   }
-#  if !defined(BOOST_NO_STD_WSTRING)
+#if !defined(BOOST_NO_STD_WSTRING)
   //! Function to parse a date_period from a wstring (eg: [2003-Oct-31/2003-Dec-25])
   inline date_period date_period_from_wstring(const std::wstring& s){
     return date_time::from_simple_string_type<date,wchar_t>(s);
   }
-#  endif // BOOST_NO_STD_WSTRING
-#endif
+#endif // BOOST_NO_STD_WSTRING
+#endif // _MSC_VER <= 1200
 
 } } //namespace gregorian
 

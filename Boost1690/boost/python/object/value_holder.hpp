@@ -29,11 +29,13 @@
 #  include <boost/preprocessor/repetition/enum_params.hpp>
 #  include <boost/preprocessor/repetition/enum_binary_params.hpp>
 
-#  include <boost/utility/addressof.hpp>
-
 namespace boost { namespace python { namespace objects { 
 
-#define BOOST_PYTHON_UNFORWARD_LOCAL(z, n, _) BOOST_PP_COMMA_IF(n) objects::do_unforward(a##n,0)
+#  if BOOST_WORKAROUND(__GNUC__, == 2)
+#   define BOOST_PYTHON_UNFORWARD_LOCAL(z, n, _) BOOST_PP_COMMA_IF(n) (typename unforward<A##n>::type)objects::do_unforward(a##n,0)
+#  else
+#   define BOOST_PYTHON_UNFORWARD_LOCAL(z, n, _) BOOST_PP_COMMA_IF(n) objects::do_unforward(a##n,0)
+#  endif 
 
 template <class Value>
 struct value_holder : instance_holder
@@ -82,19 +84,19 @@ private: // required holder implementation
 #  undef BOOST_PYTHON_UNFORWARD_LOCAL
 
 template <class Value>
-void* value_holder<Value>::holds(type_info dst_t, bool /*null_ptr_only*/)
+void* value_holder<Value>::holds(type_info dst_t, bool null_ptr_only)
 {
-    if (void* wrapped = holds_wrapped(dst_t, boost::addressof(m_held), boost::addressof(m_held)))
+    if (void* wrapped = holds_wrapped(dst_t, &m_held, &m_held))
         return wrapped;
     
     type_info src_t = python::type_id<Value>();
-    return src_t == dst_t ? boost::addressof(m_held)
-        : find_static_type(boost::addressof(m_held), src_t, dst_t);
+    return src_t == dst_t ? &m_held
+        : find_static_type(&m_held, src_t, dst_t);
 }
 
 template <class Value, class Held>
 void* value_holder_back_reference<Value,Held>::holds(
-    type_info dst_t, bool /*null_ptr_only*/)
+    type_info dst_t, bool null_ptr_only)
 {
     type_info src_t = python::type_id<Value>();
     Value* x = &m_held;
@@ -113,10 +115,7 @@ void* value_holder_back_reference<Value,Held>::holds(
 
 // --------------- value_holder ---------------
 
-// For gcc 4.4 compatability, we must include the
-// BOOST_PP_ITERATION_DEPTH test inside an #else clause.
-#else // BOOST_PP_IS_ITERATING
-#if BOOST_PP_ITERATION_DEPTH() == 1 && BOOST_PP_ITERATION_FLAGS() == 1
+#elif BOOST_PP_ITERATION_DEPTH() == 1 && BOOST_PP_ITERATION_FLAGS() == 1
 # if !(BOOST_WORKAROUND(__MWERKS__, > 0x3100)                      \
         && BOOST_WORKAROUND(__MWERKS__, BOOST_TESTED_AT(0x3201)))
 #  line BOOST_PP_LINE(__LINE__, value_holder.hpp(value_holder))
@@ -133,7 +132,7 @@ void* value_holder_back_reference<Value,Held>::holds(
             BOOST_PP_REPEAT_1ST(N, BOOST_PYTHON_UNFORWARD_LOCAL, nil)
             )
     {
-        python::detail::initialize_wrapper(self, boost::addressof(this->m_held));
+        python::detail::initialize_wrapper(self, &this->m_held);
     }
 
 # undef N
@@ -162,5 +161,4 @@ void* value_holder_back_reference<Value,Held>::holds(
 
 # undef N
 
-#endif // BOOST_PP_ITERATION_DEPTH()
 #endif

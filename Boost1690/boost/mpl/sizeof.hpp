@@ -10,9 +10,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/sizeof.hpp,v $
+// $Date: 2004/09/02 15:40:42 $
+// $Revision: 1.4 $
 
 #include <boost/mpl/size_t.hpp>
 #include <boost/mpl/aux_/na_spec.hpp>

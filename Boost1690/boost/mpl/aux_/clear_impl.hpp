@@ -10,9 +10,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/aux_/clear_impl.hpp,v $
+// $Date: 2004/09/02 15:40:43 $
+// $Revision: 1.6 $
 
 #include <boost/mpl/clear_fwd.hpp>
 #include <boost/mpl/aux_/traits_lambda_spec.hpp>

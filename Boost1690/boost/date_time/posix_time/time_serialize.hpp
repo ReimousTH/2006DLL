@@ -4,17 +4,15 @@
 /* Copyright (c) 2004-2005 CrystalClear Software, Inc.
  * Use, modification and distribution is subject to the 
  * Boost Software License, Version 1.0. (See accompanying
- * file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+ * file LICENSE-1.0 or http://www.boost.org/LICENSE-1.0)
  * Author: Jeff Garland, Bart Garst
- * $Date$
+ * $Date: 2005/06/21 03:33:15 $
  */
 
 #include "boost/date_time/posix_time/posix_time.hpp"
 #include "boost/date_time/gregorian/greg_serialize.hpp"
-#include "boost/numeric/conversion/cast.hpp"
 #include "boost/serialization/split_free.hpp"
-#include "boost/serialization/nvp.hpp"
-#include "boost/serialization/version.hpp"
+
 
 // macros to split serialize functions into save & load functions
 // NOTE: these macros define template functions in the boost::serialization namespace.
@@ -22,14 +20,6 @@
 BOOST_SERIALIZATION_SPLIT_FREE(boost::posix_time::ptime)
 BOOST_SERIALIZATION_SPLIT_FREE(boost::posix_time::time_duration)
 BOOST_SERIALIZATION_SPLIT_FREE(boost::posix_time::time_period)
-
-// Define versions for serialization compatibility
-// alows the unit tests to make an older version to check compatibility
-#ifndef BOOST_DATE_TIME_POSIX_TIME_DURATION_VERSION
-#define BOOST_DATE_TIME_POSIX_TIME_DURATION_VERSION 1
-#endif
-
-BOOST_CLASS_VERSION(boost::posix_time::time_duration, BOOST_DATE_TIME_POSIX_TIME_DURATION_VERSION)
 
 namespace boost {
 namespace serialization {
@@ -42,19 +32,6 @@ namespace serialization {
  * types are hour_type, min_type, sec_type, and fractional_seconds_type
  * as defined in the time_duration class
  */
-template<class TimeResTraitsSize, class Archive>
-void save_td(Archive& ar, const posix_time::time_duration& td)
-{
-    TimeResTraitsSize h = boost::numeric_cast<TimeResTraitsSize>(td.hours());
-    TimeResTraitsSize m = boost::numeric_cast<TimeResTraitsSize>(td.minutes());
-    TimeResTraitsSize s = boost::numeric_cast<TimeResTraitsSize>(td.seconds());
-    posix_time::time_duration::fractional_seconds_type fs = td.fractional_seconds();
-    ar & make_nvp("time_duration_hours", h);
-    ar & make_nvp("time_duration_minutes", m);
-    ar & make_nvp("time_duration_seconds", s);
-    ar & make_nvp("time_duration_fractional_seconds", fs);
-}
-
 template<class Archive>
 void save(Archive & ar, 
           const posix_time::time_duration& td, 
@@ -68,13 +45,14 @@ void save(Archive & ar,
     ar & make_nvp("sv_time_duration", s);
   }
   else {
-    // Write support for earlier versions allows for upgrade compatibility testing
-    // See load comments for version information
-    if (version == 0) {
-        save_td<int32_t>(ar, td);
-    } else {
-        save_td<int64_t>(ar, td);
-    }
+    typename posix_time::time_duration::hour_type h = td.hours();
+    typename posix_time::time_duration::min_type m = td.minutes();
+    typename posix_time::time_duration::sec_type s = td.seconds();
+    typename posix_time::time_duration::fractional_seconds_type fs = td.fractional_seconds();
+    ar & make_nvp("time_duration_hours", h);
+    ar & make_nvp("time_duration_minutes", m);
+    ar & make_nvp("time_duration_seconds", s);
+    ar & make_nvp("time_duration_fractional_seconds", fs);
   }
 }
 
@@ -83,20 +61,6 @@ void save(Archive & ar,
  * types are hour_type, min_type, sec_type, and fractional_seconds_type
  * as defined in the time_duration class
  */
-template<class TimeResTraitsSize, class Archive>
-void load_td(Archive& ar, posix_time::time_duration& td)
-{
-    TimeResTraitsSize h(0);
-    TimeResTraitsSize m(0);
-    TimeResTraitsSize s(0);
-    posix_time::time_duration::fractional_seconds_type fs(0);
-    ar & make_nvp("time_duration_hours", h);
-    ar & make_nvp("time_duration_minutes", m);
-    ar & make_nvp("time_duration_seconds", s);
-    ar & make_nvp("time_duration_fractional_seconds", fs);
-    td = posix_time::time_duration(h, m, s, fs);
-}
-
 template<class Archive>
 void load(Archive & ar, 
           posix_time::time_duration & td, 
@@ -111,25 +75,15 @@ void load(Archive & ar,
     td = posix_time::time_duration(sv);
   }
   else {
-    // Version "0"   (Boost 1.65.1 or earlier, which used int32_t for day/hour/minute/second and
-    //                therefore suffered from the year 2038 issue.)
-    // Version "0.5" (Boost 1.66.0 changed to std::time_t but did not increase the version;
-    //                it was missed in the original change, all code reviews, and there were no
-    //                static assertions to protect the code; further std::time_t can be 32-bit
-    //                or 64-bit so it reduced portability.  This makes 1.66.0 hard to handle...)
-    // Version "1"   (Boost 1.67.0 or later uses int64_t and is properly versioned)
-
-    // If the size of any of these items changes, a new version is needed.
-    BOOST_STATIC_ASSERT(sizeof(posix_time::time_duration::hour_type) == sizeof(boost::int64_t));
-    BOOST_STATIC_ASSERT(sizeof(posix_time::time_duration::min_type) == sizeof(boost::int64_t));
-    BOOST_STATIC_ASSERT(sizeof(posix_time::time_duration::sec_type) == sizeof(boost::int64_t));
-    BOOST_STATIC_ASSERT(sizeof(posix_time::time_duration::fractional_seconds_type) == sizeof(boost::int64_t));
-
-    if (version == 0) {
-        load_td<int32_t>(ar, td);
-    } else {
-        load_td<int64_t>(ar, td);
-    }
+    typename posix_time::time_duration::hour_type h(0);
+    typename posix_time::time_duration::min_type m(0);
+    typename posix_time::time_duration::sec_type s(0);
+    typename posix_time::time_duration::fractional_seconds_type fs(0);
+    ar & make_nvp("time_duration_hours", h);
+    ar & make_nvp("time_duration_minutes", m);
+    ar & make_nvp("time_duration_seconds", s);
+    ar & make_nvp("time_duration_fractional_seconds", fs);
+    td = posix_time::time_duration(h,m,s,fs);
   }
 }
 
@@ -145,14 +99,14 @@ void load(Archive & ar,
 template<class Archive>
 void save(Archive & ar, 
           const posix_time::ptime& pt, 
-          unsigned int /*version*/)
+          unsigned int version)
 {
   // from_iso_string does not include fractional seconds
   // therefore date and time_duration are used
-  posix_time::ptime::date_type d = pt.date();
+  typename posix_time::ptime::date_type d = pt.date();
   ar & make_nvp("ptime_date", d);
   if(!pt.is_special()) {
-    posix_time::ptime::time_duration_type td = pt.time_of_day();
+    typename posix_time::ptime::time_duration_type td = pt.time_of_day();
     ar & make_nvp("ptime_time_duration", td);
   }
 }
@@ -164,12 +118,12 @@ void save(Archive & ar,
 template<class Archive>
 void load(Archive & ar, 
           posix_time::ptime & pt, 
-          unsigned int /*version*/)
+          unsigned int version)
 {
   // from_iso_string does not include fractional seconds
   // therefore date and time_duration are used
-  posix_time::ptime::date_type d(posix_time::not_a_date_time);
-  posix_time::ptime::time_duration_type td;
+  typename posix_time::ptime::date_type d(posix_time::not_a_date_time);
+  typename posix_time::ptime::time_duration_type td;
   ar & make_nvp("ptime_date", d);
   if(!d.is_special()) {
     ar & make_nvp("ptime_time_duration", td);
@@ -183,9 +137,9 @@ void load(Archive & ar,
 
 //!override needed b/c no default constructor
 template<class Archive>
-inline void load_construct_data(Archive & /*ar*/, 
+inline void load_construct_data(Archive & ar, 
                                 posix_time::ptime* pt, 
-                                const unsigned int /*file_version*/)
+                                const unsigned int file_version)
 {
   // retrieve data from archive required to construct new 
   // invoke inplace constructor to initialize instance of date
@@ -201,7 +155,7 @@ inline void load_construct_data(Archive & /*ar*/,
 template<class Archive>
 void save(Archive & ar, 
           const posix_time::time_period& tp, 
-          unsigned int /*version*/)
+          unsigned int version)
 {
   posix_time::ptime beg(tp.begin().date(), tp.begin().time_of_day());
   posix_time::ptime end(tp.end().date(), tp.end().time_of_day());
@@ -216,7 +170,7 @@ void save(Archive & ar,
 template<class Archive>
 void load(Archive & ar, 
           boost::posix_time::time_period & tp, 
-          unsigned int /*version*/)
+          unsigned int version)
 {
   posix_time::time_duration td(1,0,0);
   gregorian::date d(gregorian::not_a_date_time);
@@ -229,9 +183,9 @@ void load(Archive & ar,
 
 //!override needed b/c no default constructor
 template<class Archive>
-inline void load_construct_data(Archive & /*ar*/, 
+inline void load_construct_data(Archive & ar, 
                                 boost::posix_time::time_period* tp, 
-                                const unsigned int /*file_version*/)
+                                const unsigned int file_version)
 {
   posix_time::time_duration td(1,0,0);
   gregorian::date d(gregorian::not_a_date_time);

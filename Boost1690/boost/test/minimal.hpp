@@ -1,31 +1,15 @@
-//  (C) Copyright Gennadiy Rozental 2001.
+//  (C) Copyright Gennadiy Rozental 2002-2005.
 //  Distributed under the Boost Software License, Version 1.0.
-//  (See accompanying file LICENSE_1_0.txt or copy at
+//  (See accompanying file LICENSE_1_0.txt or copy at 
 //  http://www.boost.org/LICENSE_1_0.txt)
 
 //  See http://www.boost.org/libs/test for the library home page.
 //
-/// @file
-/// @brief Deprecated implementation of simple minimal testing
-/// @deprecated
-/// To convert to Unit Test Framework simply rewrite:
-/// @code
-/// #include <boost/test/minimal.hpp>
-///
-/// int test_main( int, char *[] )
-/// {
-///   ...
-/// }
-/// @endcode
-/// as
-/// @code
-/// #include <boost/test/included/unit_test.hpp>
-///
-/// BOOST_AUTO_TEST_CASE(test_main)
-/// {
-///   ...
-/// }
-/// @endcode
+//  File        : $RCSfile: minimal.hpp,v $
+//
+//  Version     : $Revision: 1.19 $
+//
+//  Description : simple minimal testing definitions and implementation
 // ***************************************************************************
 
 #ifndef BOOST_TEST_MINIMAL_HPP_071894GER
@@ -51,12 +35,11 @@
 // Boost.Test
 #include <boost/test/detail/global_typedef.hpp>
 #include <boost/test/impl/execution_monitor.ipp>
-#include <boost/test/impl/debug.ipp>
 #include <boost/test/utils/class_properties.hpp>
 #include <boost/test/utils/basic_cstring/io.hpp>
 
 // Boost
-#include <boost/cstdlib.hpp>            // for exit codes
+#include <boost/cstdlib.hpp>            // for exit codes#include <boost/cstdlib.hpp>            // for exit codes
 #include <boost/current_function.hpp>   // for BOOST_CURRENT_FUNCTION
 
 // STL
@@ -117,6 +100,7 @@ private:
 }; // monitor
 
 } // namespace minimal_test
+
 } // namespace boost
 
 //____________________________________________________________________________//
@@ -133,7 +117,9 @@ int BOOST_TEST_CALL_DECL main( int argc, char* argv[] )
     }
     catch( boost::execution_exception const& exex ) {
         if( exex.code() != boost::execution_exception::no_error )
-            BOOST_ERROR( (std::string( "exception \"" ) + exex.what() + "\" caught").c_str() );
+            BOOST_ERROR( (std::string( "exception \"" ).
+                            append( exex.what().begin(), exex.what().end() ).
+                            append( "\" caught" ) ).c_str() );
         std::cerr << "\n**** Testing aborted.";
     }
 
@@ -145,12 +131,37 @@ int BOOST_TEST_CALL_DECL main( int argc, char* argv[] )
     }
 
     std::cout << "\n**** no errors detected\n";
-
+    
     return boost::exit_success;
 }
 
 //____________________________________________________________________________//
 
 #include <boost/test/detail/enable_warnings.hpp>
+
+// ***************************************************************************
+//  Revision History :
+//  
+//  $Log: minimal.hpp,v $
+//  Revision 1.19  2005/02/20 08:27:06  rogeeff
+//  This a major update for Boost.Test framework. See release docs for complete list of fixes/updates
+//
+//  Revision 1.18  2005/02/01 06:40:06  rogeeff
+//  copyright update
+//  old log entries removed
+//  minor stilistic changes
+//  depricated tools removed
+//
+//  Revision 1.17  2005/01/31 07:50:05  rogeeff
+//  cdecl portability fix
+//
+//  Revision 1.16  2005/01/31 06:01:27  rogeeff
+//  BOOST_TEST_CALL_DECL correctness fixes
+//
+//  Revision 1.15  2005/01/22 19:22:12  rogeeff
+//  implementation moved into headers section to eliminate dependency of included/minimal component on src directory
+//
+// ***************************************************************************
+
 
 #endif // BOOST_TEST_MINIMAL_HPP_071894GER

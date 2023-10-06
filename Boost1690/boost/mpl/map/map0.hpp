@@ -11,15 +11,14 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/map/map0.hpp,v $
+// $Date: 2004/09/02 15:40:59 $
+// $Revision: 1.2 $
 
 #include <boost/mpl/map/aux_/contains_impl.hpp>
 #include <boost/mpl/map/aux_/at_impl.hpp>
 //#include <boost/mpl/map/aux_/O1_size.hpp>
 #include <boost/mpl/map/aux_/insert_impl.hpp>
-#include <boost/mpl/map/aux_/insert_range_impl.hpp>
 #include <boost/mpl/map/aux_/erase_impl.hpp>
 #include <boost/mpl/map/aux_/erase_key_impl.hpp>
 #include <boost/mpl/map/aux_/has_key_impl.hpp>

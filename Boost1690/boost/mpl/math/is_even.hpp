@@ -10,9 +10,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/math/is_even.hpp,v $
+// $Date: 2004/09/02 15:41:01 $
+// $Revision: 1.5 $
 
 #include <boost/mpl/bool.hpp>
 #include <boost/mpl/aux_/na_spec.hpp>

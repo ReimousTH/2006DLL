@@ -9,9 +9,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/aux_/shift_op.hpp,v $
+// $Date: 2004/09/07 08:51:32 $
+// $Revision: 1.4 $
 
 #if !defined(BOOST_MPL_PREPROCESSING_MODE)
 #   include <boost/mpl/integral_c.hpp>

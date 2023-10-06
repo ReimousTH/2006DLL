@@ -10,9 +10,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/aux_/joint_iter.hpp,v $
+// $Date: 2004/10/01 16:29:34 $
+// $Revision: 1.6 $
 
 #include <boost/mpl/next_prior.hpp>
 #include <boost/mpl/deref.hpp>

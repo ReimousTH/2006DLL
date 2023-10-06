@@ -11,11 +11,6 @@
 #include <vector>
 #include <string>
 
-#if defined(BOOST_MSVC)
-#   pragma warning (push)
-#   pragma warning (disable:4251) // class 'std::vector<_Ty>' needs to have dll-interface to be used by clients of class 'boost::program_options::positional_options_description'
-#endif
-
 namespace boost { namespace program_options {
 
     /** Describes positional options. 
@@ -42,11 +37,10 @@ namespace boost { namespace program_options {
             No calls to 'add' can be made after call with 'max_value' equal to 
             '-1'.            
         */
-        positional_options_description&
-        add(const char* name, int max_count);
+        void add(const char* name, int max_count);
 
         /** Returns the maximum number of positional options that can
-            be present. Can return (numeric_limits<unsigned>::max)() to
+            be present. Can return numeric_limits<unsigned>::max() to
             indicate unlimited number. */
         unsigned max_total_count() const;
 
@@ -65,10 +59,6 @@ namespace boost { namespace program_options {
     };
 
 }}
-
-#if defined(BOOST_MSVC)
-#   pragma warning (pop)
-#endif
 
 #endif
 

@@ -1,50 +1,37 @@
 #ifndef DATE_TIME_TZ_DB_BASE_HPP__
 #define DATE_TIME_TZ_DB_BASE_HPP__
 
-/* Copyright (c) 2003-2005 CrystalClear Software, Inc.
+/* Copyright (c) 2003-2004 CrystalClear Software, Inc.
  * Subject to the Boost Software License, Version 1.0. 
- * (See accompanying file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+ * (See accompanying file LICENSE-1.0 or http://www.boost.org/LICENSE-1.0)
  * Author: Jeff Garland, Bart Garst
- * $Date$
+ * $Date: 2005/05/07 08:49:15 $
  */
 
-#include <map>
-#include <vector>
+#include "boost/shared_ptr.hpp"
+#include "boost/date_time/time_zone_names.hpp"
+#include "boost/date_time/time_zone_base.hpp"
+#include "boost/date_time/posix_time/posix_time.hpp"
+#include "boost/tokenizer.hpp"
 #include <string>
 #include <sstream>
-#include <fstream>
+#include <map>
+#include <vector>
 #include <stdexcept>
-#include <boost/tokenizer.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/throw_exception.hpp>
-#include <boost/date_time/compiler_config.hpp>
-#include <boost/date_time/time_zone_names.hpp>
-#include <boost/date_time/time_zone_base.hpp>
-#include <boost/date_time/time_parsing.hpp>
-#include <boost/algorithm/string.hpp>
+#include <fstream>
 
 namespace boost {
   namespace date_time {
 
-    //! Exception thrown when tz database cannot locate requested data file
-    class data_not_accessible : public std::logic_error
+
+    struct data_not_accessible : public std::logic_error
     {
-     public:
-       data_not_accessible() : 
-         std::logic_error(std::string("Unable to locate or access the required datafile.")) 
-       {}
-       data_not_accessible(const std::string& filespec) : 
-         std::logic_error(std::string("Unable to locate or access the required datafile. Filespec: " + filespec)) 
-       {}
+      data_not_accessible() : std::logic_error(std::string("Unable to locate or access the required datafile.")) {}
+      data_not_accessible(const std::string& filespec) : std::logic_error(std::string("Unable to locate or access the required datafile. Filespec: " + filespec)) {}
     };
-    
-    //! Exception thrown when tz database locates incorrect field structure in data file
-    class bad_field_count : public std::out_of_range
+    struct bad_field_count : public std::out_of_range
     {
-     public:
-       bad_field_count(const std::string& s) : 
-         std::out_of_range(s) 
-      {}
+      bad_field_count(const std::string& s) : std::out_of_range(s) {}
     };
 
     //! Creates a database of time_zones from csv datafile
@@ -148,58 +135,51 @@ namespace boost {
     template<class time_zone_type, class rule_type>
     class tz_db_base {
     public:
-      /* Having CharT as a template parameter created problems 
+      /* Having charT as a template parameter created problems 
        * with posix_time::duration_from_string. Templatizing 
        * duration_from_string was not possible at this time, however, 
        * it should be possible in the future (when poor compilers get 
        * fixed or stop being used). 
-       * Since this class was designed to use CharT as a parameter it 
+       * Since this class was designed to use charT as a parameter it 
        * is simply typedef'd here to ease converting in back to a 
        * parameter the future */
-      typedef char char_type;
+      typedef char charT;
 
       typedef typename time_zone_type::base_type time_zone_base_type;
       typedef typename time_zone_type::time_duration_type time_duration_type;
-      typedef time_zone_names_base<char_type> time_zone_names;
-      typedef boost::date_time::dst_adjustment_offsets<time_duration_type> dst_adjustment_offsets;
-      typedef std::basic_string<char_type> string_type;
+      typedef time_zone_names_base<charT> time_zone_names;
+      typedef dst_adjustment_offsets<time_duration_type> dst_adjustment_offsets;
+      typedef std::basic_string<charT> string_type;
 
       //! Constructs an empty database
       tz_db_base() {}
 
       //! Process csv data file, may throw exceptions
-      /*! May throw bad_field_count exceptions */
-      void load_from_stream(std::istream &in)
-      {
-        std::string buff;
-        while( std::getline(in, buff)) {
-          boost::trim_right(buff);
-          parse_string(buff);
-        }
-      }
-
-      //! Process csv data file, may throw exceptions
       /*! May throw data_not_accessible, or bad_field_count exceptions */
       void load_from_file(const std::string& pathspec)
       {
+        string_type in_str;
         std::string  buff;
         
         std::ifstream ifs(pathspec.c_str());
         if(!ifs){
-          boost::throw_exception(data_not_accessible(pathspec));
+          throw data_not_accessible(pathspec);
         }
         std::getline(ifs, buff); // first line is column headings
-        this->load_from_stream(ifs);
+
+        while( std::getline(ifs, buff)) {
+          parse_string(buff);
+        }
       }
 
       //! returns true if record successfully added to map
-      /*! Takes a region name in the form of "America/Phoenix", and a 
+      /*! Takes an id string in the form of "America/Phoenix", and a 
        * time_zone object for that region. The id string must be a unique 
        * name that does not already exist in the database. */
-      bool add_record(const string_type& region, 
+      bool add_record(const string_type& id, 
                       boost::shared_ptr<time_zone_base_type> tz)
       {
-        typename map_type::value_type p(region, tz); 
+        typename map_type::value_type p(id, tz); 
         return (m_zone_map.insert(p)).second;
       }
 
@@ -262,12 +242,8 @@ namespace boost {
         e_wn = get_week_num(e_nth);
         
         
-        return new rule_type(start_rule(s_wn,
-                                        static_cast<unsigned short>(s_d),
-                                        static_cast<unsigned short>(s_m)),
-                             end_rule(e_wn,
-                                      static_cast<unsigned short>(e_d),
-                                      static_cast<unsigned short>(e_m)));
+        return new rule_type(start_rule(s_wn, s_d, s_m),
+                             end_rule(e_wn, e_d, e_m));
       }
       //! helper function for parse_rules()
       week_num get_week_num(int nth) const
@@ -295,27 +271,14 @@ namespace boost {
       //! splits the [start|end]_date_rule string into 3 ints
       void split_rule_spec(int& nth, int& d, int& m, string_type rule) const
       {
-        typedef boost::char_separator<char_type, std::char_traits<char_type> > char_separator_type;
-        typedef boost::tokenizer<char_separator_type,
-                                 std::basic_string<char_type>::const_iterator,
-                                 std::basic_string<char_type> > tokenizer;
-        typedef boost::tokenizer<char_separator_type,
-                                 std::basic_string<char_type>::const_iterator,
-                                 std::basic_string<char_type> >::iterator tokenizer_iterator;
-        
-        const char_type sep_char[] = { ';', '\0'};
-        char_separator_type sep(sep_char);
+        typedef boost::tokenizer<boost::char_separator<charT>,
+          string_type::const_iterator,
+          string_type > tokenizer;
+        const charT sep_char[] = { ';', '\0'};
+        boost::char_separator<charT> sep(sep_char);
         tokenizer tokens(rule, sep); // 3 fields
-
-        if ( std::distance ( tokens.begin(), tokens.end ()) != 3 ) {
-          std::ostringstream msg;
-          msg << "Expecting 3 fields, got " 
-              << std::distance ( tokens.begin(), tokens.end ()) 
-              << " fields in line: " << rule;
-          boost::throw_exception(bad_field_count(msg.str()));
-        }
-
-        tokenizer_iterator tok_iter = tokens.begin(); 
+        
+        typename tokenizer::iterator tok_iter = tokens.begin(); 
         nth = std::atoi(tok_iter->c_str()); ++tok_iter;
         d   = std::atoi(tok_iter->c_str()); ++tok_iter;
         m   = std::atoi(tok_iter->c_str());
@@ -329,10 +292,11 @@ namespace boost {
        * zone_spec successfully added to database */
       bool parse_string(string_type& s)
       {
+        
         std::vector<string_type> result;
-        typedef boost::token_iterator_generator<boost::escaped_list_separator<char_type>, string_type::const_iterator, string_type >::type token_iter_type;
+        typedef boost::token_iterator_generator<boost::escaped_list_separator<charT>, string_type::const_iterator, string_type >::type token_iter_type;
 
-        token_iter_type i = boost::make_token_iterator<string_type>(s.begin(), s.end(),boost::escaped_list_separator<char_type>());
+        token_iter_type i = boost::make_token_iterator<string_type>(s.begin(), s.end(),boost::escaped_list_separator<charT>());
 
         token_iter_type end;
         while (i != end) {
@@ -347,11 +311,10 @@ namespace boost {
         //take a shot at fixing gcc 4.x error
         const unsigned int expected_fields = static_cast<unsigned int>(FIELD_COUNT);
         if (result.size() != expected_fields) { 
-          std::ostringstream msg;
+          std::stringstream msg;
           msg << "Expecting " << FIELD_COUNT << " fields, got " 
             << result.size() << " fields in line: " << s;
-          boost::throw_exception(bad_field_count(msg.str()));
-          BOOST_DATE_TIME_UNREACHABLE_EXPRESSION(return false); // should never reach
+          throw bad_field_count(msg.str());
         }
 
         // initializations
@@ -366,7 +329,7 @@ namespace boost {
                               result[DSTNAME], result[DSTABBR]);
 
         time_duration_type utc_offset = 
-          str_from_delimited_time_duration<time_duration_type,char_type>(result[GMTOFFSET]);
+          posix_time::duration_from_string(result[GMTOFFSET]);
         
         dst_adjustment_offsets adjust(time_duration_type(0,0,0),
                                       time_duration_type(0,0,0),
@@ -376,9 +339,9 @@ namespace boost {
 
         if(has_dst){
           adjust = dst_adjustment_offsets(
-                                          str_from_delimited_time_duration<time_duration_type,char_type>(result[DSTADJUST]),
-                                          str_from_delimited_time_duration<time_duration_type,char_type>(result[START_TIME]),
-                                          str_from_delimited_time_duration<time_duration_type,char_type>(result[END_TIME])
+                                          posix_time::duration_from_string(result[DSTADJUST]),
+                                          posix_time::duration_from_string(result[START_TIME]),
+                                          posix_time::duration_from_string(result[END_TIME])
                                           );
 
           rules = 

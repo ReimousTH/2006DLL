@@ -21,7 +21,7 @@ namespace SonicTeam{
 
 				///IVarible
 				//pure_call
-				virtual void OnVarible(void) override = 0;
+				virtual void OnVarible(LuaSystem**) override = 0;
 				///
 
 
@@ -58,6 +58,7 @@ namespace SonicTeam{
 
 
 
+			public:
 				//fields_but i not sure  that all should be here
 				//or 
 			

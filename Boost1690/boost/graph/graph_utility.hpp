@@ -17,7 +17,9 @@
 #include <assert.h>
 #include <boost/config.hpp>
 #include <boost/tuple/tuple.hpp>
-
+#ifndef BOOST_NO_SLIST
+#  include <slist> // shouldn't have to include this... -JGS
+#endif
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/properties.hpp>
 #include <boost/pending/container_traits.hpp>
@@ -146,106 +148,108 @@ namespace boost {
   // -JGS
 
   template <class IncidenceGraph, class Name>
-  void print_in_edges(const IncidenceGraph& G, Name name, std::ostream& os = std::cout)
+  void print_in_edges(const IncidenceGraph& G, Name name)
   {
     typename graph_traits<IncidenceGraph>::vertex_iterator ui,ui_end;
-    for (boost::tie(ui,ui_end) = vertices(G); ui != ui_end; ++ui) {
-      os << get(name,*ui) << " <-- ";
+    for (tie(ui,ui_end) = vertices(G); ui != ui_end; ++ui) {
+      std::cout << get(name,*ui) << " <-- ";
       typename graph_traits<IncidenceGraph>
         ::in_edge_iterator ei, ei_end;
-      for(boost::tie(ei,ei_end) = in_edges(*ui,G); ei != ei_end; ++ei)
-        os << get(name,source(*ei,G)) << " ";
-      os << '\n';
+      for(tie(ei,ei_end) = in_edges(*ui,G); ei != ei_end; ++ei)
+        std::cout << get(name,source(*ei,G)) << " ";
+      std::cout << std::endl;
     }
   }
 
   template <class IncidenceGraph, class Name>
-  void print_graph_dispatch(const IncidenceGraph& G, Name name, directed_tag, std::ostream& os = std::cout)
+  void print_graph_dispatch(const IncidenceGraph& G, Name name, directed_tag)
   {
     typename graph_traits<IncidenceGraph>::vertex_iterator ui,ui_end;
-    for (boost::tie(ui,ui_end) = vertices(G); ui != ui_end; ++ui) {
-      os << get(name,*ui) << " --> ";
+    for (tie(ui,ui_end) = vertices(G); ui != ui_end; ++ui) {
+      std::cout << get(name,*ui) << " --> ";
       typename graph_traits<IncidenceGraph>
         ::out_edge_iterator ei, ei_end;
-      for(boost::tie(ei,ei_end) = out_edges(*ui,G); ei != ei_end; ++ei)
-        os << get(name,target(*ei,G)) << " ";
-      os << '\n';
+      for(tie(ei,ei_end) = out_edges(*ui,G); ei != ei_end; ++ei)
+        std::cout << get(name,target(*ei,G)) << " ";
+      std::cout << std::endl;
     }
   }
   template <class IncidenceGraph, class Name>
-  void print_graph_dispatch(const IncidenceGraph& G, Name name, undirected_tag, std::ostream& os = std::cout)
+  void print_graph_dispatch(const IncidenceGraph& G, Name name, undirected_tag)
   {
     typename graph_traits<IncidenceGraph>::vertex_iterator ui,ui_end;
-    for (boost::tie(ui,ui_end) = vertices(G); ui != ui_end; ++ui) {
-      os << get(name,*ui) << " <--> ";
+    for (tie(ui,ui_end) = vertices(G); ui != ui_end; ++ui) {
+      std::cout << get(name,*ui) << " <--> ";
       typename graph_traits<IncidenceGraph>
         ::out_edge_iterator ei, ei_end;
-      for(boost::tie(ei,ei_end) = out_edges(*ui,G); ei != ei_end; ++ei)
-        os << get(name,target(*ei,G)) << " ";
-      os << '\n';
+      for(tie(ei,ei_end) = out_edges(*ui,G); ei != ei_end; ++ei)
+        std::cout << get(name,target(*ei,G)) << " ";
+      std::cout << std::endl;
     }
   }
   template <class IncidenceGraph, class Name>
-  void print_graph(const IncidenceGraph& G, Name name, std::ostream& os = std::cout)
+  void print_graph(const IncidenceGraph& G, Name name)
   {
     typedef typename graph_traits<IncidenceGraph>
       ::directed_category Cat;
-    print_graph_dispatch(G, name, Cat(), os);
+    print_graph_dispatch(G, name, Cat());
   }
   template <class IncidenceGraph>
-  void print_graph(const IncidenceGraph& G, std::ostream& os = std::cout) {
-    print_graph(G, get(vertex_index, G), os);
+  void print_graph(const IncidenceGraph& G) {
+    print_graph(G, get(vertex_index, G));
   }
 
   template <class EdgeListGraph, class Name>
-  void print_edges(const EdgeListGraph& G, Name name, std::ostream& os = std::cout)
+  void print_edges(const EdgeListGraph& G, Name name)
   {
     typename graph_traits<EdgeListGraph>::edge_iterator ei, ei_end;
-    for (boost::tie(ei, ei_end) = edges(G); ei != ei_end; ++ei)
-      os << "(" << get(name, source(*ei, G))
+    for (tie(ei, ei_end) = edges(G); ei != ei_end; ++ei)
+      std::cout << "(" << get(name, source(*ei, G))
                 << "," << get(name, target(*ei, G)) << ") ";
-    os << '\n';
+    std::cout << std::endl;
   }
 
   template <class EdgeListGraph, class VertexName, class EdgeName>
-  void print_edges2(const EdgeListGraph& G, VertexName vname, EdgeName ename, std::ostream& os = std::cout)
+  void print_edges2(const EdgeListGraph& G, VertexName vname, EdgeName ename)
   {
     typename graph_traits<EdgeListGraph>::edge_iterator ei, ei_end;
-    for (boost::tie(ei, ei_end) = edges(G); ei != ei_end; ++ei)
-      os << get(ename, *ei) << "(" << get(vname, source(*ei, G))
+    for (tie(ei, ei_end) = edges(G); ei != ei_end; ++ei)
+      std::cout << get(ename, *ei) << "(" << get(vname, source(*ei, G))
                 << "," << get(vname, target(*ei, G)) << ") ";
-    os << '\n';
+    std::cout << std::endl;
   }
 
   template <class VertexListGraph, class Name>
-  void print_vertices(const VertexListGraph& G, Name name, std::ostream& os = std::cout)
+  void print_vertices(const VertexListGraph& G, Name name)
   {
     typename graph_traits<VertexListGraph>::vertex_iterator vi,vi_end;
-    for (boost::tie(vi,vi_end) = vertices(G); vi != vi_end; ++vi)
-      os << get(name,*vi) << " ";
-    os << '\n';
+    for (tie(vi,vi_end) = vertices(G); vi != vi_end; ++vi)
+      std::cout << get(name,*vi) << " ";
+    std::cout << std::endl;
   }
 
   template <class Graph, class Vertex>
   bool is_adj_dispatch(Graph& g, Vertex a, Vertex b, bidirectional_tag)
   {
+    typedef typename graph_traits<Graph>::edge_descriptor 
+      edge_descriptor;
     typename graph_traits<Graph>::adjacency_iterator vi, viend, 
       adj_found;
-    boost::tie(vi, viend) = adjacent_vertices(a, g);
+    tie(vi, viend) = adjacent_vertices(a, g);
     adj_found = std::find(vi, viend, b);
     if (adj_found == viend)
       return false;  
 
     typename graph_traits<Graph>::out_edge_iterator oi, oiend, 
       out_found;
-    boost::tie(oi, oiend) = out_edges(a, g);
+    tie(oi, oiend) = out_edges(a, g);
     out_found = std::find_if(oi, oiend, incident_to(b, g));
     if (out_found == oiend)
       return false;
 
     typename graph_traits<Graph>::in_edge_iterator ii, iiend, 
       in_found;
-    boost::tie(ii, iiend) = in_edges(b, g);
+    tie(ii, iiend) = in_edges(b, g);
     in_found = std::find_if(ii, iiend, incident_from(a, g));
     if (in_found == iiend)
       return false;
@@ -255,17 +259,39 @@ namespace boost {
   template <class Graph, class Vertex>
   bool is_adj_dispatch(Graph& g, Vertex a, Vertex b, directed_tag)
   {
+    typedef typename graph_traits<Graph>::edge_descriptor 
+      edge_descriptor;
     typename graph_traits<Graph>::adjacency_iterator vi, viend, found;
-    boost::tie(vi, viend) = adjacent_vertices(a, g);
+    tie(vi, viend) = adjacent_vertices(a, g);
+#if defined(BOOST_MSVC) && BOOST_MSVC <= 1300 && defined(__SGI_STL_PORT)
+    // Getting internal compiler error with std::find()
+    found = viend;
+    for (; vi != viend; ++vi)
+      if (*vi == b) {
+        found = vi;
+        break;
+      }
+#else
     found = std::find(vi, viend, b);
+#endif
     if ( found == viend )
       return false;
 
     typename graph_traits<Graph>::out_edge_iterator oi, oiend, 
       out_found;
-    boost::tie(oi, oiend) = out_edges(a, g);
+    tie(oi, oiend) = out_edges(a, g);
 
+#if defined(BOOST_MSVC) && BOOST_MSVC <= 1300 && defined(__SGI_STL_PORT)
+    // Getting internal compiler error with std::find()
+    out_found = oiend;
+    for (; oi != oiend; ++oi)
+      if (target(*oi, g) == b) {
+        out_found = oi;
+        break;
+      }
+#else
     out_found = std::find_if(oi, oiend, incident_to(b, g));
+#endif
     if (out_found == oiend)
       return false;
     return true;
@@ -286,7 +312,7 @@ namespace boost {
   bool in_edge_set(Graph& g, Edge e)
   {
     typename Graph::edge_iterator ei, ei_end, found;
-    boost::tie(ei, ei_end) = edges(g);
+    tie(ei, ei_end) = edges(g);
     found = std::find(ei, ei_end, e);
     return found != ei_end;
   }
@@ -295,7 +321,7 @@ namespace boost {
   bool in_vertex_set(Graph& g, Vertex v)
   {
     typename Graph::vertex_iterator vi, vi_end, found;
-    boost::tie(vi, vi_end) = vertices(g);
+    tie(vi, vi_end) = vertices(g);
     found = std::find(vi, vi_end, v);
     return found != vi_end;
   }
@@ -304,7 +330,7 @@ namespace boost {
   bool in_edge_set(Graph& g, Vertex u, Vertex v)
   {
     typename Graph::edge_iterator ei, ei_end;
-    for (boost::tie(ei,ei_end) = edges(g); ei != ei_end; ++ei)
+    for (tie(ei,ei_end) = edges(g); ei != ei_end; ++ei)
       if (source(*ei,g) == u && target(*ei,g) == v)
         return true;
     return false;
@@ -348,12 +374,12 @@ namespace boost {
     typedef color_traits<ColorValue> Color;
     typename graph_traits<VertexListGraph>::vertex_iterator 
       ui, ui_end, vi, vi_end, ci, ci_end;
-    for (boost::tie(ui, ui_end) = vertices(g); ui != ui_end; ++ui)
-      for (boost::tie(vi, vi_end) = vertices(g); vi != vi_end; ++vi)
+    for (tie(ui, ui_end) = vertices(g); ui != ui_end; ++ui)
+      for (tie(vi, vi_end) = vertices(g); vi != vi_end; ++vi)
         if (*ui != *vi) {
-          for (boost::tie(ci, ci_end) = vertices(g); ci != ci_end; ++ci) 
+          for (tie(ci, ci_end) = vertices(g); ci != ci_end; ++ci) 
             put(color, *ci, Color::white());
-          if (! is_reachable(*ui, *vi, g, color))
+          if (! is_reachable(*ui, *vi, color))
             return false;
         }
     return true;
@@ -387,91 +413,6 @@ namespace boost {
   std::pair<T1,std::pair<T2,std::pair<T3,std::pair<T4,T5> > > > 
   make_list(const T1& t1, const T2& t2, const T3& t3, const T4& t4, const T5& t5)
     { return std::make_pair(t1, std::make_pair(t2, std::make_pair(t3, std::make_pair(t4, t5)))); }
-
-  namespace graph {
-    
-    // Functor for remove_parallel_edges: edge property of the removed edge is added to the remaining
-    template <typename EdgeProperty>
-    struct add_removed_edge_property
-    {
-      add_removed_edge_property(EdgeProperty ep) : ep(ep) {}
-      
-      template <typename Edge>
-      void operator() (Edge stay, Edge away)
-      {
-        put(ep, stay, get(ep, stay) + get(ep, away));
-      }
-      EdgeProperty  ep;
-    };
-
-    // Same as above: edge property is capacity here
-    template <typename Graph>
-    struct add_removed_edge_capacity
-      : add_removed_edge_property<typename property_map<Graph, edge_capacity_t>::type>
-    {
-      typedef add_removed_edge_property<typename property_map<Graph, edge_capacity_t>::type> base;
-      add_removed_edge_capacity(Graph& g) : base(get(edge_capacity, g)) {}
-    };    
-
-    template <typename Graph>
-    bool has_no_vertices(const Graph& g) {
-      typedef typename boost::graph_traits<Graph>::vertex_iterator vi;
-      std::pair<vi, vi> p = vertices(g);
-      return (p.first == p.second);
-    }
-
-    template <typename Graph>
-    bool has_no_edges(const Graph& g) {
-      typedef typename boost::graph_traits<Graph>::edge_iterator ei;
-      std::pair<ei, ei> p = edges(g);
-      return (p.first == p.second);
-    }
-
-    template <typename Graph>
-    bool has_no_out_edges(const typename boost::graph_traits<Graph>::vertex_descriptor& v, const Graph& g) {
-      typedef typename boost::graph_traits<Graph>::out_edge_iterator ei;
-      std::pair<ei, ei> p = out_edges(v, g);
-      return (p.first == p.second);
-    }
-
-  } // namespace graph
-
-  #include <boost/graph/iteration_macros.hpp>
-
-  template <class PropertyIn, class PropertyOut, class Graph>
-  void copy_vertex_property(PropertyIn p_in, PropertyOut p_out, Graph& g)
-  {
-    BGL_FORALL_VERTICES_T(u, g, Graph)
-      put(p_out, u, get(p_in, g));
-  }
-
-  template <class PropertyIn, class PropertyOut, class Graph>
-  void copy_edge_property(PropertyIn p_in, PropertyOut p_out, Graph& g)
-  {
-    BGL_FORALL_EDGES_T(e, g, Graph)
-      put(p_out, e, get(p_in, g));
-  }
-
-  // Return true if property_map1 and property_map2 differ
-  // for any of the vertices in graph.
-  template <typename PropertyMapFirst,
-            typename PropertyMapSecond,
-            typename Graph>
-  bool are_property_maps_different
-  (const PropertyMapFirst property_map1,
-   const PropertyMapSecond property_map2,
-   const Graph& graph) {
-  
-    BGL_FORALL_VERTICES_T(vertex, graph, Graph) {
-      if (get(property_map1, vertex) !=
-          get(property_map2, vertex)) {
-
-        return (true);
-      }
-    }
-
-    return (false);
-  }
 
 } /* namespace boost */
 

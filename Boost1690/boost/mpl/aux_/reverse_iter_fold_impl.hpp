@@ -10,9 +10,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/aux_/reverse_iter_fold_impl.hpp,v $
+// $Date: 2004/09/02 15:40:44 $
+// $Revision: 1.2 $
 
 #if !defined(BOOST_MPL_PREPROCESSING_MODE)
 #   include <boost/mpl/next_prior.hpp>

@@ -8,14 +8,10 @@
 # include <boost/python/detail/none.hpp>
 # include <boost/python/detail/value_arg.hpp>
 
-#ifndef BOOST_PYTHON_NO_PY_SIGNATURES
-# include <boost/python/converter/pytype_function.hpp>
-#endif
-
-# include <boost/python/detail/type_traits.hpp>
+# include <boost/type_traits/add_reference.hpp>
+# include <boost/type_traits/add_const.hpp>
 
 # include <boost/mpl/int.hpp>
-# include <boost/mpl/at.hpp>
 
 # include <boost/static_assert.hpp>
 # include <boost/python/refcount.hpp>
@@ -28,7 +24,7 @@ namespace detail
 {
   template <std::size_t>
   struct return_arg_pos_argument_must_be_positive
-# if defined(__GNUC__) || defined(__EDG__)
+# if defined(__GNUC__) && __GNUC__ >= 3 || defined(__EDG__)
   {}
 # endif
   ;
@@ -48,9 +44,6 @@ namespace detail
               {
                   return none();
               }
-#ifndef BOOST_PYTHON_NO_PY_SIGNATURES
-              PyTypeObject const *get_pytype() const { return converter::expected_pytype_for_arg<T>::get_pytype() ; }
-#endif
           };
       };
   };
@@ -89,12 +82,6 @@ struct return_arg : Base
         Py_DECREF(result);
         return incref( detail::get(mpl::int_<arg_pos-1>(),args) );
     }
-
-    template <class Sig> 
-    struct extract_return_type : mpl::at_c<Sig, arg_pos>
-    {
-    };
-
 };
 
 template <

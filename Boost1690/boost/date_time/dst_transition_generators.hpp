@@ -1,7 +1,7 @@
 /* Copyright (c) 2002,2003,2005 CrystalClear Software, Inc.
  * Use, modification and distribution is subject to the 
  * Boost Software License, Version 1.0. (See accompanying
- * file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+ * file LICENSE-1.0 or http://www.boost.org/LICENSE-1.0)
  * Author: Jeff Garland, Bart Garst
  */
 #ifndef DATE_TIME_DATE_DST_TRANSITION_DAY_GEN_HPP__
@@ -18,7 +18,7 @@ namespace date_time {
     {
     public:
       typedef typename date_type::year_type year_type;
-      virtual ~dst_day_calc_rule() {}
+      virtual ~dst_day_calc_rule() {};
       virtual date_type start_day(year_type y) const=0;
       virtual std::string start_rule_as_string() const=0;
       virtual date_type end_day(year_type y) const=0;

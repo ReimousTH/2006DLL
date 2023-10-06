@@ -11,66 +11,113 @@
 #ifndef BOOST_RANGE_SIZE_HPP
 #define BOOST_RANGE_SIZE_HPP
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && (_MSC_VER >= 1200)
 # pragma once
 #endif
 
 #include <boost/range/config.hpp>
-#include <boost/range/begin.hpp>
-#include <boost/range/end.hpp>
+
+#ifdef BOOST_NO_FUNCTION_TEMPLATE_ORDERING
+#include <boost/range/detail/size.hpp>
+#else
+
+#include <boost/range/detail/implementation_help.hpp>
 #include <boost/range/size_type.hpp>
-#include <boost/range/detail/has_member_size.hpp>
-#include <boost/assert.hpp>
-#include <boost/cstdint.hpp>
-#include <boost/utility.hpp>
+#include <cstddef>
+#include <iterator>
+#include <utility>
 
-namespace boost
+namespace boost 
 {
-    namespace range_detail
-    {
 
-        template<class SinglePassRange>
-        inline typename ::boost::enable_if<
-            has_member_size<SinglePassRange>,
-            typename range_size<const SinglePassRange>::type
-        >::type
-        range_calculate_size(const SinglePassRange& rng)
+#if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x564))    
+namespace range_detail 
+{
+#endif
+        //////////////////////////////////////////////////////////////////////
+        // primary template
+        //////////////////////////////////////////////////////////////////////
+        
+        template< typename C >
+        inline BOOST_DEDUCED_TYPENAME C::size_type
+        boost_range_size(  const C& c )
         {
-            return rng.size();
+            return c.size(); 
         }
 
-        template<class SinglePassRange>
-        inline typename disable_if<
-            has_member_size<SinglePassRange>,
-            typename range_size<const SinglePassRange>::type
-        >::type
-        range_calculate_size(const SinglePassRange& rng)
+        //////////////////////////////////////////////////////////////////////
+        // pair
+        //////////////////////////////////////////////////////////////////////
+
+        template< typename Iterator >
+        inline std::size_t boost_range_size(  const std::pair<Iterator,Iterator>& p )
         {
-            return std::distance(boost::begin(rng), boost::end(rng));
+            return std::distance( p.first, p.second );
         }
-    }
 
-    template<class SinglePassRange>
-    inline typename range_size<const SinglePassRange>::type
-    size(const SinglePassRange& rng)
-    {
-// Very strange things happen on some compilers that have the range concept
-// asserts disabled. This preprocessor condition is clearly redundant on a
-// working compiler but is vital for at least some compilers such as clang 4.2
-// but only on the Mac!
-#if BOOST_RANGE_ENABLE_CONCEPT_ASSERT == 1
-        BOOST_RANGE_CONCEPT_ASSERT((boost::SinglePassRangeConcept<SinglePassRange>));
+        //////////////////////////////////////////////////////////////////////
+        // array
+        //////////////////////////////////////////////////////////////////////
+
+        template< typename T, std::size_t sz >
+        inline std::size_t boost_range_size(  const T (&array)[sz] )
+        {
+            return range_detail::array_size<T,sz>( array ); 
+        }
+        
+        template< typename T, std::size_t sz >
+        inline std::size_t boost_range_size(  T (&array)[sz] )
+        {
+            return boost::range_detail::array_size<T,sz>( array );
+        }
+        
+        //////////////////////////////////////////////////////////////////////
+        // string
+        //////////////////////////////////////////////////////////////////////
+
+        inline std::size_t boost_range_size(  const char* const& s )
+        {
+            return boost::range_detail::str_size( s );
+        }
+
+        inline std::size_t boost_range_size(  const wchar_t* const& s )
+        {
+            return boost::range_detail::str_size( s );
+        }
+
+#if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x564))                
+} // namespace 'range_detail'
 #endif
 
-#if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x564)) && \
-    !BOOST_WORKAROUND(__GNUC__, < 3) \
-    /**/
-        using namespace range_detail;
+template< class T >
+inline BOOST_DEDUCED_TYPENAME range_size<T>::type size(  const T& r )
+{
+#if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x564))        
+    using namespace range_detail;
+#endif    
+    return boost_range_size( r );
+}
+
+
+#if BOOST_WORKAROUND(__MWERKS__, <= 0x3003 ) || BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x564))
+// BCB and CW are not able to overload pointer when class overloads are also available.
+inline range_size<const char*>::type size(  const char* r ) {
+    return range_detail::str_size( r );
+}
+inline range_size<char*>::type size(  char* r ) {
+    return range_detail::str_size( r );
+}
+inline range_size<const wchar_t*>::type size(  const wchar_t* r ) {
+    return range_detail::str_size( r );
+}
+inline range_size<wchar_t*>::type size(  wchar_t* r ) {
+    return range_detail::str_size( r );
+}
 #endif
 
-        return range_calculate_size(rng);
-    }
 
 } // namespace 'boost'
+
+#endif // BOOST_NO_FUNCTION_TEMPLATE_ORDERING
 
 #endif

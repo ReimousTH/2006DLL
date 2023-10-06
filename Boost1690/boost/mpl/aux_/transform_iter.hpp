@@ -10,9 +10,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/aux_/transform_iter.hpp,v $
+// $Date: 2004/09/07 12:07:56 $
+// $Revision: 1.4 $
 
 #include <boost/mpl/apply.hpp>
 #include <boost/mpl/iterator_tags.hpp>

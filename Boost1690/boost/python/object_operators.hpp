@@ -60,9 +60,7 @@ inline
 object_operators<U>::operator bool_type() const
 {
     object_cref2 x = *static_cast<U const*>(this);
-    int is_true = PyObject_IsTrue(x.ptr());
-    if (is_true < 0) throw_error_already_set();
-    return is_true ? &object::ptr : 0;
+    return PyObject_IsTrue(x.ptr()) ? &object::ptr : 0;
 }
 
 template <class U>
@@ -70,18 +68,22 @@ inline bool
 object_operators<U>::operator!() const
 {
     object_cref2 x = *static_cast<U const*>(this);
-    int is_true = PyObject_IsTrue(x.ptr());
-    if (is_true < 0) throw_error_already_set();
-    return !is_true;
+    return !PyObject_IsTrue(x.ptr());
 }
 
 # define BOOST_PYTHON_COMPARE_OP(op, opid)                              \
 template <class L, class R>                                             \
-BOOST_PYTHON_BINARY_RETURN(object) operator op(L const& l, R const& r)    \
+BOOST_PYTHON_BINARY_RETURN(bool) operator op(L const& l, R const& r)    \
 {                                                                       \
-    return PyObject_RichCompare(                                    \
+    return PyObject_RichCompareBool(                                    \
         object(l).ptr(), object(r).ptr(), opid);                        \
 }
+BOOST_PYTHON_COMPARE_OP(>, Py_GT)
+BOOST_PYTHON_COMPARE_OP(>=, Py_GE)
+BOOST_PYTHON_COMPARE_OP(<, Py_LT)
+BOOST_PYTHON_COMPARE_OP(<=, Py_LE)
+BOOST_PYTHON_COMPARE_OP(==, Py_EQ)
+BOOST_PYTHON_COMPARE_OP(!=, Py_NE)
 # undef BOOST_PYTHON_COMPARE_OP
     
 # define BOOST_PYTHON_BINARY_OPERATOR(op)                               \
@@ -91,12 +93,6 @@ BOOST_PYTHON_BINARY_RETURN(object) operator op(L const& l, R const& r)  \
 {                                                                       \
     return object(l) op object(r);                                      \
 }
-BOOST_PYTHON_BINARY_OPERATOR(>)
-BOOST_PYTHON_BINARY_OPERATOR(>=)
-BOOST_PYTHON_BINARY_OPERATOR(<)
-BOOST_PYTHON_BINARY_OPERATOR(<=)
-BOOST_PYTHON_BINARY_OPERATOR(==)
-BOOST_PYTHON_BINARY_OPERATOR(!=)
 BOOST_PYTHON_BINARY_OPERATOR(+)
 BOOST_PYTHON_BINARY_OPERATOR(-)
 BOOST_PYTHON_BINARY_OPERATOR(*)

@@ -22,15 +22,8 @@
 
 namespace boost{
 
-#ifdef BOOST_MSVC
-#pragma warning(push)
-#pragma warning(disable: 4103)
-#endif
 #ifdef BOOST_HAS_ABI_HEADERS
 #  include BOOST_ABI_PREFIX
-#endif
-#ifdef BOOST_MSVC
-#pragma warning(pop)
 #endif
 
 //
@@ -50,7 +43,7 @@ inline unsigned int regex_grep(Predicate foo,
    typedef typename match_results<BidiIterator>::allocator_type match_allocator_type;
 
    match_results<BidiIterator> m;
-   BOOST_REGEX_DETAIL_NS::perl_matcher<BidiIterator, match_allocator_type, traits> matcher(first, last, m, e, flags, first);
+   re_detail::perl_matcher<BidiIterator, match_allocator_type, traits> matcher(first, last, m, e, flags);
    unsigned int count = 0;
    while(matcher.find())
    {
@@ -138,15 +131,8 @@ inline unsigned int regex_grep(bool (*foo)(const match_results<std::basic_string
 #endif
 #endif
 
-#ifdef BOOST_MSVC
-#pragma warning(push)
-#pragma warning(disable: 4103)
-#endif
 #ifdef BOOST_HAS_ABI_HEADERS
 #  include BOOST_ABI_SUFFIX
-#endif
-#ifdef BOOST_MSVC
-#pragma warning(pop)
 #endif
 
 } // namespace boost

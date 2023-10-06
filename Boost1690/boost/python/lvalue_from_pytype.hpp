@@ -6,14 +6,10 @@
 # define LVALUE_FROM_PYTYPE_DWA2002130_HPP
 
 # include <boost/python/detail/prefix.hpp>
-#ifndef BOOST_PYTHON_NO_PY_SIGNATURES
-# include <boost/python/converter/pytype_function.hpp>
-#endif
 
 # include <boost/python/type_id.hpp>
 # include <boost/python/converter/registry.hpp>
 # include <boost/python/detail/void_ptr.hpp>
-# include <boost/python/detail/type_traits.hpp>
 
 namespace boost { namespace python {
 
@@ -36,7 +32,7 @@ namespace detail
   {
       static inline void* execute(PyObject* op)
       {
-          typedef typename add_lvalue_reference<U>::type param;
+          typedef typename boost::add_reference<U>::type param;
           return &Extractor::execute(
               boost::python::detail::void_ptr_to_reference(
                   op, (param(*)())0 )
@@ -64,7 +60,7 @@ struct extract_member
 {
     static MemberType& execute(InstanceType& c)
     {
-        (void)Py_TYPE(&c); // static assertion
+        (void)c.ob_type; // static assertion
         return c.*member;
     }
 };
@@ -76,7 +72,7 @@ struct extract_identity
 {
     static InstanceType& execute(InstanceType& c)
     {
-        (void)Py_TYPE(&c); // static assertion
+        (void)c.ob_type; // static assertion
         return c;
     }
 };
@@ -85,17 +81,12 @@ struct extract_identity
 // Extractor's static execute function from Python objects whose type
 // object is python_type.
 template <class Extractor, PyTypeObject const* python_type>
-struct lvalue_from_pytype 
+struct lvalue_from_pytype
 {
     lvalue_from_pytype()
     {
-        converter::registry::insert
-            ( &extract
-            , detail::extractor_type_id(&Extractor::execute)
-#ifndef BOOST_PYTHON_NO_PY_SIGNATURES
-            , &get_pytype
-#endif
-            );
+        converter::registry::insert(
+            &extract, detail::extractor_type_id(&Extractor::execute));
     }
  private:
     static void* extract(PyObject* op)
@@ -107,9 +98,6 @@ struct lvalue_from_pytype
             : 0
             ;
     }
-#ifndef BOOST_PYTHON_NO_PY_SIGNATURES
-    static PyTypeObject const*get_pytype() { return python_type; }
-#endif
 };
 
 }} // namespace boost::python

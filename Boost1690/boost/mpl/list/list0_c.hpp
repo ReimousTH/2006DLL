@@ -10,9 +10,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/list/list0_c.hpp,v $
+// $Date: 2004/11/28 07:18:24 $
+// $Revision: 1.5 $
 
 #include <boost/mpl/list/list0.hpp>
 #include <boost/mpl/integral_c.hpp>

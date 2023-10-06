@@ -2,7 +2,7 @@
 #define BOOST_ARCHIVE_POLYMORPHIC_TEXT_OARCHIVE_HPP
 
 // MS compatible compilers support #pragma once
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
 # pragma once
 #endif
 
@@ -18,26 +18,21 @@
 
 #include <boost/config.hpp>
 #include <boost/archive/text_oarchive.hpp>
-#include <boost/archive/detail/polymorphic_oarchive_route.hpp>
+#include <boost/archive/detail/polymorphic_oarchive_impl.hpp>
 
 namespace boost { 
 namespace archive {
 
-class BOOST_SYMBOL_VISIBLE polymorphic_text_oarchive :
-    public detail::polymorphic_oarchive_route<text_oarchive>
-{
-public:
-    polymorphic_text_oarchive(std::ostream & os, unsigned int flags = 0) :
-        detail::polymorphic_oarchive_route<text_oarchive>(os, flags)
-    {}
-    ~polymorphic_text_oarchive(){}
-};
+typedef detail::polymorphic_oarchive_impl<
+    text_oarchive_impl<text_oarchive> 
+> polymorphic_text_oarchive;
 
 } // namespace archive
 } // namespace boost
 
-// required by export
-BOOST_SERIALIZATION_REGISTER_ARCHIVE(
+// required by smart_cast for compilers not implementing 
+// partial template specialization
+BOOST_BROKEN_COMPILER_TYPE_TRAITS_SPECIALIZATION(
     boost::archive::polymorphic_text_oarchive
 )
 

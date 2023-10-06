@@ -10,9 +10,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/next_prior.hpp,v $
+// $Date: 2004/09/17 06:09:38 $
+// $Revision: 1.3 $
 
 #include <boost/mpl/aux_/common_name_wknd.hpp>
 #include <boost/mpl/aux_/na_spec.hpp>

@@ -10,9 +10,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/range_c.hpp,v $
+// $Date: 2004/11/28 01:57:09 $
+// $Revision: 1.5 $
 
 #include <boost/mpl/integral_c.hpp>
 #include <boost/mpl/aux_/range_c/front.hpp>

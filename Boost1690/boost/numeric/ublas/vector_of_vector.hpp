@@ -2,9 +2,13 @@
 //  Copyright (c) 2003
 //  Gunter Winkler, Joerg Walter
 //
-//  Distributed under the Boost Software License, Version 1.0. (See
-//  accompanying file LICENSE_1_0.txt or copy at
-//  http://www.boost.org/LICENSE_1_0.txt)
+//  Permission to use, copy, modify, distribute and sell this software
+//  and its documentation for any purpose is hereby granted without fee,
+//  provided that the above copyright notice appear in all copies and
+//  that both that copyright notice and this permission notice appear
+//  in supporting documentation.  The authors make no representations
+//  about the suitability of this software for any purpose.
+//  It is provided "as is" without express or implied warranty.
 //
 //  The authors gratefully acknowledge the support of
 //  GeNeSys mbH & Co. KG in producing this work.
@@ -60,7 +64,7 @@ namespace boost { namespace numeric { namespace ublas {
         generalized_vector_of_vector ():
             matrix_container<self_type> (),
             size1_ (0), size2_ (0), data_ (1) {
-            const size_type sizeM = layout_type::size_M (size1_, size2_);
+            const size_type sizeM = layout_type::size1 (size1_, size2_);
              // create size1+1 empty vector elements
             data_.insert_element (sizeM, vector_data_value_type ());
             storage_invariants ();
@@ -68,9 +72,9 @@ namespace boost { namespace numeric { namespace ublas {
         BOOST_UBLAS_INLINE
         generalized_vector_of_vector (size_type size1, size_type size2, size_type non_zeros = 0):
             matrix_container<self_type> (),
-            size1_ (size1), size2_ (size2), data_ (layout_type::size_M (size1_, size2_) + 1) {
-            const size_type sizeM = layout_type::size_M (size1_, size2_);
-            const size_type sizem = layout_type::size_m (size1_, size2_);
+            size1_ (size1), size2_ (size2), data_ (layout_type::size1 (size1_, size2_) + 1) {
+            const size_type sizeM = layout_type::size1 (size1_, size2_);
+            const size_type sizem = layout_type::size2 (size1_, size2_);
             for (size_type i = 0; i < sizeM; ++ i) // create size1 vector elements
                 data_.insert_element (i, vector_data_value_type ()) .resize (sizem, false);
             data_.insert_element (sizeM, vector_data_value_type ());
@@ -86,9 +90,9 @@ namespace boost { namespace numeric { namespace ublas {
         BOOST_UBLAS_INLINE
         generalized_vector_of_vector (const matrix_expression<AE> &ae, size_type non_zeros = 0):
             matrix_container<self_type> (),
-            size1_ (ae ().size1 ()), size2_ (ae ().size2 ()), data_ (layout_type::size_M (size1_, size2_) + 1) {
-            const size_type sizeM = layout_type::size_M (size1_, size2_);
-            const size_type sizem = layout_type::size_m (size1_, size2_);
+            size1_ (ae ().size1 ()), size2_ (ae ().size2 ()), data_ (layout_type::size1 (size1_, size2_) + 1) {
+            const size_type sizeM = layout_type::size1 (size1_, size2_);
+            const size_type sizem = layout_type::size2 (size1_, size2_);
             for (size_type i = 0; i < sizeM; ++ i) // create size1 vector elements
                 data_.insert_element (i, vector_data_value_type ()) .resize (sizem, false);
             data_.insert_element (sizeM, vector_data_value_type ());
@@ -106,17 +110,10 @@ namespace boost { namespace numeric { namespace ublas {
             return size2_;
         }
         BOOST_UBLAS_INLINE
-        size_type nnz_capacity () const {
+        size_type non_zeros () const {
             size_type non_zeros = 0;
-            for (const_vectoriterator_type itv = data_.begin (); itv != data_.end (); ++ itv)
-                non_zeros += (*itv).nnz_capacity ();
-            return non_zeros;
-        }
-        BOOST_UBLAS_INLINE
-        size_type nnz () const {
-            size_type non_zeros = 0;
-            for (const_vectoriterator_type itv = data_.begin (); itv != data_.end (); ++ itv)
-                non_zeros += (*itv).nnz ();
+            for (const_vectoriterator_type itv = data_ ().begin (); itv != data_ ().end (); ++ itv)
+                non_zeros += (*itv).size ();
             return non_zeros;
         }
 
@@ -133,11 +130,11 @@ namespace boost { namespace numeric { namespace ublas {
         // Resizing
         BOOST_UBLAS_INLINE
         void resize (size_type size1, size_type size2, bool preserve = true) {
-            const size_type oldM = layout_type::size_M (size1_, size2_);
+            const size_type oldM = layout_type::size1 (size1_, size2_);
             size1_ = size1;
             size2_ = size2;
-            const size_type sizeM = layout_type::size_M (size1_, size2_);
-            const size_type sizem = layout_type::size_m (size1_, size2_);
+            const size_type sizeM = layout_type::size1 (size1_, size2_);
+            const size_type sizem = layout_type::size2 (size1_, size2_);
             data ().resize (sizeM + 1, preserve);
             if (preserve) {
                 for (size_type i = 0; (i <= oldM) && (i < sizeM); ++ i)
@@ -164,8 +161,8 @@ namespace boost { namespace numeric { namespace ublas {
         }
         BOOST_UBLAS_INLINE
         const_pointer find_element (size_type i, size_type j) const {
-            const size_type elementM = layout_type::index_M (i, j);
-            const size_type elementm = layout_type::index_m (i, j);
+            const size_type elementM = layout_type::element1 (i, size1_, j, size2_);
+            const size_type elementm = layout_type::element2 (i, size1_, j, size2_);
             // optimise: check the storage_type and index directly if element always exists
             if (boost::is_convertible<typename array_type::storage_category, packed_tag>::value) {
                 return & (data () [elementM] [elementm]);
@@ -296,31 +293,31 @@ namespace boost { namespace numeric { namespace ublas {
         // Element insertion and erasure
         BOOST_UBLAS_INLINE
         true_reference insert_element (size_type i, size_type j, const_reference t) {
-            const size_type elementM = layout_type::index_M (i, j);
-            const size_type elementm = layout_type::index_m (i, j);
+            const size_type elementM = layout_type::element1 (i, size1_, j, size2_);
+            const size_type elementm = layout_type::element2 (i, size1_, j, size2_);
             vector_data_value_type& vd (ref (data () [elementM]));
             storage_invariants ();
             return vd.insert_element (elementm, t);
         }
         BOOST_UBLAS_INLINE
         void append_element (size_type i, size_type j, const_reference t) {
-            const size_type elementM = layout_type::index_M (i, j);
-            const size_type elementm = layout_type::index_m (i, j);
+            const size_type elementM = layout_type::element1 (i, size1_, j, size2_);
+            const size_type elementm = layout_type::element2 (i, size1_, j, size2_);
             vector_data_value_type& vd (ref (data () [elementM]));
             storage_invariants ();
             return vd.append_element (elementm, t);
         }
         BOOST_UBLAS_INLINE
         void erase_element (size_type i, size_type j) {
-            vectoriterator_type itv (data ().find (layout_type::index_M (i, j)));
+            vectoriterator_type itv (data ().find (layout_type::element1 (i, size1_, j, size2_)));
             if (itv == data ().end ())
                 return;
-            (*itv).erase_element (layout_type::index_m (i, j));
+            (*itv).erase_element (layout_type::element2 (i, size1_, j, size2_));
             storage_invariants ();
         }
         BOOST_UBLAS_INLINE
         void clear () {
-            const size_type sizeM = layout_type::size_M (size1_, size2_);
+            const size_type sizeM = layout_type::size1 (size1_, size2_);
             // FIXME should clear data () if this is done via value_type/*zero*/() then it is not size preserving
             for (size_type i = 0; i < sizeM; ++ i)
                 ref (data () [i]).clear ();
@@ -337,7 +334,7 @@ namespace boost { namespace numeric { namespace ublas {
 
         BOOST_UBLAS_INLINE
         true_reference at_element (size_type i, size_type j) {
-            return ref (ref (data () [layout_type::index_M (i, j)]) [layout_type::index_m (i, j)]);
+            return ref (ref (data () [layout_type::element1 (i, size1_, j, size2_)]) [layout_type::element2 (i, size1_, j, size2_)]);
         }
 
     public:
@@ -354,19 +351,19 @@ namespace boost { namespace numeric { namespace ublas {
         // BOOST_UBLAS_INLINE This function seems to be big. So we do not let the compiler inline it.    
         const_iterator1 find1 (int rank, size_type i, size_type j, int direction = 1) const {
             for (;;) {
-                const_vectoriterator_type itv (data ().find (layout_type::index_M (i, j)));
+                const_vectoriterator_type itv (data ().find (layout_type::address1 (i, size1_, j, size2_)));
                 const_vectoriterator_type itv_end (data ().end ());
                 if (itv == itv_end)
                     return const_iterator1 (*this, rank, i, j, itv_end, (*(-- itv)).end ());
 
-                const_subiterator_type it ((*itv).find (layout_type::index_m (i, j)));
+                const_subiterator_type it ((*itv).find (layout_type::address2 (i, size1_, j, size2_)));
                 const_subiterator_type it_end ((*itv).end ());
                 if (rank == 0)
                     return const_iterator1 (*this, rank, i, j, itv, it);
-                if (it != it_end && it.index () == layout_type::index_m (i, j))
+                if (it != it_end && it.index () == layout_type::address2 (i, size1_, j, size2_))
                     return const_iterator1 (*this, rank, i, j, itv, it);
                 if (direction > 0) {
-                    if (layout_type::fast_i ()) {
+                    if (layout_type::fast1 ()) {
                         if (it == it_end)
                             return const_iterator1 (*this, rank, i, j, itv, it);
                         i = it.index ();
@@ -376,7 +373,7 @@ namespace boost { namespace numeric { namespace ublas {
                         ++ i;
                     }
                 } else /* if (direction < 0)  */ {
-                    if (layout_type::fast_i ()) {
+                    if (layout_type::fast1 ()) {
                         if (it == (*itv).begin ())
                             return const_iterator1 (*this, rank, i, j, itv, it);
                         --it;
@@ -392,19 +389,19 @@ namespace boost { namespace numeric { namespace ublas {
         // BOOST_UBLAS_INLINE This function seems to be big. So we do not let the compiler inline it.    
         iterator1 find1 (int rank, size_type i, size_type j, int direction = 1) {
             for (;;) {
-                vectoriterator_type itv (data ().find (layout_type::index_M (i, j)));
+                vectoriterator_type itv (data ().find (layout_type::address1 (i, size1_, j, size2_)));
                 vectoriterator_type itv_end (data ().end ());
                 if (itv == itv_end)
                     return iterator1 (*this, rank, i, j, itv_end, (*(-- itv)).end ());
 
-                subiterator_type it ((*itv).find (layout_type::index_m (i, j)));
+                subiterator_type it ((*itv).find (layout_type::address2 (i, size1_, j, size2_)));
                 subiterator_type it_end ((*itv).end ());
                 if (rank == 0)
                     return iterator1 (*this, rank, i, j, itv, it);
-                if (it != it_end && it.index () == layout_type::index_m (i, j))
+                if (it != it_end && it.index () == layout_type::address2 (i, size1_, j, size2_))
                     return iterator1 (*this, rank, i, j, itv, it);
                 if (direction > 0) {
-                    if (layout_type::fast_i ()) {
+                    if (layout_type::fast1 ()) {
                         if (it == it_end)
                             return iterator1 (*this, rank, i, j, itv, it);
                         i = it.index ();
@@ -414,7 +411,7 @@ namespace boost { namespace numeric { namespace ublas {
                         ++ i;
                     }
                 } else /* if (direction < 0)  */ {
-                    if (layout_type::fast_i ()) {
+                    if (layout_type::fast1 ()) {
                         if (it == (*itv).begin ())
                             return iterator1 (*this, rank, i, j, itv, it);
                         --it;
@@ -430,19 +427,19 @@ namespace boost { namespace numeric { namespace ublas {
         // BOOST_UBLAS_INLINE This function seems to be big. So we do not let the compiler inline it.    
         const_iterator2 find2 (int rank, size_type i, size_type j, int direction = 1) const {
             for (;;) {
-                const_vectoriterator_type itv (data ().find (layout_type::index_M (i, j)));
+                const_vectoriterator_type itv (data ().find (layout_type::address1 (i, size1_, j, size2_)));
                 const_vectoriterator_type itv_end (data ().end ());
                 if (itv == itv_end)
                     return const_iterator2 (*this, rank, i, j, itv_end, (*(-- itv)).end ());
 
-                const_subiterator_type it ((*itv).find (layout_type::index_m (i, j)));
+                const_subiterator_type it ((*itv).find (layout_type::address2 (i, size1_, j, size2_)));
                 const_subiterator_type it_end ((*itv).end ());
                 if (rank == 0)
                     return const_iterator2 (*this, rank, i, j, itv, it);
-                if (it != it_end && it.index () == layout_type::index_m (i, j))
+                if (it != it_end && it.index () == layout_type::address2 (i, size1_, j, size2_))
                     return const_iterator2 (*this, rank, i, j, itv, it);
                 if (direction > 0) {
-                    if (layout_type::fast_j ()) {
+                    if (layout_type::fast2 ()) {
                         if (it == it_end)
                             return const_iterator2 (*this, rank, i, j, itv, it);
                         j = it.index ();
@@ -452,7 +449,7 @@ namespace boost { namespace numeric { namespace ublas {
                         ++ j;
                     }
                 } else /* if (direction < 0)  */ {
-                    if (layout_type::fast_j ()) {
+                    if (layout_type::fast2 ()) {
                         if (it == (*itv).begin ())
                             return const_iterator2 (*this, rank, i, j, itv, it);
                         --it;
@@ -468,19 +465,19 @@ namespace boost { namespace numeric { namespace ublas {
         // BOOST_UBLAS_INLINE This function seems to be big. So we do not let the compiler inline it.    
         iterator2 find2 (int rank, size_type i, size_type j, int direction = 1) {
             for (;;) {
-                vectoriterator_type itv (data ().find (layout_type::index_M (i, j)));
+                vectoriterator_type itv (data ().find (layout_type::address1 (i, size1_, j, size2_)));
                 vectoriterator_type itv_end (data ().end ());
                 if (itv == itv_end)
                     return iterator2 (*this, rank, i, j, itv_end, (*(-- itv)).end ());
 
-                subiterator_type it ((*itv).find (layout_type::index_m (i, j)));
+                subiterator_type it ((*itv).find (layout_type::address2 (i, size1_, j, size2_)));
                 subiterator_type it_end ((*itv).end ());
                 if (rank == 0)
                     return iterator2 (*this, rank, i, j, itv, it);
-                if (it != it_end && it.index () == layout_type::index_m (i, j))
+                if (it != it_end && it.index () == layout_type::address2 (i, size1_, j, size2_))
                     return iterator2 (*this, rank, i, j, itv, it);
                 if (direction > 0) {
-                    if (layout_type::fast_j ()) {
+                    if (layout_type::fast2 ()) {
                         if (it == it_end)
                             return iterator2 (*this, rank, i, j, itv, it);
                         j = it.index ();
@@ -490,7 +487,7 @@ namespace boost { namespace numeric { namespace ublas {
                         ++ j;
                     }
                 } else /* if (direction < 0)  */ {
-                    if (layout_type::fast_j ()) {
+                    if (layout_type::fast2 ()) {
                         if (it == (*itv).begin ())
                             return iterator2 (*this, rank, i, j, itv, it);
                         --it;
@@ -532,7 +529,7 @@ namespace boost { namespace numeric { namespace ublas {
             // Arithmetic
             BOOST_UBLAS_INLINE
             const_iterator1 &operator ++ () {
-                if (rank_ == 1 && layout_type::fast_i ())
+                if (rank_ == 1 && layout_type::fast1 ())
                     ++ it_;
                 else {
                     const self_type &m = (*this) ();
@@ -549,7 +546,7 @@ namespace boost { namespace numeric { namespace ublas {
             }
             BOOST_UBLAS_INLINE
             const_iterator1 &operator -- () {
-                if (rank_ == 1 && layout_type::fast_i ())
+                if (rank_ == 1 && layout_type::fast1 ())
                     -- it_;
                 else {
                     const self_type &m = (*this) ();
@@ -590,25 +587,10 @@ namespace boost { namespace numeric { namespace ublas {
 #ifdef BOOST_UBLAS_MSVC_NESTED_CLASS_RELATION
             typename self_type::
 #endif
-            const_iterator2 cbegin () const {
-                return begin ();
-            }
-            BOOST_UBLAS_INLINE
-#ifdef BOOST_UBLAS_MSVC_NESTED_CLASS_RELATION
-            typename self_type::
-#endif
             const_iterator2 end () const {
                 const self_type &m = (*this) ();
                 return m.find2 (1, index1 (), m.size2 ());
             }
-            BOOST_UBLAS_INLINE
-#ifdef BOOST_UBLAS_MSVC_NESTED_CLASS_RELATION
-            typename self_type::
-#endif
-            const_iterator2 cend () const {
-                return end ();
-            }
-
             BOOST_UBLAS_INLINE
 #ifdef BOOST_UBLAS_MSVC_NESTED_CLASS_RELATION
             typename self_type::
@@ -620,22 +602,8 @@ namespace boost { namespace numeric { namespace ublas {
 #ifdef BOOST_UBLAS_MSVC_NESTED_CLASS_RELATION
             typename self_type::
 #endif
-            const_reverse_iterator2 crbegin () const {
-                return rbegin ();
-            }
-            BOOST_UBLAS_INLINE
-#ifdef BOOST_UBLAS_MSVC_NESTED_CLASS_RELATION
-            typename self_type::
-#endif
             const_reverse_iterator2 rend () const {
                 return const_reverse_iterator2 (begin ());
-            }
-            BOOST_UBLAS_INLINE
-#ifdef BOOST_UBLAS_MSVC_NESTED_CLASS_RELATION
-            typename self_type::
-#endif
-            const_reverse_iterator2 crend () const {
-                return rend ();
             }
 #endif
 
@@ -644,8 +612,8 @@ namespace boost { namespace numeric { namespace ublas {
             size_type index1 () const {
                 BOOST_UBLAS_CHECK (*this != (*this) ().find1 (0, (*this) ().size1 (), j_), bad_index ());
                 if (rank_ == 1) {
-                    BOOST_UBLAS_CHECK (layout_type::index_M (itv_.index (), it_.index ()) < (*this) ().size1 (), bad_index ());
-                    return layout_type::index_M (itv_.index (), it_.index ());
+                    BOOST_UBLAS_CHECK (layout_type::index1 (itv_.index (), it_.index ()) < (*this) ().size1 (), bad_index ());
+                    return layout_type::index1 (itv_.index (), it_.index ());
                 } else {
                     return i_;
                 }
@@ -654,8 +622,8 @@ namespace boost { namespace numeric { namespace ublas {
             size_type index2 () const {
                 BOOST_UBLAS_CHECK (*this != (*this) ().find1 (0, (*this) ().size1 (), j_), bad_index ());
                 if (rank_ == 1) {
-                    BOOST_UBLAS_CHECK (layout_type::index_m (itv_.index (), it_.index ()) < (*this) ().size2 (), bad_index ());
-                    return layout_type::index_m (itv_.index (), it_.index ());
+                    BOOST_UBLAS_CHECK (layout_type::index2 (itv_.index (), it_.index ()) < (*this) ().size2 (), bad_index ());
+                    return layout_type::index2 (itv_.index (), it_.index ());
                 } else {
                     return j_;
                 }
@@ -698,16 +666,8 @@ namespace boost { namespace numeric { namespace ublas {
             return find1 (0, 0, 0);
         }
         BOOST_UBLAS_INLINE
-        const_iterator1 cbegin1 () const {
-            return begin1 ();
-        }
-        BOOST_UBLAS_INLINE
         const_iterator1 end1 () const {
             return find1 (0, size1_, 0);
-        }
-        BOOST_UBLAS_INLINE
-        const_iterator1 cend1 () const {
-            return end1 ();
         }
 
         class iterator1:
@@ -734,7 +694,7 @@ namespace boost { namespace numeric { namespace ublas {
             // Arithmetic
             BOOST_UBLAS_INLINE
             iterator1 &operator ++ () {
-                if (rank_ == 1 && layout_type::fast_i ())
+                if (rank_ == 1 && layout_type::fast1 ())
                     ++ it_;
                 else {
                     self_type &m = (*this) ();
@@ -751,7 +711,7 @@ namespace boost { namespace numeric { namespace ublas {
             }
             BOOST_UBLAS_INLINE
             iterator1 &operator -- () {
-                if (rank_ == 1 && layout_type::fast_i ())
+                if (rank_ == 1 && layout_type::fast1 ())
                     -- it_;
                 else {
                     self_type &m = (*this) ();
@@ -817,8 +777,8 @@ namespace boost { namespace numeric { namespace ublas {
             size_type index1 () const {
                 BOOST_UBLAS_CHECK (*this != (*this) ().find1 (0, (*this) ().size1 (), j_), bad_index ());
                 if (rank_ == 1) {
-                    BOOST_UBLAS_CHECK (layout_type::index_M (itv_.index (), it_.index ()) < (*this) ().size1 (), bad_index ());
-                    return layout_type::index_M (itv_.index (), it_.index ());
+                    BOOST_UBLAS_CHECK (layout_type::index1 (itv_.index (), it_.index ()) < (*this) ().size1 (), bad_index ());
+                    return layout_type::index1 (itv_.index (), it_.index ());
                 } else {
                     return i_;
                 }
@@ -827,8 +787,8 @@ namespace boost { namespace numeric { namespace ublas {
             size_type index2 () const {
                 BOOST_UBLAS_CHECK (*this != (*this) ().find1 (0, (*this) ().size1 (), j_), bad_index ());
                 if (rank_ == 1) {
-                    BOOST_UBLAS_CHECK (layout_type::index_m (itv_.index (), it_.index ()) < (*this) ().size2 (), bad_index ());
-                    return layout_type::index_m (itv_.index (), it_.index ());
+                    BOOST_UBLAS_CHECK (layout_type::index2 (itv_.index (), it_.index ()) < (*this) ().size2 (), bad_index ());
+                    return layout_type::index2 (itv_.index (), it_.index ());
                 } else {
                     return j_;
                 }
@@ -904,7 +864,7 @@ namespace boost { namespace numeric { namespace ublas {
             // Arithmetic
             BOOST_UBLAS_INLINE
             const_iterator2 &operator ++ () {
-                if (rank_ == 1 && layout_type::fast_j ())
+                if (rank_ == 1 && layout_type::fast2 ())
                     ++ it_;
                 else {
                     const self_type &m = (*this) ();
@@ -921,7 +881,7 @@ namespace boost { namespace numeric { namespace ublas {
             }
             BOOST_UBLAS_INLINE
             const_iterator2 &operator -- () {
-                if (rank_ == 1 && layout_type::fast_j ())
+                if (rank_ == 1 && layout_type::fast2 ())
                     -- it_;
                 else {
                     const self_type &m = (*this) ();
@@ -962,23 +922,9 @@ namespace boost { namespace numeric { namespace ublas {
 #ifdef BOOST_UBLAS_MSVC_NESTED_CLASS_RELATION
             typename self_type::
 #endif
-            const_iterator1 cbegin () const {
-                return begin ();
-            }
-            BOOST_UBLAS_INLINE
-#ifdef BOOST_UBLAS_MSVC_NESTED_CLASS_RELATION
-            typename self_type::
-#endif
             const_iterator1 end () const {
                 const self_type &m = (*this) ();
                 return m.find1 (1, m.size1 (), index2 ());
-            }
-            BOOST_UBLAS_INLINE
-#ifdef BOOST_UBLAS_MSVC_NESTED_CLASS_RELATION
-            typename self_type::
-#endif
-            const_iterator1 cend () const {
-                return end ();
             }
             BOOST_UBLAS_INLINE
 #ifdef BOOST_UBLAS_MSVC_NESTED_CLASS_RELATION
@@ -991,22 +937,8 @@ namespace boost { namespace numeric { namespace ublas {
 #ifdef BOOST_UBLAS_MSVC_NESTED_CLASS_RELATION
             typename self_type::
 #endif
-            const_reverse_iterator1 crbegin () const {
-                return rbegin ();
-            }
-            BOOST_UBLAS_INLINE
-#ifdef BOOST_UBLAS_MSVC_NESTED_CLASS_RELATION
-            typename self_type::
-#endif
             const_reverse_iterator1 rend () const {
                 return const_reverse_iterator1 (begin ());
-            }
-            BOOST_UBLAS_INLINE
-#ifdef BOOST_UBLAS_MSVC_NESTED_CLASS_RELATION
-            typename self_type::
-#endif
-            const_reverse_iterator1 crend () const {
-                return rend ();
             }
 #endif
 
@@ -1015,8 +947,8 @@ namespace boost { namespace numeric { namespace ublas {
             size_type index1 () const {
                 BOOST_UBLAS_CHECK (*this != (*this) ().find2 (0, i_, (*this) ().size2 ()), bad_index ());
                 if (rank_ == 1) {
-                    BOOST_UBLAS_CHECK (layout_type::index_M (itv_.index (), it_.index ()) < (*this) ().size1 (), bad_index ());
-                    return layout_type::index_M (itv_.index (), it_.index ());
+                    BOOST_UBLAS_CHECK (layout_type::index1 (itv_.index (), it_.index ()) < (*this) ().size1 (), bad_index ());
+                    return layout_type::index1 (itv_.index (), it_.index ());
                 } else {
                     return i_;
                 }
@@ -1025,8 +957,8 @@ namespace boost { namespace numeric { namespace ublas {
             size_type index2 () const {
                 BOOST_UBLAS_CHECK (*this != (*this) ().find2 (0, i_, (*this) ().size2 ()), bad_index ());
                 if (rank_ == 1) {
-                    BOOST_UBLAS_CHECK (layout_type::index_m (itv_.index (), it_.index ()) < (*this) ().size2 (), bad_index ());
-                    return layout_type::index_m (itv_.index (), it_.index ());
+                    BOOST_UBLAS_CHECK (layout_type::index2 (itv_.index (), it_.index ()) < (*this) ().size2 (), bad_index ());
+                    return layout_type::index2 (itv_.index (), it_.index ());
                 } else {
                     return j_;
                 }
@@ -1069,16 +1001,8 @@ namespace boost { namespace numeric { namespace ublas {
             return find2 (0, 0, 0);
         }
         BOOST_UBLAS_INLINE
-        const_iterator2 cbegin2 () const {
-            return begin2 ();
-        }
-        BOOST_UBLAS_INLINE
         const_iterator2 end2 () const {
             return find2 (0, 0, size2_);
-        }
-        BOOST_UBLAS_INLINE
-        const_iterator2 cend2 () const {
-            return end2 ();
         }
 
         class iterator2:
@@ -1105,7 +1029,7 @@ namespace boost { namespace numeric { namespace ublas {
             // Arithmetic
             BOOST_UBLAS_INLINE
             iterator2 &operator ++ () {
-                if (rank_ == 1 && layout_type::fast_j ())
+                if (rank_ == 1 && layout_type::fast2 ())
                     ++ it_;
                 else {
                     self_type &m = (*this) ();
@@ -1122,7 +1046,7 @@ namespace boost { namespace numeric { namespace ublas {
             }
             BOOST_UBLAS_INLINE
             iterator2 &operator -- () {
-                if (rank_ == 1 && layout_type::fast_j ())
+                if (rank_ == 1 && layout_type::fast2 ())
                     -- it_;
                 else {
                     self_type &m = (*this) ();
@@ -1188,8 +1112,8 @@ namespace boost { namespace numeric { namespace ublas {
             size_type index1 () const {
                 BOOST_UBLAS_CHECK (*this != (*this) ().find2 (0, i_, (*this) ().size2 ()), bad_index ());
                 if (rank_ == 1) {
-                    BOOST_UBLAS_CHECK (layout_type::index_M (itv_.index (), it_.index ()) < (*this) ().size1 (), bad_index ());
-                    return layout_type::index_M (itv_.index (), it_.index ());
+                    BOOST_UBLAS_CHECK (layout_type::index1 (itv_.index (), it_.index ()) < (*this) ().size1 (), bad_index ());
+                    return layout_type::index1 (itv_.index (), it_.index ());
                 } else {
                     return i_;
                 }
@@ -1198,8 +1122,8 @@ namespace boost { namespace numeric { namespace ublas {
             size_type index2 () const {
                 BOOST_UBLAS_CHECK (*this != (*this) ().find2 (0, i_, (*this) ().size2 ()), bad_index ());
                 if (rank_ == 1) {
-                    BOOST_UBLAS_CHECK (layout_type::index_m (itv_.index (), it_.index ()) < (*this) ().size2 (), bad_index ());
-                    return layout_type::index_m (itv_.index (), it_.index ());
+                    BOOST_UBLAS_CHECK (layout_type::index2 (itv_.index (), it_.index ()) < (*this) ().size2 (), bad_index ());
+                    return layout_type::index2 (itv_.index (), it_.index ());
                 } else {
                     return j_;
                 }
@@ -1255,16 +1179,8 @@ namespace boost { namespace numeric { namespace ublas {
             return const_reverse_iterator1 (end1 ());
         }
         BOOST_UBLAS_INLINE
-        const_reverse_iterator1 crbegin1 () const {
-            return rbegin1 ();
-        }
-        BOOST_UBLAS_INLINE
         const_reverse_iterator1 rend1 () const {
             return const_reverse_iterator1 (begin1 ());
-        }
-        BOOST_UBLAS_INLINE
-        const_reverse_iterator1 crend1 () const {
-            return rend1 ();
         }
 
         BOOST_UBLAS_INLINE
@@ -1281,16 +1197,8 @@ namespace boost { namespace numeric { namespace ublas {
             return const_reverse_iterator2 (end2 ());
         }
         BOOST_UBLAS_INLINE
-        const_reverse_iterator2 crbegin2 () const {
-            return rbegin2 ();
-        }
-        BOOST_UBLAS_INLINE
         const_reverse_iterator2 rend2 () const {
             return const_reverse_iterator2 (begin2 ());
-        }
-        BOOST_UBLAS_INLINE
-        const_reverse_iterator2 crend2 () const {
-            return rend2 ();
         }
 
         BOOST_UBLAS_INLINE
@@ -1302,34 +1210,10 @@ namespace boost { namespace numeric { namespace ublas {
             return reverse_iterator2 (begin2 ());
         }
 
-         // Serialization
-        template<class Archive>
-        void serialize(Archive & ar, const unsigned int /* file_version */){
-        
-            // we need to copy to a collection_size_type to get a portable
-            // and efficient serialization
-            serialization::collection_size_type s1 (size1_);
-            serialization::collection_size_type s2 (size2_);
-          
-            // serialize the sizes
-            ar & serialization::make_nvp("size1",s1)
-               & serialization::make_nvp("size2",s2);
-
-            // copy the values back if loading
-            if (Archive::is_loading::value) {
-                size1_ = s1;
-                size2_ = s2;
-            }
-
-            ar & serialization::make_nvp("data", data_);
-
-            storage_invariants();
-        }
-
     private:
         void storage_invariants () const
         {
-            BOOST_UBLAS_CHECK (layout_type::size_M (size1_, size2_) + 1 == data_.size (), internal_logic ());
+            BOOST_UBLAS_CHECK (layout_type::size1 (size1_, size2_) + 1 == data_.size (), internal_logic ());
             BOOST_UBLAS_CHECK (data ().begin () != data ().end (), internal_logic ());
 
         }

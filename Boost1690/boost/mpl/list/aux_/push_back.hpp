@@ -10,9 +10,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/list/aux_/push_back.hpp,v $
+// $Date: 2004/09/02 15:40:59 $
+// $Revision: 1.2 $
 
 #include <boost/mpl/push_back_fwd.hpp>
 #include <boost/mpl/bool.hpp>

@@ -14,9 +14,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/aux_/full_lambda.hpp,v $
+// $Date: 2004/09/04 01:10:19 $
+// $Revision: 1.14 $
 
 #if !defined(BOOST_MPL_PREPROCESSING_MODE)
 #   include <boost/mpl/lambda_fwd.hpp>
@@ -227,10 +227,7 @@ BOOST_MPL_AUX_NA_SPEC2(2, 3, lambda)
 
 ///// iteration, depth == 1
 
-// For gcc 4.4 compatability, we must include the
-// BOOST_PP_ITERATION_DEPTH test inside an #else clause.
-#else // BOOST_PP_IS_ITERATING
-#if BOOST_PP_ITERATION_DEPTH() == 1
+#elif BOOST_PP_ITERATION_DEPTH() == 1
 #define i_ BOOST_PP_FRAME_ITERATION(1)
 
 #if i_ > 0
@@ -350,5 +347,4 @@ struct lambda<
 };
 
 #undef i_
-#endif // BOOST_PP_ITERATION_DEPTH()
 #endif // BOOST_PP_IS_ITERATING

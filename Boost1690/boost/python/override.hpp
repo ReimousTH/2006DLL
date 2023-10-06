@@ -55,15 +55,12 @@ namespace detail
       }
 #  endif 
       
-#  if BOOST_WORKAROUND(BOOST_MSVC, BOOST_TESTED_AT(1400)) || BOOST_WORKAROUND(BOOST_INTEL_WIN, >= 900)
-      // No operator T&
-#  else
-      
+#  if !defined(BOOST_MSVC) || BOOST_WORKAROUND(_MSC_FULL_VER, > 140040607)
       template <class T>
       operator T&() const
       {
           converter::return_from_python<T&> converter;
-          return converter(const_cast<handle<>&>(m_obj).release());
+          return converter(m_obj.release());
       }
 #  endif 
 
@@ -77,7 +74,7 @@ namespace detail
       template <class T>
       T unchecked(type<T>* = 0)
       {
-          return extract<T>(m_obj.get())();
+          return extract<T>(m_obj)();
       }
    private:
       mutable handle<> m_obj;

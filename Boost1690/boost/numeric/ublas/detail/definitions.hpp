@@ -2,9 +2,13 @@
 //  Copyright (c) 2000-2002
 //  Joerg Walter, Mathias Koch
 //
-//  Distributed under the Boost Software License, Version 1.0. (See
-//  accompanying file LICENSE_1_0.txt or copy at
-//  http://www.boost.org/LICENSE_1_0.txt)
+//  Permission to use, copy, modify, distribute and sell this software
+//  and its documentation for any purpose is hereby granted without fee,
+//  provided that the above copyright notice appear in all copies and
+//  that both that copyright notice and this permission notice appear
+//  in supporting documentation.  The authors make no representations
+//  about the suitability of this software for any purpose.
+//  It is provided "as is" without express or implied warranty.
 //
 //  The authors gratefully acknowledge the support of
 //  GeNeSys mbH & Co. KG in producing this work.
@@ -15,15 +19,6 @@
 
 
 namespace boost { namespace numeric { namespace ublas {
-
-    namespace detail {
-        /* Borrowed from boost/concept_checks.hpp
-           "inline" is used for ignore_unused_variable_warning()
-           to make sure there is no overhead with g++.
-         */
-        template <class T> inline
-        void ignore_unused_variable_warning(const T&) {}
-    } // namespace detail
 
     // Borrowed from Dave Abraham's noncopyable.
     // I believe this should be part of utility.hpp one day...
@@ -80,7 +75,7 @@ namespace boost { namespace numeric { namespace ublas {
         closure_type lval_;
     };
 
-    // Improve syntax of efficient assignment where no aliases of LHS appear on the RHS
+    // Improve syntax of effcient assignment where no aliases of LHS appear on the RHS
     //  noalias(lhs) = rhs_expression
     template <class C>
     BOOST_UBLAS_INLINE

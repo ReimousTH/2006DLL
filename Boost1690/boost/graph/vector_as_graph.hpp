@@ -1,8 +1,7 @@
 //=======================================================================
 // Copyright 1997, 1998, 1999, 2000 University of Notre Dame.
-// Copyright 2006 The Trustees of Indiana University.
 // Copyright (C) 2001 Vladimir Prus <ghost@cs.msu.su>
-// Authors: Andrew Lumsdaine, Lie-Quan Lee, Jeremy G. Siek, Douglas Gregor
+// Authors: Andrew Lumsdaine, Lie-Quan Lee, Jeremy G. Siek
 //
 // Distributed under the Boost Software License, Version 1.0. (See
 // accompanying file LICENSE_1_0.txt or copy at
@@ -19,11 +18,8 @@
 #include <vector>
 #include <cstddef>
 #include <boost/iterator.hpp>
-#include <boost/iterator/counting_iterator.hpp>
-#include <boost/range/irange.hpp>
 #include <boost/graph/graph_traits.hpp>
-#include <boost/property_map/property_map.hpp>
-#include <boost/graph/properties.hpp>
+#include <boost/pending/integer_range.hpp>
 #include <algorithm>
 
 /*
@@ -40,6 +36,9 @@
 
 */
 
+#ifdef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
+#error The vector-as-graph module requires a compiler that supports partial specialization
+#endif
 
 
 namespace boost {
@@ -50,6 +49,7 @@ namespace boost {
   }
 }
 
+#if !defined BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 namespace boost {
 
   struct vector_as_graph_traversal_tag
@@ -68,14 +68,13 @@ namespace boost {
       out_edge_iterator;
     typedef void in_edge_iterator;
     typedef void edge_iterator;
-    typedef counting_iterator<V> vertex_iterator;
+    typedef typename integer_range<V>::iterator vertex_iterator;
     typedef directed_tag directed_category;
     typedef allow_parallel_edge_tag edge_parallel_category;
     typedef vector_as_graph_traversal_tag traversal_category;
     typedef typename std::vector<EdgeList>::size_type vertices_size_type;
     typedef void edges_size_type;
     typedef typename EdgeList::size_type degree_size_type;
-    static V null_vertex() {return V(-1);}
   };
   template <class EdgeList>
   struct edge_property_type< std::vector<EdgeList> >
@@ -93,6 +92,7 @@ namespace boost {
     typedef void type;
   };
 }
+#endif
 
 namespace boost {
 
@@ -175,11 +175,14 @@ namespace boost {
   // source() and target() already provided for pairs in graph_traits.hpp
 
   template <class EdgeList, class Alloc>
-  std::pair<boost::counting_iterator<typename EdgeList::value_type>,
-            boost::counting_iterator<typename EdgeList::value_type> >
+  std::pair<typename boost::integer_range<typename EdgeList::value_type>
+              ::iterator,
+            typename boost::integer_range<typename EdgeList::value_type>
+              ::iterator >
   vertices(const std::vector<EdgeList, Alloc>& v)
   {
-    typedef boost::counting_iterator<typename EdgeList::value_type> Iter;
+    typedef typename boost::integer_range<typename EdgeList::value_type>
+      ::iterator Iter;
     return std::make_pair(Iter(0), Iter(v.size()));
   }
 
@@ -301,26 +304,6 @@ namespace boost {
           --*it;
   }
 
-  template<typename EdgeList, typename Allocator>
-  struct property_map<std::vector<EdgeList, Allocator>, vertex_index_t>
-  {
-    typedef identity_property_map type;
-    typedef type const_type;
-  };
-
-  template<typename EdgeList, typename Allocator>
-  identity_property_map
-  get(vertex_index_t, const std::vector<EdgeList, Allocator>&)
-  {
-    return identity_property_map();
-  }
-
-  template<typename EdgeList, typename Allocator>
-  identity_property_map
-  get(vertex_index_t, std::vector<EdgeList, Allocator>&)
-  {
-    return identity_property_map();
-  }
 } // namespace boost
 
 #endif // BOOST_VECTOR_AS_GRAPH_HPP

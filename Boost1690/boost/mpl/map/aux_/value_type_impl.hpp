@@ -11,9 +11,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/map/aux_/value_type_impl.hpp,v $
+// $Date: 2004/09/02 15:41:00 $
+// $Revision: 1.2 $
 
 #include <boost/mpl/value_type_fwd.hpp>
 #include <boost/mpl/pair.hpp>

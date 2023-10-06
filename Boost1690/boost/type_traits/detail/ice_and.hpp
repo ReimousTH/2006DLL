@@ -9,14 +9,7 @@
 #ifndef BOOST_TT_DETAIL_ICE_AND_HPP_INCLUDED
 #define BOOST_TT_DETAIL_ICE_AND_HPP_INCLUDED
 
-#include <boost/config.hpp>
-
-//
-// This header is deprecated and no longer used by type_traits:
-//
-#if defined(__GNUC__) || defined(_MSC_VER)
-# pragma message("NOTE: Use of this header (ice_and.hpp) is deprecated")
-#endif
+#include "boost/config.hpp"
 
 namespace boost {
 namespace type_traits {

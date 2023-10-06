@@ -1,5 +1,4 @@
-// (C) Copyright 2008 CodeRage, LLC (turkanis at coderage dot com)
-// (C) Copyright 2003-2007 Jonathan Turkanis
+// (C) Copyright Jonathan Turkanis 2003.
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt.)
 
@@ -8,7 +7,7 @@
 #ifndef BOOST_IOSTREAMS_DETAIL_CHAINBUF_HPP_INCLUDED
 #define BOOST_IOSTREAMS_DETAIL_CHAINBUF_HPP_INCLUDED
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
 # pragma once
 #endif      
 
@@ -31,7 +30,7 @@ namespace boost { namespace iostreams { namespace detail {
 // Template name: chainbuf.
 // Description: Stream buffer which operates by delegating to the first
 //      linked_streambuf in a chain.
-// Template parameters:
+// Template paramters:
 //      Chain - The chain type.
 //
 template<typename Chain, typename Mode, typename Access>
@@ -75,6 +74,9 @@ protected:
                  typename Chain::char_type,
                  typename Chain::traits_type
              )                                               base_type;
+//#if !BOOST_WORKAROUND(__GNUC__, == 2)                                 
+//    BOOST_IOSTREAMS_USING_PROTECTED_STREAMBUF_MEMBERS(base_type)
+//#endif
 private:
 
     // Translate from std int_type to chain's int_type.

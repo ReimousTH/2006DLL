@@ -1,5 +1,4 @@
-// (C) Copyright 2008 CodeRage, LLC (turkanis at coderage dot com)
-// (C) Copyright 2004-2007 Jonathan Turkanis
+// (C) Copyright Jonathan Turkanis 2004.
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt.)
 
@@ -10,7 +9,7 @@
 #ifndef BOOST_IOSTREAMS_NULL_HPP_INCLUDED
 #define BOOST_IOSTREAMS_NULL_HPP_INCLUDED
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
 # pragma once
 #endif
 
@@ -29,14 +28,13 @@ public:
           public device_tag,
           public closable_tag
         { };
-    std::streamsize read(Ch*, std::streamsize) { return -1; }
+    std::streamsize read(Ch*, std::streamsize) { return 0; }
     std::streamsize write(const Ch*, std::streamsize n) { return n; }
-    std::streampos seek( stream_offset, BOOST_IOS::seekdir,
-                         BOOST_IOS::openmode = 
-                             BOOST_IOS::in | BOOST_IOS::out ) 
+    stream_offset seek( stream_offset, BOOST_IOS::seekdir,
+                        BOOST_IOS::openmode = 
+                            BOOST_IOS::in | BOOST_IOS::out ) 
     { return -1; }
-    void close() { }
-    void close(BOOST_IOS::openmode) { }
+    void close(BOOST_IOS::openmode = BOOST_IOS::in | BOOST_IOS::out) { }
 };
 
 template<typename Ch>

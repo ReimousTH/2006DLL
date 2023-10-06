@@ -10,9 +10,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/aux_/erase_key_impl.hpp,v $
+// $Date: 2004/09/05 09:42:55 $
+// $Revision: 1.3 $
 
 #include <boost/mpl/erase_key_fwd.hpp>
 #include <boost/mpl/aux_/traits_lambda_spec.hpp>

@@ -26,20 +26,12 @@
 #endif
 
 #include <algorithm>
-#include <cstddef>
 
 namespace boost{
-   namespace BOOST_REGEX_DETAIL_NS{
+   namespace re_detail{
 
-#ifdef BOOST_MSVC
-#pragma warning(push)
-#pragma warning(disable: 4103)
-#endif
 #ifdef BOOST_HAS_ABI_HEADERS
 #  include BOOST_ABI_PREFIX
-#endif
-#ifdef BOOST_MSVC
-#pragma warning(pop)
 #endif
 
 struct empty_padding{};
@@ -129,7 +121,7 @@ public:
    {
       if(size_type(last - end) < n)
          resize(n + (end - start));
-      pointer result = end;
+      register pointer result = end;
       end += n;
       return result;
    }
@@ -138,12 +130,12 @@ public:
 
    size_type BOOST_REGEX_CALL size()
    {
-      return size_type(end - start);
+      return end - start;
    }
 
    size_type BOOST_REGEX_CALL capacity()
    {
-      return size_type(last - start);
+      return last - start;
    }
 
    void* BOOST_REGEX_CALL data()const
@@ -153,7 +145,7 @@ public:
 
    size_type BOOST_REGEX_CALL index(void* ptr)
    {
-      return size_type(static_cast<pointer>(ptr) - static_cast<pointer>(data()));
+      return static_cast<pointer>(ptr) - static_cast<pointer>(data());
    }
 
    void BOOST_REGEX_CALL clear()
@@ -187,18 +179,11 @@ inline raw_storage::raw_storage(size_type n)
 }
 
 
-#ifdef BOOST_MSVC
-#pragma warning(push)
-#pragma warning(disable: 4103)
-#endif
 #ifdef BOOST_HAS_ABI_HEADERS
 #  include BOOST_ABI_SUFFIX
 #endif
-#ifdef BOOST_MSVC
-#pragma warning(pop)
-#endif
 
-} // namespace BOOST_REGEX_DETAIL_NS
+} // namespace re_detail
 } // namespace boost
 
 #endif

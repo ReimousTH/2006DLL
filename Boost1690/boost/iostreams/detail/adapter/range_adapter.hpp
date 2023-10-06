@@ -1,5 +1,4 @@
-// (C) Copyright 2008 CodeRage, LLC (turkanis at coderage dot com)
-// (C) Copyright 2003-2007 Jonathan Turkanis
+// (C) Copyright Jonathan Turkanis 2003.
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt.)
 
@@ -8,12 +7,12 @@
 #ifndef BOOST_IOSTREAMS_DETAIL_RANGE_ADAPTER_HPP_INCLUDED
 #define BOOST_IOSTREAMS_DETAIL_RANGE_ADAPTER_HPP_INCLUDED
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
 # pragma once
 #endif              
 
 #include <algorithm>                             // min.
-#include <boost/assert.hpp>
+#include <cassert>
 #include <cstddef>                               // ptrdiff_t.
 #include <iosfwd>                                // streamsize, streamoff.
 #include <boost/detail/iterator.hpp>             // boost::iterator_traits.
@@ -21,7 +20,6 @@
 #include <boost/iostreams/detail/error.hpp>
 #include <boost/iostreams/positioning.hpp>
 #include <boost/mpl/if.hpp>
-#include <boost/throw_exception.hpp>
 #include <boost/type_traits/is_convertible.hpp>
 #include <boost/utility/enable_if.hpp>
 
@@ -36,7 +34,7 @@ template<typename Traversal> struct range_adapter_impl;
 //
 // Template name: range_adapter
 // Description: Device based on an instance of boost::iterator_range.
-// Template parameters:
+// Template paramters:
 //     Mode - A mode tag.
 //     Range - An instance of iterator_range.
 //
@@ -64,7 +62,7 @@ public:
     range_adapter(iterator first, iterator last);
     std::streamsize read(char_type* s, std::streamsize n);
     std::streamsize write(const char_type* s, std::streamsize n);
-    std::streampos seek(stream_offset off, BOOST_IOS::seekdir way);
+    stream_offset seek(stream_offset off, BOOST_IOS::seekdir way);
 private:
     iterator first_, cur_, last_;
 };
@@ -91,11 +89,11 @@ inline std::streamsize range_adapter<Mode, Range>::write
 
 
 template<typename Mode, typename Range>
-std::streampos range_adapter<Mode, Range>::seek
+stream_offset range_adapter<Mode, Range>::seek
     (stream_offset off, BOOST_IOS::seekdir way)
 { 
     impl::seek(first_, cur_, last_, off, way); 
-    return offset_to_position(cur_ - first_);
+    return static_cast<stream_offset>(cur_ - first_);
 }
 
 //------------------Implementation of range_adapter_impl----------------------//
@@ -117,7 +115,7 @@ struct range_adapter_impl<std::forward_iterator_tag> {
     {
         while (cur != last && n-- > 0) *cur++ = *s++;
         if (cur == last && n > 0)
-            boost::throw_exception(write_area_exhausted());
+            throw write_area_exhausted();
         return n;
     }
 };
@@ -145,7 +143,7 @@ struct range_adapter_impl<std::random_access_iterator_tag> {
         std::copy(s, s + count, cur);
         cur += count;
         if (count < n) 
-            boost::throw_exception(write_area_exhausted());
+            throw write_area_exhausted();
         return n;
     }
 
@@ -157,25 +155,22 @@ struct range_adapter_impl<std::random_access_iterator_tag> {
         using namespace std;
         switch (way) {
         case BOOST_IOS::beg:
-            if (off > last - first || off < 0)
-                boost::throw_exception(bad_seek());
+            if (off > last - first || off < 0) bad_seek();
             cur = first + off;
             break;
         case BOOST_IOS::cur:
             {
                 std::ptrdiff_t newoff = cur - first + off;
-                if (newoff > last - first || newoff < 0)
-                    boost::throw_exception(bad_seek());
+                if (newoff > last - first || newoff < 0) bad_seek();
                 cur += off;
                 break;
             }
         case BOOST_IOS::end:
-            if (last - first + off < 0 || off > 0)
-                boost::throw_exception(bad_seek());
+            if (last - first + off < 0 || off > 0) bad_seek();
             cur = last + off;
             break;
         default:
-            BOOST_ASSERT(0);
+            assert(0);
         }
     }
 };

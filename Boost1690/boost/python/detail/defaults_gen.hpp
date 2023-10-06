@@ -213,7 +213,7 @@ namespace detail
     {                                                                                       \
         typedef typename ::boost::python::detail::                                          \
             error::more_keywords_than_function_arguments<                                   \
-                N,n_args>::too_many_keywords assertion BOOST_ATTRIBUTE_UNUSED;              \
+                N,n_args>::too_many_keywords assertion;                                     \
     }                                                                                       \
     template <std::size_t N>                                                                \
     fstubs_name(::boost::python::detail::keywords<N> const& keywords, char const* doc = 0)  \
@@ -222,7 +222,7 @@ namespace detail
     {                                                                                       \
         typedef typename ::boost::python::detail::                                          \
             error::more_keywords_than_function_arguments<                                   \
-                N,n_args>::too_many_keywords assertion BOOST_ATTRIBUTE_UNUSED;              \
+                N,n_args>::too_many_keywords assertion;                                     \
     }
 
 # if defined(BOOST_NO_VOID_RETURNS)
@@ -248,7 +248,7 @@ namespace detail
         BOOST_PYTHON_GEN_MEM_FUNCTION(                                                  \
             fname, void_return_type, n_args, n_dflts, ;)                                \
                                                                                         \
-        BOOST_PYTHON_OVERLOAD_CONSTRUCTORS(fstubs_name, n_args + 1, n_dflts)            \
+        BOOST_PYTHON_OVERLOAD_CONSTRUCTORS(fstubs_name, n_args, n_dflts)                \
     };
 
 # else // !defined(BOOST_NO_VOID_RETURNS)
@@ -273,7 +273,7 @@ namespace detail
             fname, non_void_return_type, n_args, n_dflts, return)                       \
                                                                                         \
         typedef non_void_return_type void_return_type;                                  \
-        BOOST_PYTHON_OVERLOAD_CONSTRUCTORS(fstubs_name, n_args + 1, n_dflts)            \
+        BOOST_PYTHON_OVERLOAD_CONSTRUCTORS(fstubs_name, n_args, n_dflts)                \
     };
 
 # endif // !defined(BOOST_NO_VOID_RETURNS)

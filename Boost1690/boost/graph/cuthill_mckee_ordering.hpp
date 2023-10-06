@@ -1,19 +1,35 @@
+//
 //=======================================================================
 // Copyright 1997, 1998, 1999, 2000 University of Notre Dame.
-// Copyright 2004, 2005 Trustees of Indiana University
 // Authors: Andrew Lumsdaine, Lie-Quan Lee, Jeremy G. Siek,
 //          Doug Gregor, D. Kevin McGrath
 //
-// Distributed under the Boost Software License, Version 1.0. (See
-// accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)
+// This file is part of the Boost Graph Library
+//
+// You should have received a copy of the License Agreement for the
+// Boost Graph Library along with the software; see the file LICENSE.
+// If not, contact Office of Research, University of Notre Dame, Notre
+// Dame, IN 46556.
+//
+// Permission to modify the code and to distribute modified code is
+// granted, provided the text of this NOTICE is retained, a notice that
+// the code was modified is included with the above COPYRIGHT NOTICE and
+// with the COPYRIGHT NOTICE in the LICENSE file, and that the LICENSE
+// file is distributed with the modified code.
+//
+// LICENSOR MAKES NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED.
+// By way of example, but not limitation, Licensor MAKES NO
+// REPRESENTATIONS OR WARRANTIES OF MERCHANTABILITY OR FITNESS FOR ANY
+// PARTICULAR PURPOSE OR THAT THE USE OF THE LICENSED SOFTWARE COMPONENTS
+// OR DOCUMENTATION WILL NOT INFRINGE ANY PATENTS, COPYRIGHTS, TRADEMARKS
+// OR OTHER RIGHTS.
 //=======================================================================
+//
 #ifndef BOOST_GRAPH_CUTHILL_MCKEE_HPP
 #define BOOST_GRAPH_CUTHILL_MCKEE_HPP
 
 #include <boost/config.hpp>
 #include <boost/graph/detail/sparse_ordering.hpp>
-#include <boost/graph/graph_utility.hpp>
 #include <algorithm>
 
 
@@ -42,9 +58,9 @@ namespace boost {
       void finish_vertex(Vertex, Graph&) {
         using std::sort;
 
-        typedef typename property_traits<DegreeMap>::value_type ds_type;
+        typedef typename property_traits<DegreeMap>::value_type DS;
 
-        typedef indirect_cmp<DegreeMap, std::less<ds_type> > Compare;
+        typedef indirect_cmp<DegreeMap, std::less<DS> > Compare;
         Compare comp(degree);
                 
         sort(Qptr->begin()+index_begin, Qptr->end(), comp);
@@ -75,6 +91,7 @@ namespace boost {
   {
 
     //create queue, visitor...don't forget namespaces!
+    typedef typename property_traits<DegreeMap>::value_type DS;
     typedef typename graph_traits<Graph>::vertex_descriptor Vertex;
     typedef typename boost::sparse::sparse_ordering_queue<Vertex> queue;
     typedef typename detail::bfs_rcm_visitor<OutputIterator, queue, DegreeMap> Visitor;
@@ -91,7 +108,7 @@ namespace boost {
 
     // Copy degree to pseudo_degree
     // initialize the color map
-    for (boost::tie(ui, ui_end) = vertices(g); ui != ui_end; ++ui){
+    for (tie(ui, ui_end) = vertices(g); ui != ui_end; ++ui){
       put(color, *ui, Color::white());
     }
 
@@ -132,10 +149,11 @@ namespace boost {
   cuthill_mckee_ordering(const Graph& G, OutputIterator permutation, 
                          ColorMap color, DegreeMap degree)
   {
-    if (boost::graph::has_no_vertices(G))
+    if (vertices(G).first == vertices(G).second)
       return permutation;
 
     typedef typename boost::graph_traits<Graph>::vertex_descriptor Vertex;
+    typedef typename boost::graph_traits<Graph>::vertex_iterator   VerIter;
     typedef typename property_traits<ColorMap>::value_type ColorValue;
     typedef color_traits<ColorValue> Color;
 
@@ -146,7 +164,7 @@ namespace boost {
 
     // Find one vertex from each connected component 
     BGL_FORALL_VERTICES_T(v, G, Graph) {
-      if (get(color, v) == Color::white()) {
+      if (get(color, v) != Color::white()) {
         depth_first_visit(G, v, dfs_visitor<>(), color);
         vertex_queue.push_back(v);
       }
@@ -167,9 +185,10 @@ namespace boost {
   cuthill_mckee_ordering(const Graph& G, OutputIterator permutation, 
                          VertexIndexMap index_map)
   {
-    if (boost::graph::has_no_vertices(G))
+    if (vertices(G).first == vertices(G).second)
       return permutation;
     
+    typedef out_degree_property_map<Graph> DegreeMap;
     std::vector<default_color_type> colors(num_vertices(G));
     return cuthill_mckee_ordering(G, permutation, 
                                   make_iterator_property_map(&colors[0], 

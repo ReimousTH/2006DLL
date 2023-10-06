@@ -10,9 +10,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/limits/unrolling.hpp,v $
+// $Date: 2004/09/02 15:40:57 $
+// $Revision: 1.4 $
 
 #if !defined(BOOST_MPL_LIMIT_UNROLLING)
 #   define BOOST_MPL_LIMIT_UNROLLING 4

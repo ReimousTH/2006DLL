@@ -1,7 +1,7 @@
 // Copyright 2004 The Trustees of Indiana University.
 
-// Distributed under the Boost Software License, Version 1.0.
-// (See accompanying file LICENSE_1_0.txt or copy at
+// Use, modification and distribution is subject to the Boost Software
+// License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
 //  Authors: Douglas Gregor
@@ -11,7 +11,6 @@
 
 #include <stack>
 #include <vector>
-#include <boost/graph/overloading.hpp>
 #include <boost/graph/dijkstra_shortest_paths.hpp>
 #include <boost/graph/breadth_first_search.hpp>
 #include <boost/graph/relax.hpp>
@@ -20,7 +19,7 @@
 #include <boost/type_traits/is_convertible.hpp>
 #include <boost/type_traits/is_same.hpp>
 #include <boost/mpl/if.hpp>
-#include <boost/property_map/property_map.hpp>
+#include <boost/property_map.hpp>
 #include <boost/graph/named_function_params.hpp>
 #include <algorithm>
 
@@ -296,6 +295,7 @@ namespace detail { namespace graph {
                                       ShortestPaths shortest_paths)
   {
     typedef typename graph_traits<Graph>::vertex_iterator vertex_iterator;
+    typedef typename graph_traits<Graph>::edge_iterator edge_iterator;
     typedef typename graph_traits<Graph>::vertex_descriptor vertex_descriptor;
 
     // Initialize centrality
@@ -304,10 +304,10 @@ namespace detail { namespace graph {
 
     std::stack<vertex_descriptor> ordered_vertices;
     vertex_iterator s, s_end;
-    for (boost::tie(s, s_end) = vertices(g); s != s_end; ++s) {
+    for (tie(s, s_end) = vertices(g); s != s_end; ++s) {
       // Initialize for this iteration
       vertex_iterator w, w_end;
-      for (boost::tie(w, w_end) = vertices(g); w != w_end; ++w) {
+      for (tie(w, w_end) = vertices(g); w != w_end; ++w) {
         incoming[*w].clear();
         put(path_count, *w, 0);
         put(dependency, *w, 0);
@@ -369,8 +369,7 @@ brandes_betweenness_centrality(const Graph& g,
                                DistanceMap distance,         // d
                                DependencyMap dependency,     // delta
                                PathCountMap path_count,      // sigma
-                               VertexIndexMap vertex_index
-                               BOOST_GRAPH_ENABLE_IF_MODELS_PARM(Graph,vertex_list_graph_tag))
+                               VertexIndexMap vertex_index)
 {
   detail::graph::brandes_unweighted_shortest_paths shortest_paths;
 
@@ -395,8 +394,7 @@ brandes_betweenness_centrality(const Graph& g,
                                DependencyMap dependency,     // delta
                                PathCountMap path_count,      // sigma
                                VertexIndexMap vertex_index,
-                               WeightMap weight_map
-                               BOOST_GRAPH_ENABLE_IF_MODELS_PARM(Graph,vertex_list_graph_tag))
+                               WeightMap weight_map)
 {
   detail::graph::brandes_dijkstra_shortest_paths<WeightMap>
     shortest_paths(weight_map);
@@ -420,6 +418,7 @@ namespace detail { namespace graph {
                                            VertexIndexMap vertex_index)
   {
     typedef typename graph_traits<Graph>::degree_size_type degree_size_type;
+    typedef typename graph_traits<Graph>::vertex_descriptor vertex_descriptor;
     typedef typename graph_traits<Graph>::edge_descriptor edge_descriptor;
     typedef typename mpl::if_c<(is_same<CentralityMap, 
                                         dummy_property_map>::value),
@@ -455,6 +454,7 @@ namespace detail { namespace graph {
                                            VertexIndexMap vertex_index)
   {
     typedef typename graph_traits<Graph>::degree_size_type degree_size_type;
+    typedef typename graph_traits<Graph>::vertex_descriptor vertex_descriptor;
     typedef typename graph_traits<Graph>::edge_descriptor edge_descriptor;
     typedef typename mpl::if_c<(is_same<CentralityMap, 
                                         dummy_property_map>::value),
@@ -495,28 +495,18 @@ namespace detail { namespace graph {
   };
 
   template<>
-  struct brandes_betweenness_centrality_dispatch1<param_not_found>
+  struct brandes_betweenness_centrality_dispatch1<error_property_not_found>
   {
     template<typename Graph, typename CentralityMap, 
              typename EdgeCentralityMap, typename VertexIndexMap>
     static void 
     run(const Graph& g, CentralityMap centrality, 
         EdgeCentralityMap edge_centrality_map, VertexIndexMap vertex_index,
-        param_not_found)
+        error_property_not_found)
     {
       brandes_betweenness_centrality_dispatch2(g, centrality, edge_centrality_map,
                                                vertex_index);
     }
-  };
-
-  template <typename T>
-  struct is_bgl_named_params {
-    BOOST_STATIC_CONSTANT(bool, value = false);
-  };
-
-  template <typename Param, typename Tag, typename Rest>
-  struct is_bgl_named_params<bgl_named_params<Param, Tag, Rest> > {
-    BOOST_STATIC_CONSTANT(bool, value = true);
   };
 
 } } // end namespace detail::graph
@@ -524,12 +514,11 @@ namespace detail { namespace graph {
 template<typename Graph, typename Param, typename Tag, typename Rest>
 void 
 brandes_betweenness_centrality(const Graph& g, 
-                               const bgl_named_params<Param,Tag,Rest>& params
-                               BOOST_GRAPH_ENABLE_IF_MODELS_PARM(Graph,vertex_list_graph_tag))
+                               const bgl_named_params<Param,Tag,Rest>& params)
 {
   typedef bgl_named_params<Param,Tag,Rest> named_params;
 
-  typedef typename get_param_type<edge_weight_t, named_params>::type ew;
+  typedef typename property_value<named_params, edge_weight_t>::type ew;
   detail::graph::brandes_betweenness_centrality_dispatch1<ew>::run(
     g, 
     choose_param(get_param(params, vertex_centrality), 
@@ -540,13 +529,9 @@ brandes_betweenness_centrality(const Graph& g,
     get_param(params, edge_weight));
 }
 
-// disable_if is required to work around problem with MSVC 7.1 (it seems to not
-// get partial ordering getween this overload and the previous one correct)
 template<typename Graph, typename CentralityMap>
-typename disable_if<detail::graph::is_bgl_named_params<CentralityMap>,
-                    void>::type
-brandes_betweenness_centrality(const Graph& g, CentralityMap centrality
-                               BOOST_GRAPH_ENABLE_IF_MODELS_PARM(Graph,vertex_list_graph_tag))
+void 
+brandes_betweenness_centrality(const Graph& g, CentralityMap centrality)
 {
   detail::graph::brandes_betweenness_centrality_dispatch2(
     g, centrality, dummy_property_map(), get(vertex_index, g));
@@ -555,8 +540,7 @@ brandes_betweenness_centrality(const Graph& g, CentralityMap centrality
 template<typename Graph, typename CentralityMap, typename EdgeCentralityMap>
 void 
 brandes_betweenness_centrality(const Graph& g, CentralityMap centrality,
-                               EdgeCentralityMap edge_centrality_map
-                               BOOST_GRAPH_ENABLE_IF_MODELS_PARM(Graph,vertex_list_graph_tag))
+                               EdgeCentralityMap edge_centrality_map)
 {
   detail::graph::brandes_betweenness_centrality_dispatch2(
     g, centrality, edge_centrality_map, get(vertex_index, g));
@@ -578,7 +562,7 @@ relative_betweenness_centrality(const Graph& g, CentralityMap centrality)
   typename graph_traits<Graph>::vertices_size_type n = num_vertices(g);
   centrality_type factor = centrality_type(2)/centrality_type(n*n - 3*n + 2);
   vertex_iterator v, v_end;
-  for (boost::tie(v, v_end) = vertices(g); v != v_end; ++v) {
+  for (tie(v, v_end) = vertices(g); v != v_end; ++v) {
     put(centrality, *v, factor * get(centrality, *v));
   }
 }
@@ -586,8 +570,7 @@ relative_betweenness_centrality(const Graph& g, CentralityMap centrality)
 // Compute the central point dominance of a graph.
 template<typename Graph, typename CentralityMap>
 typename property_traits<CentralityMap>::value_type
-central_point_dominance(const Graph& g, CentralityMap centrality
-                        BOOST_GRAPH_ENABLE_IF_MODELS_PARM(Graph,vertex_list_graph_tag))
+central_point_dominance(const Graph& g, CentralityMap centrality)
 {
   using std::max;
 
@@ -599,13 +582,13 @@ central_point_dominance(const Graph& g, CentralityMap centrality
   // Find max centrality
   centrality_type max_centrality(0);
   vertex_iterator v, v_end;
-  for (boost::tie(v, v_end) = vertices(g); v != v_end; ++v) {
+  for (tie(v, v_end) = vertices(g); v != v_end; ++v) {
     max_centrality = (max)(max_centrality, get(centrality, *v));
   }
 
   // Compute central point dominance
   centrality_type sum(0);
-  for (boost::tie(v, v_end) = vertices(g); v != v_end; ++v) {
+  for (tie(v, v_end) = vertices(g); v != v_end; ++v) {
     sum += (max_centrality - get(centrality, *v));
   }
   return sum/(n-1);

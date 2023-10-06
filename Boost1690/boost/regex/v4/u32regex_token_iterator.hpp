@@ -20,6 +20,7 @@
 #define BOOST_REGEX_V4_U32REGEX_TOKEN_ITERATOR_HPP
 
 #if (BOOST_WORKAROUND(__BORLANDC__, >= 0x560) && BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x570)))\
+      || BOOST_WORKAROUND(BOOST_MSVC, < 1300) \
       || BOOST_WORKAROUND(__MWERKS__, BOOST_TESTED_AT(0x3003))
 //
 // Borland C++ Builder 6, and Visual C++ 6,
@@ -36,7 +37,7 @@ namespace boost{
 #ifdef BOOST_HAS_ABI_HEADERS
 #  include BOOST_ABI_PREFIX
 #endif
-#ifdef BOOST_MSVC
+#if BOOST_WORKAROUND(BOOST_MSVC, > 1300)
 #  pragma warning(push)
 #  pragma warning(disable:4700)
 #endif
@@ -49,8 +50,7 @@ class u32regex_token_iterator_implementation
 
    match_results<BidirectionalIterator> what;   // current match
    BidirectionalIterator                end;    // end of search area
-   BidirectionalIterator                base;   // start of search area
-   const regex_type                     re;     // the expression
+   const regex_type                     re;    // the expression
    match_flag_type                      flags;  // match flags
    value_type                           result; // the current string result
    int                                  N;      // the current sub-expression being enumerated
@@ -62,8 +62,9 @@ public:
    u32regex_token_iterator_implementation(const regex_type* p, BidirectionalIterator last, const std::vector<int>& v, match_flag_type f)
       : end(last), re(*p), flags(f), subs(v){}
 #if (BOOST_WORKAROUND(__BORLANDC__, >= 0x560) && BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x570)))\
+      || BOOST_WORKAROUND(BOOST_MSVC, < 1300) \
       || BOOST_WORKAROUND(__MWERKS__, BOOST_TESTED_AT(0x3003)) \
-      || BOOST_WORKAROUND(__HP_aCC, < 60700)
+      || BOOST_WORKAROUND(__HP_aCC, BOOST_TESTED_AT(55500))
    template <class T>
    u32regex_token_iterator_implementation(const regex_type* p, BidirectionalIterator last, const T& submatches, match_flag_type f)
       : end(last), re(*p), flags(f)
@@ -90,9 +91,8 @@ public:
 
    bool init(BidirectionalIterator first)
    {
-      base = first;
       N = 0;
-      if(u32regex_search(first, end, what, re, flags, base) == true)
+      if(u32regex_search(first, end, what, re, flags) == true)
       {
          N = 0;
          result = ((subs[N] == -1) ? what.prefix() : what[(int)subs[N]]);
@@ -103,7 +103,6 @@ public:
          result.first = first;
          result.second = end;
          result.matched = (first != end);
-         N = -1;
          return true;
       }
       return false;
@@ -130,10 +129,10 @@ public:
          result =((subs[N] == -1) ? what.prefix() : what[subs[N]]);
          return true;
       }
-      //if(what.prefix().first != what[0].second)
-      //   flags |= match_prev_avail | regex_constants::match_not_bob;
+      if(what.prefix().first != what[0].second)
+         flags |= match_prev_avail | regex_constants::match_not_bob;
       BidirectionalIterator last_end(what[0].second);
-      if(u32regex_search(last_end, end, what, re, ((what[0].first == what[0].second) ? flags | regex_constants::match_not_initial_null : flags), base))
+      if(u32regex_search(last_end, end, what, re, ((what[0].first == what[0].second) ? flags | regex_constants::match_not_initial_null : flags)))
       {
          N =0;
          result =((subs[N] == -1) ? what.prefix() : what[subs[N]]);
@@ -155,6 +154,14 @@ private:
 
 template <class BidirectionalIterator>
 class u32regex_token_iterator 
+#ifndef BOOST_NO_STD_ITERATOR
+   : public std::iterator<
+         std::forward_iterator_tag, 
+         sub_match<BidirectionalIterator>,
+         typename re_detail::regex_iterator_traits<BidirectionalIterator>::difference_type,
+         const sub_match<BidirectionalIterator>*,
+         const sub_match<BidirectionalIterator>& >         
+#endif
 {
 private:
    typedef u32regex_token_iterator_implementation<BidirectionalIterator> impl;
@@ -162,7 +169,7 @@ private:
 public:
    typedef          u32regex                                                regex_type;
    typedef          sub_match<BidirectionalIterator>                        value_type;
-   typedef typename BOOST_REGEX_DETAIL_NS::regex_iterator_traits<BidirectionalIterator>::difference_type 
+   typedef typename re_detail::regex_iterator_traits<BidirectionalIterator>::difference_type 
                                                                             difference_type;
    typedef          const value_type*                                       pointer;
    typedef          const value_type&                                       reference; 
@@ -184,8 +191,9 @@ public:
          pdata.reset();
    }
 #if (BOOST_WORKAROUND(__BORLANDC__, >= 0x560) && BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x570)))\
+      || BOOST_WORKAROUND(BOOST_MSVC, < 1300) \
       || BOOST_WORKAROUND(__MWERKS__, BOOST_TESTED_AT(0x3003)) \
-      || BOOST_WORKAROUND(__HP_aCC, < 60700)
+      || BOOST_WORKAROUND(__HP_aCC, BOOST_TESTED_AT(55500))
    template <class T>
    u32regex_token_iterator(BidirectionalIterator a, BidirectionalIterator b, const regex_type& re,
                         const T& submatches, match_flag_type m = match_default)
@@ -256,7 +264,7 @@ typedef u32regex_token_iterator<const char*> utf8regex_token_iterator;
 typedef u32regex_token_iterator<const UChar*> utf16regex_token_iterator;
 typedef u32regex_token_iterator<const UChar32*> utf32regex_token_iterator;
 
-// construction from an integral sub_match state_id:
+// construction from an integral sub_match id:
 inline u32regex_token_iterator<const char*> make_u32regex_token_iterator(const char* p, const u32regex& e, int submatch = 0, regex_constants::match_flag_type m = regex_constants::match_default)
 {
    return u32regex_token_iterator<const char*>(p, p+std::strlen(p), e, submatch, m);
@@ -267,19 +275,18 @@ inline u32regex_token_iterator<const wchar_t*> make_u32regex_token_iterator(cons
    return u32regex_token_iterator<const wchar_t*>(p, p+std::wcslen(p), e, submatch, m);
 }
 #endif
-#if !defined(BOOST_REGEX_UCHAR_IS_WCHAR_T)
+#ifndef U_WCHAR_IS_UTF16
 inline u32regex_token_iterator<const UChar*> make_u32regex_token_iterator(const UChar* p, const u32regex& e, int submatch = 0, regex_constants::match_flag_type m = regex_constants::match_default)
 {
-   return u32regex_token_iterator<const UChar*>(p, p+u_strlen(p), e, submatch, m);
+   return u32regex_token_iterator<const UChar*>(p, p+u_strlen(p), e, m);
 }
 #endif
 template <class charT, class Traits, class Alloc>
 inline u32regex_token_iterator<typename std::basic_string<charT, Traits, Alloc>::const_iterator> make_u32regex_token_iterator(const std::basic_string<charT, Traits, Alloc>& p, const u32regex& e, int submatch = 0, regex_constants::match_flag_type m = regex_constants::match_default)
 {
-   typedef typename std::basic_string<charT, Traits, Alloc>::const_iterator iter_type;
-   return u32regex_token_iterator<iter_type>(p.begin(), p.end(), e, submatch, m);
+   return u32regex_token_iterator<typename std::basic_string<charT, Traits, Alloc>::const_iterator>(p.begin(), p.end(), e, m);
 }
-inline u32regex_token_iterator<const UChar*> make_u32regex_token_iterator(const U_NAMESPACE_QUALIFIER UnicodeString& s, const u32regex& e, int submatch = 0, regex_constants::match_flag_type m = regex_constants::match_default)
+inline u32regex_token_iterator<const UChar*> make_u32regex_token_iterator(const UnicodeString& s, const u32regex& e, int submatch = 0, regex_constants::match_flag_type m = regex_constants::match_default)
 {
    return u32regex_token_iterator<const UChar*>(s.getBuffer(), s.getBuffer() + s.length(), e, submatch, m);
 }
@@ -297,26 +304,25 @@ inline u32regex_token_iterator<const wchar_t*> make_u32regex_token_iterator(cons
    return u32regex_token_iterator<const wchar_t*>(p, p+std::wcslen(p), e, submatch, m);
 }
 #endif
-#if !defined(BOOST_REGEX_UCHAR_IS_WCHAR_T)
+#ifndef U_WCHAR_IS_UTF16
 template <std::size_t N>
 inline u32regex_token_iterator<const UChar*> make_u32regex_token_iterator(const UChar* p, const u32regex& e, const int (&submatch)[N], regex_constants::match_flag_type m = regex_constants::match_default)
 {
-   return u32regex_token_iterator<const UChar*>(p, p+u_strlen(p), e, submatch, m);
+   return u32regex_token_iterator<const UChar*>(p, p+u_strlen(p), e, m);
 }
 #endif
 template <class charT, class Traits, class Alloc, std::size_t N>
 inline u32regex_token_iterator<typename std::basic_string<charT, Traits, Alloc>::const_iterator> make_u32regex_token_iterator(const std::basic_string<charT, Traits, Alloc>& p, const u32regex& e, const int (&submatch)[N], regex_constants::match_flag_type m = regex_constants::match_default)
 {
-   typedef typename std::basic_string<charT, Traits, Alloc>::const_iterator iter_type;
-   return u32regex_token_iterator<iter_type>(p.begin(), p.end(), e, submatch, m);
+   return u32regex_token_iterator<typename std::basic_string<charT, Traits, Alloc>::const_iterator>(p.begin(), p.end(), e, m);
 }
 template <std::size_t N>
-inline u32regex_token_iterator<const UChar*> make_u32regex_token_iterator(const U_NAMESPACE_QUALIFIER UnicodeString& s, const u32regex& e, const int (&submatch)[N], regex_constants::match_flag_type m = regex_constants::match_default)
+inline u32regex_token_iterator<const UChar*> make_u32regex_token_iterator(const UnicodeString& s, const u32regex& e, const int (&submatch)[N], regex_constants::match_flag_type m = regex_constants::match_default)
 {
    return u32regex_token_iterator<const UChar*>(s.getBuffer(), s.getBuffer() + s.length(), e, submatch, m);
 }
 
-// construction from a vector of sub_match state_id's:
+// construction from a vector of sub_match id's:
 inline u32regex_token_iterator<const char*> make_u32regex_token_iterator(const char* p, const u32regex& e, const std::vector<int>& submatch, regex_constants::match_flag_type m = regex_constants::match_default)
 {
    return u32regex_token_iterator<const char*>(p, p+std::strlen(p), e, submatch, m);
@@ -327,24 +333,23 @@ inline u32regex_token_iterator<const wchar_t*> make_u32regex_token_iterator(cons
    return u32regex_token_iterator<const wchar_t*>(p, p+std::wcslen(p), e, submatch, m);
 }
 #endif
-#if !defined(U_WCHAR_IS_UTF16) && (U_SIZEOF_WCHAR_T != 2)
+#ifndef U_WCHAR_IS_UTF16
 inline u32regex_token_iterator<const UChar*> make_u32regex_token_iterator(const UChar* p, const u32regex& e, const std::vector<int>& submatch, regex_constants::match_flag_type m = regex_constants::match_default)
 {
-   return u32regex_token_iterator<const UChar*>(p, p+u_strlen(p), e, submatch, m);
+   return u32regex_token_iterator<const UChar*>(p, p+u_strlen(p), e, m);
 }
 #endif
 template <class charT, class Traits, class Alloc>
 inline u32regex_token_iterator<typename std::basic_string<charT, Traits, Alloc>::const_iterator> make_u32regex_token_iterator(const std::basic_string<charT, Traits, Alloc>& p, const u32regex& e, const std::vector<int>& submatch, regex_constants::match_flag_type m = regex_constants::match_default)
 {
-   typedef typename std::basic_string<charT, Traits, Alloc>::const_iterator iter_type;
-   return u32regex_token_iterator<iter_type>(p.begin(), p.end(), e, submatch, m);
+   return u32regex_token_iterator<typename std::basic_string<charT, Traits, Alloc>::const_iterator>(p.begin(), p.end(), e, m);
 }
-inline u32regex_token_iterator<const UChar*> make_u32regex_token_iterator(const U_NAMESPACE_QUALIFIER UnicodeString& s, const u32regex& e, const std::vector<int>& submatch, regex_constants::match_flag_type m = regex_constants::match_default)
+inline u32regex_token_iterator<const UChar*> make_u32regex_token_iterator(const UnicodeString& s, const u32regex& e, const std::vector<int>& submatch, regex_constants::match_flag_type m = regex_constants::match_default)
 {
    return u32regex_token_iterator<const UChar*>(s.getBuffer(), s.getBuffer() + s.length(), e, submatch, m);
 }
 
-#ifdef BOOST_MSVC
+#if BOOST_WORKAROUND(BOOST_MSVC, == 1310)
 #  pragma warning(pop)
 #endif
 #ifdef BOOST_HAS_ABI_HEADERS

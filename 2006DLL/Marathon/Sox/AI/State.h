@@ -1,0 +1,35 @@
+#pragma once
+
+namespace SonicTeam{
+	namespace SoX{
+
+
+		namespace AI{
+			//OBSOLETE CLASS 
+			template <typename IContextType>
+			class State
+			{
+			public:
+	
+				virtual ~State(void);
+				virtual unsigned int* StateConstant() = 0; // idk what real name 
+				virtual void OnStateStart() = 0; //OnStateStart
+				virtual void OnStateUpdate(float) = 0; //OnStateUpdate
+				virtual void OnStateEnd() = 0; //OnStateEnd
+				virtual unsigned int StateUnknown() = 0; // li r3 ,0x0 blr
+
+
+		
+
+
+			};
+
+			template <typename IContextType>
+			SonicTeam::SoX::AI::State<IContextType>::~State(void)
+			{
+
+			}
+
+		};
+	}
+}

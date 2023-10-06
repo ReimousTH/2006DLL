@@ -10,9 +10,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/aux_/preprocessor/add.hpp,v $
+// $Date: 2004/09/02 15:40:56 $
+// $Revision: 1.6 $
 
 #include <boost/mpl/aux_/config/preprocessor.hpp>
 

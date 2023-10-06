@@ -11,13 +11,13 @@
 # include <boost/operators.hpp>
 # include <typeinfo>
 # include <cstring>
-# include <ostream>
 # include <boost/static_assert.hpp>
 # include <boost/detail/workaround.hpp>
-# include <boost/python/detail/type_traits.hpp>
+# include <boost/type_traits/same_traits.hpp>
 
 #  ifndef BOOST_PYTHON_HAVE_GCC_CP_DEMANGLE
 #   if defined(__GNUC__)                                                \
+    && ((__GNUC__ > 3) || ((__GNUC__ == 3) && (__GNUC_MINOR__ >= 1)))   \
     && !defined(__EDG_VERSION__)
 #    define BOOST_PYTHON_HAVE_GCC_CP_DEMANGLE
 #   endif
@@ -28,20 +28,12 @@ namespace boost { namespace python {
 // for this compiler at least, cross-shared-library type_info
 // comparisons don't work, so use typeid(x).name() instead. It's not
 // yet clear what the best default strategy is.
-# if defined(__GNUC__) \
+# if (defined(__GNUC__) && __GNUC__ >= 3) \
  || defined(_AIX) \
  || (   defined(__sgi) && defined(__host_mips)) \
- || (defined(__hpux) && defined(__HP_aCC)) \
  || (defined(linux) && defined(__INTEL_COMPILER) && defined(__ICC))
 #  define BOOST_PYTHON_TYPE_ID_NAME
 # endif 
-
-#ifdef BOOST_PYTHON_HAVE_GCC_CP_DEMANGLE
-// Runtime detection of broken cxxabi::__cxa_demangle versions,
-// to avoid #ifdef clutter.
-bool cxxabi_cxa_demangle_is_broken();
-#define BOOST_PYTHON_HAVE_CXXABI_CXA_DEMANGLE_IS_BROKEN
-#endif
 
 // type ids which represent the same information as std::type_info
 // (i.e. the top-level reference and cv-qualifiers are stripped), but
@@ -67,25 +59,28 @@ struct type_info : private totally_ordered<type_info>
     base_id_t m_base_type;
 };
 
-
-// This macro is obsolete. Port away and remove.
-# define BOOST_PYTHON_EXPLICIT_TT_DEF(T)
+#  ifdef BOOST_NO_EXPLICIT_FUNCTION_TEMPLATE_ARGUMENTS
+#   define BOOST_PYTHON_EXPLICIT_TT_DEF(T) ::boost::type<T>*
+#  else
+#   define BOOST_PYTHON_EXPLICIT_TT_DEF(T)
+#  endif
 
 template <class T>
-inline type_info type_id()
+inline type_info type_id(BOOST_EXPLICIT_TEMPLATE_TYPE(T))
 {
     return type_info(
 #  if !defined(_MSC_VER)                                       \
-      || !BOOST_WORKAROUND(BOOST_INTEL_CXX_VERSION, <= 700)
+      || (!BOOST_WORKAROUND(BOOST_MSVC, <= 1300)                \
+          && !BOOST_WORKAROUND(BOOST_INTEL_CXX_VERSION, <= 700))
         typeid(T)
-#  else // strip the decoration which Intel mistakenly leaves in
+#  else // strip the decoration which msvc and Intel mistakenly leave in
         python::detail::msvc_typeid((boost::type<T>*)0)
 #  endif 
         );
 }
 
 #  if (defined(__EDG_VERSION__) && __EDG_VERSION__ < 245) \
-   || (defined(__sgi) && defined(_COMPILER_VERSION) && _COMPILER_VERSION <= 744)
+   || (defined(__sgi) && defined(_COMPILER_VERSION) && _COMPILER_VERSION <= 741)
 // Older EDG-based compilers seems to mistakenly distinguish "int" from
 // "signed int", etc., but only in typeid() expressions. However
 // though int == signed int, the "signed" decoration is propagated
@@ -94,7 +89,7 @@ inline type_info type_id()
 
 #   define BOOST_PYTHON_SIGNED_INTEGRAL_TYPE_ID(T)              \
 template <>                                                     \
-inline type_info type_id<T>()                                   \
+inline type_info type_id<T>(BOOST_PYTHON_EXPLICIT_TT_DEF(T))    \
 {                                                               \
     return type_info(typeid(T));                                \
 }
@@ -165,19 +160,6 @@ inline char const* type_info::name() const
 
 
 BOOST_PYTHON_DECL std::ostream& operator<<(std::ostream&, type_info const&);
-
-template<>
-inline type_info type_id<void>()
-{
-    return type_info (typeid (void *));
-}
-#   ifndef BOOST_NO_CV_VOID_SPECIALIZATIONS
-template<>
-inline type_info type_id<const volatile void>()
-{
-    return type_info (typeid (void *));
-}
-#  endif
 
 }} // namespace boost::python
 

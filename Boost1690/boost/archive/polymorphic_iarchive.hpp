@@ -2,14 +2,14 @@
 #define BOOST_ARCHIVE_POLYMORPHIC_IARCHIVE_HPP
 
 // MS compatible compilers support #pragma once
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
 # pragma once
 #endif
 
 /////////1/////////2/////////3/////////4/////////5/////////6/////////7/////////8
 // polymorphic_iarchive.hpp
 
-// (C) Copyright 2002 Robert Ramey - http://www.rrsd.com .
+// (C) Copyright 2002 Robert Ramey - http://www.rrsd.com . 
 // Use, modification and distribution is subject to the Boost Software
 // License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
@@ -17,39 +17,39 @@
 //  See http://www.boost.org for updates, documentation, and revision history.
 
 #include <cstddef> // std::size_t
-#include <climits> // ULONG_MAX 
-#include <string>
-
 #include <boost/config.hpp>
+
 #if defined(BOOST_NO_STDC_NAMESPACE)
-namespace std{
-    using ::size_t;
+namespace std{ 
+    using ::size_t; 
 } // namespace std
 #endif
 
+#include <string>
 #include <boost/cstdint.hpp>
 
+#include <boost/pfto.hpp>
 #include <boost/archive/detail/iserializer.hpp>
 #include <boost/archive/detail/interface_iarchive.hpp>
 #include <boost/serialization/nvp.hpp>
-#include <boost/archive/detail/register_archive.hpp>
 
-#include <boost/archive/detail/decl.hpp>
-#include <boost/archive/detail/abi_prefix.hpp> // must be the last header
+// determine if its necessary to handle (u)int64_t specifically
+// i.e. that its not a synonym for (unsigned) long
+// if there is no 64 bit int or if its the same as a long
+// we shouldn't define separate functions for int64 data types.
+#if defined(BOOST_NO_INT64_T) \
+    || (ULONG_MAX != 0xffffffff && ULONG_MAX == 18446744073709551615u) // 2**64 - 1
+#   define BOOST_NO_INTRINSIC_INT64_T
+#endif
 
-namespace boost {
-namespace serialization {
-    class extended_type_info;
-} // namespace serialization
+namespace boost { 
 namespace archive {
 namespace detail {
     class basic_iarchive;
     class basic_iserializer;
 }
 
-class polymorphic_iarchive;
-
-class BOOST_SYMBOL_VISIBLE polymorphic_iarchive_impl :
+class polymorphic_iarchive :
     public detail::interface_iarchive<polymorphic_iarchive>
 {
 #ifdef BOOST_NO_MEMBER_TEMPLATE_FRIENDS
@@ -76,14 +76,10 @@ public:
     virtual void load(long & t) = 0;
     virtual void load(unsigned long & t) = 0;
 
-    #if defined(BOOST_HAS_LONG_LONG)
-    virtual void load(boost::long_long_type & t) = 0;
-    virtual void load(boost::ulong_long_type & t) = 0;
-    #elif defined(BOOST_HAS_MS_INT64)
-    virtual void load(__int64 & t) = 0;
-    virtual void load(unsigned __int64 & t) = 0;
+    #if !defined(BOOST_NO_INTRINSIC_INT64_T)
+    virtual void load(boost::int64_t & t) = 0;
+    virtual void load(boost::uint64_t & t) = 0;
     #endif
-
     virtual void load(float & t) = 0;
     virtual void load(double & t) = 0;
 
@@ -97,46 +93,44 @@ public:
     virtual void load_start(const char * name) = 0;
     virtual void load_end(const char * name) = 0;
     virtual void register_basic_serializer(const detail::basic_iserializer & bis) = 0;
-    virtual detail::helper_collection & get_helper_collection() = 0;
 
     // msvc and borland won't automatically pass these to the base class so
     // make it explicit here
     template<class T>
-    void load_override(T & t)
+    void load_override(T & t, BOOST_PFTO int)
     {
-        archive::load(* this->This(), t);
+        archive::load(* this, t);
     }
     // special treatment for name-value pairs.
     template<class T>
     void load_override(
-        const boost::serialization::nvp< T > & t
-    ){
+                #ifndef BOOST_NO_FUNCTION_TEMPLATE_ORDERING
+                const
+                #endif
+                boost::serialization::nvp<T> & t, 
+                int
+        ){
         load_start(t.name());
-        archive::load(* this->This(), t.value());
+        archive::load(* this, t.value());
         load_end(t.name());
     }
-protected:
-    virtual ~polymorphic_iarchive_impl(){};
 public:
     // utility function implemented by all legal archives
-    virtual void set_library_version(library_version_type archive_library_version) = 0;
-    virtual library_version_type get_library_version() const = 0;
+    virtual void set_library_version(unsigned int archive_library_version) = 0;
+    virtual unsigned int get_library_version() const = 0;
     virtual unsigned int get_flags() const = 0;
+    virtual void reset_object_address(const void * new_address, const void * old_address) = 0;
     virtual void delete_created_pointers() = 0;
-    virtual void reset_object_address(
-        const void * new_address,
-        const void * old_address
-    ) = 0;
 
     virtual void load_binary(void * t, std::size_t size) = 0;
 
     // these are used by the serialization library implementation.
     virtual void load_object(
-        void *t,
+        void *t, 
         const detail::basic_iserializer & bis
     ) = 0;
     virtual const detail::basic_pointer_iserializer * load_pointer(
-        void * & t,
+        void * & t, 
         const detail::basic_pointer_iserializer * bpis_ptr,
         const detail::basic_pointer_iserializer * (*finder)(
             const boost::serialization::extended_type_info & type
@@ -147,22 +141,8 @@ public:
 } // namespace archive
 } // namespace boost
 
-#include <boost/archive/detail/abi_suffix.hpp> // pops abi_suffix.hpp pragmas
-
-namespace boost {
-namespace archive {
-
-class BOOST_SYMBOL_VISIBLE polymorphic_iarchive :
-    public polymorphic_iarchive_impl
-{
-public:
-    virtual ~polymorphic_iarchive(){};
-};
-
-} // namespace archive
-} // namespace boost
-
-// required by export
-BOOST_SERIALIZATION_REGISTER_ARCHIVE(boost::archive::polymorphic_iarchive)
+// required by smart_cast for compilers not implementing 
+// partial template specialization
+BOOST_BROKEN_COMPILER_TYPE_TRAITS_SPECIALIZATION(boost::archive::polymorphic_iarchive)
 
 #endif // BOOST_ARCHIVE_POLYMORPHIC_IARCHIVE_HPP

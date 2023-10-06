@@ -3,9 +3,9 @@
 
 /* Copyright (c) 2005 CrystalClear Software, Inc.
  * Subject to the Boost Software License, Version 1.0. (See accompanying
- * file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+ * file LICENSE-1.0 or http://www.boost.org/LICENSE-1.0)
  * Author: Jeff Garland, Bart Garst
- * $Date$
+ * $Date: 2005/04/23 05:39:52 $
  */
 
 #include "boost/date_time/compiler_config.hpp"
@@ -21,6 +21,7 @@ namespace date_time {
   inline
   std::basic_string<OutputT> convert_string_type(const std::basic_string<InputT>& inp_str)
   {
+    typedef std::basic_string<InputT> input_type;
     typedef std::basic_string<OutputT> output_type;
     output_type result;
     result.insert(result.begin(), inp_str.begin(), inp_str.end());

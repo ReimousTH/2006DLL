@@ -2,9 +2,13 @@
 //  Copyright (c) 2000-2002
 //  Joerg Walter, Mathias Koch
 //
-//  Distributed under the Boost Software License, Version 1.0. (See
-//  accompanying file LICENSE_1_0.txt or copy at
-//  http://www.boost.org/LICENSE_1_0.txt)
+//  Permission to use, copy, modify, distribute and sell this software
+//  and its documentation for any purpose is hereby granted without fee,
+//  provided that the above copyright notice appear in all copies and
+//  that both that copyright notice and this permission notice appear
+//  in supporting documentation.  The authors make no representations
+//  about the suitability of this software for any purpose.
+//  It is provided "as is" without express or implied warranty.
 //
 //  The authors gratefully acknowledge the support of
 //  GeNeSys mbH & Co. KG in producing this work.
@@ -14,20 +18,14 @@
 #define _BOOST_UBLAS_LU_
 
 #include <boost/numeric/ublas/operation.hpp>
-#include <boost/numeric/ublas/vector_proxy.hpp>
-#include <boost/numeric/ublas/matrix_proxy.hpp>
+#include <boost/numeric/ublas/matrix_expression.hpp>
 #include <boost/numeric/ublas/vector.hpp>
-#include <boost/numeric/ublas/triangular.hpp>
+#include <boost/numeric/ublas/detail/matrix_assign.hpp>
 
 // LU factorizations in the spirit of LAPACK and Golub & van Loan
 
 namespace boost { namespace numeric { namespace ublas {
 
-    /** \brief
-     *
-     * \tparam T
-     * \tparam A
-     */
     template<class T = std::size_t, class A = unbounded_array<T> >
     class permutation_matrix:
         public vector<T, A> {
@@ -37,17 +35,11 @@ namespace boost { namespace numeric { namespace ublas {
 
         // Construction and destruction
         BOOST_UBLAS_INLINE
-        explicit
         permutation_matrix (size_type size):
             vector<T, A> (size) {
             for (size_type i = 0; i < size; ++ i)
                 (*this) (i) = i;
         }
-        BOOST_UBLAS_INLINE
-        explicit
-        permutation_matrix (const vector_type & init) 
-            : vector_type(init)
-        { }
         BOOST_UBLAS_INLINE
         ~permutation_matrix () {}
 
@@ -63,6 +55,7 @@ namespace boost { namespace numeric { namespace ublas {
     BOOST_UBLAS_INLINE
     void swap_rows (const PM &pm, MV &mv, vector_tag) {
         typedef typename PM::size_type size_type;
+        typedef typename MV::value_type value_type;
 
         size_type size = pm.size ();
         for (size_type i = 0; i < size; ++ i) {
@@ -74,6 +67,7 @@ namespace boost { namespace numeric { namespace ublas {
     BOOST_UBLAS_INLINE
     void swap_rows (const PM &pm, MV &mv, matrix_tag) {
         typedef typename PM::size_type size_type;
+        typedef typename MV::value_type value_type;
 
         size_type size = pm.size ();
         for (size_type i = 0; i < size; ++ i) {
@@ -91,15 +85,14 @@ namespace boost { namespace numeric { namespace ublas {
     // LU factorization without pivoting
     template<class M>
     typename M::size_type lu_factorize (M &m) {
-
+        typedef M matrix_type;
         typedef typename M::size_type size_type;
         typedef typename M::value_type value_type;
 
 #if BOOST_UBLAS_TYPE_CHECK
-        typedef M matrix_type;
         matrix_type cm (m);
 #endif
-        size_type singular = 0;
+        int singular = 0;
         size_type size1 = m.size1 ();
         size_type size2 = m.size2 ();
         size_type size = (std::min) (size1, size2);
@@ -107,8 +100,7 @@ namespace boost { namespace numeric { namespace ublas {
             matrix_column<M> mci (column (m, i));
             matrix_row<M> mri (row (m, i));
             if (m (i, i) != value_type/*zero*/()) {
-                value_type m_inv = value_type (1) / m (i, i);
-                project (mci, range (i + 1, size1)) *= m_inv;
+                project (mci, range (i + 1, size1)) *= value_type (1) / m (i, i);
             } else if (singular == 0) {
                 singular = i + 1;
             }
@@ -128,14 +120,14 @@ namespace boost { namespace numeric { namespace ublas {
     // LU factorization with partial pivoting
     template<class M, class PM>
     typename M::size_type lu_factorize (M &m, PM &pm) {
+        typedef M matrix_type;
         typedef typename M::size_type size_type;
         typedef typename M::value_type value_type;
 
 #if BOOST_UBLAS_TYPE_CHECK
-        typedef M matrix_type;
         matrix_type cm (m);
 #endif
-        size_type singular = 0;
+        int singular = 0;
         size_type size1 = m.size1 ();
         size_type size2 = m.size2 ();
         size_type size = (std::min) (size1, size2);
@@ -151,8 +143,7 @@ namespace boost { namespace numeric { namespace ublas {
                 } else {
                     BOOST_UBLAS_CHECK (pm (i) == i_norm_inf, external_logic ());
                 }
-                value_type m_inv = value_type (1) / m (i, i);
-                project (mci, range (i + 1, size1)) *= m_inv;
+                project (mci, range (i + 1, size1)) *= value_type (1) / m (i, i);
             } else if (singular == 0) {
                 singular = i + 1;
             }
@@ -179,7 +170,7 @@ namespace boost { namespace numeric { namespace ublas {
 #if BOOST_UBLAS_TYPE_CHECK
         matrix_type cm (m);
 #endif
-        size_type singular = 0;
+        int singular = 0;
         size_type size1 = m.size1 ();
         size_type size2 = m.size2 ();
         size_type size = (std::min) (size1, size2);
@@ -264,10 +255,10 @@ namespace boost { namespace numeric { namespace ublas {
     // LU substitution
     template<class M, class E>
     void lu_substitute (const M &m, vector_expression<E> &e) {
-#if BOOST_UBLAS_TYPE_CHECK
         typedef const M const_matrix_type;
         typedef vector<typename E::value_type> vector_type;
 
+#if BOOST_UBLAS_TYPE_CHECK
         vector_type cv1 (e);
 #endif
         inplace_solve (m, e, unit_lower_tag ());
@@ -282,10 +273,10 @@ namespace boost { namespace numeric { namespace ublas {
     }
     template<class M, class E>
     void lu_substitute (const M &m, matrix_expression<E> &e) {
-#if BOOST_UBLAS_TYPE_CHECK
         typedef const M const_matrix_type;
         typedef matrix<typename E::value_type> matrix_type;
 
+#if BOOST_UBLAS_TYPE_CHECK
         matrix_type cm1 (e);
 #endif
         inplace_solve (m, e, unit_lower_tag ());
@@ -305,10 +296,10 @@ namespace boost { namespace numeric { namespace ublas {
     }
     template<class E, class M>
     void lu_substitute (vector_expression<E> &e, const M &m) {
-#if BOOST_UBLAS_TYPE_CHECK
         typedef const M const_matrix_type;
         typedef vector<typename E::value_type> vector_type;
 
+#if BOOST_UBLAS_TYPE_CHECK
         vector_type cv1 (e);
 #endif
         inplace_solve (e, m, upper_tag ());
@@ -323,10 +314,10 @@ namespace boost { namespace numeric { namespace ublas {
     }
     template<class E, class M>
     void lu_substitute (matrix_expression<E> &e, const M &m) {
-#if BOOST_UBLAS_TYPE_CHECK
         typedef const M const_matrix_type;
         typedef matrix<typename E::value_type> matrix_type;
 
+#if BOOST_UBLAS_TYPE_CHECK
         matrix_type cm1 (e);
 #endif
         inplace_solve (e, m, upper_tag ());

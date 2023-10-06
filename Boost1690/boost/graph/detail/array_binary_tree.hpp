@@ -8,19 +8,18 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 //=======================================================================
 //
-#ifndef BOOST_ARRAY_BINARY_TREE_HPP
-#define BOOST_ARRAY_BINARY_TREE_HPP
+#ifndef ADSTL_ARRAY_BINARY_TREE_HPP
+#define ADSTL_ARRAY_BINARY_TREE_HPP
 
 #include <iterator>
 #include <functional>
 #include <boost/config.hpp>
-#include <boost/iterator.hpp>
 
-namespace boost {
+namespace adstl {
+  /*
+    Note: array_binary_tree is a completey balanced binary tree
+   */
 
-/*
- * Note: array_binary_tree is a completey balanced binary tree.
- */
 #if !defined BOOST_NO_STD_ITERATOR_TRAITS
   template <class RandomAccessIterator, class ID>
 #else
@@ -46,29 +45,26 @@ public:
         : boost::iterator<std::bidirectional_iterator_tag, ArrayBinaryTreeNode,
                        difference_type, array_binary_tree_node*, ArrayBinaryTreeNode&>
     { // replace with iterator_adaptor implementation -JGS
-
+        
       inline iterator() : i(0), n(0) { }
       inline iterator(const iterator& x) : r(x.r), i(x.i), n(x.n), id(x.id) { }
       inline iterator& operator=(const iterator& x) {
-        r = x.r; i = x.i; n = x.n;
+        r = x.r; i = x.i; n = x.n; 
         /*egcs generate a warning*/
-        id = x.id;
+        id = x.id; 
         return *this;
       }
-      inline iterator(rep_iterator rr,
-                      size_type ii,
-                      size_type nn,
+      inline iterator(rep_iterator rr, 
+                      size_type ii, 
+                      size_type nn, 
                       const ID& _id) : r(rr), i(ii), n(nn), id(_id) { }
       inline array_binary_tree_node operator*() {
         return ArrayBinaryTreeNode(r, i, n, id); }
       inline iterator& operator++() { ++i; return *this; }
       inline iterator operator++(int)
         { iterator t = *this; ++(*this); return t; }
-      inline iterator& operator--() { --i; return *this; }
-      inline iterator operator--(int)
-        { iterator t = *this; --(*this); return t; }
       inline bool operator==(const iterator& x) const { return i == x.i; }
-      inline bool operator!=(const iterator& x) const
+      inline bool operator!=(const iterator& x) const 
         { return !(*this == x); }
       rep_iterator r;
       size_type i;
@@ -79,13 +75,13 @@ public:
     inline children_type(const children_type& x)
       : r(x.r), i(x.i), n(x.n), id(x.id) { }
     inline children_type& operator=(const children_type& x) {
-      r = x.r; i = x.i; n = x.n;
+      r = x.r; i = x.i; n = x.n; 
       /*egcs generate a warning*/
-      id = x.id;
+      id = x.id; 
       return *this;
     }
     inline children_type(rep_iterator rr,
-                         size_type ii,
+                         size_type ii, 
                          size_type nn,
                          const ID& _id) : r(rr), i(ii), n(nn), id(_id) { }
     inline iterator begin() { return iterator(r, 2 * i + 1, n, id); }
@@ -104,23 +100,23 @@ public:
     ID id;
   };
   inline array_binary_tree_node() : i(0), n(0) { }
-  inline array_binary_tree_node(const array_binary_tree_node& x)
+  inline array_binary_tree_node(const array_binary_tree_node& x) 
     : r(x.r), i(x.i), n(x.n), id(x.id) { }
   inline ArrayBinaryTreeNode& operator=(const ArrayBinaryTreeNode& x) {
     r = x.r;
-    i = x.i;
-    n = x.n;
+    i = x.i; 
+    n = x.n; 
     /*egcs generate a warning*/
-    id = x.id;
+    id = x.id; 
     return *this;
   }
-  inline array_binary_tree_node(rep_iterator start,
-                                rep_iterator end,
+  inline array_binary_tree_node(rep_iterator start, 
+                                rep_iterator end, 
                                 rep_iterator pos, const ID& _id)
     : r(start), i(pos - start), n(end - start), id(_id) { }
-  inline array_binary_tree_node(rep_iterator rr,
-                                size_type ii,
-                                size_type nn, const ID& _id)
+  inline array_binary_tree_node(rep_iterator rr, 
+                                size_type ii, 
+                                size_type nn, const ID& _id) 
     : r(rr), i(ii), n(nn), id(_id) { }
   inline value_type& value() { return *(r + i); }
   inline const value_type& value() const { return *(r + i); }
@@ -139,20 +135,18 @@ public:
   */
   template <class ExternalData>
   inline void swap(ArrayBinaryTreeNode x, ExternalData& edata ) {
-    using boost::get;
-
     value_type tmp = x.value();
 
     /*swap external data*/
-    edata[ get(id, tmp) ]     = i;
-    edata[ get(id, value()) ] = x.i;
+    edata[ boost::get(id, tmp) ]     = i;
+    edata[ boost::get(id, value()) ] = x.i;
 
     x.value() = value();
     value() = tmp;
     i = x.i;
   }
-   inline const children_type children() const {
-    return children_type(r, i, n);
+   inline const children_type children() const { 
+    return children_type(r, i, n); 
   }
   inline size_type index() const { return i; }
   rep_iterator r;
@@ -161,7 +155,7 @@ public:
   ID id;
 };
 
-template <class RandomAccessContainer,
+template <class RandomAccessContainer, 
        class Compare = std::less<typename RandomAccessContainer::value_type> >
 struct compare_array_node {
   typedef typename RandomAccessContainer::value_type value_type;
@@ -180,6 +174,7 @@ struct compare_array_node {
   Compare comp;
 };
 
-} // namespace boost
 
-#endif /* BOOST_ARRAY_BINARY_TREE_HPP */
+} /* namespace adstl */
+
+#endif /* ADSTL_ARRAY_BINARY_TREE_H */

@@ -1,16 +1,19 @@
-//  (C) Copyright Gennadiy Rozental 2001.
+//  (C) Copyright Gennadiy Rozental 2004-2005.
 //  Distributed under the Boost Software License, Version 1.0.
-//  (See accompanying file LICENSE_1_0.txt or copy at
+//  (See accompanying file LICENSE_1_0.txt or copy at 
 //  http://www.boost.org/LICENSE_1_0.txt)
 
 //  See http://www.boost.org/libs/test for the library home page.
 //
-//!@file
-//! Input iterator facade
+//  File        : $RCSfile: input_iterator_facade.hpp,v $
+//
+//  Version     : $Revision: 1.5 $
+//
+//  Description : Input iterator facade 
 // ***************************************************************************
 
-#ifndef BOOST_TEST_UTILS_INPUT_ITERATOR_FACADE_HPP
-#define BOOST_TEST_UTILS_INPUT_ITERATOR_FACADE_HPP
+#ifndef BOOST_INPUT_ITERATOR_FACADE_HPP_071894GER
+#define BOOST_INPUT_ITERATOR_FACADE_HPP_071894GER
 
 // Boost
 #include <boost/iterator/iterator_facade.hpp>
@@ -20,8 +23,8 @@
 //____________________________________________________________________________//
 
 namespace boost {
+
 namespace unit_test {
-namespace utils {
 
 // ************************************************************************** //
 // **************          input_iterator_core_access          ************** //
@@ -77,7 +80,7 @@ private:
     // iterator facade interface implementation
     void                increment()
     {
-        // we make post-end incrementation indefinetly safe
+        // we make post-end incrementation indefinetly safe 
         if( m_valid )
             m_valid = input_iterator_core_access::get( *static_cast<Derived*>(this) );
     }
@@ -94,12 +97,37 @@ private:
     }
 };
 
-} // namespace utils
 } // namespace unit_test
+
 } // namespace boost
 
 //____________________________________________________________________________//
 
 #include <boost/test/detail/enable_warnings.hpp>
 
-#endif // BOOST_TEST_UTILS_INPUT_ITERATOR_FACADE_HPP
+// ***************************************************************************
+//  Revision History :
+//  
+//  $Log: input_iterator_facade.hpp,v $
+//  Revision 1.5  2005/05/08 08:55:09  rogeeff
+//  typos and missing descriptions fixed
+//
+//  Revision 1.4  2005/04/12 06:47:46  rogeeff
+//  help iterator copying
+//
+//  Revision 1.3  2005/02/20 08:27:09  rogeeff
+//  This a major update for Boost.Test framework. See release docs for complete list of fixes/updates
+//
+//  Revision 1.2  2005/02/01 06:40:08  rogeeff
+//  copyright update
+//  old log entries removed
+//  minor stilistic changes
+//  depricated tools removed
+//
+//  Revision 1.1  2005/01/22 18:21:40  rogeeff
+//  moved sharable staff into utils
+//
+// ***************************************************************************
+
+#endif // BOOST_INPUT_ITERATOR_FACADE_HPP_071894GER
+

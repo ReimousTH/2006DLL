@@ -10,9 +10,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/next.hpp,v $
+// $Date: 2004/09/02 15:40:41 $
+// $Revision: 1.7 $
 
 #include <boost/mpl/next_prior.hpp>
 

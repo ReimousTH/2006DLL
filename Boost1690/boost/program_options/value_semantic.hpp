@@ -13,10 +13,10 @@
 #include <boost/function/function1.hpp>
 #include <boost/lexical_cast.hpp>
 
+
+
 #include <string>
 #include <vector>
-#include <typeinfo>
-#include <limits>
 
 namespace boost { namespace program_options {
 
@@ -43,11 +43,6 @@ namespace boost { namespace program_options {
             other sources are discarded.
         */
         virtual bool is_composing() const = 0;
-
-        /** Returns true if value must be given. Non-optional value
-
-        */
-        virtual bool is_required() const = 0;
         
         /** Parses a group of tokens that specify a value of option.
             Stores the result in 'value_store', using whatever representation
@@ -79,13 +74,6 @@ namespace boost { namespace program_options {
         // Nothing here. Specializations to follow.
     };
 
-    /** Helper conversion class for values that accept ascii
-        strings as input.
-        Overrides the 'parse' method and defines new 'xparse'
-        method taking std::string. Depending on whether input
-        to parse is ascii or UTF8, will pass it to xparse unmodified,
-        or with UTF8->ascii conversion.
-    */
     template<>
     class BOOST_PROGRAM_OPTIONS_DECL 
     value_semantic_codecvt_helper<char> : public value_semantic {
@@ -99,13 +87,6 @@ namespace boost { namespace program_options {
             const = 0;
     };
 
-    /** Helper conversion class for values that accept ascii
-        strings as input.
-        Overrides the 'parse' method and defines new 'xparse'
-        method taking std::wstring. Depending on whether input
-        to parse is ascii or UTF8, will recode input to Unicode, or
-        pass it unmodified.
-    */
     template<>
     class BOOST_PROGRAM_OPTIONS_DECL
     value_semantic_codecvt_helper<wchar_t> : public value_semantic {
@@ -120,7 +101,6 @@ namespace boost { namespace program_options {
             const = 0;
 #endif
     };
-
     /** Class which specifies a simple handling of a value: the value will
         have string type and only one token is allowed. */    
     class BOOST_PROGRAM_OPTIONS_DECL 
@@ -136,8 +116,6 @@ namespace boost { namespace program_options {
         unsigned max_tokens() const;
 
         bool is_composing() const { return false; }
-
-        bool is_required() const { return false; }
         
         /** If 'value_store' is already initialized, or new_tokens
             has more than one elements, throws. Otherwise, assigns
@@ -156,40 +134,15 @@ namespace boost { namespace program_options {
         bool m_zero_tokens;
     };
 
-#ifndef BOOST_NO_RTTI
-    /** Base class for all option that have a fixed type, and are
-        willing to announce this type to the outside world.
-        Any 'value_semantics' for which you want to find out the
-        type can be dynamic_cast-ed to typed_value_base. If conversion
-        succeeds, the 'type' method can be called.
-    */
-    class typed_value_base 
-    {
-    public:
-        // Returns the type of the value described by this
-        // object.
-        virtual const std::type_info& value_type() const = 0;
-        // Not really needed, since deletion from this
-        // class is silly, but just in case.
-        virtual ~typed_value_base() {}
-    };
-#endif
-
-
     /** Class which handles value of a specific type. */
     template<class T, class charT = char>
-    class typed_value : public value_semantic_codecvt_helper<charT>
-#ifndef BOOST_NO_RTTI
-                      , public typed_value_base
-#endif
-    {
+    class typed_value : public value_semantic_codecvt_helper<charT>  {
     public:
         /** Ctor. The 'store_to' parameter tells where to store
             the value when it's known. The parameter can be NULL. */
         typed_value(T* store_to) 
         : m_store_to(store_to), m_composing(false),
-          m_implicit(false), m_multitoken(false),
-          m_zero_tokens(false), m_required(false)
+          m_multitoken(false), m_zero_tokens(false)
         {} 
 
         /** Specifies default value, which will be used
@@ -216,42 +169,6 @@ namespace boost { namespace program_options {
             return this;
         }
 
-        /** Specifies an implicit value, which will be used
-            if the option is given, but without an adjacent value.
-            Using this implies that an explicit value is optional,
-        */
-        typed_value* implicit_value(const T &v)
-        {
-            m_implicit_value = boost::any(v);
-            m_implicit_value_as_text =
-                boost::lexical_cast<std::string>(v);
-            return this;
-        }
-
-        /** Specifies the name used to to the value in help message.  */
-        typed_value* value_name(const std::string& name)
-        {
-            m_value_name = name;
-            return this;
-        }
-
-        /** Specifies an implicit value, which will be used
-            if the option is given, but without an adjacent value.
-            Using this implies that an explicit value is optional, but if
-            given, must be strictly adjacent to the option, i.e.: '-ovalue'
-            or '--option=value'.  Giving '-o' or '--option' will cause the
-            implicit value to be applied.
-            Unlike the above overload, the type 'T' need not provide
-            operator<< for ostream, but textual representation of default
-            value must be provided by the user.
-        */
-        typed_value* implicit_value(const T &v, const std::string& textual)
-        {
-            m_implicit_value = boost::any(v);
-            m_implicit_value_as_text = textual;
-            return this;
-        }
-
         /** Specifies a function to be called when the final value
             is determined. */
         typed_value* notifier(function1<void, const T&> f)
@@ -269,33 +186,19 @@ namespace boost { namespace program_options {
             return this;
         }
 
-        /** Specifies that the value can span multiple tokens. 
-        */
+        /** Specifies that the value can span multiple tokens. */
         typed_value* multitoken()
         {
             m_multitoken = true;
             return this;
         }
 
-        /** Specifies that no tokens may be provided as the value of
-            this option, which means that only presense of the option
-            is significant. For such option to be useful, either the
-            'validate' function should be specialized, or the 
-            'implicit_value' method should be also used. In most
-            cases, you can use the 'bool_switch' function instead of
-            using this method. */
         typed_value* zero_tokens() 
         {
             m_zero_tokens = true;
             return this;
         }
             
-        /** Specifies that the value must occur. */
-        typed_value* required()
-        {
-            m_required = true;
-            return this;
-        }
 
     public: // value semantic overrides
 
@@ -305,7 +208,7 @@ namespace boost { namespace program_options {
 
         unsigned min_tokens() const
         {
-            if (m_zero_tokens || !m_implicit_value.empty()) {
+            if (m_zero_tokens) {
                 return 0;
             } else {
                 return 1;
@@ -314,7 +217,7 @@ namespace boost { namespace program_options {
 
         unsigned max_tokens() const {
             if (m_multitoken) {
-                return std::numeric_limits<unsigned>::max BOOST_PREVENT_MACRO_SUBSTITUTION();
+                return 32000;
             } else if (m_zero_tokens) {
                 return 0;
             } else {
@@ -322,10 +225,9 @@ namespace boost { namespace program_options {
             }
         }
 
-        bool is_required() const { return m_required; }
 
         /** Creates an instance of the 'validator' class and calls
-            its operator() to perform the actual conversion. */
+            its operator() to perform athe ctual conversion. */
         void xparse(boost::any& value_store, 
                     const std::vector< std::basic_string<charT> >& new_tokens) 
             const;
@@ -348,15 +250,6 @@ namespace boost { namespace program_options {
             when creating *this, stores the value there. Otherwise,
             does nothing. */
         void notify(const boost::any& value_store) const;
-
-    public: // typed_value_base overrides
-        
-#ifndef BOOST_NO_RTTI
-        const std::type_info& value_type() const
-        {
-            return typeid(T);
-        }
-#endif
         
 
     private:
@@ -364,12 +257,9 @@ namespace boost { namespace program_options {
         
         // Default value is stored as boost::any and not
         // as boost::optional to avoid unnecessary instantiations.
-        std::string m_value_name;
         boost::any m_default_value;
         std::string m_default_value_as_text;
-        boost::any m_implicit_value;
-        std::string m_implicit_value_as_text;
-        bool m_composing, m_implicit, m_multitoken, m_zero_tokens, m_required;
+        bool m_composing, m_implicit, m_multitoken, m_zero_tokens;
         boost::function1<void, const T&> m_notifier;
     };
 

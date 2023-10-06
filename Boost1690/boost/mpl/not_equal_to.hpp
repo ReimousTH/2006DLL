@@ -10,9 +10,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/not_equal_to.hpp,v $
+// $Date: 2004/09/02 15:40:41 $
+// $Revision: 1.3 $
 
 #define AUX778076_OP_NAME not_equal_to
 #define AUX778076_OP_TOKEN !=

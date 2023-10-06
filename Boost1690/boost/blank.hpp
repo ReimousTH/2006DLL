@@ -15,12 +15,10 @@
 
 #include "boost/blank_fwd.hpp"
 
-#if !defined(BOOST_NO_IOSTREAM)
 #include <iosfwd> // for std::basic_ostream forward declare
-#include "boost/detail/templated_streams.hpp"
-#endif // BOOST_NO_IOSTREAM
 
-#include "boost/type_traits/integral_constant.hpp"
+#include "boost/detail/templated_streams.hpp"
+#include "boost/mpl/bool.hpp"
 #include "boost/type_traits/is_empty.hpp"
 #include "boost/type_traits/is_pod.hpp"
 #include "boost/type_traits/is_stateless.hpp"
@@ -36,19 +34,19 @@ struct blank
 
 template <>
 struct is_pod< blank >
-    : boost::true_type
+    : mpl::true_
 {
 };
 
 template <>
 struct is_empty< blank >
-    : boost::true_type
+    : mpl::true_
 {
 };
 
 template <>
 struct is_stateless< blank >
-    : boost::true_type
+    : mpl::true_
 {
 };
 
@@ -60,35 +58,13 @@ inline bool operator==(const blank&, const blank&)
     return true;
 }
 
-inline bool operator<=(const blank&, const blank&)
-{
-    return true;
-}
-
-inline bool operator>=(const blank&, const blank&)
-{
-    return true;
-}
-
-inline bool operator!=(const blank&, const blank&)
-{
-    return false;
-}
-
 inline bool operator<(const blank&, const blank&)
-{
-    return false;
-}
-
-inline bool operator>(const blank&, const blank&)
 {
     return false;
 }
 
 // streaming support
 //
-#if !defined(BOOST_NO_IOSTREAM)
-
 BOOST_TEMPLATED_STREAM_TEMPLATE(E,T)
 inline BOOST_TEMPLATED_STREAM(ostream, E,T)& operator<<(
       BOOST_TEMPLATED_STREAM(ostream, E,T)& out
@@ -98,8 +74,6 @@ inline BOOST_TEMPLATED_STREAM(ostream, E,T)& operator<<(
     // (output nothing)
     return out;
 }
-
-#endif // BOOST_NO_IOSTREAM
 
 } // namespace boost
 

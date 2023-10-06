@@ -1,5 +1,4 @@
-// (C) Copyright 2008 CodeRage, LLC (turkanis at coderage dot com)
-// (C) Copyright 2003-2007 Jonathan Turkanis
+// (C) Copyright Jonathan Turkanis 2003.
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt.)
 
@@ -10,7 +9,7 @@
 #ifndef BOOST_IOSTREAMS_CODE_CONVERTER_HPP_INCLUDED
 #define BOOST_IOSTREAMS_CODE_CONVERTER_HPP_INCLUDED
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
 # pragma once
 #endif
 
@@ -24,7 +23,7 @@
 #include <algorithm>                       // max.
 #include <cstring>                         // memcpy.
 #include <exception>
-#include <boost/config.hpp>                // DEDUCED_TYPENAME, 
+#include <boost/config.hpp>                // DEDUCED_TYPENAME.
 #include <boost/iostreams/char_traits.hpp>
 #include <boost/iostreams/constants.hpp>   // default_filter_buffer_size.
 #include <boost/iostreams/detail/adapter/concept_adapter.hpp>
@@ -34,17 +33,14 @@
 #include <boost/iostreams/detail/codecvt_holder.hpp>
 #include <boost/iostreams/detail/codecvt_helper.hpp>
 #include <boost/iostreams/detail/double_object.hpp>
-#include <boost/iostreams/detail/execute.hpp>
 #include <boost/iostreams/detail/forward.hpp>
-#include <boost/iostreams/detail/functional.hpp>
-#include <boost/iostreams/detail/ios.hpp> // failure, openmode, int types, streamsize.
-#include <boost/iostreams/detail/optional.hpp>
+#include <boost/iostreams/detail/ios.hpp> // failure, openmode, int types.
 #include <boost/iostreams/detail/select.hpp>
 #include <boost/iostreams/traits.hpp>
 #include <boost/iostreams/operations.hpp>
+#include <boost/optional.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/static_assert.hpp>
-#include <boost/throw_exception.hpp>
 #include <boost/type_traits/is_convertible.hpp>
 #include <boost/type_traits/is_same.hpp>
 
@@ -60,32 +56,6 @@ struct code_conversion_error : BOOST_IOSTREAMS_FAILURE {
 };
 
 namespace detail {
-
-//--------------Definition of strncpy_if_same---------------------------------//
-
-// Helper template for strncpy_if_same, below.
-template<bool B>
-struct strncpy_if_same_impl;
-
-template<>
-struct strncpy_if_same_impl<true> {
-    template<typename Ch>
-    static Ch* copy(Ch* tgt, const Ch* src, std::streamsize n)
-    { return BOOST_IOSTREAMS_CHAR_TRAITS(Ch)::copy(tgt, src, n); }
-};
-
-template<>
-struct strncpy_if_same_impl<false> {
-    template<typename Src, typename Tgt>
-    static Tgt* copy(Tgt* tgt, const Src*, std::streamsize) { return tgt; }
-};
-
-template<typename Src, typename Tgt>
-Tgt* strncpy_if_same(Tgt* tgt, const Src* src, std::streamsize n)
-{
-    typedef strncpy_if_same_impl<is_same<Src, Tgt>::value> impl;
-    return impl::copy(tgt, src, n);
-}
 
 //--------------Definition of conversion_buffer-------------------------------//
 
@@ -139,8 +109,8 @@ struct code_converter_impl {
                 is_direct<Device>,
                 direct_adapter<Device>,
                 Device
-            >::type                                         device_type;
-    typedef optional< concept_adapter<device_type> >        storage_type;
+            >::type                                         policy_type;
+    typedef optional< concept_adapter<policy_type> >        storage_type;
     typedef is_convertible<device_category, two_sequence>   is_double;
     typedef conversion_buffer<Codecvt, Alloc>               buffer_type;
 
@@ -150,17 +120,16 @@ struct code_converter_impl {
     { 
         try { 
             if (flags_ & f_open) close(); 
-        } catch (...) { /* */ } 
+        } catch (std::exception&) { /* */ } 
     }
 
-    template <class T>
-    void open(const T& dev, std::streamsize buffer_size)
+    void open(const Device& dev, int buffer_size)
     {
         if (flags_ & f_open)
-            boost::throw_exception(BOOST_IOSTREAMS_FAILURE("already open"));
+            throw BOOST_IOSTREAMS_FAILURE("already open");
         if (buffer_size == -1)
             buffer_size = default_filter_buffer_size;
-        std::streamsize max_length = cvt_.get().max_length();
+        int max_length = cvt_.get().max_length();
         buffer_size = (std::max)(buffer_size, 2 * max_length);
         if (can_read::value) {
             buf_.first().resize(buffer_size);
@@ -170,41 +139,37 @@ struct code_converter_impl {
             buf_.second().resize(buffer_size);
             buf_.second().set(0, 0);
         }
-        dev_.reset(concept_adapter<device_type>(dev));
-        flags_ = f_open;
+        dev_.reset(concept_adapter<policy_type>(dev));
+        flags_ |= f_open;
     }
 
-    void close()
+    void close(BOOST_IOS::openmode which = BOOST_IOS::in | BOOST_IOS::out)
     {
-        detail::execute_all(
-            detail::call_member_close(*this, BOOST_IOS::in),
-            detail::call_member_close(*this, BOOST_IOS::out)
-        );
-    }
-
-    void close(BOOST_IOS::openmode which)
-    {
-        if (which == BOOST_IOS::in && (flags_ & f_input_closed) == 0) {
-            flags_ |= f_input_closed;
+        if (which & BOOST_IOS::in) {
             iostreams::close(dev(), BOOST_IOS::in);
+            flags_ |= f_input_closed;
         }
-        if (which == BOOST_IOS::out && (flags_ & f_output_closed) == 0) {
+        if (which & BOOST_IOS::out) {
+            buf_.second().flush(dev());
+            iostreams::close(dev(), BOOST_IOS::out);
             flags_ |= f_output_closed;
-            detail::execute_all(
-                detail::flush_buffer(buf_.second(), dev(), can_write::value),
-                detail::call_close(dev(), BOOST_IOS::out),
-                detail::call_reset(dev_),
-                detail::call_reset(buf_.first()),
-                detail::call_reset(buf_.second())
-            );
+        }
+        if ( !is_double::value || 
+             (flags_ & f_input_closed) != 0 && 
+             (flags_ & f_output_closed) != 0 )
+        {
+            dev_.reset();
+            buf_.first().reset();
+            buf_.second().reset();
+            flags_ = 0;
         }
     }
 
     bool is_open() const { return (flags_ & f_open) != 0;}
 
-    device_type& dev() { return **dev_; }
+    policy_type& dev() { return **dev_; }
 
-    enum flag_type {
+    enum {
         f_open             = 1,
         f_input_closed     = f_open << 1,
         f_output_closed    = f_input_closed << 1
@@ -223,7 +188,7 @@ struct code_converter_impl {
 
 //--------------Definition of converter---------------------------------------//
 
-#define BOOST_IOSTREAMS_CONVERTER_PARAMS() , std::streamsize buffer_size = -1
+#define BOOST_IOSTREAMS_CONVERTER_PARAMS() , int buffer_size = -1
 #define BOOST_IOSTREAMS_CONVERTER_ARGS() , buffer_size
 
 template<typename Device, typename Codecvt, typename Alloc>
@@ -245,7 +210,7 @@ private:
     typedef detail::code_converter_impl<
                 Device, Codecvt, Alloc
             >                                                       impl_type;
-    typedef typename impl_type::device_type                         device_type;
+    typedef typename impl_type::policy_type                         policy_type;
     typedef typename impl_type::buffer_type                         buffer_type;
     typedef typename detail::codecvt_holder<Codecvt>::codecvt_type  codecvt_type;
     typedef typename detail::codecvt_intern<Codecvt>::type          intern_type;
@@ -264,6 +229,14 @@ public:
     ));
 public:
     code_converter() { }
+#if BOOST_WORKAROUND(__GNUC__, < 3)
+    code_converter(code_converter& rhs) 
+        : code_converter_base<Device, Codecvt, Alloc>(rhs)
+        { }
+    code_converter(const code_converter& rhs) 
+        : code_converter_base<Device, Codecvt, Alloc>(rhs)
+        { }
+#endif
     BOOST_IOSTREAMS_FORWARD( code_converter, open_impl, Device,
                              BOOST_IOSTREAMS_CONVERTER_PARAMS, 
                              BOOST_IOSTREAMS_CONVERTER_ARGS )
@@ -292,7 +265,7 @@ private:
     }
 
     const codecvt_type& cvt() { return impl().cvt_.get(); }
-    device_type& dev() { return impl().dev(); }
+    policy_type& dev() { return impl().dev(); }
     buffer_type& in() { return impl().buf_.first(); }
     buffer_type& out() { return impl().buf_.second(); }
     impl_type& impl() { return *this->pimpl_; }
@@ -306,9 +279,10 @@ template<typename Device, typename Codevt, typename Alloc>
 std::streamsize code_converter<Device, Codevt, Alloc>::read
     (char_type* s, std::streamsize n)
 {
+    using namespace std;
     const extern_type*   next;        // Next external char.
     intern_type*         nint;        // Next internal char.
-    std::streamsize      total = 0;   // Characters read.
+    streamsize           total = 0;   // Characters read.
     int                  status = iostreams::char_traits<char>::good();
     bool                 partial = false;
     buffer_type&         buf = in();
@@ -324,31 +298,29 @@ std::streamsize code_converter<Device, Codevt, Alloc>::read
         }
 
         // Convert.
-        std::codecvt_base::result result =
+        codecvt_base::result result =
             cvt().in( buf.state(),
                       buf.ptr(), buf.eptr(), next,
                       s + total, s + n, nint );
         buf.ptr() += next - buf.ptr();
-        total = static_cast<std::streamsize>(nint - s);
+        total = static_cast<streamsize>(nint - s);
 
         switch (result) {
-        case std::codecvt_base::partial:
+        case codecvt_base::partial:
             partial = true;
             break;
-        case std::codecvt_base::ok:
+        case codecvt_base::ok:
             break;
-        case std::codecvt_base::noconv:
-            {
-                std::streamsize amt = 
-                    std::min<std::streamsize>(next - buf.ptr(), n - total);
-                detail::strncpy_if_same(s + total, buf.ptr(), amt);
-                total += amt;
-            }
-            break;
-        case std::codecvt_base::error:
+        case codecvt_base::error:
+            buf.state() = state_type();
+            throw code_conversion_error();
+        case codecvt_base::noconv:
         default:
             buf.state() = state_type();
-            boost::throw_exception(code_conversion_error());
+            intern_type c = intern_type();
+            memcpy(&c, (const void*) buf.ptr(), sizeof(extern_type));
+            s[total++] = c;
+            break;
         }
 
     } while (total < n && status != EOF && status != WOULD_BLOCK);
@@ -360,10 +332,11 @@ template<typename Device, typename Codevt, typename Alloc>
 std::streamsize code_converter<Device, Codevt, Alloc>::write
     (const char_type* s, std::streamsize n)
 {
+    using namespace std;
     buffer_type&        buf = out();
     extern_type*        next;              // Next external char.
     const intern_type*  nint;              // Next internal char.
-    std::streamsize     total = 0;         // Characters written.
+    streamsize          total = 0;         // Characters written.
     bool                partial = false;
 
     while (total < n) {
@@ -376,7 +349,7 @@ std::streamsize code_converter<Device, Codevt, Alloc>::write
         }
        
         // Convert.
-        std::codecvt_base::result result =
+        codecvt_base::result result =
             cvt().out( buf.state(),
                        s + total, s + n, nint,
                        buf.eptr(), buf.end(), next );
@@ -384,25 +357,29 @@ std::streamsize code_converter<Device, Codevt, Alloc>::write
         buf.eptr() += progress;
 
         switch (result) {
-        case std::codecvt_base::partial:
-            partial = true;
-            BOOST_FALLTHROUGH;
-        case std::codecvt_base::ok:
-            total = static_cast<std::streamsize>(nint - s);
+        case codecvt_base::partial:
+            partial = true; // Fall through.
+        case codecvt_base::ok:
+            total = static_cast<streamsize>(nint - s);
             break;
-        case std::codecvt_base::noconv:
-            {
-                std::streamsize amt = 
-                    std::min<std::streamsize>( nint - total - s, 
-                                               buf.end() - buf.eptr() );
-                detail::strncpy_if_same(buf.eptr(), s + total, amt);
-                total += amt;
-            }
-            break;
-        case std::codecvt_base::error:
-        default:
+        case codecvt_base::error:
             buf.state() = state_type();
-            boost::throw_exception(code_conversion_error());
+            throw code_conversion_error();
+        case codecvt_base::noconv:
+            {
+                // This can be shortened to two memcpy's.
+                const char* c = (const char*) (s + total);
+                for ( std::size_t index = 0; 
+                      index < sizeof(intern_type); 
+                      index += sizeof(extern_type), 
+                      ++buf.ptr() ) 
+                {
+                    memcpy(buf.ptr(), c + index, sizeof(extern_type));
+                    if (buf.eptr() == buf.end())
+                        buf.flush(dev());
+                }
+                ++total;
+            }
         }
     }
     return total;

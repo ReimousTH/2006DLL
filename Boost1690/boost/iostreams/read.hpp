@@ -1,5 +1,4 @@
-// (C) Copyright 2008 CodeRage, LLC (turkanis at coderage dot com)
-// (C) Copyright 2005-2007 Jonathan Turkanis
+// (C) Copyright Jonathan Turkanis 2005.
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt.)
 
@@ -8,7 +7,7 @@
 #ifndef BOOST_IOSTREAMS_READ_HPP_INCLUDED
 #define BOOST_IOSTREAMS_READ_HPP_INCLUDED
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
 # pragma once
 #endif
 
@@ -25,6 +24,10 @@
 
 // Must come last.
 #include <boost/iostreams/detail/config/disable_warnings.hpp>
+
+#if BOOST_WORKAROUND(BOOST_MSVC, < 1300) //-----------------------------------//
+# include <boost/iostreams/detail/vc6/read.hpp>
+#else // #if BOOST_WORKAROUND(BOOST_MSVC, < 1300) //--------------------------//
 
 namespace boost { namespace iostreams {
 
@@ -76,7 +79,7 @@ struct true_eof_impl<true> {
 template<>
 struct true_eof_impl<false> {
     template<typename T>
-    static bool true_eof(T&) { return true; }
+    static bool true_eof(T& t) { return true; }
 };
 
 template<typename T>
@@ -235,6 +238,8 @@ struct read_filter_impl<any_tag> {
 } // End namespace detail.
 
 } } // End namespaces iostreams, boost.
+
+#endif // #if BOOST_WORKAROUND(BOOST_MSVC, < 1300) //-------------------------//
 
 #include <boost/iostreams/detail/config/enable_warnings.hpp>
 

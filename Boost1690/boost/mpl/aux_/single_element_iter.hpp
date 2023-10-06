@@ -10,9 +10,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/aux_/single_element_iter.hpp,v $
+// $Date: 2004/11/28 01:47:44 $
+// $Revision: 1.8 $
 
 #include <boost/mpl/iterator_tags.hpp>
 #include <boost/mpl/advance_fwd.hpp>

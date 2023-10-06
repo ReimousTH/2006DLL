@@ -4,31 +4,26 @@
 /* Copyright (c) 2002,2003 CrystalClear Software, Inc.
  * Use, modification and distribution is subject to the 
  * Boost Software License, Version 1.0. (See accompanying
- * file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+ * file LICENSE-1.0 or http://www.boost.org/LICENSE-1.0)
  * Author: Jeff Garland, Bart Garst
- * $Date$
+ * $Date: 2005/04/12 13:16:24 $
  */
 
-#include <boost/date_time/compiler_config.hpp>
-#include <boost/date_time/gregorian/gregorian_types.hpp>
-#include <boost/date_time/date_formatting_locales.hpp> // sets BOOST_DATE_TIME_NO_LOCALE
-#include <boost/date_time/gregorian/parsers.hpp>
-#include <boost/io/ios_state.hpp>
+#include "boost/date_time/gregorian/gregorian_types.hpp"
+#include "boost/date_time/date_formatting_locales.hpp" // sets BOOST_DATE_TIME_NO_LOCALE
+#include "boost/date_time/gregorian/parsers.hpp"
+#include <string>
+#include <exception>
 
 //This file is basically commented out if locales are not supported
 #ifndef BOOST_DATE_TIME_NO_LOCALE
 
-#include <string>
-#include <memory>
-#include <locale>
-#include <iostream>
-#include <exception>
 
 namespace boost {
 namespace gregorian {
   
   //! Configuration of the output facet template
-  struct BOOST_SYMBOL_VISIBLE greg_facet_config
+  struct greg_facet_config
   {
     typedef boost::gregorian::greg_month month_type;
     typedef boost::date_time::special_values special_value_enum;
@@ -76,9 +71,9 @@ namespace gregorian {
       greg_month_formatter::format_month(m, os, f);
 
     }
-    else { // default to numeric
-      boost::io::basic_ios_fill_saver<charT> ifs(os);
-      os  << std::setw(2) << std::setfill(os.widen('0')) << m.as_number();
+    else { //default to numeric
+      charT fill_char = '0';
+      os  << std::setw(2) << std::setfill(fill_char) << m.as_number();
     }
 
     return os;
@@ -99,7 +94,7 @@ namespace gregorian {
     std::locale locale = os.getloc();
     if (std::has_facet<facet_def>(locale)) {
       const facet_def& f = std::use_facet<facet_def>(locale);
-      greg_weekday_formatter::format_weekday(wd, os, f, true);
+      greg_weekday_formatter::format_weekday(wd.as_enum(), os, f, true);
     }
     else { //default to short English string eg: Sun, Mon, Tue, Wed...
       os  << wd.as_short_string();
@@ -143,8 +138,7 @@ namespace gregorian {
   std::basic_ostream<charT, traits>&
   operator<<(std::basic_ostream<charT, traits>& os, const partial_date& pd)
   {
-    boost::io::basic_ios_fill_saver<charT> ifs(os);
-    os << std::setw(2) << std::setfill(os.widen('0')) << pd.day() << ' ' 
+    os << std::setw(2) << std::setfill('0') << pd.day() << ' ' 
        << pd.month().as_short_string() ; 
     return os;
   }
@@ -217,6 +211,8 @@ namespace gregorian {
   std::basic_istream<charT>& operator>>(std::basic_istream<charT>& is, date& d)
   {
     std::istream_iterator<std::basic_string<charT>, charT> beg(is), eos;
+    
+    typedef boost::date_time::all_date_names_put<greg_facet_config, charT> facet_def;
     d = from_stream(beg, eos);
     return is;
   }
@@ -285,32 +281,22 @@ namespace gregorian {
       const facet_def& f = std::use_facet<facet_def>(is.getloc());
       num = date_time::find_match(f.get_short_month_names(), 
                                   f.get_long_month_names(), 
-                                  (greg_month::max)(), s); // greg_month spans 1..12, so max returns the array size,
-                                                           // which is needed by find_match
+                                  (greg_month::max)(), s); 
     }
     /* bad_cast will be thrown if the desired facet is not accessible
      * so we can generate the facet. This has the drawback of using english
      * names as a default. */
-    catch(std::bad_cast&){
+    catch(std::bad_cast bc){
+      std::cout << "Month exception caught" << std::endl;
       charT a = '\0';
-      
-#if defined(BOOST_NO_CXX11_SMART_PTR)
-      
-      std::auto_ptr< const facet_def > f(create_facet_def(a));
-      
-#else
-
-      std::unique_ptr< const facet_def > f(create_facet_def(a));
-      
-#endif
-      
+      const facet_def* f = create_facet_def(a);
       num = date_time::find_match(f->get_short_month_names(), 
                                   f->get_long_month_names(), 
-                                  (greg_month::max)(), s); // greg_month spans 1..12, so max returns the array size,
-                                                           // which is needed by find_match
+                                  (greg_month::max)(), s); 
+      delete(f);
     }
     
-    ++num; // months numbered 1-12
+    num += 1; // months numbered 1-12
     m = greg_month(num); 
 
     return is;
@@ -337,29 +323,19 @@ namespace gregorian {
       const facet_def& f = std::use_facet<facet_def>(is.getloc());
       num = date_time::find_match(f.get_short_weekday_names(), 
                                   f.get_long_weekday_names(), 
-                                  (greg_weekday::max)() + 1, s); // greg_weekday spans 0..6, so increment is needed
-                                                                 // to form the array size which is needed by find_match
+                                  (greg_weekday::max)(), s); 
     }
     /* bad_cast will be thrown if the desired facet is not accessible
      * so we can generate the facet. This has the drawback of using english
      * names as a default. */
-    catch(std::bad_cast&){
+    catch(std::bad_cast bc){
+      //std::cout << "Weekday exception caught" << std::endl;
       charT a = '\0';
-      
-#if defined(BOOST_NO_CXX11_SMART_PTR)
-
-      std::auto_ptr< const facet_def > f(create_facet_def(a));
-      
-#else 
-
-      std::unique_ptr< const facet_def > f(create_facet_def(a));
-      
-#endif
-      
+      const facet_def* f = create_facet_def(a);
       num = date_time::find_match(f->get_short_weekday_names(), 
                                   f->get_long_weekday_names(), 
-                                  (greg_weekday::max)() + 1, s); // greg_weekday spans 0..6, so increment is needed
-                                                                 // to form the array size which is needed by find_match
+                                  (greg_weekday::max)(), s); 
+      delete(f);
     }
    
     wd = greg_weekday(num); // weekdays numbered 0-6
@@ -368,7 +344,8 @@ namespace gregorian {
 
 } } //namespace gregorian
 
-#endif
-
+#endif  
+    
+    
 #endif
 

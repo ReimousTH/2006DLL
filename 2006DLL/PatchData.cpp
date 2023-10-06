@@ -4943,7 +4943,7 @@ error:
 	void Draw(){
 
 
-		// g_pDevice->Clear( 0, NULL, D3DCLEAR_TARGET, 0, 1.0f, 0L );
+	//	 g_pDevice->Clear( 0, NULL, D3DCLEAR_TARGET, 0, 1.0f, 0L );
 		// Begin Xui rendering
 		XuiRenderBegin( g_hDC, D3DCOLOR_ARGB( 255, 0, 0, 0 ) );
 
@@ -4967,18 +4967,17 @@ error:
 
 	int AppMarathon_DrawMb(int a1){
 
-
-		BranchTo(0x825B1A28,int,a1);
 		g_pDevice = *(IDirect3DDevice9 **)(a1 + 0x24);
 
+		//InitXui();
+
+		//Draw();
+
+		BranchTo(0x825B1A28,int,a1);
+	
 
 		
 	
-
-
-
-
-//		Draw();
 
 		return a1;
 
@@ -5152,6 +5151,1151 @@ namespace ChainJumpTest{
 
 	void GlobalInstall(){
 		INSTALL_HOOK(sub_82208FA8);
+
+
+	}
+}
+
+
+
+namespace WhiteGameRestored
+{
+
+#pragma region Save
+
+	struct SaveParams{
+
+		byte GemLevel[8];
+		float GemEXP[8];
+
+
+	};
+
+
+
+	SaveParams Params;
+
+	void ResetParams(){
+
+		for (int i = 0;i<8;i++){
+			Params.GemEXP[i] = 0;
+			Params.GemLevel[i] = 0;
+		}
+
+
+	}
+
+	int __declspec( naked ) GameImpusleConstructorH(int a1, int a2){
+
+		__asm{
+
+			mflr r12
+				std       r25, -0x40(r1)
+				std       r26, -0x38(r1)
+				std       r27, -0x30(r1)
+				std       r28, -0x28(r1)
+				std       r29, -0x20(r1)
+				std       r30, -0x18(r1)
+				std       r31, -0x10(r1)
+				stw       r12, -8(r1)
+
+				stfd      fp30, -0x50(r1)
+				stfd      fp31, -0x48(r1)
+				lis r11,0x8217
+				ori r11,r11,0x8E2E0
+				mtctr r11
+				bctr
+		}
+	}
+
+	HOOK(int,__fastcall,GameImpusleConstructor,0x8217E2D0,int a1,int a2)
+	{
+
+
+		ResetParams();
+		
+
+		GameImpusleConstructorH(a1,a2);
+
+		return a1;
+
+	}
+
+
+#pragma endregion Save
+
+
+	void __declspec( naked ) sub_8226A478H(int a1,int a2,int a3,int a4){
+		__asm{
+			mflr r12
+
+				std       r27, -0x30(r1)
+				std       r28, -0x28(r1)
+				std       r29, -0x20(r1)
+				std       r30, -0x18(r1)
+				std       r31, -0x10(r1)
+				stw       r12, -0x8(r1)
+				stwu      r1, -0x80(r1)
+				mr r31,r3
+				lis r11,0x8226
+				ori r11,r11,0xA488
+				mtctr r11
+				bctr r11
+		}
+	}	
+
+	HOOK(int,__fastcall,State_Sound_Sonic_Constructor,0x8226A478,int a1,int a2,int a3,int a4)
+	{
+
+		// a4 = char* , sound_element_bank
+		sub_8226A478H(a1,a2,a3,a4);
+		
+		
+
+
+
+		*(int*)(a1 + 0x1D0) = BranchTo(0x82265810,int,a1,a4,(DWORD)"homing_charge");
+
+
+		*(int*)(a1 + 0x1D4) = BranchTo(0x82265810,int,a1,a4,(DWORD)"homing_shoot");
+
+
+		*(int*)(a1 + 0x1D8) = BranchTo(0x82265810,int,a1,"obj_common",(DWORD)"gauge_max");
+
+		*(int*)(a1 + 0x1DC) = BranchTo(0x82265810,int,a1,a4,(DWORD)"levelup");
+
+
+
+
+		return a1;
+
+	}
+
+	int __fastcall State_Sound_Stuff_UnknownFlags01(int a1,int UnkFlag01){
+
+		
+		DWORD result;
+		DWORD v20[2];
+
+
+		if ((UnkFlag01 & 0x10000) != 0){
+			result = BranchTo(0x82265898,int,&v20, a1 - 0x20, *(_DWORD *)(a1 + 0x1D8-0x20));
+			if (result){BranchTo(0x82581E38,int,result);}
+
+
+		}
+		//Trigger Gauge UP
+		if ((UnkFlag01 & 0x20000) != 0){
+			result = BranchTo(0x82265898,int,&v20, a1 - 0x20, *(_DWORD *)(a1 + 0x1DC-0x20));
+			if (result){BranchTo(0x82581E38,int,result);}
+
+		}
+		
+		
+		BranchTo(0x82266150,int,a1,UnkFlag01);
+	
+		return a1;
+
+
+
+	}
+
+
+	int __fastcall State_Sound_Stuff(int a1,int a2,int a3){
+
+		if (a3 != 0x47 && a3 != 0x48 )
+		BranchTo(0x82269D90,int,a1,a2,a3);
+		DWORD result = 0;
+		DWORD v20[2];
+		DWORD v23[2];
+
+
+		switch (a3)
+		{
+		case 0x47:
+			result = BranchTo(0x82265898,int,&v20, a1 - 0x20, *(_DWORD *)(a1 + 0x1D0-0x20));
+			result = v20[0];
+			if (result) BranchTo(0x82581E38,int,result);
+			break;
+
+		case 0x48:
+			result = BranchTo(0x82265898,int,&v20, a1 - 0x20, *(_DWORD *)(a1 + 0x1D4-0x20));
+			result = v20[0];
+			if (result) BranchTo(0x82581E38,int,result);
+			break;
+
+
+
+		}
+
+	
+	
+		if ( a3 < 0xAC || a3 > 0xAD )
+		{
+			result = *(_DWORD *)(a1 + 0x198);
+			*(_DWORD *)(a1 + 0x198) = 0;
+		}
+		else{
+
+			if ( *(_DWORD *)(a1 + 0x198)){
+				return a1;
+			}
+			
+			_DWORD* v11 = BranchTo(0x82265898,_DWORD*,&v23,a1-0x20,*(_DWORD *)(a1 + 0x164));
+			BranchTo(0x823032B8,int,(int *)(a1 + 0x198), v11);
+		
+
+		}
+
+		if (result){
+			BranchTo(0x82581E38,int,result);
+		}
+
+		return a1;
+
+	}
+
+	
+
+
+	void __declspec( naked ) sub_822282C0H(int a1,int a2){
+		__asm{
+			    mflr r12
+				std       r25, -0x40(r1)
+				std       r26, -0x38(r1)
+				std       r27, -0x30(r1)
+				std       r28, -0x28(r1)
+				std       r29, -0x20(r1)
+				std       r30, -0x18(r1)
+				std       r31, -0x10(r1)
+				stw       r12, -0x8(r1)
+				stwu      r1, -0xD0(r1)
+				mr r31,r3
+				lis r11,0x8222
+				ori r11,r11,0x82D0
+				mtctr r11
+				bctr r11
+		}
+	}	
+
+	HOOK(int,__fastcall,EffectModuleSonicHook,0x822282C0,int a1,int a2)
+	{
+		sub_822282C0H(a1,a2);
+
+		std::string _test = std::string("homing_smash");
+
+		byte CmnEffectWhiteGem[0x1c];
+
+
+		memset((void*)(a1 +0x680),0,0x1C);
+		BranchTo(0x82225A18,int,a1 + 0x680,a1 +0x2C,&_test);
+
+
+
+
+
+		return a1;
+
+	}
+
+	int __fastcall SonicEffects_Func(int a1,int a2,int a3){
+
+		BranchTo(0x82227E70,_DWORD*,a1,a2,a3);
+		DWORD _fake_boost_container[2];
+		DWORD RR;
+		switch (a3){
+
+			//WhiteGemParticle
+			case 0x47:
+
+
+
+
+				RR = BranchTo(0x82225BD8,int,
+					&_fake_boost_container, //r3
+					a1 + 0xC, // (GE1,GE2,GE3 and some like this, buffers) r4
+					*(UINT64*)(a1 + 0x680 - 0x20), //r5
+					*(UINT64*)(a1 + 0x680 - 0x20 + 8), //r6
+					*(UINT64*)(a1 + 0x680 - 0x20 + 0x10), //r7
+					(UINT64)*(unsigned int*)(a1 + 0x680 - 0x2C + 0x18), //r8
+					(a1 + 0x488) //Effect Group (GE1,GE2,GE3) maybe
+					); //LoadEffectFunc
+				
+				BranchTo(0x8221F3C8,int,a1 + 0x644,RR);
+				if (_fake_boost_container[1])
+					BranchTo(0x821601B8,int,_fake_boost_container[1]);
+
+
+
+				BranchTo(0x82225340,int,
+					a1 +0xC, //r3
+					*(UINT64*)(a1 + 0x4D8), //r4
+					*(UINT64*)(a1 + 0x4D8 + 0x8), //r5
+					*(UINT64*)(a1 + 0x4D8  + +0x10), //r6
+					*(UINT64*)*(unsigned int*)(a1 + 0x4D8  + 0x18), //r7
+					(a1 + 0x488) //Effect Group (GE1,GE2,GE3) maybe
+					);
+
+				*(_DWORD *)(a1 + 0x65C) = a3;
+
+
+
+			break;
+		}
+	return a1;
+
+	}
+
+
+
+
+
+
+	int __fastcall State_Sonic_HomingSmash_Action_Mid(SonicTeam::Player::State::CommonObject* _this, double delta){
+
+
+	
+	
+		if (*(unsigned int*)((int)_this+0x10) == 2)
+		{
+
+			_this->CObjContext->CurrentAnimation = 0x48;
+			_this->CObjContext->AnimationState = -2;
+	
+
+		}
+		
+
+
+		return BranchTo(0x822177B0,int,_this,delta);
+
+	}
+
+
+#define  DpadLeftPressed(input)  input & 0x100000
+
+	byte tlast = -1;
+
+	void __fastcall Context_Sonic_Core(extern SonicTeam::Player::State::CommonContext *a1, double a2){
+	
+
+		DWORD a0 = (DWORD)(a1);
+		DWORD gauge_module = *(DWORD*)(a0 + 0x234);
+
+		SonicTeam::Player::SonicGauge* GM =  *(SonicTeam::Player::SonicGauge**)(a0 + 0x234);
+
+		DWORD* gauge_max_test = (DWORD*)(gauge_module +0x30);
+
+		DWORD* gauge_level_current = (DWORD*)(gauge_module +0x64);
+
+
+		DWORD* gauge_flags = (DWORD*)(gauge_module +0xA0);;
+
+		DWORD* gauge_current_gem = (DWORD*)(gauge_module +0x6C);;
+
+		DWORD* context_current_gem = (DWORD*)(a0 +0x250);;
+
+
+
+
+		*gauge_current_gem = *context_current_gem;
+
+	
+
+		float gauge_current = *(float*)(gauge_module + 0x28);
+		float gauge_max = *(float*)(gauge_module + 0x38);
+		float gauge_reg_timer = *(float*)(gauge_module + 0x2C);
+
+
+
+		bool change = false;
+		if ((a1->Input & 0x400000u) != 0)
+		{
+
+		//	change = true;
+		//	*gauge_level_current = *gauge_level_current + 1;
+		}
+
+		if ((a1->Input & 0x800000u) != 0)
+		{
+		
+		//	*gauge_level_current = *gauge_level_current - 1;
+		}
+
+
+		bool hold_bt = false;
+		if ((a1->Input & 0x20000u) != 0)
+		{
+
+		//	*gauge_level_current = *gauge_level_current - 1;
+		//	hold_bt = true;
+			
+		}
+
+
+
+
+
+
+		
+		
+		
+		BranchTo(0x82219530,int,a1,a2);
+
+
+//		SonicTeam::Player::Score* s =  a1->ScorePlugin.get();
+
+
+	
+
+		a1->ExportPostureRequestFlag |= 0x208;
+		//a1->WeaponFlags |=	0xC;
+
+		if ((*gauge_flags & 0x1000) != 0 ){
+			a1->UnknownFlags01 |= 0x20000; //Flag To Sound Table (levlup)
+
+		}
+
+	
+		*gauge_flags = 0 ; // Reset Gauge Flags
+
+
+		if (gauge_current >= gauge_max && *gauge_max_test == 0){
+			a1->UnknownFlags01 |= 0x10000; //Flag To Sound Table (gauge_max)
+			*gauge_max_test = 1;
+		}
+
+		if (gauge_current < gauge_max){
+
+			*gauge_max_test = 0;
+		}
+
+	
+	
+		
+
+
+		
+
+
+
+
+	
+
+
+
+	}
+
+
+
+
+	HOOK(int,__fastcall,GaugeIsCanDrainNew,0x82217FC0,SonicTeam::Player::State::CommonContext *a1, int index){
+
+		DWORD a0 = (DWORD)(a1);
+		DWORD gauge_module = *(DWORD*)(a0 + 0x234);
+		if (!a0) return 0;
+
+		byte remap_table[8] = {3,2,1,7,5,4,6,8};
+
+		float gem_drain_value =   *(float*)(gauge_module + 0x3C  +   (remap_table[index-1] * 4));
+		float current_value = *(float*)(gauge_module +0x28 );
+
+
+		if (index == 7 || index == 2 ){
+			if (current_value > 0 )
+				return 1;
+		}
+
+
+
+
+		if (current_value >= gem_drain_value){
+			return 1;
+
+		}
+
+
+	}
+
+
+	void __declspec( naked ) GaugeSonicConstructorH(int a1){
+		__asm{
+			    mflr      r12
+				stw       r12, -8(r1)
+				std       r31, -0x10(r1)
+				stwu      r1, -0x60(r1)
+				lis r11,0x8223
+				ori r11,r11,0xF218
+				mtctr r11
+				bctr r11
+		}
+	}	
+
+
+	HOOK(int,__fastcall,GaugeSonicConstructor,0x8223F208,int a1){
+
+		GaugeSonicConstructorH(a1);
+
+		*(DWORD*)(a1 + 0x64) = 0; // Level
+
+		*(DWORD*)(a1 + 0x68) = 0; //Level_UP;
+
+
+		*(DWORD*)(a1 + 0x6C) = 0; // SELECTED_GEM;
+
+
+
+
+
+		*(byte*)(a1 + 0x70) = 0; //Gem 1 Level
+		*(byte*)(a1 + 0x71) = 0; //Gem 2 Level
+		*(byte*)(a1 + 0x72) = 0; //Gem 3 Level
+		*(byte*)(a1 + 0x73) = 0; //Gem 4 Level
+		*(byte*)(a1 + 0x74) = 0; //Gem 5 Level
+		*(byte*)(a1 + 0x75) = 0; //Gem 6 Level
+		*(byte*)(a1 + 0x76) = 0; //Gem 7 Level
+		*(byte*)(a1 + 0x77) = 0; //Gem 8 Level
+
+		//78,79 void
+
+
+		*(float*)(a1 + 0x80) = 0; //Gem 1 EXP
+		*(float*)(a1 + 0x80 + 4) = 0; //Gem 2 EXP
+		*(float*)(a1 + 0x80 + 8) = 0; //Gem 3 EXP
+		*(float*)(a1 + 0x80 + 12) = 0; //Gem 4 EXP
+		*(float*)(a1 + 0x80 + 16) = 0; //Gem 5 EXP
+		*(float*)(a1 + 0x80 + 20) = 0; //Gem 6 EXP
+		*(float*)(a1 + 0x80 + 24) = 0; //Gem 7 EXP
+		*(float*)(a1 + 0x80 + 28) = 0; //Gem 8 EXP
+
+
+		*(DWORD*)(a1 + 0x80 + 32) = 0; // FLAGS
+
+
+
+
+
+
+
+		return a1;
+		
+
+
+	}
+
+	int GaugeSonicGetCurrentLevel(DWORD a1){
+
+		/*
+		DWORD selected_gem = *(DWORD*)(a1 + 0x6C);
+
+		if (selected_gem <= 0 || selected_gem > 8 ){
+			return 0;
+		}
+
+		selected_gem--;
+		return *(byte*)(a1 + 0x70 + (selected_gem));
+		*/
+
+		DWORD selected_gem = *(DWORD*)(a1 + 0x6C);
+		if (selected_gem <= 0 || selected_gem > 8 ){
+			return 0;
+		}
+		selected_gem--;
+		
+		return Params.GemLevel[selected_gem];
+
+
+
+
+
+	}
+	float GaugeGetCurrentMaturity(DWORD a1){
+
+
+
+		DWORD selected_gem = *(DWORD*)(a1 + 0x6C);
+		if (selected_gem <= 0 || selected_gem > 8){
+			return 0;
+		}
+		selected_gem--;
+	
+		/*
+		return *(float*)(a1 + 0x80 + (selected_gem*4));
+		*/
+
+
+		return Params.GemEXP[selected_gem];
+
+	}
+
+	float EXP_POINT = 0.1;
+	void HealAddChaosDrive(DWORD a1){
+
+
+		SonicTeam::Player::SonicGauge* a0 = (SonicTeam::Player::SonicGauge*)a1;
+
+
+
+		DWORD selected_gem = *(DWORD*)(a1 + 0x6C);
+
+		if (selected_gem > 0   && selected_gem <= 8){
+			selected_gem-=1;
+
+
+		//	float* current_gem_exp = (float*)(a1 + 0x80 + (selected_gem*4));
+		//	byte* current_gem_level = (byte*)(a1 + 0x70 + (selected_gem));
+
+			float* current_gem_exp = (float*)&Params.GemEXP[selected_gem];
+			byte* current_gem_level = (byte*)&Params.GemLevel[selected_gem];
+			(*current_gem_exp)+=EXP_POINT;
+			float left_over_exp = *current_gem_exp - 1.0;
+			if (*current_gem_exp >= 1.0){
+				*current_gem_exp = left_over_exp;
+
+				(*(DWORD*)(a1 + 0x80 + 32)) |= 0x1000;
+
+				if ((*current_gem_level) <= 2)
+					(*current_gem_level) ++;
+
+			}
+
+		}
+		else{
+			a0->AddGaugeValue(1.0);
+
+		}
+
+
+
+
+
+
+
+	}
+
+
+
+	
+	int __declspec( naked ) CustomLevelMuturityUIH(int a1,int a2){
+		__asm{
+			    mflr      r12
+			    std       r28, -0x28(r1)
+				std       r29, -0x20(r1)
+				std       r30, -0x18(r1)
+				std       r31, -0x10(r1)
+				stw       r12, -0x8(r1)
+				stfd      fp31, -0x30(r1)
+				stwu      r1, -0xB0(r1)
+
+				lis r11,0x824D
+				ori r11,r11,0xA1A0
+				mtctr r11
+				bctr r11
+		}
+	}	
+	HOOK(int, __fastcall, CustomLevelMuturityUI,0x824DA190,int a1, int a2){
+
+		DWORD v3 = *(_DWORD *)(a1 + 0x74);
+		DWORD v322 = *(_DWORD *)(a1 + 0x54);
+
+
+//		DWORD gauge_module = *(DWORD *)(a2 + 0xC);
+
+	
+
+			int v20[4];
+			v20[0] = *(_DWORD *)(a1 + 0x54);
+			if ( v20[0] )
+				Increment(v20[0]);
+
+
+			CellLoadSpriteWithAnim((int*)v20,"power_a","DefaultAnim");
+
+
+	
+
+	//	float v17 = GaugeGetCurrentMaturity(gauge_module); // mat
+	//	DWORD v19 = GaugeSonicGetCurrentLevel(gauge_module);
+
+		//DWORD v21[4];
+		//v21[0] = 0x1B044;
+		//*(byte*)&v21[1] = 1;
+		//v21[2] = 0x17;
+		//v21[3] = (__int64)(float)((float)v17 * (float)1000.0) | (v19 << 0x10);
+
+
+		return 0;
+		//return CustomLevelMuturityUIH(a1,(int)&v21);
+
+		
+
+	}
+
+
+
+
+
+	_DWORD *__fastcall GameMasterGaugeLevelMaturityCommunicator(int a1, int Level,UINT64 IEventerModules, float Maturity){
+		int v6; // r11
+		_DWORD *result; // r3
+		DWORD v8[2]; // [sp+50h] [-40h] BYREF
+		int v9[5]; // [sp+60h] [-30h] //MORE
+		float v12; // [sp+6Ch] [-24h]
+		BranchTo(0x8262B468,int,(int)v8, a1 + 0x14);
+		if ( v8[0] )
+		{
+			
+			 v6 = *(_DWORD *)(a1 + 0x10);                // self-module
+			*(float *)&v9[3] = Maturity;
+			v9[2] = Level;
+			v9[1] = v6;
+			v9[0] = 0x1501E;
+			v9[4] = *(DWORD*)((IEventerModules >> 32 & 0XFFFFFFFF) + 0x44); //Gauge-Module
+			(*(void (__fastcall **)(DWORD, DWORD*))(*(_DWORD *)v8[0] + 4))(v8[0], (DWORD*)&v9);// 8217BB68
+
+
+
+			// Now i Try Direct FROM THIS
+			//Call UI Bar Anim
+
+			DWORD _R3 = (DWORD)v8[0];
+			DWORD _R4 = *(_DWORD *)(a1 + 0x10);
+			DWORD v4 = BranchTo(0x82167CA0,DWORD,_R3,_R4);
+			if (v4 != 4)
+			{
+				DWORD v5 = 0x4C * v4 + _R3; // Hud Battle Task
+				DWORD MainDisplayTaskPTR = *(DWORD*)(v5 + 0x1230);
+				DWORD HUDMainDisplayPTR = *(DWORD*)(MainDisplayTaskPTR + 0x4C);
+				DWORD vsm[4];
+				implOfCustomLevelMuturityUI((int)HUDMainDisplayPTR,(int)&vsm);
+
+			}
+
+
+
+
+		}
+		result = (_DWORD *)v8[1];
+		if ( v8[1] )
+			result = (DWORD*)sub_821601B8((_DWORD *)v8[1]);
+		return result;
+		
+	}
+
+
+	HOOK(int,__fastcall,PlayerEventUpdateLevelMaturityUI,0x821681C0,int a1,int a2){
+
+		int v6 = BranchTo(0x82167CA0,int,a1, *(_DWORD *)(a2 + 4));
+		if ( v6 == 4 )
+			return 0;
+		DWORD v7 = 0x4C * v6 + a1;
+
+		*(_DWORD *)(v7 + 0xE68) = *(_DWORD *)(a2 + 8); //Level
+		*(float *)(v7 + 0xE6C) = *(float *)(a2 + 0xC); //Mat
+
+		*(DWORD *)(v7 + 0xE70) = *(DWORD *)(a2 + 0x10); //Gauge-Module
+
+
+		return 1;
+
+	}
+
+
+	int HUDMainDisplay(int a1, int a2){
+
+		int v21[4];
+		switch ( *(_DWORD *)a2 ){
+
+			case 0x1B04D:
+
+				
+				DWORD gauge_module = *(DWORD*)(a2 + 4);
+			
+				if (gauge_module){
+
+					float v17 = GaugeGetCurrentMaturity(gauge_module); // mat
+					*(float *)(a1 + 0x10C) = GaugeGetCurrentMaturity(gauge_module); //mat
+					float v18 = 0.0;
+					if ( v17 < 0.0 || (v18 = 1.0, v17 > 1.0) )
+						v17 = v18;
+					*(float *)(a1 + 0x10C) = v17;
+					DWORD v19 = *(_DWORD *)(a2 + 8);
+					DWORD v20 = *(_DWORD *)(a1 + 0x4C) & 0x100000;
+					*(_DWORD *)(a1 + 0x110) = v19;
+					if ( v20 )
+					{
+						v21[0] = 0x1B044;
+						*(byte*)&v21[1] = 1;
+						v21[2] = 0x17;
+						v21[3] = gauge_module;
+						BranchTo(0x824DA190,int,a1 - 0x28, (int)v21);
+					}
+				}
+
+				return 1;
+		}
+
+
+		return BranchTo(0x824DF0C0,int,a1,a2);
+
+	}
+
+
+
+
+
+	int __fastcall Listener_Common_Input(int a1, int a2, double a3){
+
+		BranchTo(0x82222428,int,a1,a2,a3);
+
+		DWORD* v8 = BranchTo(0x82399D38,DWORD*,a2);
+
+		if ((v8[2] & 0x40) != 0){
+			*(_DWORD *)(a1 + 0x48) |= 0x400000u;  // Dpad-UP
+
+		}
+
+		if ((v8[2] & 0x80) != 0){
+			*(_DWORD *)(a1 + 0x48) |= 0x800000u;  // Dpad-Down
+
+		}
+
+		return a1;
+
+
+
+	}
+
+
+	int __fastcall SonicPushStateUpdate(int *a1){
+
+		return 1;
+
+	}
+
+	int __fastcall ModelSonicTestFlagU(int a1,int a2){
+
+		//Run Effect
+		if ((a2 & 0xC) != 0){
+
+			DWORD a11 = a1 -0x28 ;
+			BranchTo(0x822387C8,int,a11,4);
+
+		}
+		
+		return 1;
+
+	}
+	
+
+
+	HOOK(int, __fastcall, sub_0x824A0D88,0x824A0D88,int a1,XMFLOAT4* v2){
+
+		
+	
+		int z = a1 -0x260;
+
+		DWORD val =  *(DWORD*)(z + 0xF0);
+
+
+		if (   (val & 0x1) == 0){
+
+			return 1;
+		}
+		return 0;
+
+
+	}
+
+
+
+
+	int __fastcall CommonEdgeTemplateA(int a1, double a2){
+
+		float* v = (float*)(a1 + 0xC);
+		*v = *v - a2;
+		
+	
+		*(_DWORD *)(*(_DWORD *)(a1 + 8) + 0xDC) |= 2u;
+		
+
+		if (*v <= 0.0){
+			return BranchTo(0x8220C4C0,int,a1,a2);
+		}
+		return 0;
+
+		
+	}
+
+
+
+	_DWORD PostureEdgeFix(int a1){
+		return 0x10;
+	}
+
+	int __fastcall sub_8220B988(int a1, double a2)
+	{
+		int v3; // r10
+		double v4; // fp0
+		float *v5; // r10
+		float *v6; // r11
+		double v7; // fp0
+		int result; // r3
+		int v9; // r4
+		int v10; // r4
+		int v11; // r11
+		float v12; // [sp+50h] [-20h] BYREF
+		float v13; // [sp+54h] [-1Ch] BYREF
+
+		SonicTeam::Player::State::CommonContext* po = *(SonicTeam::Player::State::CommonContext**)(a1 + 8);;
+
+		v3 = *(_DWORD *)(a1 + 8);
+		if ( *(float *)(v3 + 0x44) <= 0.0 )
+			v4 = *(float *)(v3 + 0x58);
+		else
+			v4 = 0.0;
+		if ( v4 > *(float *)(v3 + 0x15C) )
+			*(_BYTE *)(a1 + 0x14) = 1;
+		if ( *(_BYTE *)(a1 + 0x14) )
+		{
+			v5 = (float *)(v3 + 0xC0);
+			if ( *v5 >= (double)*(float *)(a1 + 0x10) )
+				v5 = (float *)(a1 + 0x10);
+			*(float *)(a1 + 0x10) = *v5;
+		}
+		v6 = &v12;
+		v7 = (float)(*(float *)(a1 + 0xC) - (float)a2);
+		v12 = 0.0;
+		v13 = v7;
+		if ( v7 >= 0.0 )
+			v6 = &v13;
+		*(float *)(a1 + 0xC) = *v6;
+		if ( (unsigned __int8)StateCommonGroundFlagsListenerForStates((int *)a1, a2) )
+			return 1;
+		if ( *(float *)(a1 + 0x10) < 0.0 )
+		{
+			v9 = 0;
+			if ( (*(_DWORD *)(*(_DWORD *)(a1 + 8) + 0xC4) & 1) == 0 )
+				v9 = 3;
+			if (v3 == 3){
+				po->ContextFlags |= 0x400;
+			}
+			(*(void (__fastcall **)(_DWORD, int))(**(_DWORD **)(a1 + 4) + 0xC))(*(_DWORD *)(a1 + 4), v9);
+		}
+		if ( *(float *)(a1 + 0xC) != 0.0 )
+			return 0;
+		v10 = 0;
+		if ( (*(_DWORD *)(*(_DWORD *)(a1 + 8) + 0xC4) & 1) == 0 )
+			v10 = 3;
+		if (v10 == 3){
+			po->ContextFlags |= 0x400;
+		}
+		v11 = (*(unsigned __int8 (__fastcall **)(_DWORD, int))(**(_DWORD **)(a1 + 4) + 0xC))(*(_DWORD *)(a1 + 4), v10);
+		result = 1;
+		if ( !v11 )
+			return 0;
+		return result;
+	}
+
+
+
+	DWORD pass = false;
+
+	_DWORD *__fastcall PostureCMN01(int a1, double a2, int a3){
+
+		 BranchTo(0x82200538,int,a1,a2,a3);
+		 DWORD v18 =   BranchTo(0x821FE130,int,a1);
+		 DWORD* v19 = (_DWORD *)BranchTo(0x821FDC28,int,a1, v18);
+		// DWORD v22 =  BranchTo(0x821F1578,int,a1,v19);
+		 DWORD* v22 = (DWORD *)(a1 + 0xF0); // PostureExportFlag
+		 //Edge(nvm Up-Down axis)
+		  if ((*v22 & 0x2000) != 0){
+			
+			  pass = true;
+		  }
+
+		  //OnGround
+		  if ((*v22 & 1) != 0){
+
+	
+			  pass = false;
+
+			
+		  }
+		  if (pass ){
+
+			  DWORD t =  *(DWORD*)(a1 + 0x120 + 0x24);
+			  DWORD z  = *(DWORD*)(t + 0x14); // Count of corners the character touches
+
+			  if (z > 0  && (*v22 & 1) == 0){
+				  *v22 = *v22 |  0x80;
+				}
+
+		  }
+
+		  return 0;
+
+	}
+
+#pragma region States
+
+	int TornadoGroundOnStart()
+	{
+
+		return 0;
+	}
+
+
+
+
+
+#pragma endregion States
+
+
+
+
+
+
+
+	void GlobalInstall(){
+
+		INSTALL_HOOK(GameImpusleConstructor); //Save Params and reset them
+
+
+
+
+
+
+	//	WRITE_DWORD(0x82009050,PostureCMN01);
+
+
+
+
+		//WRITE_DWORD(0x8220055C,PostureExtractContextFlags);
+
+
+//		WRITE_DWORD(0x82008A7C,PostureEdgeFix);
+
+
+
+
+
+//		WRITE_DWORD(0x8200A114,CommonEdgeTemplateA);
+//		WRITE_DWORD(0x8200A148,CommonEdgeTemplateA);
+
+	//	INSTALL_HOOK(sub_0x824A0D88);
+
+		//sub_824A0D88 ;
+	
+	//	WRITE_DWORD(0x82200B94,0x482A01F5);
+
+
+
+
+	//	WRITE_DWORD(0x82009F8C,sub_8220B988); // FixedOTTOTO to pass something
+
+
+	//	WRITE_DWORD(0x82036E6C,HUDMainDisplay);
+	//	INSTALL_HOOK(CustomLevelMuturityUI);
+
+		//HUB(XNCP)
+	//	WRITE_DWORD(0X82167B88,POWERPC_LWZ(4,0x18,30)); // GAUGE_INSTEAD MATURITY
+	//	WRITE_DWORD(0x82167B8C,POWERPC_STW(4,0xB4,1));
+
+		//Gameplay(XNCP)
+	//	WRITE_DWORD(0x82167A68,POWERPC_LWZ(4,0x18,30)); // GAUGE_INSTEAD MATURITY
+	//	WRITE_DWORD(0x82167A6C,POWERPC_STW(4,0xA4,1));
+
+
+	
+	//	WRITE_DWORD(0x824DF490,POWERPC_LWZ(9,0x4,11)); //Get Gauge 
+	//	WRITE_DWORD(0x824DF518,POWERPC_STW(9,0x6c,1)); // Store Gauge  
+
+
+		//XNCP (82173210 = ONLevelSwap)??
+
+		
+	//	WRITE_DWORD(0x821731E0,POWERPC_LWZ(4,0x4,29)); //Get Gauge 
+	//	WRITE_DWORD(0x821731E4,POWERPC_STW(4,0xA4,1)); // Store Gauge 
+	//	
+
+
+
+
+
+
+
+
+		///GEMS(States)
+//		WRITE_DWORD(0x82003AFC,)
+		WRITE_DWORD(0x821A2FA8,POWERPC_ADDI(3,0,0x14));
+
+
+
+		
+	//	INSTALL_HOOK(PlayerEventUpdateLevelMaturityUI);
+		WRITE_DWORD(0x82007AC0,GameMasterGaugeLevelMaturityCommunicator);
+
+		WRITE_DWORD(0x8219F038,POWERPC_ADDI(3,0,0xB0)); //Extend Sonic Gauge
+		INSTALL_HOOK(GaugeSonicConstructor);
+		WRITE_DWORD(0x8200D4E0,GaugeSonicGetCurrentLevel);
+		WRITE_DWORD(0x8200D4E4,GaugeGetCurrentMaturity);
+		
+		WRITE_DWORD(0x8223EF64,0x419A0010); //Fix Gauge Behavious
+		//WRITE_DWORD(0x822196DC,0x419A000C);
+	//	WRITE_DWORD(0x8223EFDC,POWERPC_ADDI(11,11,2));
+	//	WRITE_DWORD(0x8223EFDC,POWERPC_ADDI(11,11,-2));
+	//	
+		WRITE_DWORD(0x822196E0,0x60000000);
+		WRITE_DWORD(0x822196E8,0x60000000);
+
+		WRITE_DWORD(0x8200D4F0,HealAddChaosDrive); // ADD EXP
+
+
+		WRITE_DWORD(0x8219DB40,POWERPC_ADDI(3,0,0x680 + 0x1C)); //More Memory FOr Effect MOdule
+		WRITE_DWORD(0x8200C410,SonicEffects_Func);
+		INSTALL_HOOK(EffectModuleSonicHook);
+
+
+		WRITE_DWORD(0x8200B564,Context_Sonic_Core);
+		WRITE_DWORD(0x82217224,POWERPC_ADDI(4,0,0x47)); //Change Start Animation in State
+		WRITE_DWORD(0x8200B3FC,State_Sonic_HomingSmash_Action_Mid);
+
+
+		WRITE_DWORD(0x8219DF94,POWERPC_ADDI(3,0,0x1D0 + 0x10)); //More Memory For Sound Modyle
+		WRITE_DWORD(0x8200FD88,State_Sound_Stuff);
+		WRITE_DWORD(0x8200FD9C,State_Sound_Stuff_UnknownFlags01);
+		INSTALL_HOOK(State_Sound_Sonic_Constructor);
+
+
+		WRITE_DWORD(0x8200BD64,Listener_Common_Input);
+
+
+		WRITE_DWORD(0x8200CFB4,ModelSonicTestFlagU);
+
+
+
+		//Chaos Drive , Force to only call method at + 0x18 (HealAddChaosDrive)
+		WRITE_NOP(0x82198C70,1);
+
+
+
+
+
+		//SOME
+
+	
+
+		WRITE_DWORD(0x821A04DC,POWERPC_ADDI(3,0,0x1B));
+
+
+
+	
+
+
+	
+
+
 
 
 	}

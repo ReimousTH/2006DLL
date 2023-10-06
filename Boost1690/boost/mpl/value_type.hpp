@@ -11,9 +11,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id$
-// $Date$
-// $Revision$
+// $Source: /cvsroot/boost/boost/boost/mpl/value_type.hpp,v $
+// $Date: 2004/12/14 22:34:44 $
+// $Revision: 1.4 $
 
 #include <boost/mpl/value_type_fwd.hpp>
 #include <boost/mpl/sequence_tag.hpp>

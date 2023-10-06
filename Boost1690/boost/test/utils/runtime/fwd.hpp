@@ -1,45 +1,50 @@
-//  (C) Copyright Gennadiy Rozental 2001.
+//  (C) Copyright Gennadiy Rozental 2005.
 //  Distributed under the Boost Software License, Version 1.0.
-//  (See accompanying file LICENSE_1_0.txt or copy at
+//  (See accompanying file LICENSE_1_0.txt or copy at 
 //  http://www.boost.org/LICENSE_1_0.txt)
 
 //  See http://www.boost.org/libs/test for the library home page.
 //
-//  File        : $RCSfile$
+//  File        : $RCSfile: fwd.hpp,v $
 //
-//  Version     : $Revision$
+//  Version     : $Revision: 1.1 $
 //
-//  Description : runtime parameters forward declaration
+//  Description : global framework level forward declaration
 // ***************************************************************************
 
-#ifndef BOOST_TEST_UTILS_RUNTIME_FWD_HPP
-#define BOOST_TEST_UTILS_RUNTIME_FWD_HPP
+#ifndef BOOST_RT_FWD_HPP_062604GER
+#define BOOST_RT_FWD_HPP_062604GER
 
-// Boost.Test
-#include <boost/test/detail/config.hpp>
-#include <boost/test/utils/basic_cstring/basic_cstring.hpp>
-#include <boost/test/utils/basic_cstring/io.hpp> // operator<<(boost::runtime::cstring)
+// Boost.Runtime.Parameter
+#include <boost/test/utils/runtime/config.hpp>
 
 // Boost
 #include <boost/shared_ptr.hpp>
 
-// STL
-#include <map>
-
 namespace boost {
-namespace runtime {
 
-typedef unit_test::const_string     cstring;
+namespace BOOST_RT_PARAM_NAMESPACE {
+
+class parameter;
 
 class argument;
 typedef shared_ptr<argument> argument_ptr;
+typedef shared_ptr<argument const> const_argument_ptr;
 
+template<typename T> class value_interpreter;
 template<typename T> class typed_argument;
 
-class basic_param;
-typedef shared_ptr<basic_param> basic_param_ptr;
+} // namespace BOOST_RT_PARAM_NAMESPACE
 
-} // namespace runtime
 } // namespace boost
 
-#endif // BOOST_TEST_UTILS_RUNTIME_FWD_HPP
+// ************************************************************************** //
+//   Revision History:
+//
+//   $Log: fwd.hpp,v $
+//   Revision 1.1  2005/04/12 06:42:42  rogeeff
+//   Runtime.Param library initial commit
+//
+// ************************************************************************** //
+
+#endif // BOOST_RT_FWD_HPP_062604GER
