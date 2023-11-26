@@ -5,7 +5,7 @@
 #include "IStepable/IStepable.h"
 #include <xtl.h> //replace to only XMFLOAT4
 
-namespace SonicTeam{
+namespace Sonicteam{
 	namespace Player{
 
 		

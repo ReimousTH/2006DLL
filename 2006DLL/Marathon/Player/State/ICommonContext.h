@@ -4,7 +4,7 @@
 #include "ICommonContextIF.h"
 #include <vector>
 
-namespace SonicTeam{
+namespace Sonicteam{
 
 	namespace Player{
 
@@ -40,7 +40,7 @@ namespace SonicTeam{
 
 
 				///IFlagCommunicator
-				virtual void SetAnimationStateFlag(DWORD flag_value) override; //TODO FUNCTION sub_82208F58
+				virtual void ImportAnimationStateFlag(DWORD flag_value) override; //TODO FUNCTION sub_82208F58
 				///
 
 
@@ -75,7 +75,7 @@ namespace SonicTeam{
 				float LastLockInputTime;
 				DWORD Input; // What button was pressed
 
-				float unk01;
+				float CurrentStickBorder;
 				float unk02;
 
 				XMFLOAT4 StickFixedRotationMb; // (Camera not used in Calculation)

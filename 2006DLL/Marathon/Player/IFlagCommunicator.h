@@ -3,7 +3,7 @@
 #include <xtl.h>
 
 
-namespace SonicTeam{
+namespace Sonicteam{
 
 	namespace Player{
 
@@ -18,7 +18,7 @@ namespace SonicTeam{
 			virtual void SetFlag04(DWORD flag_value){}; //UnknownFlags0xC8(by context)
 			virtual void SetFlag05(DWORD flag_value){};
 			virtual void SetFlag06(DWORD flag_value){};
-			virtual void SetAnimationStateFlag(DWORD flag_value){}; // (ImportAnimationFlags)
+			virtual void ImportAnimationStateFlag(DWORD flag_value){}; // (ImportAnimationFlags)
 			virtual void SetFlag08(DWORD flag_value){};
 			virtual void SetFlag09(DWORD flag_value){}; // Set Weapons Flags (ImportWeaponsFlags)	
 			virtual void SetFlag10(DWORD flag_value){};

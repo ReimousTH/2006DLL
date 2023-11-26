@@ -12,23 +12,21 @@
 #include <boost/scoped_ptr.hpp>
 
 
-using namespace SonicTeam::SoX::AI;
+using namespace Sonicteam::SoX::AI;
 
 
-namespace SonicTeam{
+namespace Sonicteam{
 
 	namespace Player{
 		namespace State{
 
-		
+	
 			//8200BAD8
 			class Machine2:StateMashine<IContext>,IMachine
 			{
 			public:
 				Machine2(void);
 				virtual ~Machine2(void);
-
-
 
 
 				///IMachine
@@ -42,16 +40,11 @@ namespace SonicTeam{
 				virtual unsigned int GetCurrentMashineStateID() override;
 
 		
-
-
-
 				//Mashine Fields
-
 				unsigned int field_0x3C;
 				std::vector<unsigned int> MashineStates; //0x40
 				unsigned int field_0x50; //-1 (at constuctor)
 				unsigned int field_0x54;
-				unsigned int field_0x58;
 						 byte MashineStateFlag1; //0x58
 						 byte MashineStateFlag2; //0x59
 						 byte MashineStateFlag3; //0x5A
@@ -59,10 +52,9 @@ namespace SonicTeam{
 				unsigned int Unk0x5C; //0x5C
 				unsigned int Unk0x60; //0x60
 				unsigned int Unk0x64; //0x64
-
-				//unsigned int Unk0x68; //0x68
-
-				boost::shared_ptr<IContext> MashineContext;
+				unsigned int Unk0x68; //0x68
+				unsigned int Unk0x6C; //0x6C
+				boost::shared_ptr<IContext> MashineContext; //0x70
 				
 				
 

@@ -1,6 +1,6 @@
 #include "IFlagCommunicator.h"
 
-using namespace SonicTeam::Player;
+using namespace Sonicteam::Player;
 IFlagCommunicator::IFlagCommunicator(void)
 {
 }

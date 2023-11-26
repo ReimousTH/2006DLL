@@ -1,6 +1,6 @@
 #include "SonicGauge.h"
 
-using namespace SonicTeam::Player;
+using namespace Sonicteam::Player;
 
 SonicGauge::SonicGauge(void):IGauge((char*)"gauge")
 {
@@ -25,8 +25,21 @@ SonicGauge::~SonicGauge(void)
 }
 
 //
-void SonicGauge::OnVarible(SonicTeam::LuaSystem**)
+void SonicGauge::OnVarible(Sonicteam::LuaSystem** l)
 {
+
+	Sonicteam::LuaSystem* x = *l;
+	this->c_gauge_max =     x->GetFloatValue( &std::string("c_gauge_max"));
+	this->c_green =     x->GetFloatValue( &std::string("c_green"));
+	this->c_red =     x->GetFloatValue( &std::string("c_red"));
+	this->c_blue =     x->GetFloatValue( &std::string("c_blue"));
+	this->c_white =     x->GetFloatValue( &std::string("c_white"));
+	this->c_sky =     x->GetFloatValue( &std::string("c_sky"));
+	this->c_yellow =     x->GetFloatValue( &std::string("c_yellow"));
+	this->c_purple =     x->GetFloatValue( &std::string("c_purple"));
+	this->c_super =     x->GetFloatValue( &std::string("c_super"));
+	this->c_gauge_heal_delay =     x->GetFloatValue( &std::string("c_gauge_heal_delay"));
+	
 
 }
 void SonicGauge::OnStepable(float delta)

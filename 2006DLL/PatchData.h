@@ -67,6 +67,35 @@ namespace ChainJumpTest{
 
 namespace WhiteGameRestored
 {
+
+	namespace Gems{
+		enum Gems{
+			Green,
+			Red,
+			Blue,
+			White,
+			Sky,
+			yellow,
+			purple,
+			super
+		};
+
+	}
+	
+
+#define IContext_TypeDescriptor 0x82B17464
+#define ICommonContext_TypeDescriptor 0x82B17464
+#define SonicContext_TypeDescriptor 0x82B177A8
+
+
+	class SonicMachSpeed:public Sonicteam::Player::State::CommonObject{
+	public:
+		Sonicteam::Player::State::SonicContext* CObjContext;
+		float c_custom_action_machspeed_time;
+
+	};
+
+
 	void GlobalInstall();
 }
 
@@ -74,4 +103,9 @@ namespace WhiteGameRestored
 
 
 
+
+namespace AmyRework{
+
+	void GlobalInstall();
+};
 #endif

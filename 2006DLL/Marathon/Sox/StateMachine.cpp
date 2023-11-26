@@ -1,7 +1,7 @@
 #include "StateMachine.h"
 
 
-using namespace SonicTeam::SoX::AI;
+using namespace Sonicteam::SoX::AI;
 
 
 //template<typename T>

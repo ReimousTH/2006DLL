@@ -1,6 +1,6 @@
 #include "Object2.h"
 
-using namespace SonicTeam::Player::State;
+using namespace Sonicteam::Player::State;
 
 unsigned int* Object2::StateConstant()
 {

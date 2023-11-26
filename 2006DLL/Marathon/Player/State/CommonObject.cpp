@@ -1,6 +1,6 @@
 #include "CommonObject.h"
 
-using namespace SonicTeam::Player::State;
+using namespace Sonicteam::Player::State;
 
 CommonObject::~CommonObject(void)
 {
@@ -22,18 +22,24 @@ void Object2ForceHelper(CommonContext* a1){
 
 void CommonObject::Object2PreUpdateCmn(float)
 {
+	Sonicteam::Player::State::CommonContext *v1; // r11
+	unsigned __int64 v2; // r10
 
-	unsigned long long t =  this->CObjContext->UnknownFlags0xC8;
+	v1 = this->CObjContext;
+	v2 = v1->UnknownFlags0xC8;
+	if ( (v2 & 4) != 0 )
+		v1->IsInvulnerable2 = 1;
+	if ( (v2 & 8) != 0 )
+		this->CObjContext->InvicibilityTimerWEffect = this->CObjContext->c_invincible_item;
+	if ( (v2 & 0x40000) != 0 )
+		this->CObjContext->SpeedUpTime = this->CObjContext->c_speedup_time;
 
-	if ((t & 4) != 0)
-		this->CObjContext->IsInvulnerable2 = 1;
+	((byte*)&(this->CObjContext->UnkownFlagsUnk01))[3]=0;
+	((byte*)&(this->CObjContext->UnkownFlagsUnk01))[1]=0;
 
-	if ((t & 8) != 0)
-		this->CObjContext->InvicibilityTimerWEffect = 0; // a1->StateBase.ContextBase->float1C8;
 
-	if ((t & 0x40000 ) != 0)
-		this->CObjContext->SpeedUpTime = 0; // *(float *)&a1->StateBase.ContextBase->field_1CC;
 
+//	sub_8220CA50(this->CObjContext);
 
 	//a1->StateBase.ContextBase->field_F3 = 0;
 	//a1->StateBase.ContextBase->field_F1 = 0;
@@ -54,7 +60,10 @@ CommonObject::CommonObject(IMachine* a1):Object2(a1)
 	
 	boost::shared_ptr<IContext> t =  a1->GetMashineContext();
 	this->ObjectMashine = a1;
-	this->CObjContext = (CommonContext*)(t.get()); // also should by dynamic cast but since i cant match typeid it useles
+
+	this->CObjContext =  dynamic_cast<CommonContext*>(t.get());// works now
+
+	//this->CObjContext = (CommonContext*)(t.get()); // also should by dynamic cast but since i cant match typeid it useles
 
 
 //not sure because i cant MAKE BOOST NOT USE STUPUID LWARX

@@ -1,7 +1,7 @@
 #include "IResource.h"
 
 
-using namespace SonicTeam::SoX;
+using namespace Sonicteam::SoX;
 
 IResource::IResource(void)
 {

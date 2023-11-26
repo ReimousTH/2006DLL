@@ -5451,7 +5451,7 @@ namespace WhiteGameRestored
 
 
 
-	int __fastcall State_Sonic_HomingSmash_Action_Mid(SonicTeam::Player::State::CommonObject* _this, double delta){
+	int __fastcall State_Sonic_HomingSmash_Action_Mid(Sonicteam::Player::State::CommonObject* _this, double delta){
 
 
 	
@@ -5476,13 +5476,13 @@ namespace WhiteGameRestored
 
 	byte tlast = -1;
 
-	void __fastcall Context_Sonic_Core(extern SonicTeam::Player::State::CommonContext *a1, double a2){
+	void __fastcall Context_Sonic_Core(extern Sonicteam::Player::State::SonicContext *a1, double a2){
 	
 
 		DWORD a0 = (DWORD)(a1);
 		DWORD gauge_module = *(DWORD*)(a0 + 0x234);
 
-		SonicTeam::Player::SonicGauge* GM =  *(SonicTeam::Player::SonicGauge**)(a0 + 0x234);
+		Sonicteam::Player::SonicGauge* GM =  *(Sonicteam::Player::SonicGauge**)(a0 + 0x234);
 
 		DWORD* gauge_max_test = (DWORD*)(gauge_module +0x30);
 
@@ -5539,8 +5539,42 @@ namespace WhiteGameRestored
 
 		
 		
-		
+	
+
+		bool z01 = a1->IsMachSpeed == 1;
+		bool z02 = a1->IsMachSpeed == 2;
+		bool z03 = a1->IsMachSpeed == 3;
+
+		if (z03){
+			a1->IsMachSpeed = 0;
+		}
+	
 		BranchTo(0x82219530,int,a1,a2);
+
+
+		if (a1->isThunderGuard || a1->IsMachSpeed){
+
+			GM->IsNotGrounded++;
+			GM->GaugeGroundTime = 0.0f;
+
+		}
+
+		
+		if (z01){
+			a1->ExportWeaponRequestFlag |= 0x10010000;
+		}
+		else if (z03){
+			a1->ExportWeaponRequestFlag |= 0x00120000;
+		}
+
+			
+		
+	
+			
+		
+	
+	
+
 
 
 //		SonicTeam::Player::Score* s =  a1->ScorePlugin.get();
@@ -5559,16 +5593,6 @@ namespace WhiteGameRestored
 	
 		*gauge_flags = 0 ; // Reset Gauge Flags
 
-
-		if (gauge_current >= gauge_max && *gauge_max_test == 0){
-			a1->UnknownFlags01 |= 0x10000; //Flag To Sound Table (gauge_max)
-			*gauge_max_test = 1;
-		}
-
-		if (gauge_current < gauge_max){
-
-			*gauge_max_test = 0;
-		}
 
 	
 	
@@ -5589,7 +5613,7 @@ namespace WhiteGameRestored
 
 
 
-	HOOK(int,__fastcall,GaugeIsCanDrainNew,0x82217FC0,SonicTeam::Player::State::CommonContext *a1, int index){
+	HOOK(int,__fastcall,GaugeIsCanDrainNew,0x82217FC0,Sonicteam::Player::State::CommonContext *a1, int index){
 
 		DWORD a0 = (DWORD)(a1);
 		DWORD gauge_module = *(DWORD*)(a0 + 0x234);
@@ -5732,7 +5756,7 @@ namespace WhiteGameRestored
 	void HealAddChaosDrive(DWORD a1){
 
 
-		SonicTeam::Player::SonicGauge* a0 = (SonicTeam::Player::SonicGauge*)a1;
+		Sonicteam::Player::SonicGauge* a0 = (Sonicteam::Player::SonicGauge*)a1;
 
 
 
@@ -5973,15 +5997,28 @@ namespace WhiteGameRestored
 
 	}
 
-	int __fastcall ModelSonicTestFlagU(int a1,int a2){
+	int __fastcall ModelSonicTestFlagU(int a1,int a2,float a3){
 
 		//Run Effect
-		if ((a2 & 0xC) != 0){
+		if ((a2 & 0x10010000) != 0){
 
 			DWORD a11 = a1 -0x28 ;
-			BranchTo(0x822387C8,int,a11,4);
+			BranchTo(0x822387C8,int,a11,4,a3);
+
+	
+		
+
 
 		}
+		if ((a2 & 0x00120000) != 0){
+
+			DWORD a11 = a1 -0x28 ;
+			BranchTo(0x822387C8,int,a11,5,a3);
+
+		}
+
+
+		
 		
 		return 1;
 
@@ -6047,7 +6084,7 @@ namespace WhiteGameRestored
 		float v12; // [sp+50h] [-20h] BYREF
 		float v13; // [sp+54h] [-1Ch] BYREF
 
-		SonicTeam::Player::State::CommonContext* po = *(SonicTeam::Player::State::CommonContext**)(a1 + 8);;
+		Sonicteam::Player::State::CommonContext* po = *(Sonicteam::Player::State::CommonContext**)(a1 + 8);;
 
 		v3 = *(_DWORD *)(a1 + 8);
 		if ( *(float *)(v3 + 0x44) <= 0.0 )
@@ -6148,6 +6185,82 @@ namespace WhiteGameRestored
 
 
 
+	int __declspec( naked ) Object2PostUpdateCmnH(Sonicteam::Player::State::CommonObject* _this,float delta){
+
+		__asm{
+
+				mflr      r12
+				bl        __savegprlr_28
+			
+				std       r2, -0x28(r1)
+				std       r29, -0x20(r1)
+				std       r30, -0x18(r1)
+				std       r31, -0x10(r1)
+				stw       r12, -0x8(r1)
+
+				stwu      r1, -0x80(r1)
+				mr        r30, r3
+
+				lis r11,0x8220
+				ori r11,r11,0xCC38
+				mtctr r11
+				bctr r11
+		}
+	}
+
+	HOOK(int,__fastcall,Object2PostUpdateCmn,0x8220CC28,Sonicteam::Player::State::CommonObject* _this,float delta){
+
+
+		Sonicteam::Player::State::CommonContext* a1 = _this->CObjContext;
+		//Sonicteam::Player::State::SonicContext* c = BranchTo(0x826DF418,Sonicteam::Player::State::SonicContext*,a1,0,IContext_TypeDescriptor,SonicContext_TypeDescriptor,0);
+		Sonicteam::Player::State::SonicContext* c = dynamic_cast<Sonicteam::Player::State::SonicContext*>(a1); //OMG it actually works ???!!!!!!!!!
+
+
+		if (c){
+			ShowXenonMessage(L"MSG",10.0f,0);
+			DWORD v3 = c->GroundAirDataFlags;
+			unsigned long long v4 = c->UnknownFlags0xC8;
+			Sonicteam::Player::SonicGauge* g = c->GaugePlugin.get();
+
+
+			if (c->isThunderGuard){
+
+				if (g->GaugeValue >= g->c_yellow)
+				{
+					if ( (v3 & 4) != 0 || (v4 & 1) != 0 )
+					{
+						((byte*)&c->GroundAirDataFlags)[3] = 0;
+						((byte*)&c->UnknownFlags0xC8)[7] = 0;
+						g->AddGaugeValue(-g->c_yellow);
+						g->IsNotGrounded++;
+
+					}
+					if ( (v4 & 2) != 0 )
+					{
+						((byte*)&c->UnknownFlags0xC8)[7] = 0;
+						g->AddGaugeValue(-g->c_yellow);
+						g->IsNotGrounded++;
+
+
+					}
+				}
+				
+			}
+
+
+		
+
+		}
+
+		
+
+
+
+		return Object2PostUpdateCmnH(_this,delta);
+
+	}
+
+
 
 #pragma endregion States
 
@@ -6157,11 +6270,132 @@ namespace WhiteGameRestored
 
 
 
+
+	int SonicMachSpeed__Object2Start(SonicMachSpeed* _this){
+
+		Sonicteam::Player::SonicGauge* s =  _this->CObjContext->GaugePlugin.get();
+		if (s){
+
+			if (Params.GemLevel[Gems::Blue] >= 0){
+
+				BranchTo(0x82209190,int,_this);
+				_this->CObjContext->IsMachSpeed = 1;
+				_this->CObjContext->ICCIF_01(_this->CObjContext->c_custom_action_machspeed_acc,0,_this->CObjContext->c_custom_action_machspeed_time);
+
+				_this->CObjContext->VelocityX = _this->CObjContext->LastVelocityX;
+				_this->CObjContext->VelocityZ = _this->CObjContext->LastVelocityZ;
+			
+				_this->CObjContext->ExportPostureRequestFlag |= 0x1001;
+
+
+				return 1;
+			}
+			else{
+				return BranchTo(0x821A2E88,int,_this);
+			}
+
+
+
+		}
+		else{
+			return BranchTo(0x821A2E88,int,_this);
+		}
+
+
+	}
+
+
+	int SonicMachSpeed__Object2Update(SonicMachSpeed* _this,float delta){
+
+
+
+		_this->CObjContext->IsMachSpeed = 2;
+
+		if ( BranchTo(0x8220AE28,int,_this,delta))
+			return 1;
+
+		Sonicteam::Player::SonicGauge* s =  _this->CObjContext->GaugePlugin.get();
+		if (s){
+
+			if (Params.GemLevel[Gems::Blue] >= 0){
+
+
+
+				if ( (_this->CObjContext->Input & 0x100) != 0)
+				{
+					_this->ObjectMashine->ChangeMashineState(2);
+					return 1;
+				}
+
+				float drain_value = s->c_green * delta;
+
+				if ( s->GaugeValue - drain_value >= 0.0 ){
+						s->AddGaugeValue(-drain_value);
+				}
+				else{
+					_this->ObjectMashine->ChangeMashineState(2);
+					return 1;
+				}
+			
+				_this->CObjContext->VelocityX = _this->CObjContext->LastVelocityX;
+				_this->CObjContext->VelocityZ = _this->CObjContext->LastVelocityZ;
+
+
+
+			}
+			else{
+				return BranchTo(0x821A2F00,int,_this),delta;
+			}
+
+		}
+		else{
+			return BranchTo(0x821A2F00,int,_this),delta;
+		}
+
+	
+
+
+
+
+
+
+
+
+	}
+
+
+	int SonicMachSpeed__Object2End(SonicMachSpeed* _this){
+
+
+		_this->CObjContext->ExportWeaponRequestFlag |=  0x1002;
+		 BranchTo(0x821A2EF0,int,_this);
+
+		_this->CObjContext->IsMachSpeed = 3;
+
+		return 0;
+
+	}
+
+
 	void GlobalInstall(){
+
+
+///SONIC MACH SPEED
+
+		WRITE_DWORD(0x82003AC8,SonicMachSpeed__Object2Start); //Start
+		WRITE_DWORD(0x82003ACC,SonicMachSpeed__Object2Update); //Update
+		WRITE_DWORD(0x82003AD0,SonicMachSpeed__Object2End); //End
+
+	
+
+		INSTALL_HOOK(Object2PostUpdateCmn); //Yellow correction
+
+
 
 		INSTALL_HOOK(GameImpusleConstructor); //Save Params and reset them
 
 
+		
 
 
 
@@ -6246,8 +6480,8 @@ namespace WhiteGameRestored
 	//	WRITE_DWORD(0x8223EFDC,POWERPC_ADDI(11,11,2));
 	//	WRITE_DWORD(0x8223EFDC,POWERPC_ADDI(11,11,-2));
 	//	
-		WRITE_DWORD(0x822196E0,0x60000000);
-		WRITE_DWORD(0x822196E8,0x60000000);
+		//WRITE_DWORD(0x822196E0,0x60000000);
+		//WRITE_DWORD(0x822196E8,0x60000000);
 
 		WRITE_DWORD(0x8200D4F0,HealAddChaosDrive); // ADD EXP
 
@@ -6297,6 +6531,391 @@ namespace WhiteGameRestored
 
 
 
+
+	}
+}
+
+namespace AmyRework{
+
+
+	//AMY WEAPONS FLLAGS FOR HAMMER
+	int __fastcall sub_8223F9F8(int a1, unsigned int a2){
+
+
+		 int result = *(_DWORD *)(a1 + 0x34);
+		_DWORD** v2 = (_DWORD **)result;
+		int Flags = *(unsigned __int8 *)(result + 0xD4);
+
+		byte a2_f = a2 >> 24;
+
+		int IsShowHammer = a2_f & 0x40;
+		int IsHammerAttack = a2_f & 0x80;
+
+		int CIsShowHammer = Flags & 0x40;
+		int CIsHammerAttack = Flags & 0x80;
+
+
+		if (IsShowHammer != CIsShowHammer){
+
+			if ((IsShowHammer & 0x40) != 0){
+				
+				*(unsigned __int8 *)(result + 0xD4) |= 0x40;
+			}
+			if ((IsShowHammer & 0x40) == 0){
+
+				*(unsigned __int8 *)(result + 0xD4) ^= 0x40;
+			}
+
+	
+
+			if (IsShowHammer){
+				(*(void (__fastcall **)(_DWORD, int))(**(_DWORD **)(result + 0x54) + 0x14))(
+					*(_DWORD *)(result + 0x54),
+					result + 0xC4);
+			}
+			else{
+				(*(void (__fastcall **)(_DWORD))(**(_DWORD **)(result + 0xC4) + 0x20))(*(_DWORD *)(result + 0xC4));
+
+			}
+		}
+		if (IsHammerAttack != CIsHammerAttack){
+
+			if ((IsHammerAttack & 0x40) != 0){
+
+				*(unsigned __int8 *)(result + 0xD4) |= 0x80;
+			}
+			if ((IsHammerAttack & 0x40) == 0){
+
+				*(unsigned __int8 *)(result + 0xD4) ^= 0x80;
+			}
+
+
+	
+			if (IsHammerAttack){
+				(*(void (__fastcall **)(_DWORD *, _DWORD **))(*v2[0x15] + 0x18))(v2[0x15], v2 + 0x32);
+				result = (*(int (__fastcall **)(_DWORD *, _DWORD **))(*v2[0x30] + 0x3C))(v2[0x30], v2 + 0x14);
+			}
+			else{
+				(*(void (__fastcall **)(_DWORD *))(*v2[0x32] + 0x20))(v2[0x32]);
+				result = (*(int (__fastcall **)(_DWORD *))(*v2[0x30] + 0x40))(v2[0x30]);
+			}
+
+
+
+		}
+
+
+
+
+	
+
+
+
+
+
+		return BranchTo(0x8223F9F8,int,a1,a2);
+
+	}
+
+	void  Context_Amy_CoreX(Sonicteam::Player::State::AmyContext *a1, double a2){
+
+
+		///((byte*)&a1->UnkownFlagsUnk01)[6] = 0;
+
+	//	a1->IsJumped_PostureVelocityYHandle = 1;
+		//a1->VelocityY = 10000;
+
+
+		BranchTo(0x82206D78,int,a1,a2);
+		byte IsAmyAttackX =  (char)((a1->AmyUnkFlags >> 24  ) & 0xFF); // Get First Byte (ALSO it complies as HIBYTE)
+		if (IsAmyAttackX != 0){
+
+			//ShowXenonMessage(L"MSG","");
+			a1->ExportWeaponRequestFlag |= 0x80000000; //AmyAttack
+			a1->ExportWeaponRequestFlag |= 0x40000000; //AmyHammer
+		}
+		if (a1->CurrentAnimation == 6){
+			a1->ExportWeaponRequestFlag |= 0x40000000; //AmyHammer
+
+		}
+
+
+
+
+
+	}
+
+
+	void sub_821AB7D0(Sonicteam::Player::State::BasedObject<Sonicteam::Player::State::AmyContext> *a1)
+	{
+
+	
+		Sonicteam::Player::State::AmyContext* ptr = (Sonicteam::Player::State::AmyContext*)a1->CObjContext;
+
+	
+
+	
+
+		BranchTo(0x821AB7D0,int,a1);
+
+			
+
+
+	ptr->VelocityY =  ptr->c_jump_double_speed;
+	
+
+	}
+	
+	class AmyAttack:public Sonicteam::Player::State::BasedObject<Sonicteam::Player::State::AmyContext>{
+	public:int Flags0;
+		   float Time;
+	};
+
+
+
+#define AmyAtk01 0x1
+#define AmyAtk02 0x2
+#define AmyAtk03 0x4
+#define AmyAtk04 0x8
+#define AmyAtk05 0x10
+#define AmyAtk06 0x20
+#define AmyAtk07 0x40
+#define AmyAtk08 0x80
+#define AmyAtk09 0x100
+
+#define IsAttack(atk,flags) ((atk & flags) != 0)
+
+
+	void AmyAttackStartNew(AmyAttack *a1){
+
+		(*(byte*)(&a1->BOContext->AmyUnkFlags )) = 1;
+
+		a1->Time = 0;
+		a1->Flags0 = 0;
+		if (a1->CObjContext->CurrentAnimation == 6){
+			a1->Flags0 |= AmyAtk03; 
+		}
+
+		if ( a1->CObjContext->CurrentStickBorder == 0.0){
+
+			a1->CObjContext->CurrentSpeed = 0;
+			a1->CObjContext->VelocityY = 0;
+			a1->CObjContext->VelocityX = 0;
+			a1->CObjContext->IsGravityDisabled = 1;
+			a1->Flags0 |= AmyAtk06;
+		}
+		a1->CObjContext->SetAnimation(0x45);
+	}
+
+
+	int AmyAttackUpdateNew(AmyAttack *a1,double delta){
+
+		if (BranchTo(0x8220A938,int,a1,delta)){
+			return 1;
+		}
+
+		if ((a1->CObjContext->GroundAirDataFlags & 1) != 0  ){
+
+			//Cancel Hammer Jump
+			if ( (a1->CObjContext->Input & 0x400u) != 0 &&  IsAttack(AmyAtk03,a1->Flags0)){
+				a1->Flags0 ^= AmyAtk03;
+			} 
+			if ( (a1->CObjContext->AnimationState & 1) != 0 &&  IsAttack(AmyAtk03,a1->Flags0)) {
+
+				a1->CObjContext->IsJumped_PostureVelocityYHandle=1;
+				a1->CObjContext->VelocityY = a1->BOContext->c_jump_double_speed;
+				a1->CObjContext->SetAnimation(0xAF);
+				a1->Flags0 |= AmyAtk04;
+				a1->Time = 0.035f;
+			}
+			else if ((a1->CObjContext->Input & 0x400u) != 0 && !IsAttack(AmyAtk03,a1->Flags0) ){
+
+				if (!IsAttack(AmyAtk01,a1->Flags0)){
+					a1->Flags0 |= AmyAtk01;
+					a1->CObjContext->SetAnimation(0xB0);
+					a1->Time = 0.035f;
+					
+				}
+				else if (!IsAttack(AmyAtk02,a1->Flags0)){
+					a1->Flags0 |= AmyAtk02;
+					a1->CObjContext->SetAnimation(0xAE);
+					a1->Time = 0.0f;
+				}
+				else{
+				}
+			}
+
+
+			if (a1->CObjContext->CurrentSpeed > 0.0f){
+				a1->CObjContext->CurrentSpeed -= a1->CObjContext->c_brake_acc *delta * 0.1f;
+
+			}
+		}
+		//air combos
+		else{
+			//Enable Others Combos (by 06)
+			if (IsAttack(AmyAtk06,a1->Flags0) && (a1->CObjContext->Input & 0x400u) != 0){
+
+
+				if (!IsAttack(AmyAtk07,a1->Flags0)){
+					a1->Flags0 |= AmyAtk07;
+					a1->CObjContext->SetAnimation(0xB0);
+					a1->Time = 0.019f;
+
+				}
+				else if (!IsAttack(AmyAtk08,a1->Flags0)  ){
+					a1->Flags0 |= AmyAtk08;
+					a1->CObjContext->SetAnimation(0x45);
+					a1->Time = 0.00f;
+
+				}
+				else if (!IsAttack(AmyAtk09,a1->Flags0)  ){
+					a1->Flags0 |= AmyAtk09;
+					a1->CObjContext->SetAnimation(0xAF);
+					a1->Time = 0.00f;
+					a1->CObjContext->IsGravityDisabled = 0;
+
+				}
+
+			}
+			if ((a1->CObjContext->Input & 0x400u) != 0  && !IsAttack(AmyAtk06,a1->Flags0) ){
+				if (!IsAttack(AmyAtk05,a1->Flags0)){
+					a1->Flags0 |= AmyAtk05;
+					a1->CObjContext->SetAnimation(0xAF);
+					a1->Time = 0.0f;
+				}
+			}
+		}
+
+		if (IsAttack(AmyAtk05 | AmyAtk04,a1->Flags0) == (AmyAtk04 | AmyAtk05)){
+
+			if ((a1->CObjContext->GroundAirDataFlags & 1) != 0  ){
+				
+					return BranchTo(0x82209068,int,a1);
+				
+			}	
+		}
+		if ((a1->CObjContext->AnimationState & 1) != 0){
+			a1->Time -= delta;
+		}
+	
+		if ( (a1->CObjContext->AnimationState & 1) != 0 && a1->Time <= 0 ){
+			return BranchTo(0x82209068,int,a1);
+		}
+
+		//0x45(attack),0xAF(AIR SPIN), 0xB0(SPIN )
+
+
+
+
+	}
+
+	void AmyAttackEndNew(AmyAttack *a1){
+	(*(byte*)(&a1->BOContext->AmyUnkFlags )) = 0;
+	a1->CObjContext->IsGravityDisabled = 0;
+
+
+
+	}
+
+	int AmyJumpUpdate(AmyAttack *a1,double delta){
+		
+		if ((a1->CObjContext->Input & 0x400u) != 0){
+
+			//ShowXenonMessage(L"MSG","1");
+			a1->ObjectMashine->ChangeMashineState(0x60);
+
+			return 1;
+
+		}
+
+		return BranchTo(0x821AB048,int,a1,delta);
+
+	}
+
+
+
+	class AmyStealth:public Sonicteam::Player::State::BasedObject<Sonicteam::Player::State::AmyContext>{
+	public:
+		   float Time;
+	};
+
+
+	void AmyStealthStartNew(AmyStealth *a1){
+	
+		//a1->CObjContext->IsForcedMovement = 1;
+		//a1->CObjContext->CurrentSpeed = 0;
+		a1->CObjContext->VelocityX = 0;
+		a1->CObjContext->IsInvulnerable2 = 1;
+		(*(byte*)(&a1->BOContext->AmyUnkFlags )) = 1;
+				a1->Time = 0;
+		a1->CObjContext->SetAnimation(0xB0);
+	}
+	int AmyStealthUpdateNew(AmyStealth *a1,double delta){
+
+
+		if ( (unsigned __int8)StateCommonGroundFlagsListenerForStates((int *)a1, delta) )
+			return 1;
+		BranchTo(0x8220A630,int,a1->CObjContext,delta,a1->CObjContext->c_run_acc * 0.25,a1->CObjContext->c_run_speed_max * 0.65,0.0);
+		a1->Time += delta;
+		if (a1->Time >= 2.0f)
+		{
+			a1->ObjectMashine->ChangeMashineState(9);
+		}
+		if (((a1->CObjContext->Input)  & 0x400 ) != 0 )
+		{
+			return BranchTo(0x82209068,int,a1);
+		}
+
+		return 0;
+	}
+	void AmyStealthEndNew(AmyStealth *a1){
+
+		a1->CObjContext->IsInvulnerable2 = 0;
+		(*(byte*)(&a1->BOContext->AmyUnkFlags )) = 0;
+		a1->BOContext->IsForcedMovement = 0;
+		//a1->BOContext->StealthTime = a1->BOContext->c_stealth_limit;
+	}
+
+
+	void GlobalInstall(){
+
+		WRITE_DWORD(0x8200D5AC,sub_8223F9F8);
+		WRITE_DWORD(0x8223FA34,0x60000000); //Disable Origin Hammer Settup
+
+		WRITE_DWORD(0x82009658,Context_Amy_CoreX);
+		
+
+	//	WRITE_DWORD(0x821AB08C,POWERPC_ADDI(4,0,0x5F));
+		WRITE_DWORD(0x821AB598,0x60000000);
+		WRITE_DWORD(0x821AB5A0,0x60000000);
+		WRITE_DWORD(0x821AB5B0,0x60000000);
+		WRITE_DWORD(0x821AB5D4,0x60000000);
+
+		WRITE_DWORD(0x821AB508,0x60000000);
+		WRITE_DWORD(0x821AB50C,0x60000000);
+		WRITE_DWORD(0x821AB510,0x60000000);
+		WRITE_DWORD(0x821AB514,0x60000000);
+		WRITE_DWORD(0x821AB520,0x60000000);
+
+
+
+
+		WRITE_DWORD(0x821AB630,POWERPC_ADDI(3,0,0x18));
+		WRITE_DWORD(0x82004AC4,AmyAttackStartNew);
+		WRITE_DWORD(0x82004AC8,AmyAttackUpdateNew);
+		WRITE_DWORD(0x82004ACC,AmyAttackEndNew);
+
+
+
+		WRITE_DWORD(0x820049A4,AmyJumpUpdate);
+		//WRITE_DWORD(0x82004AF4,sub_821AB7D0);
+
+
+		WRITE_DWORD(0x821AB288,POWERPC_ADDI(3,0,0x14));
+		WRITE_DWORD(0x82004A04,AmyStealthStartNew);
+		WRITE_DWORD(0x82004A08,AmyStealthUpdateNew);
+		WRITE_DWORD(0x82004A0C,AmyStealthEndNew);
 
 	}
 }
@@ -6475,13 +7094,14 @@ void ZLua::DoFile(bool ignore){
 
 	locked = true;
 	if (ignore){
-
 		executed =false;
 
 	}
+
 	if (!executed) {
 
-		if (luaL_loadfile(L, FilePath.c_str()) == LUA_ERRSYNTAX ){
+		int re = luaL_loadfile(L, FilePath.c_str());
+		if ( re== LUA_ERRSYNTAX || re == LUA_ERRFILE ){
 			ShowXenonMessage(L"ERROR",lua_tostring(L,-1));
 			lua_close(L);
 			Sleep(10000);
@@ -6492,8 +7112,9 @@ void ZLua::DoFile(bool ignore){
 			lua_pcall(L, 0,0,0);
 		}
 
-		//	   ShowXenonMessage(L"DUMBY",luaL_loadfile(L, FilePath.c_str()),0);
+			//   ShowXenonMessage(L"DUMBY",luaL_loadfile(L, FilePath.c_str()),0);
 
+	
 		executed = true;
 
 	}

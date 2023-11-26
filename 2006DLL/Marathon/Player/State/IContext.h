@@ -9,7 +9,7 @@
 
 
 
-namespace SonicTeam{
+namespace Sonicteam{
 
 	namespace Player{
 		namespace State{

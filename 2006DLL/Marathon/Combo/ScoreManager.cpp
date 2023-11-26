@@ -1,7 +1,7 @@
 #include "ScoreManager.h"
 
 
-using namespace SonicTeam::Combo;
+using namespace Sonicteam::Combo;
 
 ScoreManager::ScoreManager(void)
 {

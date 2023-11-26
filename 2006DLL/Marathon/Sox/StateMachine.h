@@ -3,7 +3,7 @@
 #include <boost/weak_ptr.hpp>
 
 
-namespace SonicTeam{
+namespace Sonicteam{
 	namespace SoX{
 
 		namespace AI{
@@ -30,6 +30,7 @@ namespace SonicTeam{
 				unsigned int field0x14; //0x14
 				unsigned int field0x18; //0x18
 				unsigned int field0x1C; //0x1C
+				//end- ->0x20
 
 
 

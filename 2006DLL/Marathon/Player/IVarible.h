@@ -2,7 +2,7 @@
 
 
 #include "../LuaSystem.h"
-namespace SonicTeam{
+namespace Sonicteam{
 	namespace Player{
 
 		

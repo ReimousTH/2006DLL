@@ -1,6 +1,6 @@
 #include "CommonContext.h"
 
-using namespace SonicTeam::Player::State;
+using namespace Sonicteam::Player::State;
 
 CommonContext::CommonContext(void):ICommonContext()
 {
@@ -12,7 +12,7 @@ CommonContext::~CommonContext(void)
 
 
 
-void CommonContext::OnVarible(SonicTeam::LuaSystem** t)
+void CommonContext::OnVarible(Sonicteam::LuaSystem** t)
 {
 
 	(*t)->LuaNodeUnknown0x01("t");
@@ -226,6 +226,11 @@ void CommonContext::OnLink()
 
 }
 
+void Sonicteam::Player::State::CommonContext::SetAnimation(int num)
+{
+	this->CurrentAnimation = num;
+	this->AnimationState = -2;
+}
 
 static OtherCommonContext::StateTableBase StateTable0x82009AB8[0x15] = {
 

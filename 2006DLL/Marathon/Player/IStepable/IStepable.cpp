@@ -1,5 +1,5 @@
 #include "IStepable.h"
-using namespace SonicTeam::Player;
+using namespace Sonicteam::Player;
 
 IStepable::IStepable(void)
 {

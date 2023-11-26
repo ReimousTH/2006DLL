@@ -52,7 +52,9 @@ DFastActions _PreLoadPatches[] = {
 	{"Multiplayer4P_Enabled",Multiplayer4P::GlobalInstall},
 	{"NoArcMode",ArcRemover::GlobalInstall},
 	{"TimeSystemRestore",TimeSystemRestore::GlobalInstall},
-	{"OmegaHoverGauge",OmegaF::GlobalInstall}
+	{"OmegaHoverGauge",OmegaF::GlobalInstall},
+	{"CompleteGauge",WhiteGameRestored::GlobalInstall},
+	{"AmyV2",AmyRework::GlobalInstall},
 };
 
 
@@ -67,17 +69,21 @@ extern "C" void OnDLLStart(){
 
 	BaseLua.DoFile(true);
 
-	for (int i = 0;i<sizeof(_PreLoadPatches) / sizeof(DFastActions);i++){
+	if (BaseLua.executed){
 
-		if (BaseLua.GetGlobalBool(_PreLoadPatches[i].GlobalName) == true){
-			//ShowXenonMessage(L"MSG",_PreLoadPatches[i].GlobalName);
-			Loaded.append(_PreLoadPatches[i].GlobalName);
-			Loaded.append("\n");
-			_PreLoadPatches[i].Install();
+		for (int i = 0;i<sizeof(_PreLoadPatches) / sizeof(DFastActions);i++){
+
+			if (BaseLua.GetGlobalBool(_PreLoadPatches[i].GlobalName) == true){
+				//ShowXenonMessage(L"MSG",_PreLoadPatches[i].GlobalName);
+				Loaded.append(_PreLoadPatches[i].GlobalName);
+				Loaded.append("\n");
+				_PreLoadPatches[i].Install();
+			}
 		}
 	}
 
-	WhiteGameRestored::GlobalInstall();
+
+	
 
 
 	
@@ -87,22 +93,34 @@ extern "C" void OnDLLStart(){
 
 	//TestProject::GlobalInstall();
 
-	ImGUI::GlobalInstall();
+	//ImGUI::GlobalInstall();
+
+	//AmyRework::GlobalInstall();
 	//ChainJumpTest::GlobalInstall();
 
 
 
-new SonicTeam::Player::State::CommonContext();
+new Sonicteam::Player::State::CommonContext();
 
-new SonicTeam::Combo::AttackManager();
+new Sonicteam::Combo::AttackManager();
+
+new Sonicteam::SoX::Object();
+
+new Sonicteam::Player::Input::ListenerNormal(0,0);
 	
 
-new SonicTeam::Player::SonicGauge();
+//Sonicteam::Player::SonicGauge* gg = new Sonicteam::Player::SonicGauge();
 
-SonicTeam::Player::State::Machine2* t = new SonicTeam::Player::State::Machine2();
+
+//std::type_info* z0 = (std::type_info*)&typeid(Sonicteam::Player::SonicGauge);
+
+//const char* tu = z0->name();
+
+Sonicteam::Player::State::Machine2* t = new Sonicteam::Player::State::Machine2();
 
 //SonicTeam::Player::State::CommonObject* v = new SonicTeam::Player::State::CommonObject((SonicTeam::Player::State::IMachine*)t);
 
+Sonicteam::Player::State::AmyContext* tz = new Sonicteam::Player::State::AmyContext();
 
 
 

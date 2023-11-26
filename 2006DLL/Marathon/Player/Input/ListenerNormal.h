@@ -1,10 +1,14 @@
 #pragma once
 
 
-#include "../../Sox/Object.h"
-#include <xtl.h>
+#include <list>
+#include "IListener.h"
+#include "../IPlugIn.h"
+#include "../IVarible.h"
+#include "../IStepable/IStepable.h"
 
-namespace SonicTeam{
+
+namespace Sonicteam{
 	namespace Player{
 
 
@@ -12,26 +16,57 @@ namespace SonicTeam{
 
 
 			//size 0x18
-			class IListener:SonicTeam::SoX::Object
+			class ListenerNormal:Sonicteam::Player::Input::IListener,Sonicteam::Player::IPlugIn,Sonicteam::Player::IVarible,Sonicteam::Player::IStepable
 			{
 			public:
-				IListener(void);
 
-				//virtual char* GetObjectType() override;
+				ListenerNormal(unsigned int,unsigned int);
+				~ListenerNormal(void);
+
+				virtual void ListenerOnUpdate(int,float);
+
+				virtual XMFLOAT4* ListenerGetStickVector4();
+
+				virtual float ListenerGetStickPower();
+
+				virtual unsigned int ListenerGetResult();
+
+				virtual int Listener5();
+
+				virtual void OnVarible(LuaSystem**);
+
+				virtual void OnStepable(float);
+
+				unsigned int ptr0x40;
+				unsigned int ptr0x44;
+				unsigned int unk0x48;
+				float StickPower; 
+				XMFLOAT4 StickVector; //0x50 
+
 				
-				//virtual ~IListener(void);
+				//unsigned int ptr0x60; //???// type size with 0x14 (vector(no any about vector) std::list maybe )
+				//std::list<unsigned int> unkList0x60;
 
-				virtual void ListenerOnUpdate() = 0;
-				virtual XMFLOAT4 ListenerGetVector4() = 0;
-				virtual float ListenerGetPower() = 0; // Stick power
-				virtual unsigned int ListenerGetResult() = 0; // Result value
-				virtual int Listener5() = 0; //always 1
+				byte unkgap0x60[0x14];
 
-				byte IL0x10;
-				byte IL0x11;
-				byte IL0x12;
-				byte IL0x13;
-				unsigned int IL0x14; //-0x18
+
+				float unkfloat0x74;
+
+				IListenerInputStruc02 ILISunk0x78; // A Button
+				IListenerInputStruc03 ILISunk0x88; // X Button
+				unsigned int unk0x9c; //always=1 
+				unsigned int unk0xA0; //always=8
+				unsigned int unk0xA4; //always=0x10
+				unsigned int unk0xA8; //always=0x8000 
+				IListenerInputStruc02 ILISunk0xAC;	 //RT Button
+				float c_input_border; //  0.1 
+
+		
+			
+
+
+			
+
 
 	
 			};

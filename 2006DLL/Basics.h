@@ -100,7 +100,11 @@
 #include <xui.h>
 
 
+
+
 #include "Marathon/Player/State/CommonContext.h"
+#include "Marathon/Player/State/SonicContext.h"
+#include "Marathon/Player/State/AmyContext.h"
 #include "Marathon/Combo/AttackManager.h"
 #include "Marathon/Combo/ScoreManager.h"
 
@@ -109,7 +113,11 @@
 
 
 #include "Marathon/Player/State/CommonObject.h"
+#include "Marathon/Player/State/BasedObject.h"
 #include "Marathon/Sox/Object.h"
+
+
+#include "Marathon/Player/Input/ListenerNormal.h"
 
 
 
@@ -126,6 +134,11 @@ extern "C" {
 #include "lauxlib.h"
 }
 #include "ZLua.h"
+
+
+
+
+
 
 #include "irrmath/quaternion.h"
 #include "irrmath/vector3d.h"

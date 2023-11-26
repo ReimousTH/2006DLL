@@ -11,14 +11,14 @@
 #include <boost/scoped_ptr.hpp>
 
 
-namespace SonicTeam{
+namespace Sonicteam{
 
 	namespace Player{
 		namespace State{
 
 		
 			//8200BAD8
-			class Object2:SonicTeam::SoX::AI::State<SonicTeam::Player::State::IContext>
+			class Object2:Sonicteam::SoX::AI::State<Sonicteam::Player::State::IContext>
 			{
 			public:
 				Object2(IMachine*);

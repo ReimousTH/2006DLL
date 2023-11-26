@@ -1,5 +1,5 @@
 #include "LuaSystemManager.h"
 
 
-using namespace SonicTeam;
+using namespace Sonicteam;
 

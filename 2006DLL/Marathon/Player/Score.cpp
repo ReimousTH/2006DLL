@@ -1,6 +1,6 @@
 #include "Score.h"
 
-using namespace SonicTeam::Player;
+using namespace Sonicteam::Player;
 
 
 

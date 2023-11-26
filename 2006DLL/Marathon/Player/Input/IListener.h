@@ -2,17 +2,19 @@
 
 
 #include "../../Sox/Object.h"
+
+
 #include <xtl.h>
 
-namespace SonicTeam{
+namespace Sonicteam{
 	namespace Player{
 
 
 		namespace Input{
 			struct IListenerInputStruc01{
 				unsigned int unk00;
-				SonicTeam::SoX::Object* PtrMyInputObj;
-				SonicTeam::SoX::Object* PtrKhronoControlInputListener;
+				Sonicteam::SoX::Object* PtrMyInputObj;
+				Sonicteam::SoX::Object* PtrKhronoControlInputListener;
 				unsigned int unk0xC;
 				unsigned int wLastButtons; //Triggers & DPAD includ
 				unsigned int ComplementwLastButtons; //Binary One's Complement (in short = ~wLastButtons)
@@ -29,24 +31,78 @@ namespace SonicTeam{
 				FLOAT      fY2;
 				unsigned int fX2Y2Unk; // (0-2 Left,2-4 Right) fx2(y2) > 0   =  0x8001 , fx2(y2) < 0 = -0x8001
 				//Next is Unk and not sure 
+			};
+			struct IListenerInputStruc02{
 
+				float float0;
+				unsigned int dword4;
+				char byte8;
+				char byte9;
+				char byteA;
+				char byteB;
+				float c_dclick_time;
+
+				IListenerInputStruc02(){
+
+				}
+				IListenerInputStruc02(int a1,float a2){
+					this->float0 = 0.0;
+					this->dword4 = a1;
+					this->c_dclick_time = a2;
+					this->byte8 = 0;
+					this->byte9 = 0;
+					this->byteA = 0;
+					this->byteB = 0;
+
+
+				}
+
+
+			};
+			struct IListenerInputStruc03{
+
+				unsigned int dword0;
+				char byte4;
+				char byte5;
+				char byte6;
+				char gap7;
+				float float8;
+				float c_lclick_time;
+				//_BYTE byte10;
+				unsigned int byte10; //  or maybe byte just aligned to 4
+
+				IListenerInputStruc03(){
+
+				}
+				IListenerInputStruc03(int a1){
+					this->dword0 = a1;
+					this->float8 = 0.0;
+					this->c_lclick_time = 0.0;
+					this->byte4 = 0;
+					this->byte5 = 0;
+					this->byte6 = 0;
+					this->gap7 = 0;
+					this->byte10 = 0;
+
+				};
 			};
 
 
 			//size 0x18
-			class IListener:SonicTeam::SoX::Object
+			class IListener:Sonicteam::SoX::Object
 			{
 			public:
 				IListener(void);
+				virtual ~IListener(void);
 
 				//virtual char* GetObjectType() override;
+					
 				
-				//virtual ~IListener(void);
 
 				virtual void ListenerOnUpdate(int,float) = 0;
-				virtual XMFLOAT4 ListenerGetStickVector4() = 0;
+				virtual XMFLOAT4* ListenerGetStickVector4() = 0;
 				virtual float ListenerGetStickPower() = 0; // Stick power
-				virtual unsigned int ListenerGetWPressedHoldReleaseButtons() = 0; // Result value
+				virtual unsigned int ListenerGetResult() = 0; // Result Input Action (Pressed Holded and etc)
 				virtual int Listener5() = 0; //always 1
 
 				byte IL0x10;

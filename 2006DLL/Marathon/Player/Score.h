@@ -7,7 +7,7 @@
 #include <xtl.h> //replace to xbox math soon
 
 
-namespace SonicTeam{
+namespace Sonicteam{
 	namespace Player{
 
 		

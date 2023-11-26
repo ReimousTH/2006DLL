@@ -11,7 +11,7 @@ extern "C" {
 #include <boost/weak_ptr.hpp>
 #include <boost/shared_ptr.hpp>
 
-namespace SonicTeam{
+namespace Sonicteam{
  
 	//Do implementation later :)
 	class LuaNodeImp:public LuaNode // : LuaNode + (again hided in destructors omg)

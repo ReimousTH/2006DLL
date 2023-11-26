@@ -1,6 +1,6 @@
 #include "ICommonContextIF.h"
 
-using namespace SonicTeam::Player::State;
+using namespace Sonicteam::Player::State;
 
 const float ICommonContextIF::unk_float = 0.94999999f;
 

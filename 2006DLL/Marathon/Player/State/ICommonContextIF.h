@@ -1,6 +1,6 @@
 #pragma once
 
-namespace SonicTeam{
+namespace Sonicteam{
 	namespace Player{
 		namespace State{
 
@@ -14,7 +14,7 @@ namespace SonicTeam{
 				virtual void ICCIF_04()= 0; //Export UnknownFlags01
 				virtual void ICCIF_05()= 0; 
 				virtual float ICCIF_06()= 0; // no args
-				virtual float ICCIF_07()= 0; // no args
+				virtual float ICCIF_07()= 0; // self
 				static const float  unk_float;
 
 

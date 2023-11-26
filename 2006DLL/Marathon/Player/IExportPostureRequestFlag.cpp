@@ -1,5 +1,5 @@
 #include "IExportPostureRequestFlag.h"
-using namespace SonicTeam::Player;
+using namespace Sonicteam::Player;
 
 IExportPostureRequestFlag::IExportPostureRequestFlag(void)
 {

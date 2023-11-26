@@ -1,5 +1,5 @@
 #include "IDynamicLink.h"
-using namespace SonicTeam::Player;
+using namespace Sonicteam::Player;
 
 IDynamicLink::IDynamicLink(void)
 {

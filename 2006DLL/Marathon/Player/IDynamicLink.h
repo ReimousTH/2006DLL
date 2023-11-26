@@ -1,6 +1,6 @@
 #pragma once
 
-namespace SonicTeam{
+namespace Sonicteam{
 	namespace Player{
 		class IDynamicLink
 		{

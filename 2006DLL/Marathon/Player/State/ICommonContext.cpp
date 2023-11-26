@@ -1,6 +1,6 @@
 #include "ICommonContext.h"
 
-using namespace SonicTeam::Player::State;
+using namespace Sonicteam::Player::State;
 
 ICommonContext::ICommonContext(void):IContext("state context")
 {
@@ -36,7 +36,7 @@ float ICommonContext::ICCIF_07()
 	return this->CurrentSpeed + this->VelocityX;
 }
 
-void ICommonContext::SetAnimationStateFlag(DWORD flag_value)
+void ICommonContext::ImportAnimationStateFlag(DWORD flag_value)
 {
 	this->AnimationState = flag_value;
 }
@@ -45,7 +45,7 @@ void ICommonContext::SetAnimationStateFlag(DWORD flag_value)
 void ICommonContext::ICOnInputTick(float a2)
 {
 	this->Input = 0; //Reset Input Value
-	this->unk01  = 0.0; // Have no idea what is it
+	this->CurrentStickBorder  = 0.0; // Have no idea what is it
 
 		if (this->LockInputTime > 0.0){
 			if (this->LockInputTime  - a2 >= 0.0){

@@ -2,7 +2,7 @@
 #include "IGauge.h"
 
 
-using namespace SonicTeam::Player;
+using namespace Sonicteam::Player;
 
 
 IGauge::~IGauge(void)

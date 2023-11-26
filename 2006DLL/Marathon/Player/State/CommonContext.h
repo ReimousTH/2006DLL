@@ -6,9 +6,11 @@
 #include <boost/weak_ptr.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/scoped_ptr.hpp>
+#include "../Input/IListener.h"
 #include <xtl.h>
 
-namespace SonicTeam{
+
+namespace Sonicteam{
 
 	namespace Player{
 
@@ -70,7 +72,7 @@ namespace SonicTeam{
 				int UnknownUnUsedFlagD8;
 				int FreeUnknownFlagsDC;
 				char IsSonicDied;
-				char IsRingGhostMode;
+				char IsRingGhostMode; 
 				char IsBlinkingMode;
 				char IsForcedMovement;
 				char IsInvulnerable;
@@ -78,7 +80,7 @@ namespace SonicTeam{
 				char IsUnkE6;
 				char IsGravityDisabled;
 				char IsUnkE8;
-				char IsQuickReturnToMaxSpeedOrIsJumpedInAir_MB;
+				char IsJumped_PostureVelocityYHandle;
 				char IsInActionsRunJumpBound_MB;
 				char IsUnkEB;
 				char IsUnkEC;
@@ -127,9 +129,9 @@ namespace SonicTeam{
 				char UnknownFlags0x111[0x15];
 				char IsUnk126;
 				char IsUnk127;
-				boost::shared_ptr<SonicTeam::Player::Score> ScorePlugin;
+				boost::shared_ptr<Sonicteam::Player::Score> ScorePlugin;
 				boost::shared_ptr<int> GravityPlugin;
-				boost::shared_ptr<int> ListenerNormalInputPlugin;
+				boost::shared_ptr<Sonicteam::Player::Input::IListener> ListenerNormalInputPlugin;
 				boost::shared_ptr<int> PlayerAIAmigoPlugin;
 				float float148;
 				float gravity;
@@ -189,6 +191,13 @@ namespace SonicTeam{
 				float float224;
 				float float228;
 				float float22C;
+
+
+
+				//NON VIRTUAL METHODS
+
+				void SetAnimation(int);
+
 
 
 		

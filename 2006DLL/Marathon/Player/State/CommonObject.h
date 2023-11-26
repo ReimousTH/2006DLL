@@ -2,13 +2,14 @@
 
 
 #include "Object2.h"
+#include "IContext.h"
 #include "CommonContext.h"
 
 
 
 
 
-namespace SonicTeam{
+namespace Sonicteam{
 
 	namespace Player{
 		namespace State{
@@ -18,7 +19,7 @@ namespace SonicTeam{
 
 		
 			//8200BAD8
-			class CommonObject:Object2
+			class CommonObject:public Object2
 			{
 			public:
 				CommonObject(IMachine*);
@@ -34,6 +35,8 @@ namespace SonicTeam{
 				virtual void Object2PostUpdateCmn(float) override;	
 
 
+
+				//IContext* CObjContext;
 				//FILEDS
 				CommonContext* CObjContext;
 

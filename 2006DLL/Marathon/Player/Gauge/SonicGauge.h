@@ -2,13 +2,22 @@
 
 #include "IGauge.h"
 
-namespace SonicTeam{
+namespace Sonicteam{
 	namespace Player{
 
+
+		
 	
 		class SonicGauge:IGauge
 			{
 			public:
+
+				//testing
+
+			//	std::type_info const &type() const { return typeid(*this); }
+
+				//
+
 				SonicGauge(void);
 				virtual ~SonicGauge(void);
 

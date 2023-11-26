@@ -1,6 +1,6 @@
 #include "AttackManager.h"
 
-using namespace SonicTeam::Combo;
+using namespace Sonicteam::Combo;
 
 AttackManager::AttackManager(void)
 {

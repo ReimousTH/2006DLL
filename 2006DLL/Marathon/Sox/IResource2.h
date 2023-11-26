@@ -2,7 +2,7 @@
 #include "IResource.h"
 #include <string>
 
-namespace SonicTeam{
+namespace Sonicteam{
 	namespace SoX{
 		template<typename T,typename Y>
 		class IResource2:public IResource
@@ -24,7 +24,7 @@ namespace SonicTeam{
 
 
 		template<typename T,typename Y>
-		SonicTeam::SoX::IResource2<T, Y>::IResource2(void)
+		Sonicteam::SoX::IResource2<T, Y>::IResource2(void)
 		{
 
 		}

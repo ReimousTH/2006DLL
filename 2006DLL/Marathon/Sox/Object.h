@@ -5,7 +5,7 @@
 
 
 
-namespace SonicTeam{
+namespace Sonicteam{
 	namespace SoX{
 		typedef class Object;
 
@@ -13,8 +13,8 @@ namespace SonicTeam{
 		{
 
 			IObject* NextIObject;
-			IObject* PreviousIObject;
-			Object* CurrentObject; //why?
+			IObject* PreviousIObject; //0x4->0x8
+			Object* CurrentObject; //why? 0x8->0xC		
 
 
 		};

@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace SonicTeam{
+namespace Sonicteam{
 	namespace SoX{
 		class IResource
 		{

@@ -1,7 +1,7 @@
 #include "LuaNodeImp.h"
 
 
-using namespace SonicTeam;
+using namespace Sonicteam;
 
 LuaNodeImp::LuaNodeImp(lua_State* l,char* f)
 {

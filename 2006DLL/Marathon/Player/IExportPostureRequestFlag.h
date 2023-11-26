@@ -3,7 +3,7 @@
 
 #include <xtl.h>
 
-namespace SonicTeam{
+namespace Sonicteam{
 
 
 	namespace Player{

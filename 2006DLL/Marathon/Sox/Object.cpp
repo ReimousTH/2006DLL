@@ -1,7 +1,7 @@
 #include "Object.h"
 
 
-using namespace SonicTeam::SoX;
+using namespace Sonicteam::SoX;
 
 Object::~Object(void)
 {

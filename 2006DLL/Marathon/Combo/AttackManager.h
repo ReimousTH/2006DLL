@@ -2,7 +2,7 @@
 #include <xtl.h>
 #include <vector>
 
-namespace SonicTeam{
+namespace Sonicteam{
 	namespace Combo{
 
 		//Size 0x1C, no methods, only destructor	

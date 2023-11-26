@@ -1,6 +1,6 @@
 #include "IPlugIn.h"
 
-using namespace SonicTeam::Player;
+using namespace Sonicteam::Player;
 
 IPlugIn::IPlugIn(char* plug_name)
 {

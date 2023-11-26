@@ -11,7 +11,7 @@
 
 
 
-namespace SonicTeam{
+namespace Sonicteam{
 	namespace Combo{
 
 		//size = 0x24 , there somewhere boost but it idk

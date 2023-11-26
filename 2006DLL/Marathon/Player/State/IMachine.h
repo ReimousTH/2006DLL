@@ -8,7 +8,7 @@
 #include <boost/scoped_ptr.hpp>
 
 
-namespace SonicTeam{
+namespace Sonicteam{
 
 	namespace Player{
 		namespace State{

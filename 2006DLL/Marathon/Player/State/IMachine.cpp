@@ -1,6 +1,6 @@
 #include "IMachine.h"
 
-using namespace SonicTeam::Player::State;
+using namespace Sonicteam::Player::State;
 IMachine::IMachine(void):IPlugIn("state mashine")
 {
 }

@@ -7,7 +7,7 @@
 
 
 
-namespace SonicTeam{
+namespace Sonicteam{
 	namespace Player{
 		class IGauge:IPlugIn,IVarible,IStepable
 		{

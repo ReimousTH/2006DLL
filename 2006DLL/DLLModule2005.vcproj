@@ -317,7 +317,7 @@
 				InlineFunctionExpansion="2"
 				EnableIntrinsicFunctions="false"
 				FavorSizeOrSpeed="2"
-				AdditionalIncludeDirectories="..\Boost1690;..\ATG;..\LUA\src;ImGuiProject\ImGui"
+				AdditionalIncludeDirectories="..\Boost1690;..\ATG;..\LUA\src;ImGuiProject\ImGui;&quot;$(InputDir)&quot;"
 				PreprocessorDefinitions="NDEBUG;_XBOX;XBOX;XBOX_SAMPLE;_XBOX_CRT_DEPRECATE_INSECURE;_XENON;_WIN32;$(NOINHERIT)"
 				StringPooling="false"
 				ExceptionHandling="1"
@@ -347,7 +347,7 @@
 				AdditionalOptions="/FORCE:MULTIPLE /ignore:4089 /dll /entry:&quot;_DllMainCRTStartup&quot; /include:&quot;XboxKrnlBuildNumber&quot;"
 				AdditionalDependencies="d3d9.lib d3dx9.lib xgraphics.lib xaudio.lib x3daudio.lib xboxkrnl.lib xbdm.lib xact.lib xuirunltcg.lib xuirenderltcg.lib LUA.lib"
 				OutputFile="$(OutDir)/$(ProjectName).dll"
-				AdditionalLibraryDirectories="D:\boost_1_69_0\boost_1_69_0\stage\lib;..\LUA\Release\"
+				AdditionalLibraryDirectories="D:\boost_1_69_0\boost_1_69_0\stage\lib;..\LUA\Release\;&quot;..\hk550\Lib\win32_net_8-0\release_multithreaded_dll&quot;"
 				ModuleDefinitionFile="DllModule.def"
 				GenerateDebugInformation="true"
 				GenerateMapFile="true"
@@ -573,6 +573,10 @@
 					RelativePath=".\PatchData.h"
 					>
 				</File>
+				<File
+					RelativePath=".\TypeBasics.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Hook"
@@ -666,6 +670,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Marathon\Player\INotification.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Player\INotification.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Marathon\Player\IPlugIn.cpp"
 					>
 				</File>
@@ -700,6 +712,22 @@
 				<Filter
 					Name="State"
 					>
+					<File
+						RelativePath=".\Marathon\Player\State\AmyContext.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Player\State\AmyContext.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Player\State\BasedObject.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Player\State\BasedObject.h"
+						>
+					</File>
 					<File
 						RelativePath=".\Marathon\Player\State\CommonContext.cpp"
 						>
@@ -764,6 +792,14 @@
 						RelativePath=".\Marathon\Player\State\Object2.h"
 						>
 					</File>
+					<File
+						RelativePath=".\Marathon\Player\State\SonicContext.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Player\State\SonicContext.h"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="Gauge"
@@ -808,6 +844,30 @@
 						RelativePath=".\Marathon\Player\Input\IListener.h"
 						>
 					</File>
+					<File
+						RelativePath=".\Marathon\Player\Input\ListenerNormal.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Player\Input\ListenerNormal.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Weapon"
+					>
+					<File
+						RelativePath=".\Marathon\Player\Weapon\SonicWeapons.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Player\Weapon\SonicWeapons.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="AI"
+					>
 				</Filter>
 			</Filter>
 			<Filter
@@ -866,6 +926,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Marathon\Sox\RefCountObject.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Sox\RefCountObject.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Marathon\Sox\StateMachine.cpp"
 					>
 				</File>
@@ -884,6 +952,30 @@
 						RelativePath=".\Marathon\Sox\AI\State.h"
 						>
 					</File>
+				</Filter>
+				<Filter
+					Name="Physics"
+					>
+					<File
+						RelativePath=".\Marathon\Sox\Physics\World.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Sox\Physics\World.h"
+						>
+					</File>
+					<Filter
+						Name="Havok"
+						>
+						<File
+							RelativePath=".\Marathon\Sox\Physics\Havok\WorldHavok.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Marathon\Sox\Physics\Havok\WorldHavok.h"
+							>
+						</File>
+					</Filter>
 				</Filter>
 			</Filter>
 		</Filter>

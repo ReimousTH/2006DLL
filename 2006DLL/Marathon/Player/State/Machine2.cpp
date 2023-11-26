@@ -1,6 +1,6 @@
 #include "Machine2.h"
 
-using namespace SonicTeam::Player::State;
+using namespace Sonicteam::Player::State;
 
 Machine2::Machine2(void):IMachine()
 {
@@ -50,7 +50,7 @@ unsigned int Machine2::GetCurrentMashineStateID()
  return 0;
 }
 
-boost::shared_ptr<SonicTeam::Player::State::IContext> Machine2::GetMashineContext()
+boost::shared_ptr<Sonicteam::Player::State::IContext> Machine2::GetMashineContext()
 {
 
 	

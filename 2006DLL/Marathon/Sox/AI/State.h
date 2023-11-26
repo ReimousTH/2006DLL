@@ -1,6 +1,6 @@
 #pragma once
 
-namespace SonicTeam{
+namespace Sonicteam{
 	namespace SoX{
 
 
@@ -25,7 +25,7 @@ namespace SonicTeam{
 			};
 
 			template <typename IContextType>
-			SonicTeam::SoX::AI::State<IContextType>::~State(void)
+			Sonicteam::SoX::AI::State<IContextType>::~State(void)
 			{
 
 			}

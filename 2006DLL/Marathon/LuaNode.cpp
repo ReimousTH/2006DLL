@@ -1,7 +1,7 @@
 #include "LuaNode.h"
 
 
-using namespace SonicTeam;
+using namespace Sonicteam;
 
 LuaNode::~LuaNode(void)
 {

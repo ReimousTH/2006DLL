@@ -1,6 +1,6 @@
 #include "IScore.h"
 
-using namespace SonicTeam::Player;
+using namespace Sonicteam::Player;
 
 IScore::IScore(void):IPlugIn("score"),IVarible()
 {
