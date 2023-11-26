@@ -32,3 +32,8 @@
 *.app
 
 hk550
+*.exp
+*.pdb
+*.idb
+*.map
+*.htm
