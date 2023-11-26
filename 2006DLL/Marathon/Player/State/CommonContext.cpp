@@ -15,8 +15,63 @@ CommonContext::~CommonContext(void)
 void CommonContext::OnVarible(Sonicteam::LuaSystem** t)
 {
 
-	(*t)->LuaNodeUnknown0x01("t");
-	(*t)->Unk03(0,std::string("test"));
+	Sonicteam::LuaSystem* x = *t;
+	this->gravity = x->GetFloatValue( &std::string("gravity"));
+	this->c_brake_acc  =x->GetFloatValue( &std::string("c_brake_acc"));
+	this->c_brake_dashpanel  =x->GetFloatValue( &std::string("c_brake_dashpanel"));
+	this->c_walk_border  =x->GetFloatValue( &std::string("c_walk_border"));
+	this->c_walk_speed_max  =x->GetFloatValue( &std::string("c_walk_speed_max"));
+	this->c_run_acc  =x->GetFloatValue( &std::string("c_run_acc"));
+	this->c_run_speed_max  =x->GetFloatValue( &std::string("c_run_speed_max"));
+	this->c_speedup_acc  =x->GetFloatValue( &std::string("c_speedup_acc"));
+	this->c_speedup_speed_max  =x->GetFloatValue( &std::string("c_speedup_speed_max"));
+	this->c_jump_time_min  =x->GetFloatValue( &std::string("c_jump_time_min"));
+	this->c_jump_brake  =x->GetFloatValue( &std::string("c_jump_brake"));
+	this->c_jump_speed_acc  =x->GetFloatValue( &std::string("c_jump_speed_acc"));
+	this->c_jump_speed_brake  =x->GetFloatValue( &std::string("c_jump_speed_brake"));
+	this->c_jump_speed  =x->GetFloatValue( &std::string("c_jump_speed"));
+	this->c_jump_walk  =x->GetFloatValue( &std::string("c_jump_walk"));
+	this->c_jump_run  =x->GetFloatValue( &std::string("c_jump_run"));
+	this->c_brake_quick_acc  =x->GetFloatValue( &std::string("c_brake_quick_acc"));
+	this->c_wait_no_input_time  =x->GetFloatValue( &std::string("c_wait_no_input_time"));
+	this->c_damage_time  =x->GetFloatValue( &std::string("c_damage_time"));
+	this->c_damage_jump  =x->GetFloatValue( &std::string("c_damage_jump"));
+	this->c_damage_speed  =x->GetFloatValue( &std::string("c_damage_speed"));
+	this->c_run_against_time  =x->GetFloatValue( &std::string("c_run_against_time"));
+	this->c_grind_speed_org  =x->GetFloatValue( &std::string("c_grind_speed_org"));
+	this->c_grind_acc  =x->GetFloatValue( &std::string("c_grind_acc"));
+	this->c_grind_speed_max  =x->GetFloatValue( &std::string("c_grind_speed_max"));
+	this->c_grind_time  =x->GetFloatValue( &std::string("c_grind_time"));
+	this->c_grind_penalty_time  =x->GetFloatValue( &std::string("c_grind_penalty_time"));
+	this->c_grind_brake_acc  =x->GetFloatValue( &std::string("c_grind_brake_acc"));
+	this->c_invincible_time  =x->GetFloatValue( &std::string("c_invincible_time"));
+	this->c_invincible_time_ring1  =x->GetFloatValue( &std::string("c_invincible_time_ring1"));
+	this->c_invincible_item  =x->GetFloatValue( &std::string("c_invincible_item"));
+	this->c_speedup_time  =x->GetFloatValue( &std::string("c_speedup_time"));
+	this->c_wind_init  =x->GetFloatValue( &std::string("c_wind_init"));
+	this->c_wind_spd  =x->GetFloatValue( &std::string("c_wind_spd"));
+	this->c_wind_dist  =x->GetFloatValue( &std::string("c_wind_dist"));
+	this->c_border_gravity  =x->GetFloatValue( &std::string("c_border_gravity"));
+	this->c_landing_time  =x->GetFloatValue( &std::string("c_landing_time"));
+	this->c_ottoto_time  =x->GetFloatValue( &std::string("c_ottoto_time"));
+	this->c_dead_animation_time  =x->GetFloatValue( &std::string("c_dead_animation_time"));
+	this->c_dead_animation_time_coll  =x->GetFloatValue( &std::string("c_dead_animation_time_coll"));
+	this->c_wallwait_time  =x->GetFloatValue( &std::string("c_wallwait_time"));
+	this->c_lclick_time  =x->GetFloatValue( &std::string("c_lclick_time"));
+	this->c_flight_acc  =x->GetFloatValue( &std::string("c_flight_acc"));
+	this->c_flight_speed_acc  =x->GetFloatValue( &std::string("c_flight_speed_acc"));
+	this->c_flight_speed_min  =x->GetFloatValue( &std::string("c_flight_speed_min"));
+	this->c_flight_speed_max  =x->GetFloatValue( &std::string("c_flight_speed_max"));
+	this->c_hovering_acc  =x->GetFloatValue( &std::string("c_hovering_acc"));
+	this->c_climb_speed  =x->GetFloatValue( &std::string("c_climb_speed"));
+	this->c_stun  =x->GetFloatValue( &std::string("c_stun"));
+	this->c_brake_acc_sand  =x->GetFloatValue( &std::string("c_brake_acc_sand"));
+	this->c_run_acc_sand  =x->GetFloatValue( &std::string("c_run_acc_sand"));
+	this->c_jump_speed_sand  =x->GetFloatValue( &std::string("c_jump_speed_sand"));
+	this->c_psi_throw_speed  =x->GetFloatValue( &std::string("c_psi_throw_speed"));
+
+	
+	
 
 }
 
