@@ -837,11 +837,7 @@ namespace Multiplayer4P
 
 
 	HOOK(int, __fastcall,MainMenuTaskUIH,0x824FFCF8,int* a1,double a2){
-
-
 		//		Die = "Test";
-
-
 		int v432;
 		int v433;
 		int v434;
@@ -912,7 +908,6 @@ namespace Multiplayer4P
 
 		//		int cuse = ***(int ***)(a1 + 76);
 		//		ShowXenonMessage(L"MSG",cuse,"");
-
 
 
 
@@ -6217,7 +6212,7 @@ namespace WhiteGameRestored
 
 
 		if (c){
-			ShowXenonMessage(L"MSG",10.0f,0);
+			//ShowXenonMessage(L"MSG",10.0f,0);
 			DWORD v3 = c->GroundAirDataFlags;
 			unsigned long long v4 = c->UnknownFlags0xC8;
 			Sonicteam::Player::SonicGauge* g = c->GaugePlugin.get();

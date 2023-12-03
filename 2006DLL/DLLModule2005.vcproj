@@ -317,7 +317,7 @@
 				InlineFunctionExpansion="2"
 				EnableIntrinsicFunctions="false"
 				FavorSizeOrSpeed="2"
-				AdditionalIncludeDirectories="..\Boost1690;..\ATG;..\LUA\src;ImGuiProject\ImGui;&quot;$(InputDir)&quot;"
+				AdditionalIncludeDirectories="..\Boost1690;..\ATG;..\LUA\src;ImGuiProject\ImGui;&quot;$(InputDir)&quot;;Marathon"
 				PreprocessorDefinitions="NDEBUG;_XBOX;XBOX;XBOX_SAMPLE;_XBOX_CRT_DEPRECATE_INSECURE;_XENON;_WIN32;$(NOINHERIT)"
 				StringPooling="false"
 				ExceptionHandling="1"
@@ -595,6 +595,14 @@
 			Name="Marathon"
 			>
 			<File
+				RelativePath=".\Marathon\DocMarathonImp.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Marathon\DocMarathonImp.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Marathon\LuaNode.cpp"
 				>
 			</File>
@@ -611,19 +619,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Marathon\LuaSystem.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Marathon\LuaSystem.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Marathon\LuaSystemManager.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\Marathon\LuaSystemManager.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Marathon\MainMenuTask.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Marathon\MainMenuTask.h"
 				>
 			</File>
 			<File
@@ -868,6 +876,22 @@
 				<Filter
 					Name="AI"
 					>
+					<File
+						RelativePath=".\Marathon\Player\AI\Amigo.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Player\AI\Amigo.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Player\AI\IBase.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Player\AI\IBase.h"
+						>
+					</File>
 				</Filter>
 			</Filter>
 			<Filter
@@ -894,6 +918,14 @@
 				Name="SoX"
 				>
 				<File
+					RelativePath=".\Marathon\Sox\Component.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Sox\Component.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Marathon\Sox\IResource.cpp"
 					>
 				</File>
@@ -915,6 +947,22 @@
 				</File>
 				<File
 					RelativePath=".\Marathon\Sox\IResourceMgr.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\LuaSystem.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\LuaSystem.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Sox\MessageReceiver.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Sox\MessageReceiver.h"
 					>
 				</File>
 				<File
@@ -976,6 +1024,54 @@
 							>
 						</File>
 					</Filter>
+				</Filter>
+				<Filter
+					Name="Engine"
+					>
+					<File
+						RelativePath=".\Marathon\Sox\Engine\Doc.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Sox\Engine\Doc.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Sox\Engine\GTask.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Sox\Engine\GTask.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Sox\Engine\Task.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Sox\Engine\Task.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Sox\Engine\View.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Sox\Engine\View.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Graphics"
+					>
+					<File
+						RelativePath=".\Marathon\Sox\Graphics\FrameSynchronizer.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Sox\Graphics\FrameSynchronizer.h"
+						>
+					</File>
 				</Filter>
 			</Filter>
 		</Filter>

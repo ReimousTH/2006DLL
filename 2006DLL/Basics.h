@@ -115,7 +115,10 @@
 #include "Marathon/Player/State/CommonObject.h"
 #include "Marathon/Player/State/BasedObject.h"
 #include "Marathon/Sox/Object.h"
+#include "Marathon/Sox/Component.h"
 
+
+#include "Marathon/DocMarathonImp.h"
 
 #include "Marathon/Player/Input/ListenerNormal.h"
 

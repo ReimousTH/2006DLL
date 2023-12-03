@@ -107,8 +107,11 @@ new Sonicteam::Combo::AttackManager();
 new Sonicteam::SoX::Object();
 
 new Sonicteam::Player::Input::ListenerNormal(0,0);
+
+new Sonicteam::SoX::Component(0);
 	
 
+new Sonicteam::SoX::ObjectRework();
 //Sonicteam::Player::SonicGauge* gg = new Sonicteam::Player::SonicGauge();
 
 
@@ -120,8 +123,19 @@ Sonicteam::Player::State::Machine2* t = new Sonicteam::Player::State::Machine2()
 
 //SonicTeam::Player::State::CommonObject* v = new SonicTeam::Player::State::CommonObject((SonicTeam::Player::State::IMachine*)t);
 
+
+
+
+
 Sonicteam::Player::State::AmyContext* tz = new Sonicteam::Player::State::AmyContext();
 
+if (*(int*)tz == 0x82000000){
+tz->AmyUnkFlags = 1;
+}
+
+
+
+Sonicteam::DocMarathonImp* impl = new Sonicteam::DocMarathonImp(0);
 
 
 t->GetMashineContext();
