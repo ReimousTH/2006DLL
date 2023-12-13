@@ -20,16 +20,13 @@ namespace Sonicteam{
 		struct IObjectNode{
 			IObjectNode* NextIObjStp;
 			IObjectNode* PreviousIObjStp;
-			virtual ~IObjectNode(){
-			}
+		
 		};
 		struct IObject{
 	
 			Object* CurrentObject;
 			IObjectNode Node;
-			virtual ~IObject(){
-
-			}
+			
 		};
 
 
@@ -44,6 +41,15 @@ namespace Sonicteam{
 			virtual ~Object(void);
 			//std::list<Object*> ObjList;
 		    IObject ObjList;
+			
+			Object* getNextObject() {
+        if (ObjList.Node.NextIObjStp != 0) {
+            // Предполагая, что obj.Next указывает на объект типа Object
+            return reinterpret_cast<Object*>(ObjList.Node.NextIObjStp);
+        }
+        return 0;
+    }
+
 
 	
 		};

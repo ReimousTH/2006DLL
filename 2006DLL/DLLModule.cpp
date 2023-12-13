@@ -55,6 +55,8 @@ DFastActions _PreLoadPatches[] = {
 	{"OmegaHoverGauge",OmegaF::GlobalInstall},
 	{"CompleteGauge",WhiteGameRestored::GlobalInstall},
 	{"AmyV2",AmyRework::GlobalInstall},
+	{"TagStory",TagStory::GlobalInstall},
+	{"TailsGauge",TailsGauge::GlobalInstall}
 };
 
 
@@ -104,9 +106,13 @@ new Sonicteam::Player::State::CommonContext();
 
 new Sonicteam::Combo::AttackManager();
 
-new Sonicteam::SoX::Object();
+
 
 new Sonicteam::Player::Input::ListenerNormal(0,0);
+
+
+(new Sonicteam::SoX::Object())->getNextObject();
+
 
 new Sonicteam::SoX::Component(0);
 	
@@ -136,6 +142,11 @@ tz->AmyUnkFlags = 1;
 
 
 Sonicteam::DocMarathonImp* impl = new Sonicteam::DocMarathonImp(0);
+
+
+boost::shared_ptr<Sonicteam::Player::GaugeStandard> tuu (new Sonicteam::Player::GaugeStandard());
+
+tuu.reset();
 
 
 t->GetMashineContext();

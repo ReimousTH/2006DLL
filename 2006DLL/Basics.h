@@ -104,11 +104,13 @@
 
 #include "Marathon/Player/State/CommonContext.h"
 #include "Marathon/Player/State/SonicContext.h"
+#include "Marathon/Player/State/TailsContext.h"
 #include "Marathon/Player/State/AmyContext.h"
 #include "Marathon/Combo/AttackManager.h"
 #include "Marathon/Combo/ScoreManager.h"
 
 #include "Marathon/Player/Gauge/SonicGauge.h"
+#include "Marathon/Player/Gauge/GaugeStandard.h"
 #include "Marathon/Player/State/Machine2.h"
 
 
@@ -121,6 +123,8 @@
 #include "Marathon/DocMarathonImp.h"
 
 #include "Marathon/Player/Input/ListenerNormal.h"
+
+#include "Marathon/MainMenuTask.h"
 
 
 

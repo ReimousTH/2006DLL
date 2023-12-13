@@ -7123,5 +7123,268 @@ void ZLua::CallFunction(){
 
 
 
+bool once = false;
 #pragma warning( pop ) 
+namespace TagStory{
+
+
+
+
+	int __declspec( naked ) sub_824ECD30H(Sonicteam::HUDOption *a1, int a2, float *a3){
+
+		__asm{
+
+			mflr      r12
+				std       r17, -0x80(r1)
+				std       r18, -0x78(r1)	
+				std       r19, -0x70(r1)
+				std       r20, -0x68(r1)
+				std       r21, -0x60(r1)
+				std       r22, -0x58(r1)
+				std       r23, -0x50(r1)
+				std       r24, -0x48(r1)
+				std       r25, -0x40(r1)
+				std       r26, -0x38(r1)
+				std       r27, -0x30(r1)
+				std       r28, -0x28(r1)
+				std       r29, -0x20(r1)
+				std       r30, -0x18(r1)
+				std       r31, -0x10(r1)
+				stw       r12, -8(r1)
+				stfd      fp30, -0x90(r1)
+				stfd      fp31, -0x88(r1)
+				lis r11,0x824E
+				ori r11,r11,0xCD40
+				mtctr r11
+				bctr
+		}
+	}
+
+
+	HOOK(int,__fastcall,sub_824ECD30,0x824ECD30,Sonicteam::HUDOption *a1, int a2, float *a3){
+
+	
+		sub_824ECD30H(a1,a2,a3);
+		a1->CSDSpriteOption->UnkReference++;
+
+	    Sonicteam::SoX::RefCountObject* some =LabelSpawn((void*)malloc06(0x70),a1->GetCurrentDoc(),a1->TextCard_msg_audio,a1->CSDSpriteOption,"option","text3",21.0,0.0,0.0,0,0);
+		some->UnkReference++;
+		LabelExecute(&a1->HMMOuint0x1E4,some);
+
+			
+
+		return (int)a1;
+	
+	}
+
+
+	int MainMenuProcess(Sonicteam::MainMenuTask* a1){
+
+		
+
+		if (a1->MMCurrentCase == 0x33){
+			a1->MMCurrentCase = 0x200;
+		}
+
+		if (a1->MMCurrentCase == 0x16){
+			a1->MMCurrentCase = 0x100;
+		}
+
+		switch (a1->MMCurrentCase)
+		{
+		case 0x200:
+
+
+			if (!BranchTo(0X824FE3B8,int,a1,a1->MMP1Input,8,&a1->MMTuint0xE0)){
+				a1->MMP1Input = 0;
+				return 0;
+			}
+
+			
+			a1->MMHudOption->OnMessageRecieved(&Sonicteam::SoX::Message(0x1B055,5,0,0,a1->MMTuint0xE0));
+			a1->MMP1Input = 0;
+
+
+
+			break;
+			//new multiplayer
+		case 0x100:
+			if ( !a1->MMTuint0x270 )
+				return 0;
+			{
+				a1->MMHudMainMenu->OnMessageRecieved(&Sonicteam::SoX::Message(0x1B053,0x64,a1->MMTuint0xA8 | 0x20000)); //mst (
+			}
+			a1->MMCurrentCase = 0x101;
+			a1->MMP1Input = 0;
+			BranchTo(0x824FDBC0,int,a1->MMTuint0x9C,(int*)&a1->MMTextCard_msg_tag_c);
+			a1->MMTuint0x270 = 0;
+			return 0;
+		case  0x101:
+
+			//X
+			if ((a1->MMP1Input & 0x10)  != 0){
+
+					int s[] = {a1->MMHudMainMenu->HMMCSDSpriteMainMenu};
+					BranchTo(0x824CE9D0,int,(int*)s,"main_menu","tagstory_select"); //PLAY
+					a1->MMHudMainMenu->OnMessageRecieved(&Sonicteam::SoX::Message(0x1B053,0x66,a1->MMTuint0xAC | 0x20000)); //show select3 arrow
+					a1->MMHudMainMenu->OnMessageRecieved(&Sonicteam::SoX::Message(0x1B053,0x65,a1->MMTuint0xA8 | 0x20000)); //hide select2 arrow
+					BranchTo(0x824FD460,int,a1,"main_deside");
+					a1->MMCurrentCase = a1->MMTuint0xA8 == 0 ? 0x102 : 0x103;
+					return 0;
+			
+			}
+
+
+			if (!BranchTo(0X824FE3B8,int,a1,a1->MMP1Input,2,&a1->MMTuint0xA8)){
+				a1->MMP1Input = 0;
+				return 0;
+			}
+			a1->MMP1Input = 0;
+			{
+
+			BranchTo(0x824FDBC0,int,a1->MMTuint0x9C,a1->MMTextCard_msg_tag_c);
+			a1->MMHudMainMenu->OnMessageRecieved(&Sonicteam::SoX::Message(0x1B053,0xB,a1->MMTuint0xA8 |  0x20000)); //mst 
+			
+			BranchTo(0x824FDBC0,int,a1->MMTuint0x9C,&a1->MMTextCard_msg_tag_c + a1->MMTuint0xA8);
+			}
+			
+			return 0;
+		case 0x102:
+
+			//Back
+			if ((a1->MMP1Input & 0x20) != 0){
+
+
+				int s[] = {a1->MMHudMainMenu->HMMCSDSpriteMainMenu};
+				BranchTo(0x824CE670,int,(int*)s,"main_menu","tagstory_select"); //PLAY
+
+				a1->MMHudMainMenu->OnMessageRecieved(&Sonicteam::SoX::Message(0x1B053,0x4E,a1->MMTuint0xA8 | 0x20000)); //mst (
+				a1->MMHudMainMenu->OnMessageRecieved(&Sonicteam::SoX::Message(0x1B053,0xB,a1->MMTuint0xA8 |  0x20000)); //mst (
+				a1->MMHudMainMenu->OnMessageRecieved(&Sonicteam::SoX::Message(0x1B053,0x67,a1->MMTuint0xAC | 0x20000)); //Select3 Arrow Show(Position)
+
+		
+				BranchTo(0x824FD460,int,a1,"main_deside");
+				a1->MMCurrentCase = 0x101;
+				return 0;
+
+			}
+			//select
+			if ((a1->MMP1Input & 0x10) != 0){
+
+
+				int s[] = {a1->MMHudMainMenu->HMMCSDSpriteMainMenu};
+				BranchTo(0x824CE670,int,(int*)s,"main_menu","tagstory_select"); //PLAY
+
+				a1->MMHudMainMenu->OnMessageRecieved(&Sonicteam::SoX::Message(0x1B053,0x67,a1->MMTuint0xAC | 0x20000)); //Select3 Arrow Show(Position)
+
+				a1->MMCurrentCase = 0x103;
+				BranchTo(0x824FD460,int,a1,"main_deside");
+				return 0;
+
+			}
+
+
+			if (!BranchTo(0X824FE3B8,int,a1,a1->MMP1Input,2,&a1->MMTuint0xAC)){
+				a1->MMP1Input = 0;
+				return 0;
+			}
+			a1->MMP1Input = 0;
+			a1->MMHudMainMenu->OnMessageRecieved(&Sonicteam::SoX::Message(0x1B053,0x66,a1->MMTuint0xAC | 0x20000)); //Select3 Arrow Show(Position)
+
+			return 0;
+		}
+
+
+
+		return BranchTo(0x824FFCF8,int,a1);
+
+		
+	}
+
+	void GlobalInstall()
+	{
+		INSTALL_HOOK(sub_824ECD30);
+		WRITE_DWORD(0x82039C10,MainMenuProcess);
+		
+		//WRITE_DWORD(0x82500B78,0x60000000);
+		//WRITE_DWORD(0x82500BA8,0x60000000);
+		//WRITE_DWORD(0x82500C00,0x60000000);
+
+
+	}
+}
+
+
+
+
+namespace TailsGauge{
+
+	class TailsContextEX:public Sonicteam::Player::State::TailsContext{
+	public:
+		boost::weak_ptr<Sonicteam::Player::GaugeStandard> GaugePlugin;
+		TailsContextEX(){
+
+		}
+		~TailsContextEX(){
+
+		}
+		
+
+	};
+
+
+	void TailsOnLink(Sonicteam::Player::IDynamicLink* _thi,boost::shared_ptr<Sonicteam::Player::IPlugIn>& plugin){
+
+
+		BranchTo(0x8220F330,int,_thi,&plugin);
+		 Sonicteam::Player::State::TailsContext* _this = dynamic_cast<Sonicteam::Player::State::TailsContext*>(_thi);
+
+		 
+		 TailsContextEX* ex = (TailsContextEX*)_this;
+		if (plugin->PluginName == "gauge"){
+			
+		//	plugin.lock().reset(new Sonicteam::Player::GaugeStandard());
+			ex->GaugePlugin = boost::dynamic_pointer_cast<Sonicteam::Player::GaugeStandard>(plugin);
+		}
+
+
+	}
+	void TailsContextOnUpdate(TailsContextEX* _this,float delta){
+
+		BranchTo(0x8221A7D8,int,_this,delta);
+
+		if ( Sonicteam::Player::GaugeStandard* gauge =  _this->GaugePlugin.lock().get() ){
+			
+		//	ShowXenonMessage(L"MSG","Ge");
+			gauge->GaugeValue = _this->TCuint0x230 * gauge->c_s_max;
+		}
+
+
+	}
+
+	DWORD TailsContextDestructor(TailsContextEX* _this,unsigned int a2){
+		 
+	
+	
+		// delete _this->GaugePlugin.get(); // and bo
+		 BranchTo(0x82206FD8,int,_this,a2);
+
+	
+		 return (DWORD)_this;
+	}
+
+
+	void GlobalInstall()
+	{
+
+		WRITE_DWORD(0x8200B7F8,TailsOnLink);
+		WRITE_DWORD(0x821B5FDC,POWERPC_LIS(3,0x258));
+		WRITE_DWORD(0x8200B868,TailsContextOnUpdate);
+
+
+		//Need to think about how to do it (
+		//WRITE_DWORD(0x8200B860,TailsContextDestructor);
+
+	}
+}
 

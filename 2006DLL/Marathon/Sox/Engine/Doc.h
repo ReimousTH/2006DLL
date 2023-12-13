@@ -1,9 +1,10 @@
 #pragma once
 
 #include "../MessageReceiver.h"
-#include "Task.h"
 #include "GTask.h"
 #include <xtl.h>
+#include <Sox/ApplicationXenon.h>
+#include <Sox/Engine/Task.h>
 
 
 
@@ -11,6 +12,8 @@ namespace Sonicteam{
 	namespace SoX{
 		namespace Engine{
 
+			
+			typedef class Task;
 			
 			namespace{
 			//Place 3 of them as anymoyus name space and use in class idk how
@@ -32,10 +35,10 @@ namespace Sonicteam{
 				virtual void OnTaskUpdate();
 			};
 };
-			
+		
 
 
-			class Doc
+		class Doc
 		{
 
 		public:
@@ -44,10 +47,10 @@ namespace Sonicteam{
 			virtual void EngineDocDomeSome(); //CriticalNoIdea?s
 
 			unsigned int Duint0x4;
-			unsigned int Duint0x8;
+			unsigned int DocCurrentMode; //CurrentMode (GameMode,MainMode)
 			RootTask* RTask;
 			RootGTask* RGTask;
-			unsigned int Duint0x14; //ApplicationMarathon
+			Sonicteam::SoX::ApplicationXenon* DocCurrentApplication; //ApplicationMarathon
 			unsigned int Duint0x18;
 			DocModeExecutor* DMExecutor;
 			unsigned int DRenderScheduler; //Sonicteam::SoX::Engine::RenderSchedule

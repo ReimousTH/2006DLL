@@ -16,7 +16,7 @@ namespace Sonicteam{
 
 				///IDynamicLink
 				// normal call
-				virtual void OnLink() override  {};
+				virtual void OnLink(Sonicteam::Player::IPlugIn*& plugin) override  {};
 				///
 
 				///IVarible

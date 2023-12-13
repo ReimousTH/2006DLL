@@ -51,7 +51,7 @@ namespace Sonicteam{
 
 
 				///IDynamicLink(0x24)
-				virtual void OnLink() override;
+				virtual void OnLink(Sonicteam::Player::IPlugIn*& plugin) override;
 
 				//fields
 				int PComboAttackManager;

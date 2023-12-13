@@ -8,6 +8,7 @@ IDynamicLink::IDynamicLink(void)
 IDynamicLink::~IDynamicLink(void)
 {
 }
-void IDynamicLink::OnLink(){
+void Sonicteam::Player::IDynamicLink::OnLink(Sonicteam::Player::IPlugIn*& plugin)
+{
 
 }

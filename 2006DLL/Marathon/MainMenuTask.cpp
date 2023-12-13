@@ -14,7 +14,8 @@ char* MainMenuTask::GetObjectType()
 	throw std::logic_error("The method or operation is not implemented.");
 }
 
-void MainMenuTask::OnTaskUpdate()
+void MainMenuTask::OnTaskUpdate(float)
 {
 	throw std::logic_error("The method or operation is not implemented.");
 }
+

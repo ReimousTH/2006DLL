@@ -55,6 +55,12 @@ FUNCTION_PTR(int,__fastcall,State_Base_FallSwitcher,0x8220AAF8,int *a1); // Stat
 FUNCTION_PTR(int,__fastcall,StateCommonGroundFlagsListenerForStates,0x8220AAF8,int* a1,double delta);
 
 
+FUNCTION_PTR(Sonicteam::SoX::RefCountObject*,__fastcall,LabelSpawn,0x824D04C8,void* mem,Sonicteam::SoX::Engine::Doc* docmarathon,boost::shared_ptr<unsigned int>& textcard,Sonicteam::SoX::RefCountObject*& csdobject,const char* csdstr1,const char* cststr2,float t1,float t2,float t3,unsigned int i1,unsigned int i2);
+
+
+FUNCTION_PTR(int,__fastcall,LabelExecute,0x824CE370,unsigned int*,Sonicteam::SoX::RefCountObject*&);
+
+
 ///TEMPLATED FUNCTIONS 
 
 

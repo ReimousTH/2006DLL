@@ -276,7 +276,7 @@ DWORD CommonContext::IEWRFExportFlag(void)
 	return this->ExportWeaponRequestFlag;
 }
 
-void CommonContext::OnLink()
+void CommonContext::OnLink(Sonicteam::Player::IPlugIn*& plugin)
 {
 
 }

@@ -9,7 +9,7 @@
 
 namespace Sonicteam{
 	namespace Player{
-		class IGauge:IPlugIn,IVarible,IStepable
+		class IGauge:public IPlugIn,IVarible,IStepable
 		{
 		public:
 			IGauge(char*);

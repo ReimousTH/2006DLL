@@ -108,4 +108,13 @@ namespace AmyRework{
 
 	void GlobalInstall();
 };
+
+namespace TagStory{
+	void GlobalInstall();
+}
+
+namespace TailsGauge{
+
+	void GlobalInstall();
+}
 #endif
