@@ -23,6 +23,7 @@ namespace Sonicteam{
 
 
 			float GetFloatValue(std::string*);
+			float GetFloatValue(std::string&);
 		
 			
 		};

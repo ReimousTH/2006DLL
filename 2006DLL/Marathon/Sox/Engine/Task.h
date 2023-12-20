@@ -12,7 +12,7 @@ namespace Sonicteam{
 		{
 		public:
 			Task(void); //no idea THRERE TWO OF THEM
-			virtual ~Task(void);
+			~Task(void);
 
 			virtual int OnMessageRecieved(Sonicteam::SoX::Message*);
 

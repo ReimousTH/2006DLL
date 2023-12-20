@@ -11,7 +11,7 @@ namespace Sonicteam{
 		public:
 			GTask(Sonicteam::SoX::Component*); //no idea THRERE TWO OF THEM
 			virtual char* GetObjectType();
-			virtual ~GTask(void);
+			 ~GTask(void);
 
 			//Fields
 			unsigned int Tuint0x24; // Self????????

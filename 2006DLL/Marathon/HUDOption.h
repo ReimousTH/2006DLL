@@ -22,16 +22,18 @@ namespace Sonicteam{
 
 
 	//not full
-	class HUDOption:Sonicteam::SoX::RefCountObject,Sonicteam::SoX::Engine::Task
+	class HUDOption:public Sonicteam::SoX::RefCountObject,Sonicteam::SoX::Engine::Task
 		{
 		public:
 
 			HUDOption(void);
-			virtual ~HUDOption();
+			~HUDOption();
+			//virtual ObjectDestroy(unsigned int flag);
 
 			virtual void OnTaskUpdate(float);
 			virtual int OnMessageRecieved(Sonicteam::SoX::Message*); //824E9850
 
+	
 
 			Sonicteam::SoX::RefCountObject* CSDSpriteOption; //sprite_option //0x54
 			Sonicteam::SoX::RefCountObject* TextBook_msg_options; //0x58
@@ -135,6 +137,8 @@ namespace Sonicteam{
 
 	public:
 		Sonicteam::SoX::Engine::Doc* GetCurrentDoc();
+
+//		virtual void DestroyObject(unsigned int flag) override;
 
 
 

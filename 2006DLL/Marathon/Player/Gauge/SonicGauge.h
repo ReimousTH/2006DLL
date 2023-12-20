@@ -19,7 +19,7 @@ namespace Sonicteam{
 				//
 
 				SonicGauge(void);
-				virtual ~SonicGauge(void);
+				~SonicGauge(void);
 
 
 
@@ -36,6 +36,8 @@ namespace Sonicteam{
 				virtual float GetGaugePoint() override; //Current_Value / c_gauge_max
 				virtual void AddGaugeValue(float) override; 
 				virtual void AddMaturityValue() override; //Not Sure About That One, but i keep it, always fixed (
+
+				virtual void DestroyObject(unsigned int flag) override;
 
 
 

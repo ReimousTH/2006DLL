@@ -10,7 +10,7 @@ namespace Sonicteam{
 
 		namespace State{
 
-			class ICommonContext:IContext,ICommonContextIF
+			class ICommonContext:public IContext,ICommonContextIF
 			{
 			public:
 
@@ -100,6 +100,8 @@ namespace Sonicteam{
 
 				ICommonContext(void);
 				~ICommonContext(void);
+
+				void DestroyObject(unsigned int flag) override;
 			};
 
 		}

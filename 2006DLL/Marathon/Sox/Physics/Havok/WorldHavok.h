@@ -2,7 +2,6 @@
 
 #include "../World.h"
 
-#include <stdexcept>
 
 namespace Sonicteam{
 	namespace SoX{
@@ -15,7 +14,7 @@ namespace Sonicteam{
 			public:
 				//size0x60
 				WorldHavok(void);
-				virtual ~WorldHavok(void);
+				~WorldHavok(void);
 
 				virtual void PhysicsWorldUnk01(XMFLOAT4*);
 

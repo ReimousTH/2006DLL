@@ -8,10 +8,7 @@ Sonicteam::HudMainMenu::HudMainMenu(void)
 
 }
 
-Sonicteam::HudMainMenu::~HudMainMenu()
-{
 
-}
 
 void Sonicteam::HudMainMenu::OnTaskUpdate(float)
 {
@@ -21,4 +18,11 @@ void Sonicteam::HudMainMenu::OnTaskUpdate(float)
 int Sonicteam::HudMainMenu::OnMessageRecieved(Sonicteam::SoX::Message*)
 {
 	throw std::logic_error("The method or operation is not implemented.");
+}
+
+
+
+Sonicteam::HudMainMenu::~HudMainMenu()
+{
+
 }

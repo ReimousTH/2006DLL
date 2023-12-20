@@ -41,7 +41,8 @@ namespace Sonicteam{
 		public:
 
 			HudMainMenu(void);
-			virtual ~HudMainMenu();
+			 ~HudMainMenu();
+			//virtual void DestroyObject(unsigned int flag);
 
 			virtual void OnTaskUpdate(float);
 			virtual int OnMessageRecieved(Sonicteam::SoX::Message*); //824E9850

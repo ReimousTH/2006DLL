@@ -3,8 +3,10 @@
 
 using namespace Sonicteam::SoX;
 
+//have not any of this
 Object::~Object(void)
 {
+	/*
 	Sonicteam::SoX::IObjectNode *v5;
 	Sonicteam::SoX::IObjectNode *v6;
 
@@ -15,6 +17,7 @@ Object::~Object(void)
 	v6 = this->ObjList.Node.PreviousIObjStp;
 	if ( v6 )
 		v6->NextIObjStp = this->ObjList.Node.NextIObjStp;
+	*/
 }
 
 char* Object::GetObjectType()
@@ -28,6 +31,13 @@ Object::Object(void)
 
 
 	
+}
+
+void Sonicteam::SoX::Object::DestroyObject(unsigned int flag)
+{
+
+	Sonicteam::SoX::Object::~Object();
+	Sonicteam::SoX::Memory::IDestructible::DestroyObject(this,flag);
 }
 
 Sonicteam::SoX::ObjectRework::ObjectRework(void)

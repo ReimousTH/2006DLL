@@ -1,15 +1,19 @@
 #pragma once
 #include <string>
+#include <Sox/Memory/IDestructible.h>
 
 namespace Sonicteam{
 
 	namespace Player{
 
-		class IPlugIn
+		class IPlugIn:public Sonicteam::SoX::Memory::IDestructible
 		{
 		public:
 			IPlugIn(char*);
-			virtual ~IPlugIn(void);
+			~IPlugIn(void);
+
+			void DestroyObject(unsigned int flag) override;
+
 			std::string PluginName;
 		};
 

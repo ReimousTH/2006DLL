@@ -56,7 +56,8 @@ DFastActions _PreLoadPatches[] = {
 	{"CompleteGauge",WhiteGameRestored::GlobalInstall},
 	{"AmyV2",AmyRework::GlobalInstall},
 	{"TagStory",TagStory::GlobalInstall},
-	{"TailsGauge",TailsGauge::GlobalInstall}
+	{"TailsGauge",TailsGauge::GlobalInstall},
+	{"AmyLOS",AmyLOS::GlobalInstall},
 };
 
 
@@ -143,7 +144,14 @@ tz->AmyUnkFlags = 1;
 
 Sonicteam::DocMarathonImp* impl = new Sonicteam::DocMarathonImp(0);
 
+Sonicteam::SoX::RefCountObject* _reference = new Sonicteam::SoX::RefCountObject();
 
+//_reference->ObjectDestroy(1);
+Sonicteam::HUDOption* _opt = new Sonicteam::HUDOption();
+//_opt->DestroyObject(1);
+
+
+new Sonicteam::SoX::Graphics::Frame();
 boost::shared_ptr<Sonicteam::Player::GaugeStandard> tuu (new Sonicteam::Player::GaugeStandard());
 
 tuu.reset();

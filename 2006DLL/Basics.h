@@ -101,6 +101,7 @@
 
 
 
+#include "Marathon/Sox/Graphics/Frame.h"
 
 #include "Marathon/Player/State/CommonContext.h"
 #include "Marathon/Player/State/SonicContext.h"
@@ -240,6 +241,17 @@ return ((returnType (callingConvention *)(__VA_ARGS__))location)(__VA_ARGS__))\
 	a1 = x;\
 	return a1;\
 }\
+
+
+#define MakeStateI(NM,TP) \
+	boost::shared_ptr<TP>& NM(boost::shared_ptr<TP>& a1,Sonicteam::Player::State::IMashine* a2){ \
+	\
+	boost::shared_ptr<TP> x(new TP(a2));\
+	a1 = x;\
+	return a1;\
+}\
+
+
 
 #define MakeStateS(TP) \
 	boost::shared_ptr<TP>& TP##C(boost::shared_ptr<TP>& a1,int a2){ \

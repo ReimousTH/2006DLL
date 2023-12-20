@@ -314,7 +314,7 @@
 			<Tool
 				Name="VCCLX360CompilerTool"
 				AdditionalOptions="-mcpu=powerpc64"
-				Optimization="0"
+				Optimization="3"
 				InlineFunctionExpansion="2"
 				EnableIntrinsicFunctions="false"
 				FavorSizeOrSpeed="2"
@@ -988,6 +988,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Marathon\Sox\IDestroyable.hpp"
+					>
+				</File>
+				<File
 					RelativePath=".\Marathon\Sox\IResource.cpp"
 					>
 				</File>
@@ -1131,6 +1135,14 @@
 					Name="Graphics"
 					>
 					<File
+						RelativePath=".\Marathon\Sox\Graphics\Frame.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Sox\Graphics\Frame.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Marathon\Sox\Graphics\FrameSynchronizer.cpp"
 						>
 					</File>
@@ -1139,6 +1151,38 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="Misc"
+					>
+					<File
+						RelativePath=".\Marathon\Sox\Misc\List.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Sox\Misc\List.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Memory"
+					>
+					<File
+						RelativePath=".\Marathon\Sox\Memory\IDestructible.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Sox\Memory\IDestructible.h"
+						>
+					</File>
+				</Filter>
+			</Filter>
+			<Filter
+				Name="Other"
+				>
+				<File
+					RelativePath=".\Marathon\Other\06BoostDestructor.hpp"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter

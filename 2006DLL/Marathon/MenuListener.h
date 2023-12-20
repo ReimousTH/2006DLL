@@ -18,7 +18,7 @@ namespace Sonicteam{
 			MenuListener(unsigned int,Sonicteam::DocMarathonImp*);
 
 			virtual char* GetObjectType();
-			virtual ~MenuListener(void);
+			~MenuListener(void);
 
 			virtual void MLOnUpdate(unsigned int,float); //UnkInputStructure(GetPlayerInputCopy),delta i guess
 			virtual void MLOnAction(unsigned int,unsigned int,float); // 2nk and delta

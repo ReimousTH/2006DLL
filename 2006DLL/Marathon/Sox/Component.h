@@ -20,7 +20,7 @@ namespace Sonicteam{
 		{
 		public:
 			Component(Component*);
-			virtual ~Component(void);
+			~Component(void);
 
 			//std::list<Component*> CompList;
 
@@ -29,6 +29,8 @@ namespace Sonicteam{
 
 			static int FreeComponents(Sonicteam::SoX::IComponentNode *, Sonicteam::SoX::IComponentNode *, int);
 			static void FreeComponentsOffsets(Sonicteam::SoX::IComponentNode *);
+
+			virtual void DestroyObject(unsigned int flag) override;
 
 		
 			

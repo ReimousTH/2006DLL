@@ -93,7 +93,7 @@ namespace Sonicteam{
 			{
 			public:
 				IListener(void);
-				virtual ~IListener(void);
+				~IListener(void);
 
 				//virtual char* GetObjectType() override;
 					

@@ -94,3 +94,9 @@ void Sonicteam::SoX::Component::FreeComponentsOffsets(Sonicteam::SoX::IComponent
 		v3->NextIObjStp = _this->NextIObjStp;
 
 }
+
+void Sonicteam::SoX::Component::DestroyObject(unsigned int flag)
+{
+	Sonicteam::SoX::Component::~Component();
+	Sonicteam::SoX::Object::DestroyObject(flag);
+}

@@ -11,3 +11,10 @@ IPlugIn::~IPlugIn(void)
 {
 	this->PluginName.clear();
 }
+
+void Sonicteam::Player::IPlugIn::DestroyObject(unsigned int flag)
+{
+	IPlugIn::~IPlugIn();	
+	IDestructible::DestroyObject(flag);
+}
+	

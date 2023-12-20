@@ -82,3 +82,10 @@ void SonicGauge::AddMaturityValue()
 {
 	this->AddGaugeValue(1.0);
 }
+
+void Sonicteam::Player::SonicGauge::DestroyObject(unsigned int flag)
+{
+	this->~SonicGauge();
+	Sonicteam::SoX::Memory::IDestructible::DestroyObject(flag);
+
+}

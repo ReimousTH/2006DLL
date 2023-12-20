@@ -33,6 +33,9 @@ namespace Sonicteam{
 				float c_stealth_limit;
 				float c_stealth_countdown;
 				float c_jump_double_speed;
+				unsigned int unk0x254;
+				unsigned int unk0x258;
+				unsigned int unk0x25C;
 
 
 

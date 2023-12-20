@@ -5,6 +5,7 @@
 #include <xtl.h>
 #include <Sox/ApplicationXenon.h>
 #include <Sox/Engine/Task.h>
+#include <Sox/RefCountObject.h>
 
 
 
@@ -38,22 +39,25 @@ namespace Sonicteam{
 		
 
 
-		class Doc
+
+	
+
+			class Doc:Sonicteam::SoX::RefCountObject
 		{
 
 		public:
-			virtual ~Doc(void);
+			~Doc(void);
 			virtual void EngineDocOnUpdate(float); //delta
 			virtual void EngineDocDomeSome(); //CriticalNoIdea?s
 
-			unsigned int Duint0x4;
+		//s	unsigned int Duint0x4; //sems always 0x4 (refobjectcound)
 			unsigned int DocCurrentMode; //CurrentMode (GameMode,MainMode)
 			RootTask* RTask;
 			RootGTask* RGTask;
-			Sonicteam::SoX::ApplicationXenon* DocCurrentApplication; //ApplicationMarathon
+			Sonicteam::SoX::ApplicationXenon* DocCurrentApplication; //ApplicationMarathon (reference &)
 			unsigned int Duint0x18;
 			DocModeExecutor* DMExecutor;
-			unsigned int DRenderScheduler; //Sonicteam::SoX::Engine::RenderSchedule
+			unsigned int DRenderScheduler; //Sonicteam::SoX::Engine::RenderSchedule (RefCountObj Ok)
 			CRITICAL_SECTION DocCriticalSectionFirst; //synchronization object
 			CRITICAL_SECTION DocCriticalSectionSecond; //synchronization object
 			

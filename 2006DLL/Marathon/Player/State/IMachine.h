@@ -19,7 +19,7 @@ namespace Sonicteam{
 			{
 			public:
 				IMachine(void);
-				virtual ~IMachine(void);
+				~IMachine(void);
 
 				virtual void OnMashineTick(float) = 0; //delta (origin = 8221EBE8)
 				virtual boost::shared_ptr<IContext> GetMashineContext() = 0;
@@ -29,7 +29,10 @@ namespace Sonicteam{
 				virtual void ResetStateFlagsB() = 0; //Not Sure about names
 				virtual unsigned int CompleteChangeMashineState(int) = 0; // With All Flags
 				virtual unsigned int GetCurrentMashineStateID() = 0;
-			
+
+				virtual void DestroyObject(unsigned int flag);
+
+
 
 			};
 

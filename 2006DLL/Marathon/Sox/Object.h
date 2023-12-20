@@ -7,6 +7,8 @@
 #include <boost/ptr_container/ptr_set.hpp>
 #include <deque>
 
+#include <SoX/Memory/IDestructible.h>
+
 
 namespace Sonicteam{
 	namespace SoX{
@@ -30,6 +32,7 @@ namespace Sonicteam{
 		};
 
 
+		
 
 		//this is the best that i can think
 		class Object
@@ -38,7 +41,8 @@ namespace Sonicteam{
 			//size0x60
 			Object(void);
 			virtual char* GetObjectType(); 
-			virtual ~Object(void);
+			virtual void DestroyObject(unsigned int flag);
+			 ~Object(void);
 			//std::list<Object*> ObjList;
 		    IObject ObjList;
 			

@@ -20,7 +20,7 @@ namespace Sonicteam{
 				//
 
 				GaugeStandard(void);
-				virtual ~GaugeStandard(void);
+				~GaugeStandard(void);
 
 
 

@@ -31,7 +31,7 @@ namespace Sonicteam{
 			{
 			public:
 				CommonContext(void);
-				virtual ~CommonContext(void);
+				~CommonContext(void);
 				virtual void OnVarible(LuaSystem**) override;
 				virtual void ICCIF_03() override;
 				virtual void ICCIF_04() override;
@@ -197,6 +197,8 @@ namespace Sonicteam{
 				//NON VIRTUAL METHODS
 
 				void SetAnimation(int);
+
+				virtual void DestroyObject(unsigned int flag) override;
 
 
 

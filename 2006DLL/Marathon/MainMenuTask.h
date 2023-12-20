@@ -35,7 +35,7 @@ namespace Sonicteam{
 			MainMenuTask(void);
 
 			virtual char* GetObjectType();
-			virtual ~MainMenuTask(void);
+			~MainMenuTask(void);
 
 			virtual void OnTaskUpdate(float);
 			virtual int OnMessageRecieved(Sonicteam::SoX::Message*); //Input Messages

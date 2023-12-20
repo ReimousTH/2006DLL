@@ -1,5 +1,4 @@
 #pragma once
-
 #include "..\RefCountObject.h"
 #include <xtl.h>
 
@@ -11,7 +10,7 @@ namespace Sonicteam{
 			public:
 				//size0x60
 				World(void);
-				virtual ~World(void);
+				~World(void);
 
 				virtual void PhysicsWorldUnk01(XMFLOAT4*) = 0; //WorldProcessAndStoreVector
 				virtual XMFLOAT4 PhysicsWorldUnk02() = 0; //WorldProcessAndReturnVector
