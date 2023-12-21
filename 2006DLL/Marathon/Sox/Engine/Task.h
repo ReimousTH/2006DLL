@@ -24,10 +24,10 @@ namespace Sonicteam{
 			//Fields
 			unsigned int Tuint0x24;
 			unsigned int Tuint0x28;
-			unsigned int Tuint0x2C;
-			unsigned int Tuint0x30;
-			unsigned int Tuint0x34;// CurrentMode (MainMode, and There Others)
-			unsigned int Tuint0x38;// 
+			unsigned int Tuint0x2C; //TASk
+			unsigned int Tuint0x30; //TASK
+			unsigned int Tuint0x34;// CurrentMode (MainMode, and There Others) IGuess Task is IT
+			unsigned int Tuint0x38;// idek
 			Sonicteam::SoX::Engine::Doc* TaskEngineDoc; // Sonicteam::SoX::Engine::Doc ,0x3C
 			Sonicteam::SoX::IObjectNode TaskList;
 			unsigned int Tuint0x48;
