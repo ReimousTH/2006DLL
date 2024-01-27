@@ -287,6 +287,8 @@ void ShowXenonMessage(LPCWSTR Title,int value,char*);
 void ShowXenonMessage(LPCWSTR Title,float value,char*);
 
 
+//template <typename T>
+//void ShowXenonMessage(LPCWSTR Title,T value);
 
 
 

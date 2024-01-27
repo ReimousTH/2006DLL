@@ -588,11 +588,11 @@
 				Name="Hook"
 				>
 				<File
-					RelativePath=".\Hook.cpp"
+					RelativePath=".\HookV2.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Hook.h"
+					RelativePath=".\HookV2.h"
 					>
 				</File>
 			</Filter>

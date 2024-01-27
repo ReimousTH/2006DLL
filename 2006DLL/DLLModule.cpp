@@ -68,6 +68,8 @@ extern "C" void OnDLLStart(){
 
 	std::string Loaded;
 
+	CheckEmulated::GlobalInstall();
+
 
 
 	BaseLua.DoFile(true);
@@ -94,6 +96,7 @@ extern "C" void OnDLLStart(){
 	Loaded.clear();
 
 
+	//ImGUI::GlobalInstall();
 	//TestProject::GlobalInstall();
 
 	//ImGUI::GlobalInstall();

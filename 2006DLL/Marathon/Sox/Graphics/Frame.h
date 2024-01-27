@@ -4,14 +4,17 @@
 #include <SoX/RefCountObject.h>
 #include "FrameSynchronizer.h"
 
+
 #include <xtl.h>
-//#include <Sox/Misc/List.h>
+#include <Sox/Misc/List.h>
 
 namespace Sonicteam{
 	namespace SoX{
 		namespace Graphics{
 
 			
+			typedef class Frame;
+
 
 			class Frame:Sonicteam::SoX::RefCountObject
 		{
@@ -20,25 +23,20 @@ namespace Sonicteam{
 			Frame();
 			~Frame();
 
-			virtual void ObjectDestroy(unsigned int flag);
+			virtual void DestroyObject(unsigned int flag) override;
 
-			unsigned int Fuint0x8; //Flag??
-			//Sonicteam::SoX::RefCountObject& Fuint0xC;
-
-			unsigned int FUNodeA_1;
-			//Sonicteam::SoX::FrameNode<Frame> FUNodeA_1;
-			//Sonicteam::SoX::FrameNode<Frame> FUNodeA_2;
-			//should be FrameObserver
-		//	Sonicteam::SoX::LinkedListB<unsigned int,Frame> LLB;
-//				ListEX01_06 Fuint0x10; // + 0x1C
-			//	unsigned int Fuint0x10; // 0
-			//	unsigned int Fuint0x14; // 0
+			unsigned int FrameRefFlag; // 0x8
+			Sonicteam::SoX::RefCountObject* instance; // 0xC
 			
-			
-		//	ListEX01_06 Fuint0x18;
-		//	unsigned int Fuint0x18; //RootFramePlayer, which have some at position 0x18
-		//	unsigned int Fuint0x1C; //FrameGP and again 0x18-0x1C
+			Frame* Layer1; //0x10
+			Frame* Layer2; //0x14
+			Frame* Layer3; //0x18
+			Frame* Layer4; //0x1c
 
+
+
+
+			Sonicteam::SoX::LinkedListB<Frame,Frame> Test;
 		//	ListEX01_06 Fuint0x20; //they point to themselfs somehow
 		//	unsigned int Fuint0x20;
 		//	unsigned int Fuint0x24;

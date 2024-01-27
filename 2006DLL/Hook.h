@@ -2,6 +2,10 @@
 
 #ifndef __HOOK__
 #define __HOOK__
+
+
+
+
 #include <xtl.h>
 #include <cassert>
 

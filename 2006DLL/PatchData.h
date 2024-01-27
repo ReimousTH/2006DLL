@@ -1,7 +1,7 @@
 #pragma once
 #ifndef PatchDataCPP
 #define PatchDataCPP
-#include "Hook.h"
+#include "HookV2.h"
 #include "Basics.h"
 #include "Marathon/Marathon.h"
 
@@ -18,6 +18,9 @@ static ZLua QuickBootLua =  ZLua((const char*)"game:\\common\\QuickBoot.lua");
 
 
 
+namespace CheckEmulated{
+	void GlobalInstall();
+}
 
 namespace DebugLogRestore{
 	void GlobalInstall();
@@ -35,7 +38,6 @@ namespace LuaDLL{
 
 
 namespace D3DH{
-
 	void GlobalInstall();
 }
 

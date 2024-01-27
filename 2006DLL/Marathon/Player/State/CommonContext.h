@@ -57,7 +57,7 @@ namespace Sonicteam{
 				int PComboAttackManager;
 				int UnknownFlags01;
 				unsigned int unkA0;
-				unsigned int ContextFlags;
+				unsigned int ContextFlags; //Export
 				unsigned int ExportPostureRequestFlag;
 				unsigned int ExportWeaponRequestFlag;
 				float DamageInvincibleTime;

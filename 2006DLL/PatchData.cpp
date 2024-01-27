@@ -3091,7 +3091,7 @@ void GlobalInstall(){
 		WRITE_DWORD(0x8219C994,POWERPC_LI(3,0x7C)); // SAVE ONE MORE VALUE;
 
 	
-		Hook::WriteHook((void*)0x8221E1E0,(void*)sub_8221E1E0);
+		//Hook::WriteHook((void*)0x8221E1E0,(void*)sub_8221E1E0);
 	//	INSTALL_HOOK(sub_82160B98);
 	
 		
@@ -4960,18 +4960,93 @@ error:
 	}
 
 
+	struct Vector2D{
+		Vector2D(){};
+		Vector2D(float x,float y){
+			this->x = x;
+			this->y = y;
+		}
+		float x,y;
+	};
+
+	struct Vector3D{
+		Vector3D() {};
+		Vector3D(float x,float y,float z){
+			this->x = x;
+			this->y = y;
+			this->z = z;
+		}
+		float x,y,z;
+	};
+
+	struct Vertex {
+public:
+	//формат вершин
+	enum {VERTEX_FORMAT = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1};
+	//позиция
+	Vector3D pos;
+	//нормаль
+	Vector3D n;
+	//текстурные координаты
+	Vector2D texCoord;
+
+	Vertex(){}
+
+};
+
+		
 	int AppMarathon_DrawMb(int a1){
 
-		g_pDevice = *(IDirect3DDevice9 **)(a1 + 0x24);
+	
+		g_pDevice = *(D3DDevice **)(a1 + 0x24);
+		Direct3D* D3D;
+		g_pDevice->GetDirect3D(&D3D);
 
-		//InitXui();
+		D3DPWLGAMMA gamma;
+		gamma.blue->Base = 255;
+		gamma.red->Base = 0;
+		gamma.green->Base = 0;
 
-		//Draw();
+
+		g_pDevice->SetPWLGamma(0,&gamma);
+
+
+
+		Vertex* vertexs = new Vertex[3];
+
+	vertexs[0].pos = Vector3D(-1.0, 1.0, 0.0);
+	vertexs[0].n = Vector3D(0.0, 0.0, -1.0);
+	vertexs[0].texCoord = Vector2D(0.0f, 0.0f);
+
+
+	vertexs[1].pos = Vector3D(1.0, 100000.0, 0.0);
+	vertexs[1].n = Vector3D(0.0, 0.0, -1.0);
+	vertexs[1].texCoord = Vector2D(1.0f, 0.0f);
+
+	vertexs[2].pos = Vector3D(-1.0, -1.0, 0.0);
+	vertexs[2].n = Vector3D(0.0, 0.0, -1.0);
+	vertexs[2].texCoord = Vector2D(0.0f, 1.0f);
+
+
+
+//	g_pDevice->BeginScene();
+
+//	g_pDevice->SetFVF(Vertex::VERTEX_FORMAT);
+
+
+
+	//WOrks but need to put in buffer :how :)
+//	g_pDevice->BeginScene();
+//g_pDevice->DrawPrimitiveUP(D3DPRIMITIVETYPE::D3DPT_TRIANGLELIST,1,vertexs,sizeof(vertexs));
+
+	//g_pDevice->Present(NULL,NULL,NULL,NULL);
+	//g_pDevice->EndScene();
+
 
 		BranchTo(0x825B1A28,int,a1);
 	
-
-		
+	
+	
 	
 
 		return a1;
@@ -6132,8 +6207,26 @@ namespace WhiteGameRestored
 
 
 	DWORD pass = false;
+	static XMFLOAT4 Vector;
 
 	_DWORD *__fastcall PostureCMN01(int a1, double a2, int a3){
+
+		
+
+
+		Vector = *(XMFLOAT4*)(a1 + 0xB0);
+
+		XMFLOAT4 PostRotationInterpolate= *(XMFLOAT4*)(a1 + 0xA0);  // always (0.0.0.1) but if change it sees it restore back to normal rotation with lerp
+
+		XMFLOAT4 Position = *(XMFLOAT4*)(a1 + 0xB0); //Position
+		XMFLOAT4 Rotation = *(XMFLOAT4*)(a1 + 0xC0); //Rotation
+
+		//0xD0 (nothing)
+
+		
+
+
+		  //0xC0 = Rotation(Quaternion)
 
 		 BranchTo(0x82200538,int,a1,a2,a3);
 		 DWORD v18 =   BranchTo(0x821FE130,int,a1);
@@ -6141,25 +6234,40 @@ namespace WhiteGameRestored
 		// DWORD v22 =  BranchTo(0x821F1578,int,a1,v19);
 		 DWORD* v22 = (DWORD *)(a1 + 0xF0); // PostureExportFlag
 		 //Edge(nvm Up-Down axis)
-		  if ((*v22 & 0x2000) != 0){
-			
+
+
+		  DWORD Edge =  *(DWORD*)(a1 + 0x388);
+	
+		 
+		 //a1 + 0xB0 (Vector) Chr Position
+		 //a1 + 0x260 (Class)
+		 // Use them both for Grab
+	
+
+		  if ((*v22 & 0x2000) != 0 && (*v22 & 0x80) == 0){
+		
 			  pass = true;
 		  }
 
+	
 		  //OnGround
 		  if ((*v22 & 1) != 0){
 
-	
+			
 			  pass = false;
 
 			
 		  }
 		  if (pass ){
 
+
+
 			  DWORD t =  *(DWORD*)(a1 + 0x120 + 0x24);
-			  DWORD z  = *(DWORD*)(t + 0x14); // Count of corners the character touches
+			  DWORD z  = *(DWORD*)(t + 0x14); // Count of corners that character touches
 
 			  if (z > 0  && (*v22 & 1) == 0){
+				  *(DWORD*)(Edge + 0x30) = 0x80;
+				  *(byte*)(Edge + 0x4C) = 0x0;
 				  *v22 = *v22 |  0x80;
 				}
 
@@ -6395,7 +6503,7 @@ namespace WhiteGameRestored
 
 
 
-	//	WRITE_DWORD(0x82009050,PostureCMN01);
+		WRITE_DWORD(0x82009050,PostureCMN01);
 
 
 
@@ -7322,6 +7430,10 @@ namespace TailsGauge{
 		~TailsContextEX(){
 
 		}
+		void FakeDestroy(unsigned int a2){
+			TailsContextEX::~TailsContextEX();
+			Sonicteam::SoX::Memory::IDestructible::DestroyObject(a2);
+		}
 		
 
 	};
@@ -7362,6 +7474,11 @@ namespace TailsGauge{
 	
 		// delete _this->GaugePlugin.get(); // and bo
 		 BranchTo(0x82206FD8,int,_this,a2);
+		 
+		 _this->FakeDestroy(a2);
+
+		 
+		 //_this->DestroyObject(a2);
 
 	
 		 return (DWORD)_this;
@@ -7377,7 +7494,7 @@ namespace TailsGauge{
 
 
 		//Need to think about how to do it (
-		//WRITE_DWORD(0x8200B860,TailsContextDestructor);
+		WRITE_DWORD(0x8200B860,TailsContextDestructor);
 
 	}
 }
@@ -7844,3 +7961,7 @@ namespace AmyLOS{
 }
 
 
+void CheckEmulated::GlobalInstall()
+{
+	HookV2::IsNotEmulatedHardWare = HookV2::CheckIsNotEmulatedHardWare();
+}

@@ -61,3 +61,12 @@ void ShowXenonMessage(LPCWSTR Title,float value,char*){
 	ShowXenonMessage(Title,vOut);
 
 }
+
+template <typename T>
+void ShowXenonMessage(LPCWSTR Title,T value){
+
+
+
+
+
+}

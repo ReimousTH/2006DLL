@@ -3,7 +3,7 @@
 
 namespace Sonicteam{
 	namespace SoX{
-		class RefCountObject:Sonicteam::SoX::Memory::IDestructible
+		class RefCountObject:public Sonicteam::SoX::Memory::IDestructible
 		{
 		public:
 			RefCountObject(void);
@@ -30,6 +30,7 @@ namespace Sonicteam{
 			this->UnkReference++;
 			return this;
 		}
+	
 
 	}
 }
