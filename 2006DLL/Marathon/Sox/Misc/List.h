@@ -35,13 +35,31 @@ namespace Sonicteam{
 
 */
 
+		template <typename T>
+		class BaseNode {
+		public:
+			BaseNode<T>* Previous;
+			BaseNode<T>* Next;
+			T* Object;
+
+			BaseNode() : Previous(nullptr), Next(nullptr), Object(nullptr) {}
+
+			BaseNode(const T& OBJ) : Object(new T(OBJ)), Previous(nullptr), Next(nullptr) {}
+
+			virtual ~BaseNode() {
+				Clear();
+			}
+
+			void Clear() {
+				if (Previous) Previous->Next = Next;
+				if (Next) Next->Previous = Previous;
+				this->Object = 0;
+			}
+		};
+
 
 		template <typename T,typename Y>
-		struct NodeB {
-
-			NodeB<T,Y>* Previous;
-			NodeB<T,Y>* Next;
-			T* Object;
+		struct NodeB:public BaseNode<T> {
 			Y* HeadObject;
 
 			Node(){}
@@ -50,10 +68,7 @@ namespace Sonicteam{
 				Clear();
 			}
 			void Clear(){
-				//need finish
-				this->Previous->Next = this->Next;
-				this->Next->Previous = this->Previous;
-				this->Object = 0;
+				BaseNode<T>::Clear();
 				this->HeadObject = 0;
 			}
 		};
@@ -72,7 +87,7 @@ namespace Sonicteam{
 			~LinkedListB() {
 				while (head != front) {
 					NodeB<T,Y>* temp = head;
-					head = head->Next;
+					head = (NodeB<T,Y>*)head->Next;
 					temp->Clear();
 
 				}
