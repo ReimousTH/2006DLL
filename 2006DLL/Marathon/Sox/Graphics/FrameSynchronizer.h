@@ -1,8 +1,8 @@
 #pragma once
 
 #include "../MessageReceiver.h"
-
 #include <xtl.h>
+#include <Sox/Memory/IDestructible.h>
 
 
 
@@ -10,15 +10,16 @@ namespace Sonicteam{
 	namespace SoX{
 		namespace Graphics{
 
-			
-
+	
 			class FrameSynchronizer
 		{
 
 		public:
 			FrameSynchronizer();
 			FrameSynchronizer(unsigned int); //Frame Count
-			virtual ~FrameSynchronizer(void);
+			~FrameSynchronizer(void);
+
+			virtual void DestroyObject(unsigned int flag);
 
 			unsigned int FSuint0x4; //self
 			unsigned int FSuint0x8; //self
@@ -28,14 +29,9 @@ namespace Sonicteam{
 			unsigned int FSFrameCount; //0x18
 			unsigned int FSuint0x1C; //
 
+	
 
-			
-
-
-			
-			
-
+			};
 		};
 	};
-}
-}
+};

@@ -12,15 +12,11 @@ namespace Sonicteam{
 			IPlugIn(char*);
 			~IPlugIn(void);
 
-			void DestroyObject(unsigned int flag) override;
+			virtual void DestroyObject(unsigned int flag) override;
 
 			std::string PluginName;
+
 		};
-
-	}
-
-	
-
-}
-
+	};
+};
 

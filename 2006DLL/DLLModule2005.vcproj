@@ -684,6 +684,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Marathon\Player\IExportExternalFlag.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Player\IExportExternalFlag.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Marathon\Player\IExportPostureRequestFlag.cpp"
 					>
 				</File>
@@ -737,6 +745,14 @@
 				</File>
 				<File
 					RelativePath=".\Marathon\Player\IVarible.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Player\RootFrame.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Player\RootFrame.h"
 					>
 				</File>
 				<File

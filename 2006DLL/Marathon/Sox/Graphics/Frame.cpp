@@ -48,3 +48,28 @@ Sonicteam::SoX::Graphics::Frame::~Frame()
 
 
 }
+
+Sonicteam::SoX::Graphics::Frame* Sonicteam::SoX::Graphics::Frame::New()
+{
+	return ((Sonicteam::SoX::Graphics::Frame* (__fastcall *)(...))0x82594530)(malloc(sizeof(Sonicteam::SoX::Graphics::Frame)));
+
+}
+
+int Sonicteam::SoX::Graphics::Frame::FrameUnk01()
+{
+	return -1;
+}
+
+int Sonicteam::SoX::Graphics::Frame::FrameUnk02()
+{
+	return 0;
+}
+
+
+
+
+
+int Sonicteam::SoX::Graphics::Frame::FrameUnk08()
+{
+	return 0;
+}

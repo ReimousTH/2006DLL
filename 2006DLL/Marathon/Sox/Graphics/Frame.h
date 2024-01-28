@@ -4,9 +4,9 @@
 #include <SoX/RefCountObject.h>
 #include "FrameSynchronizer.h"
 
-
 #include <xtl.h>
 #include <Sox/Misc/List.h>
+#include <Sox/Memory/IDestructible.h>
 
 namespace Sonicteam{
 	namespace SoX{
@@ -16,6 +16,7 @@ namespace Sonicteam{
 			typedef class Frame;
 
 
+			//TODO Original Destructor 
 			class Frame:Sonicteam::SoX::RefCountObject
 		{
 
@@ -25,6 +26,20 @@ namespace Sonicteam{
 
 			virtual void DestroyObject(unsigned int flag) override;
 
+
+			//Virtual Methods
+			virtual int FrameUnk01();
+			virtual int FrameUnk02();
+			virtual XMFLOAT4* FrameUnk03(XMFLOAT4) = 0;
+			virtual XMFLOAT4* FrameUnk04(XMFLOAT4) = 0;
+			virtual XMFLOAT4* FrameUnk05(XMFLOAT4) = 0;
+			virtual XMFLOAT4* FrameUnk06(float* Matrix) = 0;
+			virtual XMFLOAT4* FrameUnk07() = 0;
+			virtual int FrameUnk08();
+
+		
+
+			////
 			unsigned int FrameRefFlag; // 0x8
 			Sonicteam::SoX::RefCountObject* instance; // 0xC
 			
@@ -55,7 +70,9 @@ namespace Sonicteam{
 	
 	
 
-			
+
+			//just 
+			static Frame* New();
 
 
 			

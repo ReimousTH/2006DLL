@@ -8,7 +8,7 @@ namespace Sonicteam{
 			class IDestructible {
 			public:
 				~IDestructible() {}
-				virtual void DestroyObject(unsigned int flag) {
+				virtual void DestroyObject (unsigned int flag) {
 					if ((flag & 1) != 0) {
 						delete this;
 					}
@@ -35,17 +35,6 @@ namespace Sonicteam{
 
 
 
-#ifndef _T1
-#define _T1
-
-#define DefineVirtualDestroyerH() virtual RefObjectDestroy(unsigned int flag)
-
-#define DefineVirtualDestroyerCPP(ClassName) virtual RefObjectDestroy(unsigned int flag)\
-	{\
-	this->~#ClassName();\
-		if ((flag & 1 ) != 0 ){\
-	delete this;\
-	}\
 
 
-#endif
+
