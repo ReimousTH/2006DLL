@@ -17,33 +17,35 @@ namespace Sonicteam{
 
 			virtual void DestroyObject(unsigned int flag) override;
 
-			virtual XMFLOAT4* FrameUnk03(XMFLOAT4);
+			virtual XMMATRIX FrameGetTransformMatrix1();
 
-			virtual XMFLOAT4* FrameUnk04(XMFLOAT4);
+			virtual XMMATRIX FrameGetTransformMatrix2();
 
-			virtual XMFLOAT4* FrameUnk05(XMFLOAT4);
+			virtual void FrameSetTransformMatrix2(XMMATRIX&);
 
-			virtual XMFLOAT4* FrameUnk06(float* Matrix);
+			virtual void FrameUnk06(XMMATRIX&);
 
-			virtual XMFLOAT4* FrameUnk07();
+			virtual void FrameUnk07();
 
-			virtual DWORD ExportExternalFlag(void);
+			virtual unsigned long long ExportExternalFlag(void) override;
 
 
 			////Fields
 
-			XMFLOAT4 RFRotation0x70; //Rotation 0x70
-			XMFLOAT4 RFSurfaceRotation0x80; //Surface Rotation (Normal Rotation or some like that) 0x80 
-			XMFLOAT4 RFRotationInverted0x90; //Rotation( BackWards = RFRotation, but on last element need to inverted)
-			
-			XMFLOAT4 RFPosition0xA0; //Position 0xA0
-			XMFLOAT4 RFRotation0xB0; //Rotation 0xB0
+		//	XMFLOAT4 RFRotation0x70; //Rotation 0x70
+		//	XMFLOAT4 RFSurfaceRotation0x80; //Surface Rotation (Normal Rotation or some like that) 0x80 
+		//	XMFLOAT4 RFRotationInverted0x90; //Rotation( BackWards = RFRotation, but on last element need to inverted)
+		//	XMFLOAT4 RFPosition0xA0; //Position 0xA0
+			XMMATRIX RFTransformMatrix0x70;
 
-			XMFLOAT4 RFScale0xC0; //Not Sure IDEK 0xC0
-			XMFLOAT4 RFRotation0xD0; // why?s 0xD0
+		//	XMFLOAT4 RFRotation0xB0; //Rotation 0xB0
+		//	XMFLOAT4 RFScale0xC0; //Not Sure IDEK 0xC0
+		//	XMFLOAT4 RFRotation0xD0; // why?s 0xD0
+		//	XMFLOAT4 RFPosition0xE0; //Position 0xE0
 
+			XMMATRIX RFTransformMatrix0xB0;
+		
 
-			XMFLOAT4 RFPosition0xE0; //Position 0xE0
 			XMFLOAT4 RFPosition0xF0; //Position 0xF0
 			XMFLOAT4 RFPosition0x100; //Position 0xF0
 

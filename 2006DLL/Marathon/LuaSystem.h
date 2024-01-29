@@ -24,6 +24,10 @@ namespace Sonicteam{
 
 			float GetFloatValue(std::string*);
 			float GetFloatValue(std::string&);
+
+
+
+			static LuaSystem* LoadInitResource(LuaSystem*&,std::string& path);
 		
 			
 		};

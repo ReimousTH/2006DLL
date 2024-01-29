@@ -5,31 +5,34 @@ using namespace Sonicteam::Player;
 
 void Sonicteam::Player::RootFrame::DestroyObject(unsigned int flag)
 {
-	//Sonicteam::Player::RootFrame::~RootFrame();
-	//Sonicteam::SoX::Memory::IDestructible::DestroyObject(this,flag);
+	Sonicteam::Player::RootFrame::~RootFrame();
+	Sonicteam::SoX::Memory::IDestructible::DestroyObject(this,flag);
 }
 
-XMFLOAT4* Sonicteam::Player::RootFrame::FrameUnk03(XMFLOAT4)
+
+//Have no idea why 06 Compiled this with Vector function but maybe optimization flag or some
+XMMATRIX Sonicteam::Player::RootFrame::FrameGetTransformMatrix1()
+{
+	return  RFTransformMatrix0xB0;
+
+}
+
+XMMATRIX Sonicteam::Player::RootFrame::FrameGetTransformMatrix2()
+{
+	return RFTransformMatrix0x70;
+}
+
+void Sonicteam::Player::RootFrame::FrameSetTransformMatrix2(XMMATRIX& value)
+{
+	this->RFTransformMatrix0x70 = value;
+}
+
+void Sonicteam::Player::RootFrame::FrameUnk06(XMMATRIX&)
 {
 
 }
 
-XMFLOAT4* Sonicteam::Player::RootFrame::FrameUnk04(XMFLOAT4)
-{
-	
-}
-
-XMFLOAT4* Sonicteam::Player::RootFrame::FrameUnk05(XMFLOAT4)
-{
-	
-}
-
-XMFLOAT4* Sonicteam::Player::RootFrame::FrameUnk06(float* Matrix)
-{
-	
-}
-
-XMFLOAT4* Sonicteam::Player::RootFrame::FrameUnk07()
+void Sonicteam::Player::RootFrame::FrameUnk07()
 {
 	
 }
@@ -45,5 +48,5 @@ Sonicteam::Player::RootFrame::~RootFrame(void)
 
 unsigned long long Sonicteam::Player::RootFrame::ExportExternalFlag(void)
 {
-	
+	return this->ExternalFlag;
 }

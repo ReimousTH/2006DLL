@@ -46,7 +46,7 @@ namespace Sonicteam{
 
 			BaseNode(const T& OBJ) : Object(new T(OBJ)), Previous(0), Next(0) {}
 
-			virtual ~BaseNode() {
+			~BaseNode() {
 				Clear();
 			}
 

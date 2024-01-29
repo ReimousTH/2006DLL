@@ -641,6 +641,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Marathon\LuaSystem.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Marathon\LuaSystem.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Marathon\LuaSystemManager.cpp"
 				>
 			</File>
@@ -670,6 +678,14 @@
 			</File>
 			<File
 				RelativePath=".\Marathon\MenuListener.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Marathon\MyPhysicsSystemFactory.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Marathon\MyPhysicsSystemFactory.h"
 				>
 			</File>
 			<Filter
@@ -955,6 +971,26 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="Effect"
+					>
+					<File
+						RelativePath=".\Marathon\Player\Effect\IParticle.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Player\Effect\IParticle.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Player\Effect\ParticleScript.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Player\Effect\ParticleScript.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Combo"
@@ -1029,14 +1065,6 @@
 				</File>
 				<File
 					RelativePath=".\Marathon\Sox\IResourceMgr.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Marathon\LuaSystem.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Marathon\LuaSystem.h"
 					>
 				</File>
 				<File

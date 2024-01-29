@@ -101,7 +101,7 @@
 
 
 
-#include "Marathon/Sox/Graphics/Frame.h"
+#include "Marathon/Player/RootFrame.h"
 
 #include "Marathon/Player/State/CommonContext.h"
 #include "Marathon/Player/State/SonicContext.h"
@@ -126,6 +126,10 @@
 #include "Marathon/Player/Input/ListenerNormal.h"
 
 #include "Marathon/MainMenuTask.h"
+
+#include "Marathon/Player/Effect/IParticle.h"
+
+#include "Marathon/MyPhysicsSystemFactory.h"
 
 
 

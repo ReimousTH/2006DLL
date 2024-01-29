@@ -17,7 +17,7 @@ namespace Sonicteam{
 
 
 			//TODO Original Destructor 
-			class Frame:Sonicteam::SoX::RefCountObject
+			class Frame:public Sonicteam::SoX::RefCountObject
 		{
 
 		public:
@@ -30,11 +30,11 @@ namespace Sonicteam{
 			//Virtual Methods
 			virtual int FrameUnk01();
 			virtual int FrameUnk02();
-			virtual XMFLOAT4* FrameUnk03(XMFLOAT4) = 0;
-			virtual XMFLOAT4* FrameUnk04(XMFLOAT4) = 0;
-			virtual XMFLOAT4* FrameUnk05(XMFLOAT4) = 0;
-			virtual XMFLOAT4* FrameUnk06(float* Matrix) = 0;
-			virtual XMFLOAT4* FrameUnk07() = 0;
+			virtual XMMATRIX FrameGetTransformMatrix1() = 0;
+			virtual XMMATRIX FrameGetTransformMatrix2() = 0;
+			virtual void FrameSetTransformMatrix2(XMMATRIX&) = 0;
+			virtual void FrameUnk06(XMMATRIX&) = 0;
+			virtual void FrameUnk07() = 0;
 			virtual int FrameUnk08();
 
 		

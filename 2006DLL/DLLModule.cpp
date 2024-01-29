@@ -106,22 +106,22 @@ extern "C" void OnDLLStart(){
 
 
 
-new Sonicteam::Player::State::CommonContext();
+//new Sonicteam::Player::State::CommonContext();
 
-new Sonicteam::Combo::AttackManager();
-
-
-
-new Sonicteam::Player::Input::ListenerNormal(0,0);
+//new Sonicteam::Combo::AttackManager();
 
 
-(new Sonicteam::SoX::Object())->getNextObject();
+
+//new Sonicteam::Player::Input::ListenerNormal(0,0);
 
 
-new Sonicteam::SoX::Component(0);
+//(new Sonicteam::SoX::Object())->getNextObject();
+
+
+//new Sonicteam::SoX::Component(0);
 	
 
-new Sonicteam::SoX::ObjectRework();
+//new Sonicteam::SoX::ObjectRework();
 //Sonicteam::Player::SonicGauge* gg = new Sonicteam::Player::SonicGauge();
 
 
@@ -129,7 +129,7 @@ new Sonicteam::SoX::ObjectRework();
 
 //const char* tu = z0->name();
 
-Sonicteam::Player::State::Machine2* t = new Sonicteam::Player::State::Machine2();
+//Sonicteam::Player::State::Machine2* t = new Sonicteam::Player::State::Machine2();
 
 //SonicTeam::Player::State::CommonObject* v = new SonicTeam::Player::State::CommonObject((SonicTeam::Player::State::IMachine*)t);
 
@@ -137,34 +137,45 @@ Sonicteam::Player::State::Machine2* t = new Sonicteam::Player::State::Machine2()
 
 
 
-Sonicteam::Player::State::AmyContext* tz = new Sonicteam::Player::State::AmyContext();
+//Sonicteam::Player::State::AmyContext* tz = new Sonicteam::Player::State::AmyContext();
 
-if (*(int*)tz == 0x82000000){
-tz->AmyUnkFlags = 1;
-}
+//if (*(int*)tz == 0x82000000){
+//tz->AmyUnkFlags = 1;
+//}
 
 
 
-Sonicteam::DocMarathonImp* impl = new Sonicteam::DocMarathonImp(0);
+//Sonicteam::DocMarathonImp* impl = new Sonicteam::DocMarathonImp(0);
 
-Sonicteam::SoX::RefCountObject* _reference = new Sonicteam::SoX::RefCountObject();
+//Sonicteam::SoX::RefCountObject* _reference = new Sonicteam::SoX::RefCountObject();
 
 //_reference->ObjectDestroy(1);
-Sonicteam::HUDOption* _opt = new Sonicteam::HUDOption();
+//Sonicteam::HUDOption* _opt = new Sonicteam::HUDOption();
 //_opt->DestroyObject(1);
 
 
-new Sonicteam::SoX::Graphics::Frame();
-boost::shared_ptr<Sonicteam::Player::GaugeStandard> tuu (new Sonicteam::Player::GaugeStandard());
+ //Sonicteam::Player::RootFrame* rf =  new Sonicteam::Player::RootFrame();
 
-tuu.reset();
+ //XMMATRIX a =  rf->FrameGetTransformMatrix1();
 
+//boost::shared_ptr<Sonicteam::Player::GaugeStandard> tuu (new Sonicteam::Player::GaugeStandard());
 
-t->GetMashineContext();
-
-
+//tuu.reset();
 
 
+//t->GetMashineContext();
+
+
+//Sonicteam::Player::Effect::IParticle* v = new Sonicteam::Player::Effect::IParticle(new Sonicteam::Player::IPlugIn("test"),std::string("t"));
+
+//v->BufferParticleName = std::string("et");
+
+//Sonicteam::MyPhysicsSystemFactory* tax = Sonicteam::MyPhysicsSystemFactory::GetOriginInstance();
+
+//Sonicteam::MyPhysicsSystemFactory* tax1 = Sonicteam::MyPhysicsSystemFactory::GetInstance();
+
+//delete tax;
+//delete tax1;
 
 //	ImGUI::GlobalInstall();
 

@@ -14,12 +14,27 @@ namespace Sonicteam{
 					}
 				}
 				template <typename T>
-				static void DestroyObject(T& obj,unsigned int flag){
+				inline static void DestroyObject(T& obj,unsigned int flag){
 					if ((flag & 1) != 0) {
 						delete obj;
 					}
 				}
 			};
+
+			class IUDestructible {
+			public:
+				~IUDestructible() {}
+				template <typename T>
+				inline static void DestroyObject(T& obj,unsigned int flag){
+					if ((flag & 1) != 0) {
+						free(obj);
+					}
+				}
+			};
+
+
+
+
 
 			static void boost_ptr_cleanup(IDestructible* obj){
 				obj->DestroyObject(1);

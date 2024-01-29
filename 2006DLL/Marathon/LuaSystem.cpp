@@ -40,3 +40,9 @@ float Sonicteam::LuaSystem::GetFloatValue(std::string& nm)
 
 }
 
+
+LuaSystem* Sonicteam::LuaSystem::LoadInitResource(LuaSystem*& value,std::string& path)
+{
+	return 	((Sonicteam::LuaSystem* (__fastcall *)(...))0x82163620)(&value,&path);
+}
+
