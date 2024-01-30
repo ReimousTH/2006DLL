@@ -131,6 +131,8 @@
 
 #include "Marathon/MyPhysicsSystemFactory.h"
 
+#include "Marathon/Sox/Physics/BoxShape.h"
+
 
 
 

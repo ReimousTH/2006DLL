@@ -24,15 +24,35 @@ namespace Sonicteam{
 
 
 
-			virtual void CreateSphereShapeHavok(double delta); //0x0 + 0x0 (void = type (r3))
-			virtual void CreateBoxShapeHavok(); // 0x0 + 0x4
-			virtual void CreateCapsuleShapeHavok(); // 0x0 + 0x8
-			virtual void CreateCylinderShapeHavok(); // 0x0 + 0xC
-			virtual void CreateMeshShapeHavok(); // 0x0 + 0xC
-			virtual void CreateConvexShapeHavok(); // 0x0 + 0xC
+			virtual void CreateSphereShapeHavok(double radius); //0x0 + 0x0 (void = type (r3))
+			virtual void CreateBoxShapeHavok(double width,double height,double length); // width, height, length
 
-			virtual void CreateBodyHavokA(); // 0x0 + 0xC
-			virtual void CreateBodyHavokB(); // 0x0 + 0xC
+			virtual void CreateCapsuleShapeHavok(double radius,double height); 
+			virtual void CreateCylinderShapeHavok(double radius,double height); // 0x0 + 0xC
+
+
+			virtual void CreateMeshShapeHavok(unsigned int* RawMesh); // 0x0 + 0xC
+			virtual void CreateConvexShapeHavok(unsigned int* RawMesh); // 0x0 + 0xC
+
+			virtual void CreateBodyHavokA(unsigned int* RawBody); // 0x0 + 0xC
+			virtual void CreateBodyHavokB(); //YES NO args
+
+			virtual void CreateMyPhantomA(unsigned int* RawPhantom); // 0x0 + 0xC
+			virtual void CreateMyPhantomB(); // 0x0 + 0xC
+
+			virtual void CreateRayCastHavokA(unsigned int* RawRayCast); // 0x0 + 0xC
+			virtual void CreateRayCastHavokB(); // 0x0 + 0xC
+
+			virtual void CreateShapeCastHavokA(unsigned int* RawShapeCast); // 0x0 + 0xC
+			virtual void CreateShapeCastHavokB(); // 0x0 + 0xC
+
+
+			virtual void CreateLineConstraintHavok(double,unsigned int* PhysicsBody); // 0x0 + 0xC
+
+			virtual void CreateMyRagdollInfo(); // i GUESS??
+			virtual void CreatMyVehicleInfo(); // 0x0 + 0xC
+			virtual void CreateMyLandCollisionInfo(); // 0x0 + 0xC
+			
 			
 			//??????s
 			void DestroyObject(unsigned int flag); //0x0 + 0x10

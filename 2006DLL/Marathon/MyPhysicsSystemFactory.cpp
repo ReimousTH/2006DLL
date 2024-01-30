@@ -18,42 +18,94 @@ Sonicteam::MyPhysicsSystemFactory::~MyPhysicsSystemFactory(void)
 	
 }
 
-void Sonicteam::MyPhysicsSystemFactory::CreateSphereShapeHavok(double delta)
+
+
+void Sonicteam::MyPhysicsSystemFactory::CreateSphereShapeHavok(double radius)
 {
 
 }
 
-void Sonicteam::MyPhysicsSystemFactory::CreateBoxShapeHavok()
+void Sonicteam::MyPhysicsSystemFactory::CreateBoxShapeHavok(double width,double height,double length)
 {
 
 }
 
-void Sonicteam::MyPhysicsSystemFactory::CreateCapsuleShapeHavok()
+void Sonicteam::MyPhysicsSystemFactory::CreateCapsuleShapeHavok(double radius,double height)
 {
 
 }
 
-void Sonicteam::MyPhysicsSystemFactory::CreateCylinderShapeHavok()
+void Sonicteam::MyPhysicsSystemFactory::CreateCylinderShapeHavok(double radius,double height)
 {
 
 }
 
-void Sonicteam::MyPhysicsSystemFactory::CreateMeshShapeHavok()
+void Sonicteam::MyPhysicsSystemFactory::CreateMeshShapeHavok(unsigned int* RawMesh)
 {
 
 }
 
-void Sonicteam::MyPhysicsSystemFactory::CreateConvexShapeHavok()
+void Sonicteam::MyPhysicsSystemFactory::CreateConvexShapeHavok(unsigned int* RawMesh)
 {
 
 }
 
-void Sonicteam::MyPhysicsSystemFactory::CreateBodyHavokA()
+void Sonicteam::MyPhysicsSystemFactory::CreateBodyHavokA(unsigned int* RawBody)
 {
 
 }
 
 void Sonicteam::MyPhysicsSystemFactory::CreateBodyHavokB()
+{
+
+}
+
+void Sonicteam::MyPhysicsSystemFactory::CreateMyPhantomA(unsigned int* RawPhantom)
+{
+
+}
+
+void Sonicteam::MyPhysicsSystemFactory::CreateMyPhantomB()
+{
+
+}
+
+void Sonicteam::MyPhysicsSystemFactory::CreateRayCastHavokA(unsigned int* RawRayCast)
+{
+
+}
+
+void Sonicteam::MyPhysicsSystemFactory::CreateRayCastHavokB()
+{
+
+}
+
+void Sonicteam::MyPhysicsSystemFactory::CreateShapeCastHavokA(unsigned int* RawShapeCast)
+{
+
+}
+
+void Sonicteam::MyPhysicsSystemFactory::CreateShapeCastHavokB()
+{
+
+}
+
+void Sonicteam::MyPhysicsSystemFactory::CreateLineConstraintHavok(double,unsigned int* PhysicsBody)
+{
+
+}
+
+void Sonicteam::MyPhysicsSystemFactory::CreateMyRagdollInfo()
+{
+
+}
+
+void Sonicteam::MyPhysicsSystemFactory::CreatMyVehicleInfo()
+{
+
+}
+
+void Sonicteam::MyPhysicsSystemFactory::CreateMyLandCollisionInfo()
 {
 
 }

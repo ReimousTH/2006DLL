@@ -1115,6 +1115,14 @@
 					Name="Physics"
 					>
 					<File
+						RelativePath=".\Marathon\Sox\Physics\BoxShape.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Sox\Physics\BoxShape.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Marathon\Sox\Physics\World.cpp"
 						>
 					</File>
@@ -1125,6 +1133,22 @@
 					<Filter
 						Name="Havok"
 						>
+						<File
+							RelativePath=".\Marathon\Sox\Physics\Havok\BoxShapeHavok.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Marathon\Sox\Physics\Havok\BoxShapeHavok.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Marathon\Sox\Physics\Havok\ShapeHavok.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Marathon\Sox\Physics\Havok\ShapeHavok.h"
+							>
+						</File>
 						<File
 							RelativePath=".\Marathon\Sox\Physics\Havok\WorldHavok.cpp"
 							>

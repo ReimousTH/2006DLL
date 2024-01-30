@@ -179,6 +179,9 @@ extern "C" void OnDLLStart(){
 
 //	ImGUI::GlobalInstall();
 
+	Sonicteam::SoX::Physics::BoxShape* v = new Sonicteam::SoX::Physics::BoxShape(10,10,10);
+	v->Width = 0;
+
 	
 }
 
