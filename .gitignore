@@ -31,12 +31,16 @@
 *.out
 *.app
 
-hk550
-hkx550
-
+# EXTRA
 *.idb	
 *.pdb
 *.idb
-2006DLL\Release
 *.exp
 *.map
+
+hk550
+hkx550
+2006DLL\Release
+
+
+
