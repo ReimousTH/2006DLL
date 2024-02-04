@@ -37,10 +37,14 @@
 *.idb
 *.exp
 *.map
+*.suo
 
-hk550
-hkx550
-2006DLL\Release
+
+.suo
+.vs
+\hk550
+\hkx550
+\2006DLL\Release
 
 
 
