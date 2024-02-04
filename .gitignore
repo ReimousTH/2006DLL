@@ -32,10 +32,11 @@
 *.app
 
 hk550
-*.exp
+hkx550
+
+*.idb	
 *.pdb
 *.idb
+2006DLL\Release
+*.exp
 *.map
-*.htm
-
-*.pdb

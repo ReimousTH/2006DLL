@@ -6,7 +6,7 @@
 
 
 namespace Sonicteam{
-	namespace SoX{
+	namespace SoX{	
 		namespace Physics{
 			namespace Havok{
 			class ShapeHavok
@@ -16,7 +16,7 @@ namespace Sonicteam{
 				ShapeHavok(void);
 				~ShapeHavok(void);
 
-				unsigned int* MhkBaseObject; // Marathon no name left ((( off_8207ED80
+				unsigned int* MhkBaseObject; // Marathon no name left ((( off_8207ED80 0x20
 				
 
 				virtual void DestroyObject(unsigned int flag);

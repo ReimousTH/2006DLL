@@ -320,7 +320,7 @@
 				FavorSizeOrSpeed="2"
 				EnableFiberSafeOptimizations="false"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="..\Boost1690;..\ATG;..\LUA\src;ImGuiProject\ImGui;&quot;$(InputDir)&quot;;Marathon"
+				AdditionalIncludeDirectories="..\Boost1690;..\ATG;..\LUA\src;Marathon\"
 				PreprocessorDefinitions="NDEBUG;_XBOX;XBOX;XBOX_SAMPLE;_XBOX_CRT_DEPRECATE_INSECURE;_XENON;_WIN32;$(NOINHERIT)"
 				StringPooling="false"
 				MinimalRebuild="false"
@@ -351,9 +351,9 @@
 				Name="VCX360LinkerTool"
 				UseLibraryDependencyInputs="false"
 				AdditionalOptions="/FORCE:MULTIPLE /ignore:4089 /dll /entry:&quot;_DllMainCRTStartup&quot; /include:&quot;XboxKrnlBuildNumber&quot;&#x0D;&#x0A;/-mcpu=powerpc64"
-				AdditionalDependencies="d3d9.lib d3dx9.lib xgraphics.lib xaudio.lib x3daudio.lib xboxkrnl.lib xbdm.lib xact.lib xuirunltcg.lib xuirenderltcg.lib LUA.lib"
+				AdditionalDependencies="d3d9.lib d3dx9.lib xgraphics.lib xaudio.lib x3daudio.lib xboxkrnl.lib xbdm.lib xact.lib xuirunltcg.lib xuirenderltcg.lib LUA.lib hkaAnimation.lib hkaInternal.lib hkaRagdoll.lib hkBase.lib hkCompat.lib hkgBridge.lib hkgCommon.lib hkgDx9.lib hkgDx9s.lib hkgOgl.lib hkpCollide.lib hkpConstraintSolver.lib hkpDynamics.lib hkpInternal.lib hkpUtilities.lib hkpVehicle.lib hkSceneData.lib hkSerialize.lib hkVisualize.lib"
 				OutputFile="$(OutDir)/$(ProjectName).dll"
-				AdditionalLibraryDirectories="D:\boost_1_69_0\boost_1_69_0\stage\lib;..\LUA\Release\;&quot;..\hk550\Lib\win32_net_8-0\release_multithreaded_dll&quot;"
+				AdditionalLibraryDirectories="D:\boost_1_69_0\boost_1_69_0\stage\lib;..\LUA\Release\;&quot;..\hkx550\Lib\win32_net_8-0\release_multithreaded&quot;"
 				ModuleDefinitionFile="DllModule.def"
 				GenerateDebugInformation="true"
 				GenerateMapFile="true"
@@ -764,6 +764,59 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Marathon\Player\PhantomEnterListener.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Xbox 360"
+						>
+			<Tool
+				Name="VCCLX360CompilerTool"
+				ObjectFile="$(IntDir)\$(InputName)1.obj"
+				XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+			/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Profile|Xbox 360"
+						>
+			<Tool
+				Name="VCCLX360CompilerTool"
+				ObjectFile="$(IntDir)\$(InputName)1.obj"
+				XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+			/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Profile_FastCap|Xbox 360"
+						>
+			<Tool
+				Name="VCCLX360CompilerTool"
+				ObjectFile="$(IntDir)\$(InputName)1.obj"
+				XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+			/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Xbox 360"
+						>
+			<Tool
+				Name="VCCLX360CompilerTool"
+				ObjectFile="$(IntDir)\$(InputName)1.obj"
+				XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+			/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release_LTCG|Xbox 360"
+						>
+			<Tool
+				Name="VCCLX360CompilerTool"
+				ObjectFile="$(IntDir)\$(InputName)1.obj"
+				XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+			/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\Marathon\Player\PhantomEnterListener.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Marathon\Player\RootFrame.cpp"
 					>
 				</File>
@@ -1123,6 +1176,46 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Marathon\Sox\Physics\CapsuleShape.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Sox\Physics\CapsuleShape.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Sox\Physics\CylinderShape.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Sox\Physics\CylinderShape.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Sox\Physics\PhantomListener.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Sox\Physics\PhantomListener.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Sox\Physics\Shape.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Sox\Physics\Shape.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Sox\Physics\SphereShape.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Sox\Physics\SphereShape.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Marathon\Sox\Physics\World.cpp"
 						>
 					</File>
@@ -1142,11 +1235,35 @@
 							>
 						</File>
 						<File
+							RelativePath=".\Marathon\Sox\Physics\Havok\CapsuleShapeHavok.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Marathon\Sox\Physics\Havok\CapsuleShapeHavok.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Marathon\Sox\Physics\Havok\CylinderShapeHavok.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Marathon\Sox\Physics\Havok\CylinderShapeHavok.h"
+							>
+						</File>
+						<File
 							RelativePath=".\Marathon\Sox\Physics\Havok\ShapeHavok.cpp"
 							>
 						</File>
 						<File
 							RelativePath=".\Marathon\Sox\Physics\Havok\ShapeHavok.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Marathon\Sox\Physics\Havok\SphereShapeHavok.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Marathon\Sox\Physics\Havok\SphereShapeHavok.h"
 							>
 						</File>
 						<File

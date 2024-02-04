@@ -20,24 +20,24 @@ Sonicteam::MyPhysicsSystemFactory::~MyPhysicsSystemFactory(void)
 
 
 
-void Sonicteam::MyPhysicsSystemFactory::CreateSphereShapeHavok(double radius)
+Sonicteam::SoX::Physics::Havok::SphereShapeHavok* Sonicteam::MyPhysicsSystemFactory::CreateSphereShapeHavok(double radius)
 {
-
+	return new Sonicteam::SoX::Physics::Havok::SphereShapeHavok(radius);
 }
 
-void Sonicteam::MyPhysicsSystemFactory::CreateBoxShapeHavok(double width,double height,double length)
+Sonicteam::SoX::Physics::Havok::BoxShapeHavok* Sonicteam::MyPhysicsSystemFactory::CreateBoxShapeHavok(double width,double height,double length)
 {
-
+	return new Sonicteam::SoX::Physics::Havok::BoxShapeHavok(width,height,length);
 }
 
-void Sonicteam::MyPhysicsSystemFactory::CreateCapsuleShapeHavok(double radius,double height)
+Sonicteam::SoX::Physics::Havok::CapsuleShapeHavok* Sonicteam::MyPhysicsSystemFactory::CreateCapsuleShapeHavok(double radius,double height)
 {
-
+	return new Sonicteam::SoX::Physics::Havok::CapsuleShapeHavok(radius,height);
 }
 
-void Sonicteam::MyPhysicsSystemFactory::CreateCylinderShapeHavok(double radius,double height)
+Sonicteam::SoX::Physics::Havok::CylinderShapeHavok* Sonicteam::MyPhysicsSystemFactory::CreateCylinderShapeHavok(double radius,double height)
 {
-
+	return new Sonicteam::SoX::Physics::Havok::CylinderShapeHavok(radius,height);
 }
 
 void Sonicteam::MyPhysicsSystemFactory::CreateMeshShapeHavok(unsigned int* RawMesh)

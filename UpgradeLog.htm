@@ -1,0 +1,404 @@
+﻿<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+ <html xmlns:msxsl="urn:schemas-microsoft-com:xslt"><head><meta content="en-us" http-equiv="Content-Language" /><meta content="text/html; charset=utf-16" http-equiv="Content-Type" /><title _locID="ConversionReport0">
+          Отчет о переносе
+        </title><style> 
+                    /* Body style, for the entire document */
+                    body
+                    {
+                        background: #F3F3F4;
+                        color: #1E1E1F;
+                        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+                        padding: 0;
+                        margin: 0;
+                    }
+
+                    /* Header1 style, used for the main title */
+                    h1
+                    {
+                        padding: 10px 0px 10px 10px;
+                        font-size: 21pt;
+                        background-color: #E2E2E2;
+                        border-bottom: 1px #C1C1C2 solid; 
+                        color: #201F20;
+                        margin: 0;
+                        font-weight: normal;
+                    }
+
+                    /* Header2 style, used for "Overview" and other sections */
+                    h2
+                    {
+                        font-size: 18pt;
+                        font-weight: normal;
+                        padding: 15px 0 5px 0;
+                        margin: 0;
+                    }
+
+                    /* Header3 style, used for sub-sections, such as project name */
+                    h3
+                    {
+                        font-weight: normal;
+                        font-size: 15pt;
+                        margin: 0;
+                        padding: 15px 0 5px 0;
+                        background-color: transparent;
+                    }
+
+                    /* Color all hyperlinks one color */
+                    a
+                    {
+                        color: #1382CE;
+                    }
+
+                    /* Table styles */ 
+                    table
+                    {
+                        border-spacing: 0 0;
+                        border-collapse: collapse;
+                        font-size: 10pt;
+                    }
+
+                    table th
+                    {
+                        background: #E7E7E8;
+                        text-align: left;
+                        text-decoration: none;
+                        font-weight: normal;
+                        padding: 3px 6px 3px 6px;
+                    }
+
+                    table td
+                    {
+                        vertical-align: top;
+                        padding: 3px 6px 5px 5px;
+                        margin: 0px;
+                        border: 1px solid #E7E7E8;
+                        background: #F7F7F8;
+                    }
+
+                    /* Local link is a style for hyperlinks that link to file:/// content, there are lots so color them as 'normal' text until the user mouse overs */
+                    .localLink
+                    {
+                        color: #1E1E1F;
+                        background: #EEEEED;
+                        text-decoration: none;
+                    }
+
+                    .localLink:hover
+                    {
+                        color: #1382CE;
+                        background: #FFFF99;
+                        text-decoration: none;
+                    }
+
+                    /* Center text, used in the over views cells that contain message level counts */ 
+                    .textCentered
+                    {
+                        text-align: center;
+                    }
+
+                    /* The message cells in message tables should take up all avaliable space */
+                    .messageCell
+                    {
+                        width: 100%;
+                    }
+
+                    /* Padding around the content after the h1 */ 
+                    #content 
+                    {
+	                    padding: 0px 12px 12px 12px; 
+                    }
+
+                    /* The overview table expands to width, with a max width of 97% */ 
+                    #overview table
+                    {
+                        width: auto;
+                        max-width: 75%; 
+                    }
+
+                    /* The messages tables are always 97% width */
+                    #messages table
+                    {
+                        width: 97%;
+                    }
+
+                    /* All Icons */
+                    .IconSuccessEncoded, .IconInfoEncoded, .IconWarningEncoded, .IconErrorEncoded
+                    {
+                        min-width:18px;
+                        min-height:18px; 
+                        background-repeat:no-repeat;
+                        background-position:center;
+                    }
+
+                    /* Success icon encoded */
+                    .IconSuccessEncoded
+                    {
+                        /* Note: Do not delete the comment below. It is used to verify the correctness of the encoded image resource below before the product is released */
+                        /* [---XsltValidateInternal-Base64EncodedImage:IconSuccess#Begin#background-image: url(data:image/png;base64,#Separator#);#End#] */
+                        background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABcElEQVR4Xq2TsUsCURzHv15g8ZJcBWlyiYYgCIWcb9DFRRwMW5TA2c0/QEFwFkxxUQdxVlBwCYWOi6IhWgQhBLHJUCkhLr/BW8S7gvrAg+N+v8/v+x68Z8MGy+XSCyABQAXgBgHGALoASkIIDWSLeLBetdHryMjd5IxQPWT4rn1c/P7+xxp72Cs9m5SZ0Bq2vPnbPFafK2zDvmNHypdC0BPkLlQhxJsCAhQoZwdZU5mwxh720qGo8MzTxTTKZDPCx2HoVzp6lz0Q9tKhyx0kGs8Ny+TkWRKk8lCROwEduhyg9l/6lunOPSfmH3NUH6uQ0KHLAe7JYvJjevm+DAMGJHToKtigE+vwvIidxLamb8IBY9e+C5LiXREkfho3TSd06HJA13/oh6T51MTsfQbHrsMynQ5dDihFjiK8JJAU9AKIWTp76dCVN7HWHrajmUEGvyF9nkbAE6gLIS7kTUyuf2gscLoJrElZo/Mvj+nPz/kLTmfnEwP3tB0AAAAASUVORK5CYII=);
+                    }
+
+                    /* Information icon encoded */
+                    .IconInfoEncoded
+                    {
+                        /* Note: Do not delete the comment below. It is used to verify the correctness of the encoded image resource below before the product is released */
+                        /* [---XsltValidateInternal-Base64EncodedImage:IconInformation#Begin#background-image: url(data:image/png;base64,#Separator#);#End#] */
+                        background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABHElEQVR4Xs2TsUoDQRRF7wwoziokjZUKadInhdhukR9YP8DMX1hYW+QvdsXa/QHBbcXC7W0CamWTQnclFutceIQJwwaWNLlwm5k5d94M76mmaeCrrmsLYOocY12FcxZFUeozCqKqqgYA8uevv1H6VuPxcwlfk5N92KHBxfFeCSAxxswlYAW/Xr989x/mv9gkhtyMDhcAxgzRsp7flj8B/HF1RsMXq+NZMkopaHe7lbKxQUEIGbKsYNoGn969060hZBkQex/W8oRQwsQaW2o3Ago2SVcJUzAgY3N0lTCZZm+zPS8HB51gMmS1DEYyOz9acKO1D8JWTlafKIMxdhvlfdyT94Vv5h7P8Ky7nQzACmhvKq3zk3PjW9asz9D/1oigecsioooAAAAASUVORK5CYII=);
+                    }
+
+                    /* Warning icon encoded */
+                    .IconWarningEncoded
+                    {
+                        /* Note: Do not delete the comment below. It is used to verify the correctness of the encoded image resource below before the product is released */
+                        /* [---XsltValidateInternal-Base64EncodedImage:IconWarning#Begin#background-image: url(data:image/png;base64,#Separator#);#End#] */
+                        background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAx0lEQVR4XpWSMQ7CMAxFf4xAyBMLCxMrO8dhaBcuwdCJS3RJBw7SA/QGTCxdWJgiQYWKXJWKIXHIlyw5lqr34tQgEOdcBsCOx5yZK3hCCKdYXneQkh4pEfqzLfu+wVDSyyzFoJjfz9NB+pAF+eizx2Vruts0k15mPgvS6GYvpVtQhB61IB/dk6AF6fS4Ben0uIX5odtFe8Q/eW1KvFeH4e8khT6+gm5B+t3juyDt7n0jpe+CANTd+oTUjN/U3yVaABnSUjFz/gFq44JaVSCXeQAAAABJRU5ErkJggg==);
+                    }
+
+                    /* Error icon encoded */
+                    .IconErrorEncoded
+                    {
+                        /* Note: Do not delete the comment below. It is used to verify the correctness of the encoded image resource below before the product is released */
+                        /* [---XsltValidateInternal-Base64EncodedImage:IconError#Begin#background-image: url(data:image/png;base64,#Separator#);#End#] */
+                        background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABQElEQVR4XqWTvUoEQRCE6wYPZUA80AfwAQz23uCMjA7MDRQEIzPBVEyNTQUFIw00vcQTTMzuAh/AxEQQT8HF/3G/oGGnEUGuoNnd6qoZuqltyKEsyzVJq5I6rnUp6SjGeGhESikzzlc1eL7opfuVbrqbU1Zw9NCgtQMaZpY0eNnaaL2fHusvTK5vKu7sjSS1Y4y3QUA6K3e3Mau5UFDyMP7tYF9o8cAHZv68vipoIJg971PZIZ5HiwdvYGGvFVFHmGmZ2MxwmQYPXubPl9Up0tfoMQGetXd6mRbvhBw+boZ6WF7Mbv1+GsHRk0fQmPAH1GfmZirbCfDJ61tw3Px8/8pZsPAG4jlVhcPgZ7adwNWBB68lkRQWFiTgFlbnLY3DGGM7izIJIyT/jjIvEJw6fdJTc6krDzh6aMwMP9bvDH4ADSsa9uSWVJkAAAAASUVORK5CYII=);
+                    }
+                 </style><script type="text/javascript" language="javascript"> 
+          
+            // Startup 
+            // Hook up the the loaded event for the document/window, to linkify the document content
+            var startupFunction = function() { linkifyElement("messages"); };
+            
+            if(window.attachEvent)
+            {
+              window.attachEvent('onload', startupFunction);
+            }
+            else if (window.addEventListener) 
+            {
+              window.addEventListener('load', startupFunction, false);
+            }
+            else 
+            {
+              document.addEventListener('load', startupFunction, false);
+            } 
+            
+            // Toggles the visibility of table rows with the specified name 
+            function toggleTableRowsByName(name)
+            {
+               var allRows = document.getElementsByTagName('tr');
+               for (i=0; i < allRows.length; i++)
+               {
+                  var currentName = allRows[i].getAttribute('name');
+                  if(!!currentName && currentName.indexOf(name) == 0)
+                  {
+                      var isVisible = allRows[i].style.display == ''; 
+                      isVisible ? allRows[i].style.display = 'none' : allRows[i].style.display = '';
+                  }
+               }
+            }
+            
+            function scrollToFirstVisibleRow(name) 
+            {
+               var allRows = document.getElementsByTagName('tr');
+               for (i=0; i < allRows.length; i++)
+               {
+                  var currentName = allRows[i].getAttribute('name');
+                  var isVisible = allRows[i].style.display == ''; 
+                  if(!!currentName && currentName.indexOf(name) == 0 && isVisible)
+                  {
+                     allRows[i].scrollIntoView(true); 
+                     return true; 
+                  }
+               }
+               
+               return false;
+            }
+            
+            // Linkifies the specified text content, replaces candidate links with html links 
+            function linkify(text)
+            {
+                 if(!text || 0 === text.length)
+                 {
+                     return text; 
+                 }
+
+                 // Find http, https and ftp links and replace them with hyper links 
+                 var urlLink = /(http|https|ftp)\:\/\/[a-zA-Z0-9\-\.]+(:[a-zA-Z0-9]*)?\/?([a-zA-Z0-9\-\._\?\,\/\\\+&%\$#\=~;\{\}])*/gi;
+                 
+                 return text.replace(urlLink, '<a href="$&">$&</a>') ;
+            }
+            
+            // Linkifies the specified element by ID
+            function linkifyElement(id)
+            {
+                var element = document.getElementById(id);
+                if(!!element)
+                {
+                  element.innerHTML = linkify(element.innerHTML); 
+                }
+            }
+            
+            function ToggleMessageVisibility(projectName)
+            {
+              if(!projectName || 0 === projectName.length)
+              {
+                return; 
+              }
+              
+              toggleTableRowsByName("MessageRowClass" + projectName);
+              toggleTableRowsByName('MessageRowHeaderShow' + projectName);
+              toggleTableRowsByName('MessageRowHeaderHide' + projectName); 
+            }
+            
+            function ScrollToFirstVisibleMessage(projectName)
+            {
+              if(!projectName || 0 === projectName.length)
+              {
+                return; 
+              }
+              
+              // First try the 'Show messages' row
+              if(!scrollToFirstVisibleRow('MessageRowHeaderShow' + projectName))
+              {
+                // Failed to find a visible row for 'Show messages', try an actual message row 
+                scrollToFirstVisibleRow('MessageRowClass' + projectName); 
+              }
+            }
+           </script></head><body><h1 _locID="ConversionReport">
+          Отчет о миграции - </h1><div id="content"><h2 _locID="OverviewTitle">Обзор</h2><div id="overview"><table><tr><th></th><th _locID="ProjectTableHeader">Проект</th><th _locID="PathTableHeader">Путь</th><th _locID="ErrorsTableHeader">Ошибки</th><th _locID="WarningsTableHeader">Предупреждения</th><th _locID="MessagesTableHeader">Сообщения</th></tr><tr><td class="IconWarningEncoded" /><td><strong><a href="#AtgFramework2008">AtgFramework2008</a></strong></td><td>ATG\AtgFramework2008.vcproj</td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#AtgFramework2008Warning">34</a></td><td class="textCentered"><a href="#" onclick="ScrollToFirstVisibleMessage('AtgFramework2008'); return false;">2</a></td></tr><tr><td class="IconWarningEncoded" /><td><strong><a href="#AtgFramework2005">AtgFramework2005</a></strong></td><td>ATG\AtgFramework2005.vcproj</td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#AtgFramework2005Warning">32</a></td><td class="textCentered"><a href="#" onclick="ScrollToFirstVisibleMessage('AtgFramework2005'); return false;">2</a></td></tr><tr><td class="IconWarningEncoded" /><td><strong><a href="#DLLModule2005">DLLModule2005</a></strong></td><td>2006DLL\DLLModule2005.vcproj</td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#DLLModule2005Warning">26</a></td><td class="textCentered"><a href="#" onclick="ScrollToFirstVisibleMessage('DLLModule2005'); return false;">2</a></td></tr><tr><td class="IconWarningEncoded" /><td><strong><a href="#LUA">LUA</a></strong></td><td>LUA\LUA.vcproj</td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#LUAWarning">12</a></td><td class="textCentered"><a href="#" onclick="ScrollToFirstVisibleMessage('LUA'); return false;">2</a></td></tr><tr><td class="IconWarningEncoded" /><td><strong><a href="#Solution"><span _locID="OverviewSolutionSpan">Решение</span></a></strong></td><td>2006DLL.sln</td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#SolutionWarning">1</a></td><td class="textCentered"><a href="#" onclick="ScrollToFirstVisibleMessage('Solution'); return false;">2</a></td></tr><tr><td class="IconSuccessEncoded" /><td><strong><a href="#2006DLL">2006DLL</a></strong></td><td>2006DLL\DLLModule2005.vcproj</td><td class="textCentered"><a>0</a></td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#">0</a></td></tr><tr><td class="IconSuccessEncoded" /><td><strong><a href="#AtgFramework">AtgFramework</a></strong></td><td>ATG\AtgFramework2005.vcproj</td><td class="textCentered"><a>0</a></td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#">0</a></td></tr></table></div><h2 _locID="SolutionAndProjectsTitle">Решение и проекты</h2><div id="messages"><a name="AtgFramework2008" /><h3>AtgFramework2008</h3><table><tr id="AtgFramework2008HeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Сообщение</th></tr><tr name="WarningRowClassAtgFramework2008"><td class="IconWarningEncoded"><a name="AtgFramework2008Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2008.vcproj:
+        </strong><span>VCConvertEngine could not convert attribute UseOfMFC = -1 under Configuration Debug|Xbox 360.</span></td></tr><tr name="WarningRowClassAtgFramework2008"><td class="IconWarningEncoded"><a name="AtgFramework2008Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2008.vcproj:
+        </strong><span>VCWebServiceProxyGeneratorTool is no longer supported. The tool has been removed from your project settings.</span></td></tr><tr name="WarningRowClassAtgFramework2008"><td class="IconWarningEncoded"><a name="AtgFramework2008Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2008.vcproj:
+        </strong><span>DebuggerTool is no longer supported. The tool has been removed from your project settings.</span></td></tr><tr name="WarningRowClassAtgFramework2008"><td class="IconWarningEncoded"><a name="AtgFramework2008Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2008.vcproj:
+        </strong><span>VCConvertEngine could not convert attribute UseOfMFC = -1 under Configuration CodeAnalysis|Xbox 360.</span></td></tr><tr name="WarningRowClassAtgFramework2008"><td class="IconWarningEncoded"><a name="AtgFramework2008Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2008.vcproj:
+        </strong><span>DebuggerTool is no longer supported. The tool has been removed from your project settings.</span></td></tr><tr name="WarningRowClassAtgFramework2008"><td class="IconWarningEncoded"><a name="AtgFramework2008Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2008.vcproj:
+        </strong><span>VCConvertEngine could not convert attribute UseOfMFC = -1 under Configuration Profile|Xbox 360.</span></td></tr><tr name="WarningRowClassAtgFramework2008"><td class="IconWarningEncoded"><a name="AtgFramework2008Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2008.vcproj:
+        </strong><span>DebuggerTool is no longer supported. The tool has been removed from your project settings.</span></td></tr><tr name="WarningRowClassAtgFramework2008"><td class="IconWarningEncoded"><a name="AtgFramework2008Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2008.vcproj:
+        </strong><span>VCConvertEngine could not convert attribute UseOfMFC = -1 under Configuration Profile_FastCap|Xbox 360.</span></td></tr><tr name="WarningRowClassAtgFramework2008"><td class="IconWarningEncoded"><a name="AtgFramework2008Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2008.vcproj:
+        </strong><span>DebuggerTool is no longer supported. The tool has been removed from your project settings.</span></td></tr><tr name="WarningRowClassAtgFramework2008"><td class="IconWarningEncoded"><a name="AtgFramework2008Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2008.vcproj:
+        </strong><span>VCConvertEngine could not convert attribute UseOfMFC = -1 under Configuration Release|Xbox 360.</span></td></tr><tr name="WarningRowClassAtgFramework2008"><td class="IconWarningEncoded"><a name="AtgFramework2008Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2008.vcproj:
+        </strong><span>DebuggerTool is no longer supported. The tool has been removed from your project settings.</span></td></tr><tr name="WarningRowClassAtgFramework2008"><td class="IconWarningEncoded"><a name="AtgFramework2008Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2008.vcproj:
+        </strong><span>VCConvertEngine could not convert attribute UseOfMFC = -1 under Configuration Release_LTCG|Xbox 360.</span></td></tr><tr name="WarningRowClassAtgFramework2008"><td class="IconWarningEncoded"><a name="AtgFramework2008Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2008.vcproj:
+        </strong><span>DebuggerTool is no longer supported. The tool has been removed from your project settings.</span></td></tr><tr name="WarningRowClassAtgFramework2008"><td class="IconWarningEncoded"><a name="AtgFramework2008Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2008.vcproj:
+        </strong><span>Unable to upgrade the file '.\stdafx.cpp' default tool.</span></td></tr><tr name="WarningRowClassAtgFramework2008"><td class="IconWarningEncoded"><a name="AtgFramework2008Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2008.vcproj:
+        </strong><span>Unable to upgrade the file '.\stdafx.cpp' default tool.</span></td></tr><tr name="WarningRowClassAtgFramework2008"><td class="IconWarningEncoded"><a name="AtgFramework2008Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2008.vcproj:
+        </strong><span>Unable to upgrade the file '.\stdafx.cpp' default tool.</span></td></tr><tr name="WarningRowClassAtgFramework2008"><td class="IconWarningEncoded"><a name="AtgFramework2008Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2008.vcproj:
+        </strong><span>Unable to upgrade the file '.\stdafx.cpp' default tool.</span></td></tr><tr name="WarningRowClassAtgFramework2008"><td class="IconWarningEncoded"><a name="AtgFramework2008Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2008.vcproj:
+        </strong><span>Unable to upgrade the file '.\stdafx.cpp' default tool.</span></td></tr><tr name="WarningRowClassAtgFramework2008"><td class="IconWarningEncoded"><a name="AtgFramework2008Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2008.vcproj:
+        </strong><span>Unable to upgrade the file '.\stdafx.cpp' default tool.</span></td></tr><tr name="WarningRowClassAtgFramework2008"><td class="IconWarningEncoded"><a name="AtgFramework2008Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2008.vcproj:
+        </strong><span>Unable to upgrade the file '.\AtgXmlParser.h' default tool.</span></td></tr><tr name="WarningRowClassAtgFramework2008"><td class="IconWarningEncoded"><a name="AtgFramework2008Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2008.vcproj:
+        </strong><span>Unable to upgrade the file '.\AtgXmlWriter.h' default tool.</span></td></tr><tr name="WarningRowClassAtgFramework2008"><td class="IconWarningEncoded"><a name="AtgFramework2008Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2008.vcproj:
+        </strong><span>Unable to upgrade the file '.\AtgCamera.h' default tool.</span></td></tr><tr name="WarningRowClassAtgFramework2008"><td class="IconWarningEncoded"><a name="AtgFramework2008Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2008.vcproj:
+        </strong><span>Unable to upgrade the file '.\AtgFrame.h' default tool.</span></td></tr><tr name="WarningRowClassAtgFramework2008"><td class="IconWarningEncoded"><a name="AtgFramework2008Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2008.vcproj:
+        </strong><span>Unable to upgrade the file '.\AtgLight.h' default tool.</span></td></tr><tr name="WarningRowClassAtgFramework2008"><td class="IconWarningEncoded"><a name="AtgFramework2008Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2008.vcproj:
+        </strong><span>Unable to upgrade the file '.\AtgModel.h' default tool.</span></td></tr><tr name="WarningRowClassAtgFramework2008"><td class="IconWarningEncoded"><a name="AtgFramework2008Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2008.vcproj:
+        </strong><span>Unable to upgrade the file '.\AtgNamedTypedObject.h' default tool.</span></td></tr><tr name="WarningRowClassAtgFramework2008"><td class="IconWarningEncoded"><a name="AtgFramework2008Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2008.vcproj:
+        </strong><span>Unable to upgrade the file '.\AtgResourceDatabase.h' default tool.</span></td></tr><tr name="WarningRowClassAtgFramework2008"><td class="IconWarningEncoded"><a name="AtgFramework2008Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2008.vcproj:
+        </strong><span>Unable to upgrade the file '.\AtgScene.h' default tool.</span></td></tr><tr name="WarningRowClassAtgFramework2008"><td class="IconWarningEncoded"><a name="AtgFramework2008Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2008.vcproj:
+        </strong><span>Unable to upgrade the file '.\AtgSceneAll.h' default tool.</span></td></tr><tr name="WarningRowClassAtgFramework2008"><td class="IconWarningEncoded"><a name="AtgFramework2008Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2008.vcproj:
+        </strong><span>Unable to upgrade the file '.\AtgBound.h' default tool.</span></td></tr><tr name="WarningRowClassAtgFramework2008"><td class="IconWarningEncoded"><a name="AtgFramework2008Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2008.vcproj:
+        </strong><span>Unable to upgrade the file '.\AtgCollision.h' default tool.</span></td></tr><tr name="WarningRowClassAtgFramework2008"><td class="IconWarningEncoded"><a name="AtgFramework2008Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2008.vcproj:
+        </strong><span>Unable to upgrade the file '.\AtgDebugDraw.h' default tool.</span></td></tr><tr name="WarningRowClassAtgFramework2008"><td class="IconWarningEncoded"><a name="AtgFramework2008Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2008.vcproj:
+        </strong><span>Unable to upgrade the file '.\AtgSimpleShaders.h' default tool.</span></td></tr><tr name="WarningRowClassAtgFramework2008"><td class="IconWarningEncoded"><a name="AtgFramework2008Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2008.vcproj:
+        </strong><span>Unable to upgrade the file '.\AtgEnumStrings.h' default tool.</span></td></tr><tr name="MessageRowHeaderShowAtgFramework2008"><td class="IconInfoEncoded" /><td class="messageCell"><a _locID="ShowAdditionalMessages" href="#" name="AtgFramework2008Message" onclick="ToggleMessageVisibility('AtgFramework2008'); return false;">
+          Показать 2 дополнительные сообщения
+        </a></td></tr><tr name="MessageRowClassAtgFramework2008" style="display: none"><td class="IconInfoEncoded"><a name="AtgFramework2008Message" /></td><td class="messageCell"><strong>ATG\AtgFramework2008.vcproj:
+        </strong><span>Converting project file 'D:\Games\X360\SONIC THE HEDGEHOG (XBOX 360)\DLL_NEW\2006DLL\ATG\AtgFramework2008.vcproj'.</span></td></tr><tr name="MessageRowClassAtgFramework2008" style="display: none"><td class="IconInfoEncoded"><a name="AtgFramework2008Message" /></td><td class="messageCell"><strong>ATG\AtgFramework2008.vcproj:
+        </strong><span>Done converting to new project file 'D:\Games\X360\SONIC THE HEDGEHOG (XBOX 360)\DLL_NEW\2006DLL\ATG\AtgFramework2008.vcxproj'.</span></td></tr><tr style="display: none" name="MessageRowHeaderHideAtgFramework2008"><td class="IconInfoEncoded" /><td class="messageCell"><a _locID="HideAdditionalMessages" href="#" name="AtgFramework2008Message" onclick="ToggleMessageVisibility('AtgFramework2008'); return false;">
+          Скрыть 2 дополнительные сообщения
+        </a></td></tr></table><a name="AtgFramework2005" /><h3>AtgFramework2005</h3><table><tr id="AtgFramework2005HeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Сообщение</th></tr><tr name="WarningRowClassAtgFramework2005"><td class="IconWarningEncoded"><a name="AtgFramework2005Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2005.vcproj:
+        </strong><span>This application has been updated to include settings related to the User Account Control (UAC) feature of Windows Vista. By default, when run on Windows Vista with UAC enabled, this application is marked to run with the same privileges as the process that launched it. This marking also disables the application from running with virtualization. You can change UAC related settings from the Property Pages of the project.</span></td></tr><tr name="WarningRowClassAtgFramework2005"><td class="IconWarningEncoded"><a name="AtgFramework2005Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2005.vcproj:
+        </strong><span>VCConvertEngine could not convert attribute UseOfMFC = -1 under Configuration Debug|Xbox 360.</span></td></tr><tr name="WarningRowClassAtgFramework2005"><td class="IconWarningEncoded"><a name="AtgFramework2005Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2005.vcproj:
+        </strong><span>VCWebServiceProxyGeneratorTool is no longer supported. The tool has been removed from your project settings.</span></td></tr><tr name="WarningRowClassAtgFramework2005"><td class="IconWarningEncoded"><a name="AtgFramework2005Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2005.vcproj:
+        </strong><span>DebuggerTool is no longer supported. The tool has been removed from your project settings.</span></td></tr><tr name="WarningRowClassAtgFramework2005"><td class="IconWarningEncoded"><a name="AtgFramework2005Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2005.vcproj:
+        </strong><span>VCConvertEngine could not convert attribute UseOfMFC = -1 under Configuration Profile|Xbox 360.</span></td></tr><tr name="WarningRowClassAtgFramework2005"><td class="IconWarningEncoded"><a name="AtgFramework2005Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2005.vcproj:
+        </strong><span>DebuggerTool is no longer supported. The tool has been removed from your project settings.</span></td></tr><tr name="WarningRowClassAtgFramework2005"><td class="IconWarningEncoded"><a name="AtgFramework2005Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2005.vcproj:
+        </strong><span>VCConvertEngine could not convert attribute UseOfMFC = -1 under Configuration Profile_FastCap|Xbox 360.</span></td></tr><tr name="WarningRowClassAtgFramework2005"><td class="IconWarningEncoded"><a name="AtgFramework2005Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2005.vcproj:
+        </strong><span>DebuggerTool is no longer supported. The tool has been removed from your project settings.</span></td></tr><tr name="WarningRowClassAtgFramework2005"><td class="IconWarningEncoded"><a name="AtgFramework2005Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2005.vcproj:
+        </strong><span>VCConvertEngine could not convert attribute UseOfMFC = -1 under Configuration Release|Xbox 360.</span></td></tr><tr name="WarningRowClassAtgFramework2005"><td class="IconWarningEncoded"><a name="AtgFramework2005Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2005.vcproj:
+        </strong><span>DebuggerTool is no longer supported. The tool has been removed from your project settings.</span></td></tr><tr name="WarningRowClassAtgFramework2005"><td class="IconWarningEncoded"><a name="AtgFramework2005Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2005.vcproj:
+        </strong><span>VCConvertEngine could not convert attribute UseOfMFC = -1 under Configuration Release_LTCG|Xbox 360.</span></td></tr><tr name="WarningRowClassAtgFramework2005"><td class="IconWarningEncoded"><a name="AtgFramework2005Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2005.vcproj:
+        </strong><span>DebuggerTool is no longer supported. The tool has been removed from your project settings.</span></td></tr><tr name="WarningRowClassAtgFramework2005"><td class="IconWarningEncoded"><a name="AtgFramework2005Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2005.vcproj:
+        </strong><span>Unable to upgrade the file '.\stdafx.cpp' default tool.</span></td></tr><tr name="WarningRowClassAtgFramework2005"><td class="IconWarningEncoded"><a name="AtgFramework2005Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2005.vcproj:
+        </strong><span>Unable to upgrade the file '.\stdafx.cpp' default tool.</span></td></tr><tr name="WarningRowClassAtgFramework2005"><td class="IconWarningEncoded"><a name="AtgFramework2005Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2005.vcproj:
+        </strong><span>Unable to upgrade the file '.\stdafx.cpp' default tool.</span></td></tr><tr name="WarningRowClassAtgFramework2005"><td class="IconWarningEncoded"><a name="AtgFramework2005Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2005.vcproj:
+        </strong><span>Unable to upgrade the file '.\stdafx.cpp' default tool.</span></td></tr><tr name="WarningRowClassAtgFramework2005"><td class="IconWarningEncoded"><a name="AtgFramework2005Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2005.vcproj:
+        </strong><span>Unable to upgrade the file '.\stdafx.cpp' default tool.</span></td></tr><tr name="WarningRowClassAtgFramework2005"><td class="IconWarningEncoded"><a name="AtgFramework2005Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2005.vcproj:
+        </strong><span>Unable to upgrade the file '.\AtgXmlParser.h' default tool.</span></td></tr><tr name="WarningRowClassAtgFramework2005"><td class="IconWarningEncoded"><a name="AtgFramework2005Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2005.vcproj:
+        </strong><span>Unable to upgrade the file '.\AtgXmlWriter.h' default tool.</span></td></tr><tr name="WarningRowClassAtgFramework2005"><td class="IconWarningEncoded"><a name="AtgFramework2005Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2005.vcproj:
+        </strong><span>Unable to upgrade the file '.\AtgCamera.h' default tool.</span></td></tr><tr name="WarningRowClassAtgFramework2005"><td class="IconWarningEncoded"><a name="AtgFramework2005Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2005.vcproj:
+        </strong><span>Unable to upgrade the file '.\AtgFrame.h' default tool.</span></td></tr><tr name="WarningRowClassAtgFramework2005"><td class="IconWarningEncoded"><a name="AtgFramework2005Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2005.vcproj:
+        </strong><span>Unable to upgrade the file '.\AtgLight.h' default tool.</span></td></tr><tr name="WarningRowClassAtgFramework2005"><td class="IconWarningEncoded"><a name="AtgFramework2005Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2005.vcproj:
+        </strong><span>Unable to upgrade the file '.\AtgModel.h' default tool.</span></td></tr><tr name="WarningRowClassAtgFramework2005"><td class="IconWarningEncoded"><a name="AtgFramework2005Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2005.vcproj:
+        </strong><span>Unable to upgrade the file '.\AtgNamedTypedObject.h' default tool.</span></td></tr><tr name="WarningRowClassAtgFramework2005"><td class="IconWarningEncoded"><a name="AtgFramework2005Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2005.vcproj:
+        </strong><span>Unable to upgrade the file '.\AtgResourceDatabase.h' default tool.</span></td></tr><tr name="WarningRowClassAtgFramework2005"><td class="IconWarningEncoded"><a name="AtgFramework2005Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2005.vcproj:
+        </strong><span>Unable to upgrade the file '.\AtgScene.h' default tool.</span></td></tr><tr name="WarningRowClassAtgFramework2005"><td class="IconWarningEncoded"><a name="AtgFramework2005Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2005.vcproj:
+        </strong><span>Unable to upgrade the file '.\AtgSceneAll.h' default tool.</span></td></tr><tr name="WarningRowClassAtgFramework2005"><td class="IconWarningEncoded"><a name="AtgFramework2005Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2005.vcproj:
+        </strong><span>Unable to upgrade the file '.\AtgBound.h' default tool.</span></td></tr><tr name="WarningRowClassAtgFramework2005"><td class="IconWarningEncoded"><a name="AtgFramework2005Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2005.vcproj:
+        </strong><span>Unable to upgrade the file '.\AtgCollision.h' default tool.</span></td></tr><tr name="WarningRowClassAtgFramework2005"><td class="IconWarningEncoded"><a name="AtgFramework2005Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2005.vcproj:
+        </strong><span>Unable to upgrade the file '.\AtgDebugDraw.h' default tool.</span></td></tr><tr name="WarningRowClassAtgFramework2005"><td class="IconWarningEncoded"><a name="AtgFramework2005Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2005.vcproj:
+        </strong><span>Unable to upgrade the file '.\AtgSimpleShaders.h' default tool.</span></td></tr><tr name="WarningRowClassAtgFramework2005"><td class="IconWarningEncoded"><a name="AtgFramework2005Warning" /></td><td class="messageCell"><strong>ATG\AtgFramework2005.vcproj:
+        </strong><span>Unable to upgrade the file '.\AtgEnumStrings.h' default tool.</span></td></tr><tr name="MessageRowHeaderShowAtgFramework2005"><td class="IconInfoEncoded" /><td class="messageCell"><a _locID="ShowAdditionalMessages" href="#" name="AtgFramework2005Message" onclick="ToggleMessageVisibility('AtgFramework2005'); return false;">
+          Показать 2 дополнительные сообщения
+        </a></td></tr><tr name="MessageRowClassAtgFramework2005" style="display: none"><td class="IconInfoEncoded"><a name="AtgFramework2005Message" /></td><td class="messageCell"><strong>ATG\AtgFramework2005.vcproj:
+        </strong><span>Converting project file 'D:\Games\X360\SONIC THE HEDGEHOG (XBOX 360)\DLL_NEW\2006DLL\ATG\AtgFramework2005.vcproj'.</span></td></tr><tr name="MessageRowClassAtgFramework2005" style="display: none"><td class="IconInfoEncoded"><a name="AtgFramework2005Message" /></td><td class="messageCell"><strong>ATG\AtgFramework2005.vcproj:
+        </strong><span>Done converting to new project file 'D:\Games\X360\SONIC THE HEDGEHOG (XBOX 360)\DLL_NEW\2006DLL\ATG\AtgFramework2005.vcxproj'.</span></td></tr><tr style="display: none" name="MessageRowHeaderHideAtgFramework2005"><td class="IconInfoEncoded" /><td class="messageCell"><a _locID="HideAdditionalMessages" href="#" name="AtgFramework2005Message" onclick="ToggleMessageVisibility('AtgFramework2005'); return false;">
+          Скрыть 2 дополнительные сообщения
+        </a></td></tr></table><a name="DLLModule2005" /><h3>DLLModule2005</h3><table><tr id="DLLModule2005HeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Сообщение</th></tr><tr name="WarningRowClassDLLModule2005"><td class="IconWarningEncoded"><a name="DLLModule2005Warning" /></td><td class="messageCell"><strong>2006DLL\DLLModule2005.vcproj:
+        </strong><span>This application has been updated to include settings related to the User Account Control (UAC) feature of Windows Vista. By default, when run on Windows Vista with UAC enabled, this application is marked to run with the same privileges as the process that launched it. This marking also disables the application from running with virtualization. You can change UAC related settings from the Property Pages of the project.</span></td></tr><tr name="WarningRowClassDLLModule2005"><td class="IconWarningEncoded"><a name="DLLModule2005Warning" /></td><td class="messageCell"><strong>2006DLL\DLLModule2005.vcproj:
+        </strong><span>VCConvertEngine could not convert attribute UseOfMFC = -1 under Configuration Debug|Xbox 360.</span></td></tr><tr name="WarningRowClassDLLModule2005"><td class="IconWarningEncoded"><a name="DLLModule2005Warning" /></td><td class="messageCell"><strong>2006DLL\DLLModule2005.vcproj:
+        </strong><span>VCWebServiceProxyGeneratorTool is no longer supported. The tool has been removed from your project settings.</span></td></tr><tr name="WarningRowClassDLLModule2005"><td class="IconWarningEncoded"><a name="DLLModule2005Warning" /></td><td class="messageCell"><strong>2006DLL\DLLModule2005.vcproj:
+        </strong><span>DebuggerTool is no longer supported. The tool has been removed from your project settings.</span></td></tr><tr name="WarningRowClassDLLModule2005"><td class="IconWarningEncoded"><a name="DLLModule2005Warning" /></td><td class="messageCell"><strong>2006DLL\DLLModule2005.vcproj:
+        </strong><span>VCConvertEngine could not convert attribute UseOfMFC = -1 under Configuration Profile|Xbox 360.</span></td></tr><tr name="WarningRowClassDLLModule2005"><td class="IconWarningEncoded"><a name="DLLModule2005Warning" /></td><td class="messageCell"><strong>2006DLL\DLLModule2005.vcproj:
+        </strong><span>DebuggerTool is no longer supported. The tool has been removed from your project settings.</span></td></tr><tr name="WarningRowClassDLLModule2005"><td class="IconWarningEncoded"><a name="DLLModule2005Warning" /></td><td class="messageCell"><strong>2006DLL\DLLModule2005.vcproj:
+        </strong><span>VCConvertEngine could not convert attribute UseOfMFC = -1 under Configuration Profile_FastCap|Xbox 360.</span></td></tr><tr name="WarningRowClassDLLModule2005"><td class="IconWarningEncoded"><a name="DLLModule2005Warning" /></td><td class="messageCell"><strong>2006DLL\DLLModule2005.vcproj:
+        </strong><span>DebuggerTool is no longer supported. The tool has been removed from your project settings.</span></td></tr><tr name="WarningRowClassDLLModule2005"><td class="IconWarningEncoded"><a name="DLLModule2005Warning" /></td><td class="messageCell"><strong>2006DLL\DLLModule2005.vcproj:
+        </strong><span>VCConvertEngine could not convert attribute UseOfMFC = -1 under Configuration Release|Xbox 360.</span></td></tr><tr name="WarningRowClassDLLModule2005"><td class="IconWarningEncoded"><a name="DLLModule2005Warning" /></td><td class="messageCell"><strong>2006DLL\DLLModule2005.vcproj:
+        </strong><span>DebuggerTool is no longer supported. The tool has been removed from your project settings.</span></td></tr><tr name="WarningRowClassDLLModule2005"><td class="IconWarningEncoded"><a name="DLLModule2005Warning" /></td><td class="messageCell"><strong>2006DLL\DLLModule2005.vcproj:
+        </strong><span>VCConvertEngine could not convert attribute UseOfMFC = -1 under Configuration Release_LTCG|Xbox 360.</span></td></tr><tr name="WarningRowClassDLLModule2005"><td class="IconWarningEncoded"><a name="DLLModule2005Warning" /></td><td class="messageCell"><strong>2006DLL\DLLModule2005.vcproj:
+        </strong><span>DebuggerTool is no longer supported. The tool has been removed from your project settings.</span></td></tr><tr name="WarningRowClassDLLModule2005"><td class="IconWarningEncoded"><a name="DLLModule2005Warning" /></td><td class="messageCell"><strong>2006DLL\DLLModule2005.vcproj:
+        </strong><span>Attribute 'CopyLocalDependencies' of 'AssemblyReference' is not supported in this version and has been removed during conversion.</span></td></tr><tr name="WarningRowClassDLLModule2005"><td class="IconWarningEncoded"><a name="DLLModule2005Warning" /></td><td class="messageCell"><strong>2006DLL\DLLModule2005.vcproj:
+        </strong><span>Attribute 'UseDependenciesInBuild' of 'AssemblyReference' is not supported in this version and has been removed during conversion.</span></td></tr><tr name="WarningRowClassDLLModule2005"><td class="IconWarningEncoded"><a name="DLLModule2005Warning" /></td><td class="messageCell"><strong>2006DLL\DLLModule2005.vcproj:
+        </strong><span>Attribute 'CopyLocalDependencies' of 'AssemblyReference' is not supported in this version and has been removed during conversion.</span></td></tr><tr name="WarningRowClassDLLModule2005"><td class="IconWarningEncoded"><a name="DLLModule2005Warning" /></td><td class="messageCell"><strong>2006DLL\DLLModule2005.vcproj:
+        </strong><span>Attribute 'UseDependenciesInBuild' of 'AssemblyReference' is not supported in this version and has been removed during conversion.</span></td></tr><tr name="WarningRowClassDLLModule2005"><td class="IconWarningEncoded"><a name="DLLModule2005Warning" /></td><td class="messageCell"><strong>2006DLL\DLLModule2005.vcproj:
+        </strong><span>Attribute 'CopyLocalDependencies' of 'AssemblyReference' is not supported in this version and has been removed during conversion.</span></td></tr><tr name="WarningRowClassDLLModule2005"><td class="IconWarningEncoded"><a name="DLLModule2005Warning" /></td><td class="messageCell"><strong>2006DLL\DLLModule2005.vcproj:
+        </strong><span>Attribute 'UseDependenciesInBuild' of 'AssemblyReference' is not supported in this version and has been removed during conversion.</span></td></tr><tr name="WarningRowClassDLLModule2005"><td class="IconWarningEncoded"><a name="DLLModule2005Warning" /></td><td class="messageCell"><strong>2006DLL\DLLModule2005.vcproj:
+        </strong><span>Attribute 'CopyLocalDependencies' of 'AssemblyReference' is not supported in this version and has been removed during conversion.</span></td></tr><tr name="WarningRowClassDLLModule2005"><td class="IconWarningEncoded"><a name="DLLModule2005Warning" /></td><td class="messageCell"><strong>2006DLL\DLLModule2005.vcproj:
+        </strong><span>Attribute 'UseDependenciesInBuild' of 'AssemblyReference' is not supported in this version and has been removed during conversion.</span></td></tr><tr name="WarningRowClassDLLModule2005"><td class="IconWarningEncoded"><a name="DLLModule2005Warning" /></td><td class="messageCell"><strong>2006DLL\DLLModule2005.vcproj:
+        </strong><span>Attribute 'CopyLocalDependencies' of 'AssemblyReference' is not supported in this version and has been removed during conversion.</span></td></tr><tr name="WarningRowClassDLLModule2005"><td class="IconWarningEncoded"><a name="DLLModule2005Warning" /></td><td class="messageCell"><strong>2006DLL\DLLModule2005.vcproj:
+        </strong><span>Attribute 'UseDependenciesInBuild' of 'AssemblyReference' is not supported in this version and has been removed during conversion.</span></td></tr><tr name="WarningRowClassDLLModule2005"><td class="IconWarningEncoded"><a name="DLLModule2005Warning" /></td><td class="messageCell"><strong>2006DLL\DLLModule2005.vcproj:
+        </strong><span>Unable to upgrade the file '.\MPatches.cpp' default tool.</span></td></tr><tr name="WarningRowClassDLLModule2005"><td class="IconWarningEncoded"><a name="DLLModule2005Warning" /></td><td class="messageCell"><strong>2006DLL\DLLModule2005.vcproj:
+        </strong><span>Unable to upgrade the file '.\MPatches.h' default tool.</span></td></tr><tr name="WarningRowClassDLLModule2005"><td class="IconWarningEncoded"><a name="DLLModule2005Warning" /></td><td class="messageCell"><strong>2006DLL\DLLModule2005.vcproj:
+        </strong><span>Unable to upgrade the file '.\Basics.h' default tool.</span></td></tr><tr name="WarningRowClassDLLModule2005"><td class="IconWarningEncoded"><a name="DLLModule2005Warning" /></td><td class="messageCell"><strong>2006DLL\DLLModule2005.vcproj:
+        </strong><span>Unable to upgrade the file '.\PatchData.cpp' default tool.</span></td></tr><tr name="MessageRowHeaderShowDLLModule2005"><td class="IconInfoEncoded" /><td class="messageCell"><a _locID="ShowAdditionalMessages" href="#" name="DLLModule2005Message" onclick="ToggleMessageVisibility('DLLModule2005'); return false;">
+          Показать 2 дополнительные сообщения
+        </a></td></tr><tr name="MessageRowClassDLLModule2005" style="display: none"><td class="IconInfoEncoded"><a name="DLLModule2005Message" /></td><td class="messageCell"><strong>2006DLL\DLLModule2005.vcproj:
+        </strong><span>Converting project file 'D:\Games\X360\SONIC THE HEDGEHOG (XBOX 360)\DLL_NEW\2006DLL\2006DLL\DLLModule2005.vcproj'.</span></td></tr><tr name="MessageRowClassDLLModule2005" style="display: none"><td class="IconInfoEncoded"><a name="DLLModule2005Message" /></td><td class="messageCell"><strong>2006DLL\DLLModule2005.vcproj:
+        </strong><span>Done converting to new project file 'D:\Games\X360\SONIC THE HEDGEHOG (XBOX 360)\DLL_NEW\2006DLL\2006DLL\DLLModule2005.vcxproj'.</span></td></tr><tr style="display: none" name="MessageRowHeaderHideDLLModule2005"><td class="IconInfoEncoded" /><td class="messageCell"><a _locID="HideAdditionalMessages" href="#" name="DLLModule2005Message" onclick="ToggleMessageVisibility('DLLModule2005'); return false;">
+          Скрыть 2 дополнительные сообщения
+        </a></td></tr></table><a name="LUA" /><h3>LUA</h3><table><tr id="LUAHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Сообщение</th></tr><tr name="WarningRowClassLUA"><td class="IconWarningEncoded"><a name="LUAWarning" /></td><td class="messageCell"><strong>LUA\LUA.vcproj:
+        </strong><span>This application has been updated to include settings related to the User Account Control (UAC) feature of Windows Vista. By default, when run on Windows Vista with UAC enabled, this application is marked to run with the same privileges as the process that launched it. This marking also disables the application from running with virtualization. You can change UAC related settings from the Property Pages of the project.</span></td></tr><tr name="WarningRowClassLUA"><td class="IconWarningEncoded"><a name="LUAWarning" /></td><td class="messageCell"><strong>LUA\LUA.vcproj:
+        </strong><span>VCConvertEngine could not convert attribute UseOfMFC = -1 under Configuration Debug|Xbox 360.</span></td></tr><tr name="WarningRowClassLUA"><td class="IconWarningEncoded"><a name="LUAWarning" /></td><td class="messageCell"><strong>LUA\LUA.vcproj:
+        </strong><span>VCWebServiceProxyGeneratorTool is no longer supported. The tool has been removed from your project settings.</span></td></tr><tr name="WarningRowClassLUA"><td class="IconWarningEncoded"><a name="LUAWarning" /></td><td class="messageCell"><strong>LUA\LUA.vcproj:
+        </strong><span>DebuggerTool is no longer supported. The tool has been removed from your project settings.</span></td></tr><tr name="WarningRowClassLUA"><td class="IconWarningEncoded"><a name="LUAWarning" /></td><td class="messageCell"><strong>LUA\LUA.vcproj:
+        </strong><span>VCConvertEngine could not convert attribute UseOfMFC = -1 under Configuration Profile|Xbox 360.</span></td></tr><tr name="WarningRowClassLUA"><td class="IconWarningEncoded"><a name="LUAWarning" /></td><td class="messageCell"><strong>LUA\LUA.vcproj:
+        </strong><span>DebuggerTool is no longer supported. The tool has been removed from your project settings.</span></td></tr><tr name="WarningRowClassLUA"><td class="IconWarningEncoded"><a name="LUAWarning" /></td><td class="messageCell"><strong>LUA\LUA.vcproj:
+        </strong><span>VCConvertEngine could not convert attribute UseOfMFC = -1 under Configuration Profile_FastCap|Xbox 360.</span></td></tr><tr name="WarningRowClassLUA"><td class="IconWarningEncoded"><a name="LUAWarning" /></td><td class="messageCell"><strong>LUA\LUA.vcproj:
+        </strong><span>DebuggerTool is no longer supported. The tool has been removed from your project settings.</span></td></tr><tr name="WarningRowClassLUA"><td class="IconWarningEncoded"><a name="LUAWarning" /></td><td class="messageCell"><strong>LUA\LUA.vcproj:
+        </strong><span>VCConvertEngine could not convert attribute UseOfMFC = -1 under Configuration Release|Xbox 360.</span></td></tr><tr name="WarningRowClassLUA"><td class="IconWarningEncoded"><a name="LUAWarning" /></td><td class="messageCell"><strong>LUA\LUA.vcproj:
+        </strong><span>DebuggerTool is no longer supported. The tool has been removed from your project settings.</span></td></tr><tr name="WarningRowClassLUA"><td class="IconWarningEncoded"><a name="LUAWarning" /></td><td class="messageCell"><strong>LUA\LUA.vcproj:
+        </strong><span>VCConvertEngine could not convert attribute UseOfMFC = -1 under Configuration Release_LTCG|Xbox 360.</span></td></tr><tr name="WarningRowClassLUA"><td class="IconWarningEncoded"><a name="LUAWarning" /></td><td class="messageCell"><strong>LUA\LUA.vcproj:
+        </strong><span>DebuggerTool is no longer supported. The tool has been removed from your project settings.</span></td></tr><tr name="MessageRowHeaderShowLUA"><td class="IconInfoEncoded" /><td class="messageCell"><a _locID="ShowAdditionalMessages" href="#" name="LUAMessage" onclick="ToggleMessageVisibility('LUA'); return false;">
+          Показать 2 дополнительные сообщения
+        </a></td></tr><tr name="MessageRowClassLUA" style="display: none"><td class="IconInfoEncoded"><a name="LUAMessage" /></td><td class="messageCell"><strong>LUA\LUA.vcproj:
+        </strong><span>Converting project file 'D:\Games\X360\SONIC THE HEDGEHOG (XBOX 360)\DLL_NEW\2006DLL\LUA\LUA.vcproj'.</span></td></tr><tr name="MessageRowClassLUA" style="display: none"><td class="IconInfoEncoded"><a name="LUAMessage" /></td><td class="messageCell"><strong>LUA\LUA.vcproj:
+        </strong><span>Done converting to new project file 'D:\Games\X360\SONIC THE HEDGEHOG (XBOX 360)\DLL_NEW\2006DLL\LUA\LUA.vcxproj'.</span></td></tr><tr style="display: none" name="MessageRowHeaderHideLUA"><td class="IconInfoEncoded" /><td class="messageCell"><a _locID="HideAdditionalMessages" href="#" name="LUAMessage" onclick="ToggleMessageVisibility('LUA'); return false;">
+          Скрыть 2 дополнительные сообщения
+        </a></td></tr></table><a name="Solution" /><h3 _locID="ProjectDisplayNameHeader">Решение</h3><table><tr id="SolutionHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Сообщение</th></tr><tr name="WarningRowClassSolution"><td class="IconWarningEncoded"><a name="SolutionWarning" /></td><td class="messageCell"><strong>2006DLL.sln:
+        </strong><span>Среде Visual Studio требуется внести в этот проект нефункциональные изменения, чтобы его можно было открывать в выпущенных версиях Visual Studio, которые новее Visual Studio 2010 с пакетом обновления 1 (SP1), без ущерба для поведения проекта.</span></td></tr><tr name="MessageRowHeaderShowSolution"><td class="IconInfoEncoded" /><td class="messageCell"><a _locID="ShowAdditionalMessages" href="#" name="SolutionMessage" onclick="ToggleMessageVisibility('Solution'); return false;">
+          Показать 2 дополнительные сообщения
+        </a></td></tr><tr name="MessageRowClassSolution" style="display: none"><td class="IconInfoEncoded"><a name="SolutionMessage" /></td><td class="messageCell"><strong>2006DLL.sln:
+        </strong><span>Для файла была успешно создана резервная копия D:\Games\X360\SONIC THE HEDGEHOG (XBOX 360)\DLL_NEW\2006DLL\Backup\2006DLL.sln</span></td></tr><tr name="MessageRowClassSolution" style="display: none"><td class="IconInfoEncoded"><a name="SolutionMessage" /></td><td class="messageCell"><strong>2006DLL.sln:
+        </strong><span>Перенос решения успешно завершен</span></td></tr><tr style="display: none" name="MessageRowHeaderHideSolution"><td class="IconInfoEncoded" /><td class="messageCell"><a _locID="HideAdditionalMessages" href="#" name="SolutionMessage" onclick="ToggleMessageVisibility('Solution'); return false;">
+          Скрыть 2 дополнительные сообщения
+        </a></td></tr></table><a name="2006DLL" /><h3>2006DLL</h3><table><tr id="2006DLLHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Сообщение</th></tr><tr><td class="IconInfoEncoded" /><td class="messageCell" _locID="NoMessagesRow">2006DLL сообщения не зарегистрированы.
+                  </td></tr></table><a name="AtgFramework" /><h3>AtgFramework</h3><table><tr id="AtgFrameworkHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Сообщение</th></tr><tr><td class="IconInfoEncoded" /><td class="messageCell" _locID="NoMessagesRow">AtgFramework сообщения не зарегистрированы.
+                  </td></tr></table></div></div></body></html>

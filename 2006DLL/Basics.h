@@ -129,9 +129,19 @@
 
 #include "Marathon/Player/Effect/IParticle.h"
 
-#include "Marathon/MyPhysicsSystemFactory.h"
+//#include "Marathon/MyPhysicsSystemFactory.h"
 
-#include "Marathon/Sox/Physics/BoxShape.h"
+
+
+
+#include <boost/bind.hpp>
+#include <boost/function.hpp>
+
+#include "Marathon/Player/PhantomEnterListener.h"
+
+
+#define  HK_CONFIG_SIMD HK_CONFIG_SIMD_DISABLED
+//#include <Common/Base/hkBase.h>
 
 
 

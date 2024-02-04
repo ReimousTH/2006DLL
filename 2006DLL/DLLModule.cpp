@@ -91,6 +91,7 @@ extern "C" void OnDLLStart(){
 	
 
 
+
 	
 	ShowXenonMessage(L"LoadedDLLPatches",Loaded.c_str());
 	Loaded.clear();
@@ -179,8 +180,8 @@ extern "C" void OnDLLStart(){
 
 //	ImGUI::GlobalInstall();
 
-	Sonicteam::SoX::Physics::BoxShape* v = new Sonicteam::SoX::Physics::BoxShape(10,10,10);
-	v->Width = 0;
+//	Sonicteam::SoX::Physics::BoxShape* v = new Sonicteam::SoX::Physics::BoxShape(10,10,10);
+//	v->Width = 0;
 
 	
 }

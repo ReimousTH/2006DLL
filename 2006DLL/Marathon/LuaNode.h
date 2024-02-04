@@ -23,7 +23,7 @@ namespace Sonicteam{
 			virtual boost::shared_ptr<LuaNodeImp> LuaNodeUnknown0x01(char*) = 0; //table_name
 			virtual boost::shared_ptr<LuaNodeImp> LuaNodeUnknown0x02(char*)  = 0; //table_name
 			virtual boost::shared_ptr<LuaNodeImp> LuaNodeUnknown0x03() = 0; 
-			virtual boost::shared_ptr<LuaNodeImp> LuaNodeUnknown0x04()  = 0; // 	dynamic_cast to LuaNode,LuaNoImp)
+			virtual boost::shared_ptr<LuaNodeImp> LuaNodeResetNode(lua_State* L)  = 0; // ResetNode
 			virtual bool LuaNodeUnknown0x05(int) = 0;  //IsCanbeConvertedToImpulse
 			virtual bool LuaNodeUnknown0x06(int) = 0;  //IsCanbeConvertedToImpulse
 			virtual void	ClearTablePath() = 0;//8204E4DC

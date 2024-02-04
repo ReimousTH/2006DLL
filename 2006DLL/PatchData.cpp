@@ -7960,8 +7960,23 @@ namespace AmyLOS{
 	}
 }
 
+int addWrapper(int a, int b) {
+	// Some implementation here
+	return 0;
+}
 
 void CheckEmulated::GlobalInstall()
 {
+
+	 boost::function<int()> operation = boost::bind(addWrapper, 10, 20);
+
+
+
+	Sonicteam::Player::PhantomEnterListener* le = new Sonicteam::Player::PhantomEnterListener(operation);
+
+	
+
+
+
 	HookV2::IsNotEmulatedHardWare = HookV2::CheckIsNotEmulatedHardWare();
 }
