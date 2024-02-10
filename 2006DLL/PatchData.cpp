@@ -1579,16 +1579,80 @@ luabridge:
 		{NULL, NULL}
 	};
 
-	static tust tx3[] = {
+
+
+	extern "C" static int GetPlayerRawInput(lua_State* L)
+	{
+		return 1;
+	}
+
+	extern "C" static int GetPlayerInput(lua_State* L){
+
+
+	
+		int n = lua_gettop(L);  
+		if (n <= 0) 
+			
+		{lua_pushnumber(L, 0); return 1;}
+
+
+		UINT32 PlayerIndex = (UINT32)lua_tonumber(L,1);
+		Sonicteam::DocMarathonImp* impl = 	*(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
+		PlayerIndex = impl->GetRealControllerID(PlayerIndex);
+		Sonicteam::Player::Input::IListenerInputStruc01* Inp = (Sonicteam::Player::Input::IListenerInputStruc01*)impl->GetPlayerInput(PlayerIndex);
+		
+
+	
+		if (Inp->PtrKhronoControlInputListener == 0){
+			lua_pushnumber(L, 0); return 1;
+		}
+		Sonicteam::SoX::RNodeF<Sonicteam::SoX::Object>* h = (Sonicteam::SoX::RNodeF<Sonicteam::SoX::Object>*) &Inp->PtrMyInputObj;
+		Sonicteam::SoX::RNodeF<Sonicteam::SoX::Object>* temp = (Sonicteam::SoX::RNodeF<Sonicteam::SoX::Object>*)h->Next;
+		while (h != temp){
+
+			if (dynamic_cast<Sonicteam::Player::Input::IListener*>(temp->FObject) != 0){
+				break;
+			}
+			temp = (Sonicteam::SoX::RNodeF<Sonicteam::SoX::Object>*)temp->Next;
+		}
+
+		Sonicteam::Player::Input::IListener* il =   dynamic_cast<Sonicteam::Player::Input::IListener*>(temp->FObject);
+		if (il){
+			lua_pushnumber(L, il->ListenerGetResult()); 
+		}
+		else{
+			lua_pushnumber(L, 0); 
+		}
+		
+		return 1;
+	}
+
+	
+
+
+	static const struct luaL_reg PET [] = {
+		{"GetPlayerInput", GetPlayerInput},
+		{NULL, NULL}  /* sentinel */
+	};
+
+
+	extern "C" static int PlayerEXT(lua_State* l){
+
+		
+		luaL_openlib(l,"player",PET,0);
+		return 1;
+	}
+
+	static tust tx3[] = {	
 
 		{"math",0x825DB498},
 		{"script",0x82639830},
 		{"level",0x825D9660},
 		{
 			NULL,NULL
-		}
+		},
+		{"player",(DWORD)PlayerEXT}
 	};
-
 
 
 	 static tust tx[] = {
@@ -1646,6 +1710,7 @@ luabridge:
 		{
 			NULL,NULL
 		}
+	
 
 	};
 
@@ -2446,7 +2511,7 @@ LPCWSTR g_pwstrButtonsXx[1] = { L"------------OK----------------" };
 
 
 
-	int __declspec( naked ) sub_825ED208H(DWORD LS){
+	int __declspec( naked ) sub_825ED208H(lua_State* LS){
 
 		__asm{
 			    mflr      r12
@@ -2477,50 +2542,20 @@ LPCWSTR g_pwstrButtonsXx[1] = { L"------------OK----------------" };
 		return lua_open();
 	}
 
-	HOOK(DWORD,__fastcall,sub_825ED208,0x825ED208,DWORD LS){
+	HOOK(DWORD,__fastcall,sub_825ED208,0x825ED208,lua_State* LS){
 		
 
 
 
 
 
-		 sub_825ED208H(LS);
+		sub_825ED208H(LS);
 
 
-		DWORD L = *(DWORD*)(LS+0x4);
 
 
-//		lua_State* x = lua_open();
-//		*(lua_State**)(LS+0x4) = x;
+		return 1;
 
-		//luaL_openlib(x,"script",tx2,0);
-
-		//ShowXenonMessage(L"MSG",(int)(*(DWORD*)L+0x8),0);
-	//	luaL_openlib((lua_State*)L,"test",tx2,0);
-		// 
-		// 
-		//		luaL_openlib(L,"scriptx",tx2,0);
-
-		//lua_settop((lua_State*)L,0);
-		//BranchTo(0x825D6700,int,L,0,(DWORD)&tx2,0);
-	//	log.push_back(new std::string("BOM"));
-		//lua_register((lua_State*)L,"print",Log);
-		//BranchTo(0x825D6700,void,L,"",tx2,0);
-		//lua_gettop(L);
-		return LS;
-	//	return luaopen_math(LS);
-
-	
-		
-		//BranchTo(0x825D6700,int,LS,"script",0x8204E420,0);
-
-	//	BranchTo(0x825D5918,void,LS,"print"); //push_string
-	//	BranchTo(0x825D5320,void,LS,Log); //pushcfunc
-	//	BranchTo(0x825D5D98,void,LS,-10001);
-		//lua_register(LS,"printxx",Log);
-	
-	
-	//	return sub_825DB498H(LS);
 	
 	}
 
@@ -2543,9 +2578,80 @@ LPCWSTR g_pwstrButtonsXx[1] = { L"------------OK----------------" };
 	}
 
 
-	HOOKL(extern,int,__fastcall,sub_825DB498,0x825DB498,lua_State* LS){
 
-		 BranchTo(0x8246235C,int,LS);
+
+	extern "C" static int BitBaseEX(lua_State*L,int cs){
+
+		int v1 = lua_tonumber(L,1);
+		int v2 = lua_tonumber(L,2);
+		int result = 0;
+		switch (cs){
+
+			case 0:
+				result = v1 << v2;
+				break;
+			case 1:
+				result = v1 >> v2;
+				break;
+			case 3:
+				result = v1 & v2;
+				break;
+			case 4:
+				result = v1 | v2;
+				break; 
+
+			default:
+				lua_pushnil(L);
+				return 1;
+		}
+		lua_pushnumber(L,result);
+		return 1;
+	}
+
+	extern "C" static int BIT_ShiftLeftEX(lua_State* L){
+		return BitBaseEX(L,0);
+
+	}
+	extern "C" static int BIT_ShiftRightEX(lua_State* L){
+		return BitBaseEX(L,1);
+
+	}
+	extern "C" static int BIT_ANDEX(lua_State* L){
+		return BitBaseEX(L,3);
+
+	}
+	extern "C" static int BIT_OREX(lua_State* L){
+		return BitBaseEX(L,4);
+
+	}
+
+
+	static const struct luaL_reg BitLIB [] = {
+		{"AND", BIT_ANDEX},
+		{"OR", BIT_OREX},
+		{"SL", BIT_ShiftLeftEX},
+		{"SR", BIT_ShiftRightEX},
+		{NULL, NULL}  /* sentinel */
+	};
+
+
+	
+	HOOKL(extern "C",int,__cdecl ,sub_825DB498,0x825DB498,lua_State* LS){
+
+		
+
+	
+
+		lua_rawget(LS,11);
+
+		BranchTo(0x825D6700,int,LS,"bit",BitLIB,0);
+
+
+
+		BranchTo(0x825D6700,int,LS,"player",PET,0);
+		//luaL_openlib(LS,"player",PET,0);
+
+
 		return sub_825DB498H(LS);
 	}
 
@@ -2562,37 +2668,37 @@ LPCWSTR g_pwstrButtonsXx[1] = { L"------------OK----------------" };
 
 
 
-	//--------------------------------------------------------------------------------------
-	// Maximum number of content name data structures allowed.
-	//--------------------------------------------------------------------------------------
-	static const DWORD MAX_DATA_COUNT = 10;
 
-	//--------------------------------------------------------------------------------------
-	// Save root name to use. This can be any valid directory name.
-	//--------------------------------------------------------------------------------------
-	static CHAR g_szSaveRoot[] = "save";
 
-	//--------------------------------------------------------------------------------------
-	// Dummy file name to use for the save game.
-	//--------------------------------------------------------------------------------------
-	static CHAR g_szSaveGame[] = "save:\\savegame.txt";
 
-	//--------------------------------------------------------------------------------------
-	// Thumbnail image path.
-	//--------------------------------------------------------------------------------------
-	static CHAR g_szThumbnailImage[] = "game:\\XContentThumbnail.png";
+	int __declspec( naked ) PlayBGMH(lua_State* LS){
 
-	//--------------------------------------------------------------------------------------
-	// Invliad user index
-	//--------------------------------------------------------------------------------------
-	static const DWORD INVALID_USER_INDEX = 0xffffffff;
+		__asm{
+			    mflr      r12
+				stw       r12, -8(r1)
+				std       r30, -0x18(r1)
+				std       r31, -0x10(r1)
 
-	//--------------------------------------------------------------------------------------
-	// Color values
-	//--------------------------------------------------------------------------------------
+				lis r11,0x8246
+				ori r11,r11,0x23E8
+				mtctr r11
+				bctr
+
+		}
+	}
+	HOOKL(extern "C",int,__cdecl ,PlayBGM,0x824623D8,lua_State* LS){
+
 
 	
-	
+		 int dt =   (int)lua_touserdata(LS, -10002); 
+		 BranchTo(0x8216B360,int,dt,lua_tostring(LS,1));
+
+		return PlayBGMH(LS);
+	}
+
+
+
+
 
 
 	void GlobalInstall(){
@@ -2605,7 +2711,9 @@ LPCWSTR g_pwstrButtonsXx[1] = { L"------------OK----------------" };
 	//INSTALL_HOOK(sub_825ED208);
 	//INSTALL_HOOK(sub_825DAAA0);
 
-	//INSTALL_HOOK(sub_825DB498);
+
+	INSTALL_HOOK(PlayBGM);
+	INSTALL_HOOK(sub_825DB498);
 
 	WRITE_DWORD(0x8204C664,sub_8260BCE0);
 
@@ -7974,6 +8082,9 @@ void CheckEmulated::GlobalInstall()
 
 	Sonicteam::Player::PhantomEnterListener* le = new Sonicteam::Player::PhantomEnterListener(operation);
 
+
+//	(new Sonicteam::SoX::Component(0))->DestroyObject(1);
+//	(new Sonicteam::SoX::Graphics::Frame())->DestroyObject(1);
 	
 
 

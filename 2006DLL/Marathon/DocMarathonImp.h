@@ -36,7 +36,7 @@ namespace Sonicteam{
 
 			DocMarathonImp(unsigned int); //ptr SonicTeamEngineApplication
 
-			virtual ~DocMarathonImp(void);
+			~DocMarathonImp(void);
 
 			virtual void EngineDocOnUpdate(float);
 			virtual void EngineDocDomeSome();

@@ -1192,6 +1192,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Marathon\Sox\Physics\Entity.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Sox\Physics\Entity.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Marathon\Sox\Physics\PhantomListener.cpp"
 						>
 					</File>
@@ -1325,6 +1333,14 @@
 					</File>
 					<File
 						RelativePath=".\Marathon\Sox\Graphics\Frame.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Sox\Graphics\FrameObserver.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Sox\Graphics\FrameObserver.h"
 						>
 					</File>
 					<File

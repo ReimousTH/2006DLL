@@ -38,14 +38,10 @@ namespace Sonicteam{
 		{
 		public:
 			MessageReceiver(void);
-			virtual ~MessageReceiver(void);
+			~MessageReceiver(void);
+
+			virtual void DestroyObject(unsigned int flag) ;
 			virtual int OnMessageRecieved(Message*) = 0;
-
-			
-	
-
-
-			
 		};
-	}
-}
+	};
+};

@@ -11,13 +11,17 @@ void Sonicteam::SoX::Graphics::Frame::DestroyObject(unsigned int flag)
 	Sonicteam::SoX::Memory::IDestructible::DestroyObject(flag);
 }
 
-Sonicteam::SoX::Graphics::Frame::Frame()
+Sonicteam::SoX::Graphics::Frame::Frame():FUULLB0x20(),BNF0x34(this),BNF0x40(this)
 {
 }
 
 
 Sonicteam::SoX::Graphics::Frame::~Frame()
 {
+
+
+	this->FUULLB0x20.Clear();
+
 	if (this->Layer4){
 
 		Frame* v5 = this->Layer4;
@@ -73,3 +77,5 @@ int Sonicteam::SoX::Graphics::Frame::FrameUnk08()
 {
 	return 0;
 }
+
+

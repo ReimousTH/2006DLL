@@ -16,3 +16,8 @@ MessageReceiver::~MessageReceiver(void)
 
 }
 
+void Sonicteam::SoX::MessageReceiver::DestroyObject(unsigned int flag)
+{
+
+}
+
