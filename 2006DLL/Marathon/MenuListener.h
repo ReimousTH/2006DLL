@@ -11,7 +11,7 @@ namespace Sonicteam{
 
 	 
 	//Or SonicTeamSoxComponent
-	class MenuListener:Sonicteam::SoX::Object
+	class MenuListener:Sonicteam::SoX::Object,Sonicteam::SoX::IOObject
 		{
 		public:
 

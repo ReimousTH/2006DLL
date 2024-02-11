@@ -7,34 +7,32 @@
 #include <boost/ptr_container/ptr_set.hpp>
 #include <deque>
 
+#include "Sox/Misc/List.h"
 #include <SoX/Memory/IDestructible.h>
 
 
 namespace Sonicteam{
 	namespace SoX{
 		typedef class Object;
-		typedef class ObjectRework;
-		typedef class Component;
-		typedef class IObjectStep;
+		typedef class IObject;
 		
 
 
-		struct IObjectNode{
-			IObjectNode* NextIObjStp;
-			IObjectNode* PreviousIObjStp;
-		
-		};
-		struct IObject{
-	
-			Object* CurrentObject;
-			IObjectNode Node;
-			
+
+		//Inteface Object Object
+		struct IOObject{	
+			Sonicteam::SoX::RNodeF<Sonicteam::SoX::Object> RNodeF; //0x4,0x8,0xC
+			unsigned int IOFlag;  //0x10
+			//0x14...
 		};
 
 
 		
 
-		//this is the best that i can think
+		
+		/************************************************************************/
+		/*         Inherit with IOObject or custom struct  */
+		/************************************************************************/
 		class Object
 		{
 		public:
@@ -43,16 +41,9 @@ namespace Sonicteam{
 			virtual char* GetObjectType(); 
 			virtual void DestroyObject(unsigned int flag);
 			 ~Object(void);
-			//std::list<Object*> ObjList;
-		    IObject ObjList;
-			
-			Object* getNextObject() {
-        if (ObjList.Node.NextIObjStp != 0) {
-            // Предполагая, что obj.Next указывает на объект типа Object
-            return reinterpret_cast<Object*>(ObjList.Node.NextIObjStp);
-        }
-        return 0;
-    }
+
+			 //0x14...
+
 
 
 	

@@ -54,7 +54,7 @@ namespace Sonicteam{
 			Frame* Layer3; //0x18
 			Frame* Layer4; //0x1c
 
-			Sonicteam::SoX::LinkedNodeListB<FrameObserver> FUULLB0x20;
+			Sonicteam::SoX::LinkedNodeListB<Sonicteam::SoX::RNodeF<FrameObserver>> FUULLB0x20;
 			unsigned int Fuint0x28; //not pointer, message, or flags or some like that, beacuse with each restart it changes from point to non and to value
 			unsigned int Fuint0x2C; //Pointer, Can be struct because 40 16 84 E0 points tho themselfs (last pointer points to other )
 			Sonicteam::SoX::Graphics::FrameSynchronizer* FrameSynchronizer; //Poitner only, not reference	

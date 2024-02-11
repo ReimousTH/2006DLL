@@ -5,7 +5,7 @@
 
 namespace Sonicteam{
 	namespace SoX{
-		class ApplicationXenon:Sonicteam::SoX::Object
+		class ApplicationXenon:Sonicteam::SoX::Object,Sonicteam::SoX::IOObject
 		{
 		public:
 			ApplicationXenon(void);

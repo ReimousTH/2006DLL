@@ -1606,7 +1606,7 @@ luabridge:
 
 
 		//RtlReAllocateHeap NOT same :|
-/*
+
 		BranchTo(0x825D5918,int,L,"Buttons");
 		//BranchTo(0x825D5890,int,L,Inp.wLastButtons);
 		lua_pushnumber(L, Inp.wLastButtons);
@@ -1631,7 +1631,8 @@ luabridge:
 		BranchTo(0x825D5890,int,L,Inp.fY2);
 		BranchTo(0x825D5D98,int,L,-3);
 
-		*/
+		
+		/*
 
 		lua_pushstring(L, "Buttons");
 		lua_pushnumber(L, Inp.wLastButtons);
@@ -1654,7 +1655,7 @@ luabridge:
 		lua_settable(L, -3);
 
 	
-
+*/
 
 
 

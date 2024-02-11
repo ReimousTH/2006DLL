@@ -24,7 +24,10 @@ namespace Sonicteam{
 
 				unsigned int Flag1; //0xC
 
-				Sonicteam::SoX::LinkedNodeListB<Entity,Entity> ULLC0x10;
+
+				
+
+				Sonicteam::SoX::LinkedNodeListB<Sonicteam::SoX::RNodeF<Entity>> ULLC0x10;
 
 
 				unsigned int UEuint0x18;

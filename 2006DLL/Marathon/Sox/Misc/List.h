@@ -1,11 +1,13 @@
 #pragma  once
 
 
+
 namespace Sonicteam{
 	namespace SoX{
 
 
-		template <typename T>
+
+		template <typename T = int>
 		class RNodeH {
 		public:
 			RNodeH* Previous;
@@ -49,8 +51,29 @@ namespace Sonicteam{
 
 
 
-		template <typename T,typename Y = T,typename Z = RNodeF<T>>
-		class LinkedNodeListB:Z{
+
+
+
+
+
+		//template <typename Z = RNodeF<T>>
+		template <typename Z>
+		static void RNodeFClear(Z* PREV,Z* NEXT,unsigned int Flag){
+
+			Z* temp = NEXT;
+			Z* temp2 = 0;
+			if (PREV != NEXT){
+				do 
+				{
+					temp2 = (Z*)(temp->Next);
+					temp->FObject->DestroyObject(Flag);
+					temp = temp2;
+				} while (temp2 != NEXT);
+			}
+		};
+
+		template <typename Z = RNodeF<T,Y>>
+		class LinkedNodeListB:RNodeH<int>{
 		public:
 
 			LinkedNodeListB(){this->Next = this; this->Previous = this;}
@@ -58,7 +81,7 @@ namespace Sonicteam{
 			{
 				Z* temp = (Z*)Next;
 				Z* temp2 = 0;
-				if (this != Next){
+				if ((Z*)this !=(Z*) Next){
 					do 
 					{
 						temp2 = (Z*)(temp->Next);
@@ -67,7 +90,7 @@ namespace Sonicteam{
 						temp = temp2;
 
 
-					} while (temp2 != this);
+					} while ((Z*)temp2 != (Z*)this);
 				}
 
 
@@ -79,17 +102,20 @@ namespace Sonicteam{
 			inline void Clear(){
 				Z* temp = (Z*)Next;
 				Z* temp2 = 0;
-				if (this != Next){ //Just Do twice for fun later
+				if ((Z*)this != (Z*)Next){ //Just Do twice for fun later
 					do 
 					{
 						temp2 = (Z*)(temp->Next);		
 						temp2->FObject->OnRNodeHClear();
 						temp = temp2;
 	
-					} while (temp2 != this);
+					} while ((Z*)temp2 != (Z*)this);
 				}
 
 			}
+
+			//used in Component destructor :
+
 
 		};
 

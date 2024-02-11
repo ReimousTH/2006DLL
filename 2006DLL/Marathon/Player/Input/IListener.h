@@ -89,7 +89,7 @@ namespace Sonicteam{
 
 
 			//size 0x18
-			class IListener:Sonicteam::SoX::Object
+			class IListener:Sonicteam::SoX::Object,Sonicteam::SoX::IOObject
 			{
 			public:
 				IListener(void);
