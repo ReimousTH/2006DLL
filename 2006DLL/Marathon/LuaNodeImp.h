@@ -1,12 +1,8 @@
 #pragma once
 
 #include <string>
-extern "C" {
-#include "lua.h"
-}
-
-
 #include "LuaNode.h"
+
 
 #include <boost/weak_ptr.hpp>
 #include <boost/shared_ptr.hpp>

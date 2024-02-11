@@ -46,3 +46,9 @@ LuaSystem* Sonicteam::LuaSystem::LoadInitResource(LuaSystem*& value,std::string&
 	return 	((Sonicteam::LuaSystem* (__fastcall *)(...))0x82163620)(&value,&path);
 }
 
+void Sonicteam::LuaSystem::LuaProceedArgFunction(Sonicteam::SoX::Object*& arg,std::string& fncn)
+{
+	this->LuaNodeUnknown0x09(fncn.c_str(),(int)&arg);
+
+}
+

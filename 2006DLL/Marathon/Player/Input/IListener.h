@@ -12,11 +12,11 @@ namespace Sonicteam{
 
 		namespace Input{
 			struct IListenerInputStruc01{
-				unsigned int unk00;
-				Sonicteam::SoX::Object* PtrMyInputObj;
-				Sonicteam::SoX::Object* PtrKhronoControlInputListener;
-				unsigned int unk0xC;
-				unsigned int wLastButtons; //Triggers & DPAD includ
+				unsigned int unk00; //0x0
+				Sonicteam::SoX::Object* PtrMyInputObj; //0xx4
+				Sonicteam::SoX::Object* PtrKhronoControlInputListener; //0x8
+				unsigned int unk0xC; //0xC
+				unsigned int wLastButtons; //Triggers & DPAD includ //0x10 :
 				unsigned int ComplementwLastButtons; //Binary One's Complement (in short = ~wLastButtons)
 				unsigned int unk14;
 				unsigned int unk18;

@@ -1,7 +1,12 @@
 #pragma once
 
 #include <string>
+
+extern "C" {
 #include "lua.h"
+#include "lualib.h"
+#include "lauxlib.h"
+}
 
 
 #include <boost/weak_ptr.hpp>
@@ -29,7 +34,7 @@ namespace Sonicteam{
 			virtual void	ClearTablePath() = 0;//8204E4DC
 			virtual bool	LuaNodeUnknown0x07(char*,int,char*) = 0 ;//8204E4E0
 			virtual int		LuaNodeUnknown0x08(char*,int,char*) = 0;//8204E4E4 ( lua_pushnumber sends back to .lua)
-			virtual int		LuaNodeUnknown0x09(char*,int) = 0;//8204E4E8
+			virtual int		LuaNodeUnknown0x09(const char*,int) = 0;//8204E4E8
 			virtual int		LuaNodeUnknown0x0A(char*) = 0;//8204E4EC
 			virtual int		LuaNodeUnknown0x0B(char*) = 0;//8204E4F0  (return lua_tonumber)
 			virtual int		LuaNodeUnknown0x0C(char*,int) = 0;//8204E4F4

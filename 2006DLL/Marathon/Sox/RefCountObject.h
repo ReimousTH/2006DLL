@@ -15,7 +15,7 @@ namespace Sonicteam{
 
 			//not sure, my custom for easier 
 			template <typename T>
-			T GetObject();
+			T* GetObject();
 			void LoseObject();
 
 			unsigned int UnkReference;
@@ -25,7 +25,7 @@ namespace Sonicteam{
 		};
 
 		template <typename T>
-			T Sonicteam::SoX::RefCountObject::GetObject()
+			T* Sonicteam::SoX::RefCountObject::GetObject()
 		{
 			this->UnkReference++;
 			return this;

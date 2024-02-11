@@ -5,6 +5,7 @@
 #include "LuaSystemManager.h"
 #include "LuaNodeImp.h"
 
+#include <Sox/Object.h>
 
 
 #include <boost/weak_ptr.hpp>
@@ -25,6 +26,7 @@ namespace Sonicteam{
 			float GetFloatValue(std::string*);
 			float GetFloatValue(std::string&);
 
+			void LuaProceedArgFunction(Sonicteam::SoX::Object*& arg,std::string& fncn);
 
 
 			static LuaSystem* LoadInitResource(LuaSystem*&,std::string& path);

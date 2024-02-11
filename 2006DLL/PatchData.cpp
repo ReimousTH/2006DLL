@@ -1583,6 +1583,82 @@ luabridge:
 
 	extern "C" static int GetPlayerRawInput(lua_State* L)
 	{
+		int n = lua_gettop(L);  
+		if (n <= 0) 
+
+		{lua_pushnumber(L, 0); return 1;}
+
+
+		UINT32 PlayerIndex = (UINT32)lua_tonumber(L,1);
+		Sonicteam::DocMarathonImp* impl = 	*(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
+		PlayerIndex = impl->GetRealControllerID(PlayerIndex);
+		Sonicteam::Player::Input::IListenerInputStruc01* Inp2 = (Sonicteam::Player::Input::IListenerInputStruc01*)impl->GetPlayerInput(PlayerIndex);
+
+		Sonicteam::Player::Input::IListenerInputStruc01 Inp;
+
+
+		if (Inp2){
+			memcpy(&Inp,Inp2,sizeof(Sonicteam::Player::Input::IListenerInputStruc01));
+		}
+
+
+		BranchTo(0x825D5C30,int,L); //lua_newtable
+
+
+		//RtlReAllocateHeap NOT same :|
+/*
+		BranchTo(0x825D5918,int,L,"Buttons");
+		//BranchTo(0x825D5890,int,L,Inp.wLastButtons);
+		lua_pushnumber(L, Inp.wLastButtons);
+		BranchTo(0x825D5D98,int,L,-3);
+
+
+
+		BranchTo(0x825D5918,int,L,"LStickX");
+		BranchTo(0x825D5890,int,L,Inp.fX1);
+		BranchTo(0x825D5D98,int,L,-3);
+
+
+		BranchTo(0x825D5918,int,L,"LStickY");
+		BranchTo(0x825D5890,int,L,Inp.fY1);
+		BranchTo(0x825D5D98,int,L,-3);
+
+		BranchTo(0x825D5918,int,L,"RStickX");
+		BranchTo(0x825D5890,int,L,Inp.fX2);
+		BranchTo(0x825D5D98,int,L,-3);
+
+		BranchTo(0x825D5918,int,L,"RStickY");
+		BranchTo(0x825D5890,int,L,Inp.fY2);
+		BranchTo(0x825D5D98,int,L,-3);
+
+		*/
+
+		lua_pushstring(L, "Buttons");
+		lua_pushnumber(L, Inp.wLastButtons);
+		lua_settable(L, -3);
+
+		lua_pushstring(L, "LStickX");
+		lua_pushnumber(L, Inp.fX1);
+		lua_settable(L, -3);
+
+		lua_pushstring(L, "LStickY");
+		lua_pushnumber(L, Inp.fY1);
+		lua_settable(L, -3);
+
+		lua_pushstring(L, "RStickX");
+		lua_pushnumber(L, Inp.fX2);
+		lua_settable(L, -3);
+
+		lua_pushstring(L, "RStickY");
+		lua_pushnumber(L, Inp.fY2);
+		lua_settable(L, -3);
+
+	
+
+
+
+
+
 		return 1;
 	}
 
@@ -1632,13 +1708,12 @@ luabridge:
 
 	static const struct luaL_reg PET [] = {
 		{"GetPlayerInput", GetPlayerInput},
+		{"GetPlayerRawInput", GetPlayerRawInput},
 		{NULL, NULL}  /* sentinel */
 	};
 
 
 	extern "C" static int PlayerEXT(lua_State* l){
-
-		
 		luaL_openlib(l,"player",PET,0);
 		return 1;
 	}
@@ -1648,10 +1723,10 @@ luabridge:
 		{"math",0x825DB498},
 		{"script",0x82639830},
 		{"level",0x825D9660},
+		//{"player2",(DWORD)PlayerEXT},
 		{
 			NULL,NULL
 		},
-		{"player",(DWORD)PlayerEXT}
 	};
 
 
@@ -2642,8 +2717,6 @@ LPCWSTR g_pwstrButtonsXx[1] = { L"------------OK----------------" };
 
 	
 
-		lua_rawget(LS,11);
-
 		BranchTo(0x825D6700,int,LS,"bit",BitLIB,0);
 
 
@@ -2702,20 +2775,23 @@ LPCWSTR g_pwstrButtonsXx[1] = { L"------------OK----------------" };
 
 
 	void GlobalInstall(){
+
 	WRITE_DWORD(0x82462398  ,POWERPC_LIS(11,POWERPC_HI((DWORD)&tx)));
 	WRITE_DWORD(0x824623A0  ,POWERPC_ADDI(5,11,POWERPC_LO((DWORD)&tx)));
 
 	WRITE_DWORD(0x8203B8AC,Log);
 	WRITE_DWORD(0x82049094,luaB_print);
 
-	//INSTALL_HOOK(sub_825ED208);
-	//INSTALL_HOOK(sub_825DAAA0);
+
 
 
 	INSTALL_HOOK(PlayBGM);
-	INSTALL_HOOK(sub_825DB498);
+	INSTALL_HOOK(sub_825DB498); // MathLib Replace
 
-	WRITE_DWORD(0x8204C664,sub_8260BCE0);
+
+
+
+	//WRITE_DWORD(0x8204C664,sub_8260BCE0);
 
 
 
@@ -5588,7 +5664,6 @@ namespace WhiteGameRestored
 
 
 
-
 				RR = BranchTo(0x82225BD8,int,
 					&_fake_boost_container, //r3
 					a1 + 0xC, // (GE1,GE2,GE3 and some like this, buffers) r4
@@ -5689,6 +5764,12 @@ namespace WhiteGameRestored
 		bool change = false;
 		if ((a1->Input & 0x400000u) != 0)
 		{
+			//ShowXenonMessage(L"MG","T");
+			Sonicteam::Player::Score* score =   a1->ScorePlugin.get();
+
+			int POP =  score->PtrObjectPlayer;
+
+
 
 		//	change = true;
 		//	*gauge_level_current = *gauge_level_current + 1;
@@ -5705,6 +5786,7 @@ namespace WhiteGameRestored
 		if ((a1->Input & 0x20000u) != 0)
 		{
 
+
 		//	*gauge_level_current = *gauge_level_current - 1;
 		//	hold_bt = true;
 			
@@ -5715,10 +5797,7 @@ namespace WhiteGameRestored
 
 
 
-		
-		
 	
-
 		bool z01 = a1->IsMachSpeed == 1;
 		bool z02 = a1->IsMachSpeed == 2;
 		bool z03 = a1->IsMachSpeed == 3;
@@ -5728,6 +5807,10 @@ namespace WhiteGameRestored
 		}
 	
 		BranchTo(0x82219530,int,a1,a2);
+
+
+	
+
 
 
 		if (a1->isThunderGuard || a1->IsMachSpeed){
@@ -5760,7 +5843,8 @@ namespace WhiteGameRestored
 
 	
 
-		a1->ExportPostureRequestFlag |= 0x208;
+		//a1->ExportPostureRequestFlag |= 0x208;
+
 		//a1->WeaponFlags |=	0xC;
 
 		if ((*gauge_flags & 0x1000) != 0 ){
@@ -8076,11 +8160,11 @@ int addWrapper(int a, int b) {
 void CheckEmulated::GlobalInstall()
 {
 
-	 boost::function<int()> operation = boost::bind(addWrapper, 10, 20);
+	 //boost::function<int()> operation = boost::bind(addWrapper, 10, 20);
 
 
 
-	Sonicteam::Player::PhantomEnterListener* le = new Sonicteam::Player::PhantomEnterListener(operation);
+	//Sonicteam::Player::PhantomEnterListener* le = new Sonicteam::Player::PhantomEnterListener(operation);
 
 
 //	(new Sonicteam::SoX::Component(0))->DestroyObject(1);
