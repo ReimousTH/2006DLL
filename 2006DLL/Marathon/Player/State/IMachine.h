@@ -30,7 +30,7 @@ namespace Sonicteam{
 				virtual unsigned int CompleteChangeMashineState(int) = 0; // With All Flags
 				virtual unsigned int GetCurrentMashineStateID() = 0;
 
-				virtual void DestroyObject(unsigned int flag);
+				virtual void DestroyObject(unsigned int flag) override;
 
 
 

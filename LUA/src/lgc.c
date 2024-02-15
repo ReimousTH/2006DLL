@@ -476,6 +476,10 @@ static void mark (lua_State *L) {
 }
 
 
+void luaC_collectgarbage06 (lua_State *L) {
+
+}
+
 void luaC_collectgarbage (lua_State *L) {
   mark(L);
   luaC_sweep(L, 0);

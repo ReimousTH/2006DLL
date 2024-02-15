@@ -42,6 +42,19 @@ static sint32 posrelat (sint32 pos, size_t len) {
 }
 
 
+static int str_sub06 (lua_State *L) {
+	size_t l;
+	const char *s = luaL_checklstring06(L, 1, &l);
+	sint32 start = posrelat(luaL_checklong06(L, 2), l);
+	sint32 end = posrelat(luaL_optlong06(L, 3, -1), l);
+	if (start < 1) start = 1;
+	if (end > (sint32)l) end = (sint32)l;
+	if (start <= end)
+		lua_pushlstring06(L, s+start-1, end-start+1);
+	else lua_pushliteral06(L, "");
+	return 1;
+}
+
 static int str_sub (lua_State *L) {
   size_t l;
   const char *s = luaL_checklstring(L, 1, &l);
@@ -68,6 +81,18 @@ static int str_lower (lua_State *L) {
   return 1;
 }
 
+static int str_lower06 (lua_State *L) {
+	size_t l;
+	size_t i;
+	luaL_Buffer b;
+	const char *s = luaL_checklstring06(L, 1, &l);
+	luaL_buffinit(L, &b);
+	for (i=0; i<l; i++)
+		luaL_putchar06(&b, tolower(uchar(s[i])));
+	luaL_pushresult06(&b);
+	return 1;
+}
+
 
 static int str_upper (lua_State *L) {
   size_t l;
@@ -80,6 +105,30 @@ static int str_upper (lua_State *L) {
   luaL_pushresult(&b);
   return 1;
 }
+static int str_upper06 (lua_State *L) {
+	size_t l;
+	size_t i;
+	luaL_Buffer b;
+	const char *s = luaL_checklstring06(L, 1, &l);
+	luaL_buffinit(L, &b);
+	for (i=0; i<l; i++)
+		luaL_putchar06(&b, toupper(uchar(s[i])));
+	luaL_pushresult06(&b);
+	return 1;
+}
+
+static int str_rep06 (lua_State *L) {
+	size_t l;
+	luaL_Buffer b;
+	const char *s = luaL_checklstring06(L, 1, &l);
+	int n = luaL_checkint06(L, 2);
+	luaL_buffinit(L, &b);
+	while (n-- > 0)
+		luaL_addlstring06(&b, s, l);
+	luaL_pushresult06(&b);
+	return 1;
+}
+
 
 static int str_rep (lua_State *L) {
   size_t l;
@@ -94,6 +143,17 @@ static int str_rep (lua_State *L) {
 }
 
 
+static int str_byte06 (lua_State *L) {
+	size_t l;
+	const char *s = luaL_checklstring06(L, 1, &l);
+	sint32 pos = posrelat(luaL_optlong06(L, 2, 1), l);
+	if (pos <= 0 || (size_t)(pos) > l)  /* index out of range? */
+		return 0;  /* no answer */
+	lua_pushnumber(L, uchar(s[pos-1]));
+	return 1;
+}
+
+
 static int str_byte (lua_State *L) {
   size_t l;
   const char *s = luaL_checklstring(L, 1, &l);
@@ -104,6 +164,20 @@ static int str_byte (lua_State *L) {
   return 1;
 }
 
+
+static int str_char06 (lua_State *L) {
+	int n = lua_gettop(L);  /* number of arguments */
+	int i;
+	luaL_Buffer b;
+	luaL_buffinit(L, &b);
+	for (i=1; i<=n; i++) {
+		int c = luaL_checkint06(L, i);
+		luaL_argcheck06(L, uchar(c) == c, i, "invalid value");
+		luaL_putchar06(&b, uchar(c));
+	}
+	luaL_pushresult06(&b);
+	return 1;
+}
 
 static int str_char (lua_State *L) {
   int n = lua_gettop(L);  /* number of arguments */
@@ -743,6 +817,123 @@ static int str_format (lua_State *L) {
 }
 
 
+
+
+
+
+static const char *scanformat06 (lua_State *L, const char *strfrmt,
+							   char *form, int *hasprecision) {
+								   const char *p = strfrmt;
+								   while (strchr("-+ #0", *p)) p++;  /* skip flags */
+								   if (isdigit(uchar(*p))) p++;  /* skip width */
+								   if (isdigit(uchar(*p))) p++;  /* (2 digits at most) */
+								   if (*p == '.') {
+									   p++;
+									   *hasprecision = 1;
+									   if (isdigit(uchar(*p))) p++;  /* skip precision */
+									   if (isdigit(uchar(*p))) p++;  /* (2 digits at most) */
+								   }
+								   if (isdigit(uchar(*p)))
+									   luaL_error06(L, "invalid format (width or precision too long)");
+								   if (p-strfrmt+2 > MAX_FORMAT)  /* +2 to include `%' and the specifier */
+									   luaL_error06(L, "invalid format (too long)");
+								   form[0] = '%';
+								   strncpy(form+1, strfrmt, p-strfrmt+1);
+								   form[p-strfrmt+2] = 0;
+								   return p;
+}
+static void luaI_addquoted06 (lua_State *L, luaL_Buffer *b, int arg) {
+	size_t l;
+	const char *s = luaL_checklstring06(L, arg, &l);
+	luaL_putchar06(b, '"');
+	while (l--) {
+		switch (*s) {
+	  case '"': case '\\': case '\n': {
+		  luaL_putchar06(b, '\\');
+		  luaL_putchar06(b, *s);
+		  break;
+				}
+	  case '\0': {
+		  luaL_addlstring06(b, "\\000", 4);
+		  break;
+				 }
+	  default: {
+		  luaL_putchar06(b, *s);
+		  break;
+			   }
+		}
+		s++;
+	}
+	luaL_putchar06(b, '"');
+}
+
+
+static int str_format06 (lua_State *L) {
+  int arg = 1;
+  size_t sfl;
+  const char *strfrmt = luaL_checklstring06(L, arg, &sfl);
+  const char *strfrmt_end = strfrmt+sfl;
+  luaL_Buffer b;
+  luaL_buffinit(L, &b);
+  while (strfrmt < strfrmt_end) {
+    if (*strfrmt != '%')
+      luaL_putchar06(&b, *strfrmt++);
+    else if (*++strfrmt == '%')
+      luaL_putchar06(&b, *strfrmt++);  /* %% */
+    else { /* format item */
+      char form[MAX_FORMAT];  /* to store the format (`%...') */
+      char buff[MAX_ITEM];  /* to store the formatted item */
+      int hasprecision = 0;
+      if (isdigit(uchar(*strfrmt)) && *(strfrmt+1) == '$')
+        return luaL_error06(L, "obsolete option (d$) to `format'");
+      arg++;
+      strfrmt = scanformat06(L, strfrmt, form, &hasprecision);
+      switch (*strfrmt++) {
+        case 'c':  case 'd':  case 'i': {
+          sprintf(buff, form, luaL_checkint06(L, arg));
+          break;
+        }
+        case 'o':  case 'u':  case 'x':  case 'X': {
+          sprintf(buff, form, (unsigned int)(luaL_checknumber06(L, arg)));
+          break;
+        }
+        case 'e':  case 'E': case 'f':
+        case 'g': case 'G': {
+          sprintf(buff, form, luaL_checknumber06(L, arg));
+          break;
+        }
+        case 'q': {
+          luaI_addquoted06(L, &b, arg);
+          continue;  /* skip the `addsize' at the end */
+        }
+        case 's': {
+          size_t l;
+          const char *s = luaL_checklstring06(L, arg, &l);
+          if (!hasprecision && l >= 100) {
+            /* no precision and string is too long to be formatted;
+               keep original string */
+            lua_pushvalue(L, arg);
+            luaL_addvalue06(&b);
+            continue;  /* skip the `addsize' at the end */
+          }
+          else {
+            sprintf(buff, form, s);
+            break;
+          }
+        }
+        default: {  /* also treat cases `pnLlh' */
+          return luaL_error06(L, "invalid option to `format'");
+        }
+      }
+      luaL_addlstring06(&b, buff, strlen(buff));
+    }
+  }
+  luaL_pushresult06(&b);
+  return 1;
+}
+
+
+
 static const luaL_reg strlib[] = {
   {"len", str_len},
   {"sub", str_sub},
@@ -759,6 +950,22 @@ static const luaL_reg strlib[] = {
   {NULL, NULL}
 };
 
+static const luaL_reg strlib06[] = {
+	{"len", str_len},
+	{"sub", str_sub06},
+	{"lower", str_lower06},
+	{"upper", str_upper06},
+	{"char", str_char06},
+	{"rep", str_rep06},
+	{"byte", str_byte06},
+	{"format", str_format06},
+	{"dump", str_dump},
+	{"find", str_find},
+	{"gfind", gfind},
+	{"gsub", str_gsub},
+	{NULL, NULL}
+};
+
 
 /*
 ** Open string library
@@ -767,4 +974,15 @@ LUALIB_API int luaopen_string (lua_State *L) {
   luaL_openlib(L, LUA_STRLIBNAME, strlib, 0);
   return 1;
 }
+
+LUALIB_API int luaopen_string_06 (lua_State *L) {
+
+
+	((void (__fastcall *)(lua_State*,char*,const luaL_reg *,int))0x825D6700)(L,"string",strlib06,0);
+
+
+
+	return 1;
+}
+
 

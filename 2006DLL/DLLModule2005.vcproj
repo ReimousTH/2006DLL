@@ -315,14 +315,14 @@
 				Name="VCCLX360CompilerTool"
 				AdditionalOptions="-mcpu=powerpc64"
 				Optimization="3"
-				InlineFunctionExpansion="2"
-				EnableIntrinsicFunctions="false"
+				InlineFunctionExpansion="1"
+				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="2"
 				EnableFiberSafeOptimizations="false"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="..\Boost1690;..\ATG;..\LUA\src;Marathon\"
+				AdditionalIncludeDirectories="..\Boost1690;..\ATG;..\LUA\src;Marathon\;Hook\;$(NOINHERIT)"
 				PreprocessorDefinitions="NDEBUG;_XBOX;XBOX;XBOX_SAMPLE;_XBOX_CRT_DEPRECATE_INSECURE;_XENON;_WIN32;$(NOINHERIT)"
-				StringPooling="false"
+				StringPooling="true"
 				MinimalRebuild="false"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="0"
@@ -333,11 +333,13 @@
 				FloatingPointModel="2"
 				ForceConformanceInForLoopScope="true"
 				RuntimeTypeInfo="false"
-				OpenMP="true"
+				OpenMP="false"
 				UsePrecompiledHeader="0"
 				WarningLevel="0"
 				DebugInformationFormat="3"
 				CompileAs="0"
+				Prescheduling="true"
+				CallAttributedProfiling="0"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -584,6 +586,34 @@
 					RelativePath=".\TypeBasics.h"
 					>
 				</File>
+				<Filter
+					Name="DebugLog"
+					>
+					<File
+						RelativePath=".\Patches\DebugLog\DebugLog.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\DebugLog\DebugLog.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\DebugLog\LuaExtension.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\DebugLog\LuaExtension.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\DebugLog\MessagesUtil.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\DebugLog\MessagesUtil.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Hook"
@@ -1394,6 +1424,14 @@
 		<Filter
 			Name="ImGuiProject"
 			>
+		</Filter>
+		<Filter
+			Name="Hook"
+			>
+			<File
+				RelativePath=".\Hook\Head.h"
+				>
+			</File>
 		</Filter>
 		<File
 			RelativePath=".\DLLModule.cpp"

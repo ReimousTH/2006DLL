@@ -96,8 +96,8 @@ static void pusherror(lua_State *L)
 {
  int error=GetLastError();
  char buffer[128];
- if (FormatMessage(0x00000200 | 0x00001000,
-	0, error, 0, buffer, sizeof(buffer), 0))
+
+ if ( sprintf(buffer,"FormatMessage : %d Error : %d",0x00000200 | 0x00001000,error))
   lua_pushstring(L,buffer);
  else
   lua_pushfstring(L,"system error %d\n",error);

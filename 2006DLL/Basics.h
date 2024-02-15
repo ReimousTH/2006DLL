@@ -87,6 +87,7 @@
 
 //#include <cassert>
 #include <vector>
+#include <iterator>
 #include <list>
 #include <iostream>
 #include <sstream>
@@ -165,11 +166,6 @@ extern "C" {
 
 
 
-
-
-#include "irrmath/quaternion.h"
-#include "irrmath/vector3d.h"
-
 #define __ROL4__(x, y) _rotl64(x, y)       // Rotate left
 #define __ROR4__(x, y) _rotr64(x, y)       // Rotate right
 #define _QWORD unsigned long long
@@ -206,11 +202,6 @@ public:
 
 
 
-#define BranchTo(offset,rtype,...) \
-	((rtype (__fastcall *)(...))offset)(__VA_ARGS__) \
-
-#define CBranchTo(offset,tp,rtype,...) \
-	((rtype (tp *)(...))offset)(__VA_ARGS__) \
 
 
 
@@ -246,11 +237,7 @@ return ((returnType (callingConvention *)(__VA_ARGS__))location)(__VA_ARGS__))\
 }\
 
 
-#define HOOKL(externs,returnType, callingConvention, functionName, location, ...) \
-	int original_addr_##functionName = (int)location ;\
-	typedef returnType callingConvention functionName(__VA_ARGS__); \
-	functionName* original##functionName = (functionName*)(location+0x10); \
-	externs returnType callingConvention implOf##functionName(__VA_ARGS__)
+
 
 
 #define MakeState(NM,TP) \
@@ -280,8 +267,6 @@ return ((returnType (callingConvention *)(__VA_ARGS__))location)(__VA_ARGS__))\
 	return a1;\
 }\
 
-#define malloc06(size) \
-	BranchTo(0x82186158,int,size) \
 
 
 

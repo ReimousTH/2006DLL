@@ -1,12 +1,7 @@
 #pragma once
 
-
-
 #include <xtl.h>
 #include <cassert>
-
-#include "Basics.h"
-
 
 
 
@@ -65,6 +60,13 @@ const DWORD JumpASMNoPreserveI[] = { /*Dont always have enough space to preserve
 	returnType callingConvention implOf##functionName(__VA_ARGS__)
 
 
+#define HOOKL(externs,returnType, callingConvention, functionName, location, ...) \
+	DWORD original_addr_##functionName = (int)location ;\
+	typedef returnType callingConvention functionName(__VA_ARGS__); \
+	functionName* original##functionName = (functionName*)(location+0x10); \
+	externs returnType callingConvention implOf##functionName(__VA_ARGS__)
+
+
 #define INSTALL_HOOK(functionName) \
 	HookV2::InstalHook(false,(UINT64)original_addr_##functionName, (int)implOf##functionName); \
 
@@ -84,6 +86,24 @@ const DWORD JumpASMNoPreserveI[] = { /*Dont always have enough space to preserve
 
 #define  ADDR(i) \
 	HookV2::GetAddress(i)
+
+#define malloc06(size) \
+	BranchTo(0x82186158,int,size) \
+
+
+
+#define BranchTo(offset,rtype,...) \
+	((rtype (__fastcall *)(...))offset)(__VA_ARGS__) \
+
+#define CBranchTo(offset,tp,rtype,...) \
+	((rtype (tp *)(...))offset)(__VA_ARGS__) \
+
+
+
+
+
+
+
 
 
 //#define KinectTEST

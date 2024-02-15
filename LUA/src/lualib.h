@@ -28,6 +28,9 @@ LUALIB_API int luaopen_io (lua_State *L);
 
 #define LUA_STRLIBNAME	"string"
 LUALIB_API int luaopen_string (lua_State *L);
+LUALIB_API int luaopen_string_06 (lua_State *L);
+
+
 
 #define LUA_MATHLIBNAME	"math"
 LUALIB_API int luaopen_math (lua_State *L);

@@ -112,6 +112,7 @@ LUA_API lua_CFunction lua_atpanic (lua_State *L, lua_CFunction panicf);
 LUA_API int   lua_gettop (lua_State *L);
 LUA_API void  lua_settop (lua_State *L, int idx);
 LUA_API void  lua_pushvalue (lua_State *L, int idx);
+LUA_API void  lua_pushvalue06 (lua_State *L, int idx);
 LUA_API void  lua_remove (lua_State *L, int idx);
 LUA_API void  lua_insert (lua_State *L, int idx);
 LUA_API void  lua_replace (lua_State *L, int idx);
@@ -151,11 +152,14 @@ LUA_API const void     *lua_topointer (lua_State *L, int idx);
 LUA_API void  lua_pushnil (lua_State *L);
 LUA_API void  lua_pushnumber (lua_State *L, lua_Number n);
 LUA_API void  lua_pushlstring (lua_State *L, const char *s, size_t l);
+LUA_API void  lua_pushlstring06 (lua_State *L, const char *s, size_t l);
 LUA_API void  lua_pushstring (lua_State *L, const char *s);
+LUA_API void  lua_pushstring06 (lua_State *L, const char *s);
 LUA_API const char *lua_pushvfstring (lua_State *L, const char *fmt,
                                                     va_list argp);
 LUA_API const char *lua_pushfstring (lua_State *L, const char *fmt, ...);
 LUA_API void  lua_pushcclosure (lua_State *L, lua_CFunction fn, int n);
+LUA_API void  lua_pushcclosure06 (lua_State *L, lua_CFunction fn, int n);
 LUA_API void  lua_pushboolean (lua_State *L, int b);
 LUA_API void  lua_pushlightuserdata (lua_State *L, void *p);
 
@@ -167,7 +171,9 @@ LUA_API void  lua_gettable (lua_State *L, int idx);
 LUA_API void  lua_rawget (lua_State *L, int idx);
 LUA_API void  lua_rawgeti (lua_State *L, int idx, int n);
 LUA_API void  lua_newtable (lua_State *L);
+LUA_API void  lua_newtable06 (lua_State *L);
 LUA_API void *lua_newuserdata (lua_State *L, size_t sz);
+LUA_API void *lua_newuserdata06 (lua_State *L, size_t sz);
 LUA_API int   lua_getmetatable (lua_State *L, int objindex);
 LUA_API void  lua_getfenv (lua_State *L, int idx);
 
@@ -176,9 +182,11 @@ LUA_API void  lua_getfenv (lua_State *L, int idx);
 ** set functions (stack -> Lua)
 */
 LUA_API void  lua_settable (lua_State *L, int idx);
+LUA_API void  lua_settable06 (lua_State *L, int idx);
 LUA_API void  lua_rawset (lua_State *L, int idx);
 LUA_API void  lua_rawseti (lua_State *L, int idx, int n);
 LUA_API int   lua_setmetatable (lua_State *L, int objindex);
+LUA_API int   lua_setmetatable06 (lua_State *L, int objindex);
 LUA_API int   lua_setfenv (lua_State *L, int idx);
 
 
@@ -219,6 +227,9 @@ LUA_API int   lua_next (lua_State *L, int idx);
 
 LUA_API void  lua_concat (lua_State *L, int n);
 
+LUA_API void  lua_concat06 (lua_State *L, int n);
+
+
 
 
 /* 
@@ -239,7 +250,16 @@ LUA_API void  lua_concat (lua_State *L, int n);
 	 lua_pushcfunction(L, f), \
 	 lua_settable(L, LUA_GLOBALSINDEX))
 
+#define lua_register06(L,n,f) \
+	(lua_pushstring06(L, n), \
+	lua_pushcfunction06(L, f), \
+	lua_settable06(L, LUA_GLOBALSINDEX))
+
+
 #define lua_pushcfunction(L,f)	lua_pushcclosure(L, f, 0)
+
+
+#define lua_pushcfunction06(L,f)	lua_pushcclosure06(L, f, 0)
 
 #define lua_isfunction(L,n)	(lua_type(L,n) == LUA_TFUNCTION)
 #define lua_istable(L,n)	(lua_type(L,n) == LUA_TTABLE)
@@ -251,6 +271,10 @@ LUA_API void  lua_concat (lua_State *L, int n);
 
 #define lua_pushliteral(L, s)	\
 	lua_pushlstring(L, "" s, (sizeof(s)/sizeof(char))-1)
+
+#define lua_pushliteral06(L, s)	\
+	lua_pushlstring06(L, "" s, (sizeof(s)/sizeof(char))-1)
+
 
 
 

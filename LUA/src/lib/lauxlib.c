@@ -43,6 +43,10 @@
 */
 
 
+LUALIB_API int luaL_argerror06 (lua_State *L, int narg, const char *extramsg) {
+	return 	((int (__fastcall *)(lua_State *L, int narg, const char *extramsg))0x825D6FF8)(L,narg,extramsg);
+
+}
 LUALIB_API int luaL_argerror (lua_State *L, int narg, const char *extramsg) {
   lua_Debug ar;
   lua_getstack(L, 0, &ar);
@@ -84,6 +88,11 @@ LUALIB_API void luaL_where (lua_State *L, int level) {
 }
 
 
+LUALIB_API  int luaL_error06 (lua_State *L, const char *fmt, ...) {
+	
+	return ((int (__fastcall *)(lua_State *L, const char *fmt))0x825D6380)(L,fmt);
+}
+
 LUALIB_API int luaL_error (lua_State *L, const char *fmt, ...) {
   va_list argp;
   va_start(argp, fmt);
@@ -106,6 +115,7 @@ LUALIB_API int luaL_findstring (const char *name, const char *const list[]) {
 }
 
 
+
 LUALIB_API int luaL_newmetatable (lua_State *L, const char *tname) {
   lua_pushstring(L, tname);
   lua_rawget(L, LUA_REGISTRYINDEX);  /* get registry.name */
@@ -120,6 +130,16 @@ LUALIB_API int luaL_newmetatable (lua_State *L, const char *tname) {
   lua_pushstring(L, tname);
   lua_rawset(L, LUA_REGISTRYINDEX);  /* registry[metatable] = name */
   return 1;
+}
+
+LUALIB_API int luaL_newmetatable06 (lua_State *L, const char *tname) {
+
+	return ((int (__fastcall *)(lua_State *L, const char *tname))0x825D6408)(L,tname);
+}
+
+
+LUALIB_API void  luaL_getmetatable06 (lua_State *L, const char *tname) {
+	 ((void (__fastcall *)(lua_State *L, const char *tname))0x825D64C8)(L,tname);
 }
 
 
@@ -171,6 +191,13 @@ LUALIB_API const char *luaL_checklstring (lua_State *L, int narg, size_t *len) {
 }
 
 
+LUALIB_API const char *luaL_checklstring06 (lua_State *L, int narg, size_t *len) {
+	
+
+	return 	((const char * (__fastcall *)(lua_State *L, int narg, size_t *len))0x825D71C0)(L,narg,len);
+}
+
+
 LUALIB_API const char *luaL_optlstring (lua_State *L, int narg,
                                         const char *def, size_t *len) {
   if (lua_isnoneornil(L, narg)) {
@@ -182,6 +209,12 @@ LUALIB_API const char *luaL_optlstring (lua_State *L, int narg,
 }
 
 
+LUALIB_API lua_Number luaL_checknumber06 (lua_State *L, int narg) {
+
+	return  ((lua_Number (__fastcall *)(lua_State *L, int narg))0x825D72B0)(L,narg);
+
+}
+
 LUALIB_API lua_Number luaL_checknumber (lua_State *L, int narg) {
   lua_Number d = lua_tonumber(L, narg);
   if (d == 0 && !lua_isnumber(L, narg))  /* avoid extra test when d is not 0 */
@@ -189,6 +222,11 @@ LUALIB_API lua_Number luaL_checknumber (lua_State *L, int narg) {
   return d;
 }
 
+
+LUALIB_API lua_Number luaL_optnumber06 (lua_State *L, int narg, lua_Number def) {
+	if (lua_isnoneornil(L, narg)) return def;
+	else return luaL_checknumber06(L, narg);
+}
 
 LUALIB_API lua_Number luaL_optnumber (lua_State *L, int narg, lua_Number def) {
   if (lua_isnoneornil(L, narg)) return def;
@@ -219,6 +257,16 @@ LUALIB_API int luaL_callmeta (lua_State *L, int obj, const char *event) {
   lua_pushvalue(L, obj);
   lua_call(L, 1, 1);
   return 1;
+}
+
+
+LUALIB_API void luaL_openlib06 (lua_State *L, const char *libname,
+								const luaL_reg *l, int nup) {
+
+									((void (__fastcall *)(lua_State *L, const char *libname,
+										const luaL_reg *l, int nup))0x825D6700)(L,libname,l,nup);
+
+
 }
 
 
@@ -345,6 +393,21 @@ static int emptybuffer (luaL_Buffer *B) {
   }
 }
 
+static int emptybuffer06 (luaL_Buffer *B) {
+	size_t l = bufflen(B);
+	if (l == 0) return 0;  /* put nothing on stack */
+	else {
+		lua_pushlstring06(B->L, B->buffer, l);
+		B->p = B->buffer;
+		B->lvl++;
+		return 1;
+	}
+}
+
+
+static void adjuststack06 (luaL_Buffer *B) {
+	((void (__fastcall *)(luaL_Buffer *B))0x825D6BD0 )(B);
+}
 
 static void adjuststack (luaL_Buffer *B) {
   if (B->lvl > 1) {
@@ -371,6 +434,20 @@ LUALIB_API char *luaL_prepbuffer (luaL_Buffer *B) {
   return B->buffer;
 }
 
+LUALIB_API char *luaL_prepbuffer06 (luaL_Buffer *B) {
+
+	if (emptybuffer06(B))
+		adjuststack06(B);
+	  return B->buffer;
+
+}
+
+
+LUALIB_API void luaL_addlstring06 (luaL_Buffer *B, const char *s, size_t l) {
+	while (l--)
+		luaL_putchar06(B, *s++);
+}
+
 
 LUALIB_API void luaL_addlstring (luaL_Buffer *B, const char *s, size_t l) {
   while (l--)
@@ -383,11 +460,27 @@ LUALIB_API void luaL_addstring (luaL_Buffer *B, const char *s) {
 }
 
 
+LUALIB_API void luaL_pushresult06 (luaL_Buffer *B) {
+	emptybuffer06(B);
+	lua_concat06(B->L, B->lvl);
+	B->lvl = 1;
+
+}
 LUALIB_API void luaL_pushresult (luaL_Buffer *B) {
   emptybuffer(B);
   lua_concat(B->L, B->lvl);
   B->lvl = 1;
 }
+
+
+
+LUALIB_API void luaL_addvalue06 (luaL_Buffer *B) {
+
+	((void (__fastcall *)(luaL_Buffer*))0x825D6D20)(B);
+
+
+}
+
 
 
 LUALIB_API void luaL_addvalue (luaL_Buffer *B) {

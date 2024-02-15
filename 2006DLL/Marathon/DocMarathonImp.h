@@ -30,13 +30,14 @@ namespace Sonicteam{
 
 	//not complete :(
 
-	class DocMarathonImp:Sonicteam::SoX::Engine::Doc
+	class DocMarathonImp:public Sonicteam::SoX::Engine::Doc
 		{
 		public:
 
 			DocMarathonImp(unsigned int); //ptr SonicTeamEngineApplication
-
 			~DocMarathonImp(void);
+		
+
 
 			virtual void EngineDocOnUpdate(float);
 			virtual void EngineDocDomeSome();
@@ -121,7 +122,7 @@ namespace Sonicteam{
 
 
 			//field
-			unsigned int DocCurrentDocMode; //MainMode (0x5C)
+			unsigned int DocCurrentDocMode; //MainMode (0x5C) But ... StateGamemode .....
 			unsigned int DocMyGraphicDevice; //0x60
 			unsigned int DocSceneParamManager; //0x64
 			std::vector<unsigned int>* Doculist; //0x68;

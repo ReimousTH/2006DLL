@@ -235,7 +235,8 @@
 			<Tool
 				Name="VCCLX360CompilerTool"
 				Optimization="3"
-				InlineFunctionExpansion="2"
+				InlineFunctionExpansion="0"
+				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="2"
 				AdditionalIncludeDirectories="src\"
 				PreprocessorDefinitions="NDEBUG;_XBOX;_LIB"
@@ -245,11 +246,14 @@
 				BufferSecurityCheck="false"
 				EnableFunctionLevelLinking="true"
 				FloatingPointModel="2"
-				OpenMP="true"
+				DisableLanguageExtensions="false"
+				OpenMP="false"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderFile="$(OutDir)/$(ProjectName).pch"
 				WarningLevel="3"
+				WarnAsError="false"
 				DebugInformationFormat="3"
+				CompileAs="1"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -546,19 +550,19 @@
 			>
 		</File>
 		<File
-			RelativePath=".\src\lib\Makefile"
-			>
-		</File>
-		<File
 			RelativePath=".\src\Makefile"
 			>
 		</File>
 		<File
-			RelativePath=".\src\lib\README"
+			RelativePath=".\src\lib\Makefile"
 			>
 		</File>
 		<File
 			RelativePath=".\src\README"
+			>
+		</File>
+		<File
+			RelativePath=".\src\lib\README"
 			>
 		</File>
 	</Files>

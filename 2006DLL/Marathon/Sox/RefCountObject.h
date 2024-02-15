@@ -28,7 +28,7 @@ namespace Sonicteam{
 			T* Sonicteam::SoX::RefCountObject::GetObject()
 		{
 			this->UnkReference++;
-			return this;
+			return (T*)this;
 		}
 	
 

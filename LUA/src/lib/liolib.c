@@ -569,8 +569,41 @@ static int io_tmpname (lua_State *L) {
 }
 
 
+
+static const char* xbox_getenv(const char* variableName) {
+	// Retrieve the value of the environment variable using Xbox SDK equivalent functions
+	// Here, you can use Xbox-specific methods to retrieve configuration or runtime information
+	// You might need to implement your custom logic to map environment variable names to Xbox-specific variables or settings
+
+	if (strcmp(variableName, "PATH") == 0) {
+		// Simulate the environment variable "MY_VARIABLE" with a custom value
+		return "PATH";
+	}
+	else if (strcmp(variableName, "HOME") == 0) {
+		// Simulate the environment variable "MY_VARIABLE" with a custom value
+		return "HOME";
+	}
+	else if (strcmp(variableName, "USER") == 0) {
+		// Simulate the environment variable "MY_VARIABLE" with a custom value
+		return "USER";
+	}
+	else if (strcmp(variableName, "TEMP") == 0) {
+		// Simulate the environment variable "MY_VARIABLE" with a custom value
+		return "TEMP";
+	}
+	else if (strcmp(variableName, "LANG") == 0) {
+		// Simulate the environment variable "MY_VARIABLE" with a custom value
+		return "TEMP";
+	}
+
+	else {
+		// If the environment variable does not exist, return nullptr
+		return 0;
+	}
+}
 static int io_getenv (lua_State *L) {
-  lua_pushstring(L, getenv(luaL_checkstring(L, 1)));  /* if NULL push nil */
+
+  lua_pushstring(L, xbox_getenv(luaL_checkstring(L, 1)));  /* if NULL push nil */
   return 1;
 }
 

@@ -432,7 +432,7 @@ namespace Multiplayer4P
 		int v15; // r11
 		int v16; // r11
 		int v17; // r3
-		int v18; // r11
+		int v18; // r11fGe
 		int v19; // r10
 		int v20; // r3
 		int v21; // r10
@@ -1382,6 +1382,8 @@ INSTALL_HOOK(sub_82160B98);
 }
 
 
+
+
 namespace DebugLogRestore{
 
 	struct tust{
@@ -1669,7 +1671,6 @@ luabridge:
 	
 		int n = lua_gettop(L);  
 		if (n <= 0) 
-			
 		{lua_pushnumber(L, 0); return 1;}
 
 
@@ -1678,24 +1679,35 @@ luabridge:
 		PlayerIndex = impl->GetRealControllerID(PlayerIndex);
 		Sonicteam::Player::Input::IListenerInputStruc01* Inp = (Sonicteam::Player::Input::IListenerInputStruc01*)impl->GetPlayerInput(PlayerIndex);
 		
-
-	
-		if (Inp->PtrKhronoControlInputListener == 0){
+		if (!Inp || Inp->PtrKhronoControlInputListener == 0){
 			lua_pushnumber(L, 0); return 1;
 		}
+
+
 		Sonicteam::SoX::RNodeF<Sonicteam::SoX::Object>* h = (Sonicteam::SoX::RNodeF<Sonicteam::SoX::Object>*) &Inp->PtrMyInputObj;
 		Sonicteam::SoX::RNodeF<Sonicteam::SoX::Object>* temp = (Sonicteam::SoX::RNodeF<Sonicteam::SoX::Object>*)h->Next;
-		while (h != temp){
 
-			if (dynamic_cast<Sonicteam::Player::Input::IListener*>(temp->FObject) != 0){
-				break;
+
+		if (h->Next != h->Previous){
+			while (h != temp){
+
+				if (temp->Next == temp->Previous) {temp =0;}
+
+				if (temp->FObject && dynamic_cast<Sonicteam::Player::Input::IListener*>(temp->FObject) != 0){
+					break;
+				}
+				temp = (Sonicteam::SoX::RNodeF<Sonicteam::SoX::Object>*)temp->Next;
 			}
-			temp = (Sonicteam::SoX::RNodeF<Sonicteam::SoX::Object>*)temp->Next;
+		}
+		else{
+			temp = 0;
 		}
 
-		Sonicteam::Player::Input::IListener* il =   dynamic_cast<Sonicteam::Player::Input::IListener*>(temp->FObject);
-		if (il){
-			lua_pushnumber(L, il->ListenerGetResult()); 
+		if (temp && temp->FObject) {
+			Sonicteam::Player::Input::IListener* il =   dynamic_cast<Sonicteam::Player::Input::IListener*>(temp->FObject);
+			if (il){
+				lua_pushnumber(L, il->ListenerGetResult()); 
+			}
 		}
 		else{
 			lua_pushnumber(L, 0); 
@@ -1704,12 +1716,132 @@ luabridge:
 		return 1;
 	}
 
+	extern "C" static int PrintNext(lua_State* L){
+
+		int n = lua_gettop(L);  /* number of arguments */
+		int i;
+		lua_getglobal(L, "tostring");
+		for (i=1; i<=n; i++) {
+			const char *s;
+			lua_pushvalue(L, -1);  /* function to be called */
+			lua_pushvalue(L, i);   /* value to print */
+			lua_call(L, 1, 1);
+			s = lua_tostring(L, -1);  /* get result */
+			if (s == NULL)
+				return luaL_error(L, "`tostring' must return a string to `print'");
+			
+			std::string msg =  std::string(s);
+
+			int length = msg.length() + 1;
+			wchar_t* wcharPtr = new wchar_t[length];
+			std::memset(wcharPtr, 0, length * sizeof(wchar_t));
+			std::mbstowcs(wcharPtr, msg.c_str(), length);
+
+
+			int MCount = DebugMessages.size();
+			if (MCount > 2){
+				MCount--;
+				std::vector<int>::iterator it = DebugMessages.begin();
+				BranchTo(0x8262BA68,int,*it,1); //Destroy from mem
+				std::advance(it, 0);
+				DebugMessages.erase(it);
+
+				//Re Order Messages
+				
+				int cc = 0;
+				for (std::vector<int>::iterator it = DebugMessages.begin(); it != DebugMessages.end(); ++it) {
+					ChangeMessagePositionY( *it,(cc * 28) );
+					cc++;
+				}
+			}
+
+			DebugMessages.push_back( SpawnMessage(wcharPtr,(MCount * 28)));
 	
+			//if (i>1) fputs("\t", stdout);
+			//fputs(s, stdout);
+			lua_pop(L, 1);  /* pop result */
+		}
+		fputs("\n", stdout);
+		return 0;
+
+	}
+	extern "C" static int GetPlayerPosition(lua_State* L){
+
+		int n = lua_gettop(L);  
+		if (n <= 0) 
+		{lua_pushnumber(L, 0); return 1;}
+
+
+		UINT32 PlayerIndex = (UINT32)lua_tonumber(L,1);
+		Sonicteam::DocMarathonImp* impl = 	*(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
+		UINT32 vft =  *(UINT32*)impl->DocCurrentMode;
+		UINT32 pstack[4] = {};
+		if (vft == 0x82033534){ //GameMode
+
+			UINT32 gameimp = *(UINT32*)(impl->DocCurrentMode + 0x6C);
+			UINT32 ActorManager = *(UINT32*)(gameimp+0x11C4);
+			UINT32 ActorMangerActorsCount = *(UINT32*)(ActorManager+0x80000);
+			UINT32 PIX = 0;
+			for (int i = 0;i<ActorMangerActorsCount;i++)
+			{
+				UINT32 Actor = *(UINT32*)(ActorManager+0x40000+(i*4));
+				UINT32 ActorVFT = *(UINT32*)Actor;
+				if (ActorVFT == 0x82003564){ //Object_Player
+
+
+					Sonicteam::Player::State::IMachine* PlayerMashine = *(Sonicteam::Player::State::IMachine**)(Actor+0xE4);
+					if (PlayerMashine){
+						Sonicteam::Player::State::CommonContext* PCC = (Sonicteam::Player::State::CommonContext*)PlayerMashine->GetMashineContext().get();
+						UINT32 PCC_AI = (UINT32)PCC->PlayerAIAmigoPlugin.get();
+						UINT32 PCC_AI_FLAG = *(UINT32*)(PCC_AI + 0x24);
+						if (PCC_AI_FLAG == 0) pstack[PIX++] = Actor;
+					}
+				}
+			}
+		}
+		XMFLOAT4 POS;
+		if (pstack[PlayerIndex] != 0){
+			UINT32 ObjectPlayer = pstack[PlayerIndex];
+			UINT32 PlayerPosture = *(UINT32 *)(ObjectPlayer + 0xDC);
+			XMFLOAT4* PlayerPos = (XMFLOAT4*)(PlayerPosture + 0xB0);
+			memcpy(&POS,PlayerPos,sizeof(XMFLOAT4));
+		}
+
+		
+		BranchTo(0x825D5C30,int,L); //lua_newtable
+
+		BranchTo(0x825D5918,int,L,"X");
+		BranchTo(0x825D5890,int,L,POS.x);
+		BranchTo(0x825D5D98,int,L,-3);
+
+		BranchTo(0x825D5918,int,L,"Y");
+		BranchTo(0x825D5890,int,L,POS.y);
+		BranchTo(0x825D5D98,int,L,-3);
+
+		BranchTo(0x825D5918,int,L,"Z");
+		BranchTo(0x825D5890,int,L,POS.z);
+		BranchTo(0x825D5D98,int,L,-3);
+		
+
+
+
+
+		return 1;
+
+	}
+
+
+	
+
+
+
 
 
 	static const struct luaL_reg PET [] = {
 		{"GetPlayerInput", GetPlayerInput},
 		{"GetPlayerRawInput", GetPlayerRawInput},
+		{"GetPlayerPosition",GetPlayerPosition},
+		{"print",PrintNext},
 		{NULL, NULL}  /* sentinel */
 	};
 
@@ -2023,9 +2155,8 @@ luabridge:
 		const DWORD word = (DWORD)&ARGStack; // VALUE
 			__asm{
 				mr r12,word 
-					
 			};
-			CallCPLUSFuncHELPER();
+		CallCPLUSFuncHELPER();
 		BranchTo(offset,int);
 		_asm{
 			mr result,r3
@@ -2472,8 +2603,6 @@ luabridge:
 				lua_pushnumber(L,*(int*)arg1);
 				break;
 
-
-
 			default:
 			lua_pushnil(L);
 
@@ -2613,6 +2742,13 @@ LPCWSTR g_pwstrButtonsXx[1] = { L"------------OK----------------" };
 	lua_settable(L, LUA_GLOBALSINDEX))
 
 
+#define lua_register06(L,n,f) \
+	(lua_pushstring06(L, n), \
+	lua_pushcfunction06(L, f), \
+	lua_settable06(L, LUA_GLOBALSINDEX))
+
+
+
 	HOOK(lua_State*,__fastcall,sub_825DAAA0,0x825DAAA0){
 
 		return lua_open();
@@ -2711,35 +2847,123 @@ LPCWSTR g_pwstrButtonsXx[1] = { L"------------OK----------------" };
 	};
 
 
+	// Create & return MyObject instance to Lua
+	static int DebugLabel_new(lua_State* L){
+
+		const char* msg = lua_tostring(L,1);
+		int PX = lua_tonumber(L,2);
+		int PY = lua_tonumber(L,3);
+
+
+		std::string msgt =  std::string(msg);
+		int length = msgt.length() + 1;
+		wchar_t* wcharPtr = new wchar_t[length];
+		std::memset(wcharPtr, 0, length * sizeof(wchar_t));
+		std::mbstowcs(wcharPtr, msgt.c_str(), length);
+		msgt.clear();
+
+
+		*reinterpret_cast<int**>(lua_newuserdata06(L, sizeof(int*))) = (int*)SpawnMessage(wcharPtr,PX,PY);
+
+		luaL_getmetatable06(L,"DebugLabel");
+		lua_setmetatable06(L, -2);
+
+		free(wcharPtr);
+
+		return 1;
+	}
+
+
+	extern "C" static int DebugLabel_delete(lua_State* L){
+		
+		BranchTo(0x8262BA68,int,*reinterpret_cast<int**>(lua_touserdata(L, 1)),1); //Destroy from mem
+		
+		return 0;
+	}
+
+	extern "C" static int DebugLabel_SetText(lua_State* L){
+
+
+
+
+		int* TextEntity = (*reinterpret_cast<int**>(luaL_checkudata(L, 1, "DebugLabel")));
+			
+	
+		UINT ud = (UINT)TextEntity;
+	
+
+		const char* msg = lua_tostring(L,2);
+		std::string msgt =  std::string(msg);
+		int length = msgt.length() + 1;
+		wchar_t* wcharPtr = new wchar_t[length];
+		std::memset(wcharPtr, 0, length * sizeof(wchar_t));
+		std::mbstowcs(wcharPtr, msgt.c_str(), length);
+		msgt.clear();
+		EditMessage((UINT32)ud,wcharPtr);
+		free(wcharPtr);
+		return 0;
+	}
+
+
+	extern "C" static int DebugLabel_SetPosition(lua_State* L){
+
+
+		int* TextEntity = (*reinterpret_cast<int**>(luaL_checkudata(L, 1, "DebugLabel")));
+		UINT ud = (UINT)TextEntity;
+		float x  = lua_tonumber(L,2);
+		float y = lua_tonumber(L,3);
+		ChangeMessagePosition(ud,x,y);
+
+		return 0;
+	}
+
+
 	
 	HOOKL(extern "C",int,__cdecl ,sub_825DB498,0x825DB498,lua_State* LS){
 
 		
+		BranchTo(0x825D6700,int,LS,"bit",BitLIB,0);
+		BranchTo(0x825D6700,int,LS,"player",PET,0);
+
+		lua_register06(LS,"DebugLabel",DebugLabel_new);
+		luaL_newmetatable06(LS,"DebugLabel");
+
+
+		// lua_setfield(L, -2, "__gc");
+		lua_pushstring06(LS, "__gc"); lua_pushcfunction06(LS, DebugLabel_delete); lua_settable06(LS, -3);
+
+		lua_pushvalue(LS, -1);  lua_pushstring06(LS, "__index"); lua_pushvalue(LS,-2);  lua_settable06(LS,-3);
+		
+		lua_pushstring06(LS, "SetText"); lua_pushcfunction06(LS, DebugLabel_SetText); 	lua_settable06(LS, -3);
+
+		lua_pushstring06(LS, "SetPosition"); lua_pushcfunction06(LS, DebugLabel_SetPosition); 	lua_settable06(LS, -3);
+
+
+
+
+		lua_pop(LS,1);
+
+
+
+
+
+
+
+
+
 
 	
+	//	luaopen_string(LS);
+	
 
-		BranchTo(0x825D6700,int,LS,"bit",BitLIB,0);
-
-
-
-		BranchTo(0x825D6700,int,LS,"player",PET,0);
-		//luaL_openlib(LS,"player",PET,0);
+		
 
 
 		return sub_825DB498H(LS);
 	}
 
 
-	int __fastcall sub_8260BCE0(lua_State *LS)
-	{
-
-		
-		log.push_back(new std::string(lua_tostring(LS,2)));
-
-		return BranchTo(0x8260BCE0,int,LS);
-
-	}
-
+	
 
 
 
@@ -2774,9 +2998,166 @@ LPCWSTR g_pwstrButtonsXx[1] = { L"------------OK----------------" };
 
 
 
+	bool _extra_is_loaded = false;
+	Sonicteam::SoX::RefCountObject* RefLoadedCSDObject;
+	UINT32 TextEntityStatic = 0;
+
+
+
+
+
+	//return TextEntity
+	void ChangeMessagePosition(UINT32 TextEntity,float x,float y){
+		XMVECTOR* pos = (XMVECTOR*)(TextEntity + 0x30);
+		pos->x = x;
+		pos->y = y;
+		*(_BYTE *)(TextEntity + 0xDD) = 1;
+		BranchTo(0x8262AF00,int,TextEntity,30.0);
+		BranchTo(0x8262B008,int,TextEntity);
+
+	}
+
+
+	//return TextEntity
+	void ChangeMessagePositionY(UINT32 TextEntity,float y){
+		XMVECTOR* pos = (XMVECTOR*)(TextEntity + 0x30);
+		pos->x = 0.0;
+		pos->y = 480 + y;
+		*(_BYTE *)(TextEntity + 0xDD) = 1;
+		BranchTo(0x8262AF00,int,TextEntity,30.0);
+		BranchTo(0x8262B008,int,TextEntity);
+
+	}
+	void EditMessage(UINT32 TextEntity,const wchar_t* msg){
+
+		*(_BYTE *)(TextEntity + 0xDD) = 1;
+		BranchTo(0x8262DB90,int,TextEntity,msg,0); //New Text
+		BranchTo(0x8262B008,int,TextEntity);
+	}
+	UINT32 SpawnMessage(const wchar_t* msg,float pos_x,float pos_y){
+
+		Sonicteam::DocMarathonImp* doc = *(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
+		UINT32 Resouce = doc->DocGetUnkGameResources();
+		// 8 * (index + 3)
+		UINT32 RequiredResouce = (8*(3)) + Resouce;
+
+		//wchar_t or i
+		//i dunno text-size???// 
+		//Z-Inddex ???
+		UINT32 TextEntity = BranchTo(0x8262DC60,UINT32,malloc06(0x110),RequiredResouce,msg,0,0);
+		TextEntityStatic = TextEntity;
+
+		BranchTo(0x8262AF00,int,TextEntity,30.0);
+
+		XMVECTOR* pos = (XMVECTOR*)(TextEntity + 0x30);
+		pos->x = pos_x;
+		pos->y = pos_y;
+		*(_BYTE *)(TextEntity + 0xDD) = 1;
+		//BranchTo(0x8262DB90,int,TextEntity,L"JUCK",0); //New Text
+		//ARGB(Alpha,Red,Green,Blue)
+		UINT flag = ((0xFF << 24) |(0xFF << 16) | (0xFF << 8) |  0x00 );
+		BranchTo(0x8262B288,int,TextEntity,&flag);
+		BranchTo(0x8262B008,int,TextEntity);
+		return TextEntity;
+
+	}
+
+	UINT32 SpawnMessage(const wchar_t* msg,float pos_y){
+
+		Sonicteam::DocMarathonImp* doc = *(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
+		UINT32 Resouce = doc->DocGetUnkGameResources();
+		// 8 * (index + 3)
+		UINT32 RequiredResouce = (8*(3)) + Resouce;
+
+		//wchar_t or i
+		//i dunno text-size???// 
+		//Z-Inddex ???
+		UINT32 TextEntity = BranchTo(0x8262DC60,UINT32,malloc06(0x110),RequiredResouce,msg,0,0);
+		TextEntityStatic = TextEntity;
+
+		BranchTo(0x8262AF00,int,TextEntity,30.0);
+
+		XMVECTOR* pos = (XMVECTOR*)(TextEntity + 0x30);
+		pos->x = 0.0;
+		pos->y = 480.0 + pos_y;
+		*(_BYTE *)(TextEntity + 0xDD) = 1;
+		//BranchTo(0x8262DB90,int,TextEntity,L"JUCK",0); //New Text
+		//ARGB(Alpha,Red,Green,Blue)
+		UINT flag = ((0xFF << 24) |(0xFF << 16) | (0xFF << 8) |  0x00 );
+		BranchTo(0x8262B288,int,TextEntity,&flag);
+		BranchTo(0x8262B008,int,TextEntity);
+		return TextEntity;
+
+	}
+
+	void sub_825EA610(Sonicteam::DocMarathonImp* _this, double a2){
+
+		BranchTo(0x825EA610,int,_this,a2);
+
+	
+		if (!_extra_is_loaded){
+			_extra_is_loaded = true;
+
+			Sonicteam::SoX::RefCountObject* RefSpriteObj;
+			Sonicteam::SoX::RefCountObject** RefSpriteObj2 = BranchTo(0x82617570,Sonicteam::SoX::RefCountObject**,&RefSpriteObj,&std::string("sprite/debug_UI"));
+
+			RefLoadedCSDObject = RefSpriteObj->GetObject<Sonicteam::SoX::RefCountObject>();
+			RefLoadedCSDObject->LoseObject();
+			//RefSpriteObj->LoseObject();
+
+			if (RefLoadedCSDObject){
+				*(int*)((int)(RefLoadedCSDObject)+0x20) &= 0xFFFFFFF7;
+				BranchTo(0x8262AF00,int,(int)(RefLoadedCSDObject)+8,20.0);
+
+				RefLoadedCSDObject = RefLoadedCSDObject->GetObject<Sonicteam::SoX::RefCountObject>();
+				CellLoadSpriteWithAnim((int*)&RefLoadedCSDObject,"text_log",0);
+
+
+			
+			//	SpawnMessage(L"Testing",0);
+			//	EditMessage(  SpawnMessage(L"TestingX2",28),L"T");
+				
+			
+
+			}
+
+		}
+
+		if (RefLoadedCSDObject){
+
+			int v5 = (int)RefLoadedCSDObject;
+			(*(int (__fastcall **)(int, double))(*(_DWORD *)(v5 + 8) + 8))(v5 + 8, a2);
+
+		}
+
+		
+
+	
+
+		
+
+
+		
+
+	}
+
+	
+
+	bool once = false;
 
 	void GlobalInstall(){
 
+
+		DebugMessages = std::vector<int>();
+		DebugMessagesPlace = std::vector<int>();
+		ScrollPosition.x = 0;
+		ScrollPosition.y = 0;
+
+
+	//WRITE_DWORD(0x8203B014,sub_825126A0);
+
+	//WRITE_DWORD(0x82033578,sub_824A7598);
+	//WRITE_DWORD(0x82000950,sub_825EA610); Not needd
 	WRITE_DWORD(0x82462398  ,POWERPC_LIS(11,POWERPC_HI((DWORD)&tx)));
 	WRITE_DWORD(0x824623A0  ,POWERPC_ADDI(5,11,POWERPC_LO((DWORD)&tx)));
 
@@ -2791,8 +3172,6 @@ LPCWSTR g_pwstrButtonsXx[1] = { L"------------OK----------------" };
 
 
 
-
-	//WRITE_DWORD(0x8204C664,sub_8260BCE0);
 
 
 
@@ -3414,13 +3793,6 @@ namespace TimeSystemRestore{
 
 
 
-
-
-
-
-
-
-
 		std::stringstream ss;
 		ss << std::hex << a1;
 
@@ -3432,8 +3804,6 @@ namespace TimeSystemRestore{
 			*(float*)(Khrono_Component + 0x5C) += 1.0;
 		//	*(float*)(Khrono_Component + 0x58) -= 1.0;
 
-
-			
 
 		}
 		
@@ -4194,8 +4564,6 @@ namespace ArcRemover{
 	{
 	
 		int res = 0;
-		//int res = BranchTo(0x825BE438,int,a1,a2);
-	//	if (BranchTo(0x825BE438,int,a1,a2) == 0)
 		{
 
 			HANDLE hFile = CreateFile( a2->c_str(), GENERIC_READ, 0, NULL, 
@@ -4211,7 +4579,6 @@ namespace ArcRemover{
 			CloseHandle(hFile);
 
 		}
-
 		return res;
 	}
 
@@ -4236,22 +4603,18 @@ namespace ArcRemover{
 
 
 		WRITE_DWORD(0x828B30FC,0x48000010);
-		WRITE_DWORD(0x828B30EC,0x60000000);
+		//WRITE_DWORD(0x828B30EC,0x60000000);
 		
-WRITE_DWORD(0x82080424,sub_828B30A8);
+//		WRITE_DWORD(0x82080424,sub_828B30A8);
+		
+		
+		//INSTALL_HOOK(sub_82582648);
+		WRITE_DWORD(0x8204839C,sub_825BE438);
 
-INSTALL_HOOK(sub_82582648);
-WRITE_DWORD(0x8204839C,sub_825BE438);
-//INSTALL_HOOK(sub_828B30A8);
+
+
 	
-		INSTALL_HOOK(sub_8263B628);
-	
-
-	//	const int stackSize = 65536;
-	//	HANDLE Thr = CreateThread( NULL, stackSize, ThreadProc, (VOID *)0, CREATE_SUSPENDED, NULL );
-	//	ResumeThread(Thr);
-	//	WRITE_DWORD(0x82000BC0,0x820461E8);
-
+	//	INSTALL_HOOK(sub_8263B628);
 
 	}
 }
@@ -4459,28 +4822,9 @@ namespace TestProject{
 
 
 		
-		irr::core::quaternion s;
-		s.X = vec4_rot_quat[0];
-		s.Y = vec4_rot_quat[1];
-		s.Z = vec4_rot_quat[2];
-		s.W = vec4_rot_quat[3];
-		irr::core::vector3d<float> zUP;
-		zUP.X = 0;
-		zUP.Y = 1;
-		zUP.Z = 0;
-		
-		irr::core::vector3d<float> x = s * zUP * 1000;
-	
 
 		
 
-		v2->field_34 = x.X;
-		v2->JumpKineticForce = x.Y;
-		v2->field_3C = x.Z;
-		
-		if (x.Y < 0 ){
-			//ShowXenonMessage(L"DDD","as");
-		} 
 	
 
 		v4 = result->StateBase.ContextBase;
@@ -8176,3 +8520,25 @@ void CheckEmulated::GlobalInstall()
 
 	HookV2::IsNotEmulatedHardWare = HookV2::CheckIsNotEmulatedHardWare();
 }
+
+
+namespace DevTitle{
+
+
+	void sub_82161AB8(Sonicteam::DocMarathonImp* _this){
+
+
+	
+
+	//	BranchTo(0x82161AB8,int,_this);
+		int doc = *(int*)0x82D35E50;
+		_this->DocSetCurrentMode(doc);
+	}
+
+	void GlobalInstall()
+	{
+		WRITE_DWORD(0x82000AAC,sub_82161AB8);
+
+	}
+}
+

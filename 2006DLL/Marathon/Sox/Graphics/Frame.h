@@ -31,13 +31,13 @@ namespace Sonicteam{
 			//Virtual Methods
 			virtual int FrameUnk01();
 			virtual int FrameUnk02();
-			/*
+			
 			virtual XMMATRIX FrameGetTransformMatrix1() = 0;
 			virtual XMMATRIX FrameGetTransformMatrix2() = 0;
 			virtual void FrameSetTransformMatrix2(XMMATRIX&) = 0;
 			virtual void FrameUnk06(XMMATRIX&) = 0;
 			virtual void FrameUnk07() = 0;
-				*/
+				
 			virtual int FrameUnk08();
 
 

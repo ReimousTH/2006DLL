@@ -29,26 +29,35 @@ typedef struct luaL_reg {
 
 LUALIB_API void luaL_openlib (lua_State *L, const char *libname,
                                const luaL_reg *l, int nup);
+LUALIB_API void luaL_openlib06 (lua_State *L, const char *libname,
+							  const luaL_reg *l, int nup);
 LUALIB_API int luaL_getmetafield (lua_State *L, int obj, const char *e);
 LUALIB_API int luaL_callmeta (lua_State *L, int obj, const char *e);
 LUALIB_API int luaL_typerror (lua_State *L, int narg, const char *tname);
 LUALIB_API int luaL_argerror (lua_State *L, int numarg, const char *extramsg);
+LUALIB_API int luaL_argerror06 (lua_State *L, int numarg, const char *extramsg);
 LUALIB_API const char *luaL_checklstring (lua_State *L, int numArg, size_t *l);
+LUALIB_API const char *luaL_checklstring06 (lua_State *L, int narg, size_t *len);
 LUALIB_API const char *luaL_optlstring (lua_State *L, int numArg,
                                            const char *def, size_t *l);
 LUALIB_API lua_Number luaL_checknumber (lua_State *L, int numArg);
+LUALIB_API lua_Number luaL_checknumber06 (lua_State *L, int numArg);
 LUALIB_API lua_Number luaL_optnumber (lua_State *L, int nArg, lua_Number def);
+LUALIB_API lua_Number luaL_optnumber06 (lua_State *L, int nArg, lua_Number def);
 
 LUALIB_API void luaL_checkstack (lua_State *L, int sz, const char *msg);
 LUALIB_API void luaL_checktype (lua_State *L, int narg, int t);
 LUALIB_API void luaL_checkany (lua_State *L, int narg);
 
 LUALIB_API int   luaL_newmetatable (lua_State *L, const char *tname);
+LUALIB_API int   luaL_newmetatable06 (lua_State *L, const char *tname);
 LUALIB_API void  luaL_getmetatable (lua_State *L, const char *tname);
+LUALIB_API void  luaL_getmetatable06 (lua_State *L, const char *tname);
 LUALIB_API void *luaL_checkudata (lua_State *L, int ud, const char *tname);
 
 LUALIB_API void luaL_where (lua_State *L, int lvl);
 LUALIB_API int luaL_error (lua_State *L, const char *fmt, ...);
+LUALIB_API int luaL_error06 (lua_State *L, const char *fmt, ...);
 
 LUALIB_API int luaL_findstring (const char *st, const char *const lst[]);
 
@@ -72,14 +81,18 @@ LUALIB_API int luaL_loadbuffer (lua_State *L, const char *buff, size_t sz,
 
 #define luaL_argcheck(L, cond,numarg,extramsg) if (!(cond)) \
                                                luaL_argerror(L, numarg,extramsg)
+
+#define luaL_argcheck06(L, cond,numarg,extramsg) if (!(cond)) \
+												luaL_argerror06(L, numarg,extramsg)
 #define luaL_checkstring(L,n)	(luaL_checklstring(L, (n), NULL))
 #define luaL_optstring(L,n,d)	(luaL_optlstring(L, (n), (d), NULL))
 #define luaL_checkint(L,n)	((int)luaL_checknumber(L, n))
+#define luaL_checkint06(L,n)	((int)luaL_checknumber06(L, n))
 #define luaL_checklong(L,n)	((long)luaL_checknumber(L, n))
+#define luaL_checklong06(L,n)	((long)luaL_checknumber06(L, n))
 #define luaL_optint(L,n,d)	((int)luaL_optnumber(L, n,(lua_Number)(d)))
 #define luaL_optlong(L,n,d)	((long)luaL_optnumber(L, n,(lua_Number)(d)))
-
-
+#define luaL_optlong06(L,n,d) ((long)luaL_optnumber06(L, n,(lua_Number)(d)))
 /*
 ** {======================================================
 ** Generic Buffer manipulation
@@ -103,14 +116,23 @@ typedef struct luaL_Buffer {
   ((void)((B)->p < ((B)->buffer+LUAL_BUFFERSIZE) || luaL_prepbuffer(B)), \
    (*(B)->p++ = (char)(c)))
 
+
+#define luaL_putchar06(B,c) \
+	((void)((B)->p < ((B)->buffer+LUAL_BUFFERSIZE) || luaL_prepbuffer06(B)), \
+	(*(B)->p++ = (char)(c)))
+
 #define luaL_addsize(B,n)	((B)->p += (n))
 
 LUALIB_API void luaL_buffinit (lua_State *L, luaL_Buffer *B);
 LUALIB_API char *luaL_prepbuffer (luaL_Buffer *B);
+LUALIB_API char *luaL_prepbuffer06 (luaL_Buffer *B);
 LUALIB_API void luaL_addlstring (luaL_Buffer *B, const char *s, size_t l);
+LUALIB_API void luaL_addlstring06 (luaL_Buffer *B, const char *s, size_t l);
 LUALIB_API void luaL_addstring (luaL_Buffer *B, const char *s);
 LUALIB_API void luaL_addvalue (luaL_Buffer *B);
+LUALIB_API void luaL_addvalue06 (luaL_Buffer *B);
 LUALIB_API void luaL_pushresult (luaL_Buffer *B);
+LUALIB_API void luaL_pushresult06 (luaL_Buffer *B);
 
 
 /* }====================================================== */

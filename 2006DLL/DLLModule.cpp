@@ -32,6 +32,9 @@
 //#include "Patches.cpp"
 
 #include "PatchData.h"
+#include "Patches/DebugLog/DebugLog.h"
+
+
 
 
 
@@ -41,14 +44,8 @@ struct DFastActions{
 	
 };
 
-bool _NoArcMode = false;
-bool _TimeSystemRestore = false;
-bool _Multiplayer4P = false;
-bool _DebugLogRestore = false;
-bool _OmegaHoverGauge = false;
-
 DFastActions _PreLoadPatches[] = {
-	{"DebugLog_Enabled",DebugLogRestore::GlobalInstall},
+	{"DebugLog_Enabled",DebugLogV2::GlobalInstall},
 	{"Multiplayer4P_Enabled",Multiplayer4P::GlobalInstall},
 	{"NoArcMode",ArcRemover::GlobalInstall},
 	{"TimeSystemRestore",TimeSystemRestore::GlobalInstall},
@@ -60,6 +57,14 @@ DFastActions _PreLoadPatches[] = {
 	{"AmyLOS",AmyLOS::GlobalInstall},
 };
 
+bool _NoArcMode = false;
+bool _TimeSystemRestore = false;
+bool _Multiplayer4P = false;
+bool _DebugLogRestore = false;
+bool _OmegaHoverGauge = false;
+
+
+
 
 
 
@@ -69,6 +74,7 @@ extern "C" void OnDLLStart(){
 	std::string Loaded;
 
 	CheckEmulated::GlobalInstall();
+	//DevTitle::GlobalInstall();
 
 
 

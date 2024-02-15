@@ -6,15 +6,20 @@
 #include "Marathon/Marathon.h"
 
 
-#include "All06Functions.hpp"
 
+
+
+#include "All06Functions.hpp"
 #include "IdaExports.h"
 
 
 
 static ZLua BaseLua =  ZLua((const char*)"game:\\common\\DLL.lua");
-
 static ZLua QuickBootLua =  ZLua((const char*)"game:\\common\\QuickBoot.lua");
+
+
+
+
 
 
 
@@ -23,6 +28,25 @@ namespace CheckEmulated{
 }
 
 namespace DebugLogRestore{
+
+
+
+
+	struct LabelData {
+		int* ptr;
+	};
+
+	static std::vector<int> DebugMessagesPlace;
+	static std::vector<int> DebugMessages;
+	static XMFLOAT4 ScrollPosition;
+
+	void ChangeMessagePosition(UINT32 TextEntity,float x,float y);
+	void ChangeMessagePositionY(UINT32 TextEntity,float y);
+	void EditMessage(UINT32 TextEntity,const wchar_t* msg);
+	UINT32 SpawnMessage(const wchar_t* msg,float pos_x,float pos_y);
+	UINT32 SpawnMessage(const wchar_t* msg,float pos_y);
+
+
 	void GlobalInstall();
 }
 
@@ -38,6 +62,10 @@ namespace LuaDLL{
 
 
 namespace D3DH{
+	void GlobalInstall();
+}
+
+namespace DevTitle{
 	void GlobalInstall();
 }
 
@@ -132,4 +160,17 @@ namespace TailsGauge{
 
 	void GlobalInstall();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 #endif
