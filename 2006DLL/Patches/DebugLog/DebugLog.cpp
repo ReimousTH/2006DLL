@@ -30,6 +30,7 @@ namespace DebugLogV2{
 		BitLibGlobalInstall(LS);
 		PlayerLIB_GlobalInstall(LS);
 		STRLIB_GlobalInstall(LS);
+		MemoryLIB_GlobalInstall(LS);
 
 		return sub_825DB498H(LS);
 	}

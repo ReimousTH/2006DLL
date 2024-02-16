@@ -31,6 +31,21 @@ namespace DebugLogV2 {
 
 
 	int PlayerLIB_GlobalInstall(lua_State* LS);
+
+	struct Player_NEWS{
+		int* ObjectPlayer;
+		int Index;
+	};
+
+	static int Player___GC(lua_State* L);
+	extern "C" Player_RELOAD(lua_State* L);
+	extern "C" Player_GetPTR(lua_State* L);
+	extern "C" Player_NEW(lua_State* L);
+
+	void GetPlayerActors(UINT32* pstack);
+	UINT32 GetPlayerPosture(UINT32 ObjectPlayer);
+	XMFLOAT4* GetPlayerPosition(UINT32 PlayerPosture);
+	extern "C" Player_NEW(lua_State* L);
 	extern "C" static int GetPlayerRawInput(lua_State* L);
 	extern "C" int GetPlayerInput(lua_State* L);
 	extern "C" int PrintNext(lua_State* L);
@@ -38,6 +53,19 @@ namespace DebugLogV2 {
 
 
 
+
+
+
 	int STRLIB_GlobalInstall(lua_State* LS);
 	int MemoryLIB_GlobalInstall(lua_State* LS);
+	extern "C" Memory_GetPointer(lua_State* L);
+	extern "C" Memory_SetPointerValue(lua_State* L);
+	extern "C" Memory_GetDWORD(lua_State* L);
+	extern "C" Memory_SetDWORD(lua_State* L);
+	extern "C" Memory_GetFLOAT(lua_State* L);
+	extern "C" Memory_SetFLOAT(lua_State* L);
+	extern "C" Memory_GetBYTE(lua_State* L);
+	extern "C" Memory_SetBYTE(lua_State* L);
+
+	
 }
