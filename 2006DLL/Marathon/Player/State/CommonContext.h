@@ -65,7 +65,7 @@ namespace Sonicteam{
 				float SpeedUpTime;
 				int UnkSomeTimer;
 				float AngleMoveDataMB;
-				unsigned int GroundAirDataFlags;
+				unsigned int GroundAirDataFlags; //0xC4
 				unsigned long long UnknownFlags0xC8;
 				int UnknownFlags0xD0;
 				int UnknownFlags0xD4;

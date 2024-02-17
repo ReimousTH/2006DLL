@@ -4450,18 +4450,21 @@ namespace ArcRemover{
 	HOOK(int,__fastcall,sub_82582648,0x82582648,_DWORD *a1, int* HandleManager, std::string* a3, std::string *a4, int* a5, int ShowErrors){
 
 
+	
 		DWORD test;
 		__asm{
 			mflr r12;
 			stw r12,test
 		}
 
-		if (TOGLE){
-			ShowXenonMessage(L"MSG",a3->c_str());
+		//if (TOGLE){
+		
+		
+		//	ShowXenonMessage(L"MSG",buffer);
 
 
 			// Sleep(1000);
-		}
+		//}
 
 		//std::string* po = new std::string();
 		//po->append(a3->c_str());
@@ -4563,6 +4566,8 @@ namespace ArcRemover{
 	int __fastcall sub_825BE438(int a1, std::string* a2)
 	{
 	
+
+	
 		int res = 0;
 		{
 
@@ -4572,8 +4577,14 @@ namespace ArcRemover{
 			if( INVALID_HANDLE_VALUE != hFile ){
 
 				res = 1;
+				
 			}
 			else{
+	
+			//	char buffer[1024];
+			//	char* path = "xenon_root";
+			//	sprintf(buffer,"%s",a2->c_str());
+			//	ShowXenonMessage(L"MSG",buffer);
 				res = 0;
 			}
 			CloseHandle(hFile);
@@ -4608,7 +4619,7 @@ namespace ArcRemover{
 //		WRITE_DWORD(0x82080424,sub_828B30A8);
 		
 		
-		//INSTALL_HOOK(sub_82582648);
+		INSTALL_HOOK(sub_82582648);
 		WRITE_DWORD(0x8204839C,sub_825BE438);
 
 

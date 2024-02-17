@@ -1,0 +1,238 @@
+#include "DevTitle.h"
+
+namespace DevTitleV2{
+
+
+	void EditText(UINT32 Label1,const char* str){
+
+		std::string msg = std::string(str);
+		int length = msg.length() + 1;
+		wchar_t* wcharPtr = new wchar_t[length];
+		std::memset(wcharPtr, 0, length * sizeof(wchar_t));
+		std::mbstowcs(wcharPtr, msg.c_str(), length);
+		DebugLogV2::EditMessage(Label1,wcharPtr);
+		free(wcharPtr);
+
+	}
+
+	int __fastcall DevTitleModeMessageReciever(int a1, Sonicteam::SoX::Message* a2){
+
+		_DWORD _this = (_DWORD )(a1 - 0x20);
+
+
+		BranchTo(0x824A0E38,int,a1,a2);
+
+
+
+		return 1;
+
+
+
+	}
+
+
+	int __fastcall DocLoadMainMode(Sonicteam::DocMarathonImp* _this, int a2){
+		
+		BranchTo(0x82161AB8,int,_this,a2);
+
+	//	BranchTo(0x825E9E28,int,_this,a2);
+	
+		if ( !*(int*)0x82D35E78 )
+			*(int*)0x82D35E78 = BranchTo(0x82161860,int);
+
+
+		Label1 =  DebugLogV2::SpawnMessage(L"",400,600);
+		Label2 =  DebugLogV2::SpawnMessage(L">>$<<","picture(button_a)",640,100);
+
+		Label3 =  DebugLogV2::SpawnMessage(L">>[Selected]:[]<<",10,600);
+
+		Label4 =  DebugLogV2::SpawnMessage(L"",500,200);
+
+		return _this->DocSetCurrentMode(*(int*)0x82D35E78);
+
+	}
+
+	_DWORD *__fastcall DevTitleUI(int a1, Sonicteam::DocMarathonImp *a2){
+
+
+		//if ( !BranchTo(0x82581C68,int,(int)a2) ){
+			int mode =  (int)a2->DocCurrentMode;
+			int index = *(int*)(mode + 0x50);
+			char buffer[100];
+
+
+
+			const char* str =  *(const char**)((0x82B10A40 + (index * 8)));
+
+			sprintf(buffer,">>[Selected]:[%s]<< : ", 	str);
+			EditText(Label3,(const char*)buffer);
+		//}
+
+		
+
+
+		return BranchTo(0x82162298,_DWORD*,a1,a2);
+
+	}
+
+
+
+	const char* Names[] = {
+		"CStage",
+		"SArea",
+		"SPlayer",
+		"SID",
+		"SComment"
+	};
+
+	const char* NamesF[] = {
+		"CStage",
+		"SArea",
+		"SPlayer",
+		"SID",
+		"SComment"
+	};
+
+
+	int __fastcall StageSelectParameterStage(int a1, Sonicteam::DocMarathonImp* a2){
+
+
+
+		int docmode = a2->DocCurrentMode;
+		int ActiveStageMap  = *(int*)(docmode + 0x54);
+		int Index = *(int*)(docmode + 0x5C);
+		int IndexLR = *(int*)(docmode + 0x60); //Deep
+
+
+
+		std::vector<UINT32>* stage_maps  = (std::vector<UINT32>*)(ActiveStageMap + 0x58);
+		std::string* str =  (std::string*)(((*stage_maps)[Index]) + 0x20);
+		Names[IndexLR] = str->c_str();
+		
+
+		for (int i = IndexLR+1;i<sizeof(Names)/4;i++){
+			Names[i] = "...";
+		}
+
+		if (IndexLR == 2){
+
+			 UINT32 CurrentStageMap  =  (UINT32)((*stage_maps))[Index];
+			 std::vector<UINT32>* stage_maps_C  = (std::vector<UINT32>*)(CurrentStageMap + 0x58);
+			 UINT32 IDStageMAP = (UINT32)((*stage_maps_C))[0];
+			 std::string* IDStageMAPSTR =  (std::string*)(IDStageMAP + 0x20);
+			 std::string* ComentStageMAPSTR =  (std::string*)(IDStageMAP + 0x3C);
+
+			 if (!IDStageMAPSTR->empty()){
+				 Names[IndexLR+1] = IDStageMAPSTR->c_str();
+
+			 }
+			 if (!ComentStageMAPSTR->empty()){
+				 Names[IndexLR+2] = ComentStageMAPSTR->c_str();
+			 }
+			 
+		
+
+		}
+
+
+		memcpy(&NamesF,Names,sizeof(NamesF));
+		char buffer1[1024];
+		sprintf(buffer1,">>[%s]<<",Names[IndexLR]);
+		NamesF[IndexLR] = buffer1;
+
+	
+		
+		char buffer[1024];
+		sprintf(buffer,"Stage = [%s]\nArea = [%s]\nPlayer = [%s]\nID = [%s]\nComment = [%s]",NamesF[0],NamesF[1],NamesF[2],NamesF[3],NamesF[4]);
+
+
+
+		DebugLogV2:EditText(Label4,(const char*)buffer);
+
+
+
+		//stage_Map
+		//str 0x20      Stage = "aqa ( Aquatic Base )",
+		//0x58- result Select StageMap
+		//0x50- Something Stagemaps??
+		//0x54- Stagemap but changing after Confirm
+		//0x5C - Index	
+
+
+
+
+		return BranchTo(0x82161F20,int,a1,a2);
+	}
+
+	int __fastcall EngineDocOnUpdate(Sonicteam::DocMarathonImp *a1, double a2){
+
+		if (Label1 && Label2){
+
+			char buffer[100];
+			int docmode = (int)a1->DocCurrentMode;
+			if (docmode){
+
+
+				int index = *(int*)(docmode + 0x50);
+				const char** str = *(const char***)(docmode + 0x80);
+				const char* str2 = *(const char**)(docmode + 0x88);
+				int flag = *(int*)(docmode + 0x84);
+
+				if (str != 0){
+
+					sprintf(buffer,">>[%s]:[%s]:[%x]<< :",*str,str2,flag);
+					EditText(Label2,(const char*)buffer);
+
+
+				}
+		
+			}			
+
+
+		}
+
+		return BranchTo(0x825EA610,int,a1,a2);
+	}
+
+	_DWORD *__fastcall StageSelectParameterStageDestructor(_DWORD *result, char a2){
+
+		EditText(Label1,"");
+		EditText(Label2,"");
+		EditText(Label3,"");
+		EditText(Label4,"");
+	
+		return BranchTo(0x82160D20,_DWORD*,result,a2);
+	}
+
+	int __fastcall DocSetCurrentMode(int result, int a2){
+
+		if (Label1 && Label2 && Label3 && Label3){
+		EditText(Label1,"");
+		EditText(Label2,"");
+		EditText(Label3,"");
+		EditText(Label4,"");
+		}
+
+
+		return BranchTo(0x825E8D78,int,result,a2);
+	}
+	void GlobalInstall()
+	{
+
+	
+
+		
+	//	WRITE_DWORD(0x82000950,EngineDocOnUpdate);
+		
+		WRITE_DWORD(0x820009A0,DocSetCurrentMode);
+
+		WRITE_DWORD(0x82160D20,StageSelectParameterStageDestructor);
+		WRITE_DWORD(0x82000AFC,StageSelectParameterStage);
+
+		WRITE_DWORD(0x82000B68,DevTitleUI);
+
+		WRITE_DWORD(0x8202B1D8,DevTitleModeMessageReciever);
+		WRITE_DWORD(0x82000AAC,DocLoadMainMode);
+	}
+
+}

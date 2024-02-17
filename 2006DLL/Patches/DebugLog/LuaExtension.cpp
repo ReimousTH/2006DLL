@@ -69,6 +69,7 @@ namespace DebugLogV2{
 
 
 
+
 	int DebugLabel_GlobalInstall(lua_State* LS)
 	{
 
@@ -152,6 +153,142 @@ namespace DebugLogV2{
 		return 0;
 	}
 
+	
+	
+
+
+
+
+	int VectorLIB_GlobalInstall(lua_State* LS)
+	{
+
+		lua_register06(LS,"Vector",Vector_NEW);
+
+
+		luaL_newmetatable06(LS,"Vector");
+		lua_pushstring06(LS, "__gc"); lua_pushcfunction06(LS, Vector__GC); lua_settable06(LS, -3);
+		lua_pushstring06(LS, "__tostring"); lua_pushcfunction06(LS, Vector__tostring); lua_settable06(LS, -3);
+		lua_pushstring06(LS, "__add"); lua_pushcfunction06(LS, Vector__add); lua_settable06(LS, -3);
+		lua_pushstring06(LS, "__sub"); lua_pushcfunction06(LS, Vector__sub); lua_settable06(LS, -3);
+
+		lua_pushvalue(LS, -1);  lua_pushstring06(LS, "__index"); lua_pushvalue(LS,-2);  lua_settable06(LS,-3);
+		lua_pushstring06(LS, "GetTable"); lua_pushcfunction06(LS, Vector_GetTable); 	lua_settable06(LS, -3);
+
+
+		return 1;
+	}
+
+	extern "C" Vector__GC(lua_State* L){
+		BranchTo(0x82186190,int,*reinterpret_cast<XMVECTOR**>(lua_touserdata(L, 1))); //Destroy from mem
+		return 0;
+	}
+
+	extern "C" Vector_GetTable(lua_State* L){
+
+
+		XMVECTOR* vector = (*reinterpret_cast<XMVECTOR**>(luaL_checkudata(L, 1, "Vector")));
+	
+
+		lua_newtable06(L);
+
+		lua_pushstring06(L, "X");
+		lua_pushnumber(L, vector->x);
+		lua_settable06(L, -3);
+
+		lua_pushstring06(L, "Y");
+		lua_pushnumber(L, vector->y);
+		lua_settable06(L, -3);
+
+		lua_pushstring06(L, "Z");
+		lua_pushnumber(L, vector->z);
+		lua_settable06(L, -3);
+
+		lua_pushstring06(L, "W");
+		lua_pushnumber(L, vector->w);
+		lua_settable06(L, -3);
+
+	
+
+
+		return 1;
+	}
+	extern "C" Vector__tostring(lua_State* L){
+
+		int args = lua_gettop(L);
+
+
+		XMVECTOR* vector = (*reinterpret_cast<XMVECTOR**>(luaL_checkudata(L, 1, "Vector")));
+		//PE->ObjectPlayer
+		const char* format = "(X = %.2f, Y = %.2f, Z = %.2f, W = %.2f)";
+		if (args > 1){
+			format = lua_tostring(L,2);
+		}
+		char buffer[100];
+
+		std::sprintf(buffer, format,vector->x, vector->y, vector->z,vector->w);
+		lua_pushstring06(L, buffer);
+
+
+
+		return 1;
+	}
+
+	extern "C" Vector__add(lua_State* L){
+
+
+		XMVECTOR vector1 = *(*reinterpret_cast<XMVECTOR**>(luaL_checkudata(L, 1, "Vector")));
+		XMVECTOR vector2 = *(*reinterpret_cast<XMVECTOR**>(luaL_checkudata(L, 2, "Vector")));
+
+
+		//why i dont use operators well because (they allocate memory either and i dont too)
+		XMVECTOR* z = (XMVECTOR*)malloc06(sizeof(XMVECTOR));
+		*z = vector1 + vector2;
+		*reinterpret_cast<XMVECTOR**>(lua_newuserdata06(L, sizeof(XMVECTOR*))) = z;
+		// Set the metatable for the new userdata
+		luaL_getmetatable(L, "Vector");
+		lua_setmetatable(L, -2);
+
+
+		return 1;
+	}
+	extern "C" Vector__sub(lua_State* L){
+
+
+		XMVECTOR vector1 = *(*reinterpret_cast<XMVECTOR**>(luaL_checkudata(L, 1, "Vector")));
+		XMVECTOR vector2 = *(*reinterpret_cast<XMVECTOR**>(luaL_checkudata(L, 2, "Vector")));
+		//why i dont use operators well because (they allocate memory either and i dont too)
+		XMVECTOR* z = (XMVECTOR*)malloc06(sizeof(XMVECTOR));
+		*z = vector1 - vector2;
+		*reinterpret_cast<XMVECTOR**>(lua_newuserdata06(L, sizeof(XMVECTOR*))) = z;
+		// Set the metatable for the new userdata
+		luaL_getmetatable(L, "Vector");
+		lua_setmetatable(L, -2);
+
+
+		return 1;
+	}
+
+
+
+	extern "C" Vector_NEW(lua_State* L)
+	{
+		int args = lua_gettop(L);
+
+		XMVECTOR* z = (XMVECTOR*)malloc06(sizeof(XMVECTOR));
+
+		for (int i = 0;i<args;i++){
+			z->v[i] = lua_tonumber(L,i+1);
+		}
+		
+
+		*reinterpret_cast<XMVECTOR**>(lua_newuserdata06(L, sizeof(XMVECTOR*))) = z;
+
+		luaL_getmetatable06(L,"Vector");
+		lua_setmetatable06(L, -2);
+
+		return 1;
+	}
+
 	static const struct luaL_reg PET [] = {
 		{"GetPlayerInput", GetPlayerInput},
 		{"GetPlayerRawInput", GetPlayerRawInput},
@@ -179,6 +316,15 @@ namespace DebugLogV2{
 		lua_pushstring06(LS, "GetPTR"); lua_pushcfunction06(LS, Player_GetPTR); 	lua_settable06(LS, -3);
 
 		lua_pushstring06(LS, "Reload"); lua_pushcfunction06(LS, Player_RELOAD); 	lua_settable06(LS, -3);
+
+		lua_pushstring06(LS, "Swap"); lua_pushcfunction06(LS, Player_SWAP); 	lua_settable06(LS, -3);
+
+		lua_pushstring06(LS, "OpenPostureControl"); lua_pushcfunction06(LS, Player_OpenPostureControl); 	lua_settable06(LS, -3);
+		lua_pushstring06(LS, "OpenInput"); lua_pushcfunction06(LS, Player_OpenInput); 	lua_settable06(LS, -3);
+		lua_pushstring06(LS, "OpenPackage"); lua_pushcfunction06(LS, Player_OpenPackage); 	lua_settable06(LS, -3);
+		lua_pushstring06(LS, "OpenModel"); lua_pushcfunction06(LS, Player_OpenModel); 	lua_settable06(LS, -3);
+		lua_pushstring06(LS, "OpenFrame"); lua_pushcfunction06(LS, Player_OpenFrame); 	lua_settable06(LS, -3);
+
 
 		lua_pop(LS,1);
 
@@ -259,7 +405,325 @@ namespace DebugLogV2{
 
 
 
+	extern "C" Player_SWAP(lua_State* L){
+
+		int args = lua_gettop(L);
+		if (args <= 1) return 0;
+
+		const char* chara = lua_tostring(L,2);
+
+		Player_NEWS* PE = (*reinterpret_cast<Player_NEWS**>(luaL_checkudata(L, 1, "Player")));
+		//PE->ObjectPlayer
+			
+		BranchTo(0x82195D20,int,PE->ObjectPlayer,chara);
+		return 0;
+
+
+	}
 	
+
+	extern "C" Player_OpenFrame(lua_State* L){
+
+		Player_NEWS* PE = (*reinterpret_cast<Player_NEWS**>(luaL_checkudata(L, 1, "Player")));
+		_DWORD ObjPlayer =  (_DWORD)PE->ObjectPlayer;
+		int index = 0;
+
+
+
+	
+		int v2 = ObjPlayer;
+		int v3 = malloc06(0x160);
+		int v5;
+		if ( v3 )
+		{
+	
+			int v4 = 	BranchTo(0x8223B458,int,v3);
+			v5 = v4;
+			if ( v4 )
+			{
+				BranchTo(0x82659610,int,v4);
+
+				XMMATRIX matrix = XMMATRIX(1,0,0,0,
+										   0,1,0,0,
+										   0,0,1,0,
+										   0,0,0,1);
+							
+				
+				BranchTo(0x8223B208,int,v5,&matrix);
+			
+			
+			}
+		}
+		else
+		{
+			v5 = 0;
+		}
+		if ( *(_DWORD *)(v2 + 0x154)  )
+		{
+			int v8 = v5;
+			if ( v5 )
+				BranchTo(0x82659610,int,v5);
+			(*(void (__fastcall **)(_DWORD, int *))(**(_DWORD **)(v2 + 0x154) + 0xC))(*(_DWORD *)(v2 + 0x154), &v8);
+			if ( v8 )
+				BranchTo(0x82581E38 ,int,v8);
+		}
+		if ( v5 )
+			BranchTo(0x82659610,int,v5);
+		_DWORD v6 = *(_DWORD *)(v2 + 0xCC);
+		*(_DWORD *)(v2 + 0xCC) = v5;
+		if ( v6 )
+			BranchTo(0x82581E38 ,int,v6);
+		if ( v5 )
+			BranchTo(0x82581E38 ,int,v5);
+	
+	
+	
+
+
+		return 0;
+	}
+
+
+
+
+	extern "C" Player_OpenModel(lua_State* L){
+
+		Player_NEWS* PE = (*reinterpret_cast<Player_NEWS**>(luaL_checkudata(L, 1, "Player")));
+		_DWORD ObjPlayer =  (_DWORD)PE->ObjectPlayer;
+		int index = 0;
+	
+		int v25[2];
+		int v31[2];
+		int v8;
+		v31[0] = 0;
+		v31[1] = 0;
+
+
+		v25[0] = 0;
+		v8 = (int)malloc06(0xC8);
+		int v5 = 0; //FLAG
+		int v9;
+		int v10;
+		if ( v8 )
+		{
+			v25[1] = *(_DWORD *)(ObjPlayer + 0xCC);
+			if ( v25[1] )
+				BranchTo(0x82659610,int,v25[1]);
+			v5 = 1;
+		
+			int AnimationTableSetup  = 0x820032C0 + (0xC * v25[0]);
+
+
+			v9 = BranchTo(0x822392D8,int,v8,*(_DWORD *)(ObjPlayer + 0x154), &v25[1], AnimationTableSetup);
+		}
+		else
+		{
+			v9 = 0;
+		}
+		v31[0] = v9;
+		BranchTo(0x821C04B0,int,&v31[1],v9,0);
+		if ( (v5 & 1) != 0 && v25[1] )
+			BranchTo(0x82581E38,int,v25[1]);
+		BranchTo(0x821B8F28,int,ObjPlayer,v31,2u);
+
+		*(_DWORD *)(ObjPlayer + 0xD4) = v31[0];
+		BranchTo(0x821600C0,int,ObjPlayer + 0xD8,&v31[1]);
+
+		v10 = v31[1];
+		if ( v10 )
+			BranchTo(0x821601B8,int,v10);
+
+		int v51[2];
+		v51[0] =0;
+		v51[1] = 0;
+
+		v51[0] = *(_DWORD *)(ObjPlayer + 0x154);
+		BranchTo(0x82160248,int,&v51[1],(int *)(ObjPlayer + 0x158));
+		BranchTo(0x821BFA70,int,ObjPlayer + 0x114,v51);
+
+		if ( v51[1] )
+			sub_821601B8(v51[1]);
+
+		int v43 = *(_DWORD *)(ObjPlayer + 0xDC);
+		if ( v43  )
+		{
+			XMMATRIX matrix;
+			//BranchTo(0x821F1A18,int,v43,&matrix); POS
+		
+		}
+		//TODO ELSE
+		//BranchTo(0x82195B98,int,ObjPlayer);
+
+
+
+		int v60[2];
+		v60[0] = 0;
+		v60[1] = 0;
+		//BranchTo(0x8219FBB8,int,v60,(int *)(ObjPlayer + 0x144));
+
+		if ( v60[0]  )
+		{
+			//(*(void (__fastcall **)(int, int))(*(_DWORD *)v60[0] + 0x18))(v60[0], *(_DWORD *)(ObjPlayer + 0x1F4));
+		}
+
+	//	if ( v61[1] )
+	//		sub_821601B8(v61[1]);
+		BranchTo(0x821966E0,int,ObjPlayer);
+		BranchTo(0x82196CF8,int,ObjPlayer);
+		BranchTo(0x82196768,int,ObjPlayer);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		
+		return 0;
+	}
+
+
+
+
+	extern "C" Player_OpenPackage(lua_State* L){
+
+		Player_NEWS* PE = (*reinterpret_cast<Player_NEWS**>(luaL_checkudata(L, 1, "Player")));
+		_DWORD ObjPlayer =  (_DWORD)PE->ObjectPlayer;
+
+		const char* v3 = lua_tostring(L, 2);
+		if ( v3 ){
+
+
+			std::string* S1 =  (std::string *)(ObjPlayer + 0x74); S1->assign(v3);
+			int v6 = *(_DWORD *)(ObjPlayer + 0x154);
+			if ( v6 )
+			{
+		
+				{
+					int v11[8];
+					int* v7 = (int *)(*(int (__fastcall **)(int *, int, int))(*(_DWORD *)v6 + 4))(v11, v6, ObjPlayer + 0x74);
+					int v8 = *v7;
+		
+				
+					Sonicteam::SoX::RefCountObject* v9 = *(	Sonicteam::SoX::RefCountObject*  *)(ObjPlayer + 0xD0);
+					*(_DWORD *)(ObjPlayer + 0xD0) = v8;
+					if ( v9 )
+						v9->LoseObject();
+				
+				}
+			}
+		}
+		return 0;
+	}
+
+
+
+
+	extern "C" Player_OpenInput(lua_State* L)
+	{
+
+		Player_NEWS* PE = (*reinterpret_cast<Player_NEWS**>(luaL_checkudata(L, 1, "Player")));
+		_DWORD ObjPlayer =  (_DWORD)PE->ObjectPlayer;
+
+
+
+	
+
+		int AllocatedInputMemDebug = (int)malloc06(0x70);
+		int boostContainer[2];
+
+		boostContainer[0]= 0;
+		boostContainer[1]= 0;
+
+
+		if ( AllocatedInputMemDebug )
+		{
+			int v12 = (int)(ObjPlayer + 8);
+			if ( !ObjPlayer )
+				v12 = 0;
+
+			int AllocatedInputMemDebugT = BranchTo(0x822219F0,int,AllocatedInputMemDebug,(int)(ObjPlayer + 0x25),v12);
+			BranchTo(0x821B8868,int,boostContainer,AllocatedInputMemDebugT);
+
+
+			BranchTo(0x821B8A28,int,ObjPlayer,&boostContainer,0u);
+			if ( boostContainer[1] ) sub_821601B8(boostContainer[1]);
+	
+		}
+
+
+
+
+
+
+		return 0;
+	}
+
+	extern "C" Player_OpenPostureControl(lua_State* L)
+	{
+
+		Player_NEWS* PE = (*reinterpret_cast<Player_NEWS**>(luaL_checkudata(L, 1, "Player")));
+		_DWORD ObjPlayer =  (_DWORD)PE->ObjectPlayer;
+
+
+
+		int AllocatedPostureDebugMem = (int)malloc06(0x140);
+		int AllocatedPostureDebugMemT;
+		int v40[2];
+		int BoostAllocatedPostureDebugMem[2];
+		BoostAllocatedPostureDebugMem[0] = 0;
+		BoostAllocatedPostureDebugMem[1] = 0;
+		int flag = 8;
+		int DRefCountObj1;
+		int* DRefCountObj;
+		if ( AllocatedPostureDebugMem )
+		{
+			Sonicteam::SoX::RefCountObject* DRefCountObj0 = *(Sonicteam::SoX::RefCountObject**)(ObjPlayer + 0xCC);
+			if ( DRefCountObj0 )
+				DRefCountObj0->GetObject<int>(); //add ref
+			int* v15 = BranchTo(0x823D0E88,int*,(int)v40, ObjPlayer);
+			int flag = 8;
+			DRefCountObj = (int *)(*(int (__fastcall **)(int *,int))(**(_DWORD **)v15 + 0x18))(&DRefCountObj1,*v15);
+
+	
+			AllocatedPostureDebugMemT = BranchTo(0x821F75E0,int,(int)AllocatedPostureDebugMem, DRefCountObj, &DRefCountObj0);
+			BranchTo(0x821B9498,int,BoostAllocatedPostureDebugMem, AllocatedPostureDebugMem);
+				if ( (flag & 8) != 0 && v40[1] )
+					sub_821601B8(v40[1]);
+
+		}
+		else
+		{
+			AllocatedPostureDebugMemT = 0;
+		}
+
+
+
+		BranchTo(0x821B95E8,int,ObjPlayer,BoostAllocatedPostureDebugMem,1u);
+		*(_DWORD *)(ObjPlayer + 0xDC) = BoostAllocatedPostureDebugMem[0];
+		int v28 = BoostAllocatedPostureDebugMem[1];
+		if ( BoostAllocatedPostureDebugMem[1] )
+			BranchTo(0x82160140,int,BoostAllocatedPostureDebugMem[1]);
+
+		int v29 = *(_DWORD *)(ObjPlayer + 0xE0);
+		if ( v29 )
+			BranchTo(0x821601B8,int,v29);
+
+		*(_DWORD *)(ObjPlayer + 0xE0) = v28;
+
+
+
+
+		return 0;
+	}
 
 	extern "C" static int GetPlayerRawInput(lua_State* L)
 	{
@@ -546,6 +1010,7 @@ namespace DebugLogV2{
 
 
 	static const struct luaL_reg MEM [] = {
+		{"ADD",Memory_ADD},
 		{"GetPointer", Memory_GetPointer},
 		{"SetPointerValue", Memory_SetPointerValue},
 		{"SetBYTE", Memory_SetBYTE},
@@ -746,6 +1211,35 @@ namespace DebugLogV2{
 		else{
 			lua_pushnil(L);
 		}
+		return 1;
+	}
+	extern "C" Memory_ADD(lua_State* L){
+
+		int args = lua_gettop(L);
+		UINT ptr = 0;
+		UINT mv = 0; 
+
+		if (args < 2){ lua_pushnil(L); return 1;}
+
+		if (lua_isuserdata(L,1)){
+			ptr = (UINT)lua_touserdata(L,1);
+		}
+
+		else{
+			ptr = (UINT)lua_tonumber(L,1);
+		}
+
+		if (lua_isuserdata(L,2)){
+			mv = (UINT)lua_touserdata(L,2);
+		}
+
+		else{
+			mv = (UINT)lua_tonumber(L,2);
+		}
+
+		lua_pushlightuserdata(L,(void*)(ptr+mv));
+
+
 		return 1;
 	}
 	extern "C" Memory_SetPointerValue(lua_State* L){

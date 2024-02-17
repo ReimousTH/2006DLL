@@ -33,6 +33,7 @@
 
 #include "PatchData.h"
 #include "Patches/DebugLog/DebugLog.h"
+#include "Patches/DevTitle/DevTitle.h"
 
 
 
@@ -46,6 +47,7 @@ struct DFastActions{
 
 DFastActions _PreLoadPatches[] = {
 	{"DebugLog_Enabled",DebugLogV2::GlobalInstall},
+	{"DevTitleV2",DevTitleV2::GlobalInstall},
 	{"Multiplayer4P_Enabled",Multiplayer4P::GlobalInstall},
 	{"NoArcMode",ArcRemover::GlobalInstall},
 	{"TimeSystemRestore",TimeSystemRestore::GlobalInstall},
@@ -74,6 +76,7 @@ extern "C" void OnDLLStart(){
 	std::string Loaded;
 
 	CheckEmulated::GlobalInstall();
+	//DevTitleV2::GlobalInstall();
 	//DevTitle::GlobalInstall();
 
 

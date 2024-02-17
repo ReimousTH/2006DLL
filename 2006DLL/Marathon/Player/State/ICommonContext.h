@@ -62,12 +62,12 @@ namespace Sonicteam{
 				//fields_but i not sure  that all should be here
 				//or 
 			
-				float CurrentSpeed; //Can Be Added
-				float VelocityX;
-				float VelocityY;
-				float VelocityZ;
+				float CurrentSpeed; //Can Be Added //0x30
+				float VelocityX; //0x44
+				float VelocityY; //0x48
+				float VelocityZ; //0x4C
 			
-				DWORD CurrentAnimation;
+				DWORD CurrentAnimation; //0x40
 				float LockInputTime;
 
 				float LastVelocityX;

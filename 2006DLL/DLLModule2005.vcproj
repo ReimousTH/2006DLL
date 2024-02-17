@@ -360,8 +360,8 @@
 				ModuleDefinitionFile="DllModule.def"
 				GenerateDebugInformation="true"
 				GenerateMapFile="true"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
+				OptimizeReferences="1"
+				EnableCOMDATFolding="1"
 				SetChecksum="true"
 			/>
 			<Tool
@@ -611,6 +611,18 @@
 					</File>
 					<File
 						RelativePath=".\Patches\DebugLog\MessagesUtil.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="DevTitle"
+					>
+					<File
+						RelativePath=".\Patches\DevTitle\DevTitle.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\DevTitle\DevTitle.h"
 						>
 					</File>
 				</Filter>
@@ -1168,6 +1180,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Marathon\Sox\Perfomance.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Sox\Perfomance.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Marathon\Sox\RefCountObject.cpp"
 					>
 				</File>
@@ -1181,6 +1201,14 @@
 				</File>
 				<File
 					RelativePath=".\Marathon\Sox\StateMachine.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Sox\Thread.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Sox\Thread.h"
 					>
 				</File>
 				<Filter

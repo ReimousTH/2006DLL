@@ -1,5 +1,42 @@
 #include "MessagesUtil.h"
 
+
+
+namespace DebugLogV2{
+
+
+	UINT32 SpawnMessageBase(float pos_x,float pos_y,const wchar_t* MSG,const char* PMSG,int FontIndex,int ColorFlag){
+		Sonicteam::DocMarathonImp* doc = *(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
+		UINT32 Resouce = doc->DocGetUnkGameResources();
+		// 8 * (index + 3)
+		//2 bold (little bigger 0)
+		//1 bold, but bigger
+		//0 --common
+		//Font
+	
+		UINT32 RequiredResouce = (8*(FontIndex+3)) + Resouce;
+
+		//wchar_t or i
+		//i dunno text-size???// 
+		//Z-Inddex ???
+		//MSG
+		//MSG-Picture 
+		//picture(button_a),picture(button_b)
+		//picture(button_b) 
+		UINT32 TextEntity = BranchTo(0x8262DC60,UINT32,malloc06(0x110),RequiredResouce,MSG,PMSG,128);
+		BranchTo(0x8262AF00,int,TextEntity,20.0); //unk
+		XMVECTOR* pos = (XMVECTOR*)(TextEntity + 0x30);
+		pos->x = pos_x;
+		pos->y = pos_y;
+		*(_BYTE *)(TextEntity + 0xDD) = 1; //reset
+		//ARGB(Alpha,Red,Green,Blue)
+		BranchTo(0x8262B288,int,TextEntity,&ColorFlag);
+		BranchTo(0x8262B008,int,TextEntity);
+		return TextEntity;
+	}
+
+}
+
 void DebugLogV2::ChangeMessagePosition(UINT32 TextEntity,float x,float y)
 {
 
@@ -30,32 +67,49 @@ void DebugLogV2::EditMessage(UINT32 TextEntity,const wchar_t* msg)
 	BranchTo(0x8262B008,int,TextEntity);
 }
 
-UINT32 DebugLogV2::SpawnMessage(const wchar_t* msg,float pos_x,float pos_y)
+void DebugLogV2::EditMessageColor(UINT32 TextEntity,char Alpha,char Red,char Green,char Blue)
 {
 
-	Sonicteam::DocMarathonImp* doc = *(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
-	UINT32 Resouce = doc->DocGetUnkGameResources();
-	// 8 * (index + 3)
-	UINT32 RequiredResouce = (8*(3)) + Resouce;
-
-	//wchar_t or i
-	//i dunno text-size???// 
-	//Z-Inddex ???
-	UINT32 TextEntity = BranchTo(0x8262DC60,UINT32,malloc06(0x110),RequiredResouce,msg,0,0);
-
-	BranchTo(0x8262AF00,int,TextEntity,30.0);
-
-	XMVECTOR* pos = (XMVECTOR*)(TextEntity + 0x30);
-	pos->x = pos_x;
-	pos->y = pos_y;
-	*(_BYTE *)(TextEntity + 0xDD) = 1;
-	//BranchTo(0x8262DB90,int,TextEntity,L"JUCK",0); //New Text
-	//ARGB(Alpha,Red,Green,Blue)
-	UINT flag = ((0xFF << 24) |(0xFF << 16) | (0xFF << 8) |  0x00 );
+	UINT flag = ((Alpha << 24) |(Red << 16) | (Green << 8) |  Blue );
 	BranchTo(0x8262B288,int,TextEntity,&flag);
 	BranchTo(0x8262B008,int,TextEntity);
-	return TextEntity;
 }
+
+void DebugLogV2::EditMessage(UINT32 TextEntity,const wchar_t* msg,const char* pmsg)
+{
+	*(_BYTE *)(TextEntity + 0xDD) = 1;
+	BranchTo(0x8262DB90,int,TextEntity,msg,pmsg); //New Text
+	BranchTo(0x8262B008,int,TextEntity);
+}
+
+
+
+
+
+UINT32 DebugLogV2::SpawnMessage(const wchar_t* msg,float pos_x,float pos_y)
+{
+	return  SpawnMessageBase(pos_x,pos_y,msg,0,0,0xFFFFFFFF); 
+}
+
+
+
+
+
+
+UINT32 DebugLogV2::SpawnMessage(const wchar_t* msg,const char* picturemsg,float pos_x,float pos_y)
+{
+
+	return  SpawnMessageBase(pos_x,pos_y,msg,picturemsg,0,0xFFFFFFFF);
+}
+UINT32 DebugLogV2::SpawnMessage(const wchar_t* msg,float pos_y)
+{
+	return SpawnMessageBase(0,480.0+pos_y,msg,0,0,0xFFFFFFFF);
+}
+
+
+
+
+
 
 
 
@@ -163,29 +217,3 @@ void DebugLogV2::MessageUtilGlobalInstall()
 
 }
 
-UINT32 DebugLogV2::SpawnMessage(const wchar_t* msg,float pos_y)
-{
-	Sonicteam::DocMarathonImp* doc = *(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
-	UINT32 Resouce = doc->DocGetUnkGameResources();
-	// 8 * (index + 3)
-	UINT32 RequiredResouce = (8*(3)) + Resouce;
-
-	//wchar_t or i
-	//i dunno text-size???// 
-	//Z-Inddex ???
-	UINT32 TextEntity = BranchTo(0x8262DC60,UINT32,malloc06(0x110),RequiredResouce,msg,0,0);
-
-
-	BranchTo(0x8262AF00,int,TextEntity,30.0);
-
-	XMVECTOR* pos = (XMVECTOR*)(TextEntity + 0x30);
-	pos->x = 0;
-	pos->y = 480.0 + pos_y;
-	*(_BYTE *)(TextEntity + 0xDD) = 1;
-	//BranchTo(0x8262DB90,int,TextEntity,L"JUCK",0); //New Text
-	//ARGB(Alpha,Red,Green,Blue)
-	UINT flag = ((0xFF << 24) |(0xFF << 16) | (0xFF << 8) |  0x00 );
-	BranchTo(0x8262B288,int,TextEntity,&flag);
-	BranchTo(0x8262B008,int,TextEntity);
-	return TextEntity;
-}

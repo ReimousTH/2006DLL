@@ -8,10 +8,15 @@ extern "C" {
 
 #include "Head.h"
 #include "MessagesUtil.h"
+#include <xtl.h>
 
 #include <Player/Input/IListener.h>
 #include <Player/State/IMachine.h>
 #include <Player/State/CommonContext.h>
+
+#define _DWORD DWORD
+#define _BYTE BYTE
+
 
 namespace DebugLogV2 {
 	extern "C" void DebugLabel_GlobalInstallX(lua_State* LS);
@@ -30,6 +35,18 @@ namespace DebugLogV2 {
 	int DebugLabel_SetPosition(lua_State* L);
 
 
+
+	
+	int VectorLIB_GlobalInstall(lua_State* LS);
+	extern "C" Vector_NEW(lua_State* L);
+	extern "C" Vector__GC(lua_State* L);
+	extern "C" Vector__tostring(lua_State* L);
+	extern "C" Vector_GetTable(lua_State* L);
+
+
+	extern "C" Vector__add(lua_State* L);
+	extern "C" Vector__sub(lua_State* L);
+
 	int PlayerLIB_GlobalInstall(lua_State* LS);
 
 	struct Player_NEWS{
@@ -37,10 +54,20 @@ namespace DebugLogV2 {
 		int Index;
 	};
 
+
+
+
 	static int Player___GC(lua_State* L);
 	extern "C" Player_RELOAD(lua_State* L);
 	extern "C" Player_GetPTR(lua_State* L);
 	extern "C" Player_NEW(lua_State* L);
+	extern "C" Player_SWAP(lua_State* L);
+
+	extern "C" Player_OpenFrame(lua_State* L);
+	extern "C" Player_OpenModel(lua_State* L);
+	extern "C" Player_OpenPackage(lua_State* L);
+	extern "C" Player_OpenInput(lua_State* L);
+	extern "C" Player_OpenPostureControl(lua_State* L);
 
 	void GetPlayerActors(UINT32* pstack);
 	UINT32 GetPlayerPosture(UINT32 ObjectPlayer);
@@ -59,6 +86,7 @@ namespace DebugLogV2 {
 	int STRLIB_GlobalInstall(lua_State* LS);
 	int MemoryLIB_GlobalInstall(lua_State* LS);
 	extern "C" Memory_GetPointer(lua_State* L);
+	extern "C" Memory_ADD(lua_State* L);
 	extern "C" Memory_SetPointerValue(lua_State* L);
 	extern "C" Memory_GetDWORD(lua_State* L);
 	extern "C" Memory_SetDWORD(lua_State* L);

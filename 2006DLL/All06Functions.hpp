@@ -6,7 +6,8 @@
 
 #include "Basics.h"
 
-
+#define _DWORD DWORD
+#define _BYTE BYTE
 
 
 FUNCTION_PTR(int,__fastcall,ContextSonicIsCanDrain,0x82217FC0,int *a1, int a2);
@@ -94,6 +95,8 @@ template <typename A1,typename A2> int __fastcall BoostWeakPtr(A1 a1,A2 a2){retu
 
 template <typename A1> int __fastcall sub_821601B8(A1 a1){return ((int (__fastcall *)(A1))0x821601B8)(a1);}
 template <typename A1> int __fastcall sub_82160140(A1 a1){return ((int (__fastcall *)(A1))0x82160140)(a1);}
+
+
 
 //int __fastcall sub_821601B8(int a1){return ((int (__fastcall *)(int))0x821601B8)(a1);}
 //int __fastcall sub_82160140(int a1){return ((int (__fastcall *)(int))0x82160140)(a1);}

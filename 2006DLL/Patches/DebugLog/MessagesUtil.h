@@ -28,8 +28,13 @@ namespace DebugLogV2{
 	void ChangeMessagePosition(UINT32 TextEntity,float x,float y);
 	void ChangeMessagePositionY(UINT32 TextEntity,float y);
 	void EditMessage(UINT32 TextEntity,const wchar_t* msg);
+	void EditMessage(UINT32 TextEntity,const wchar_t* msg,const char* pmsg);
+	void EditMessageColor(UINT32 TextEntity,char Alpha,char Red,char Green,char Blue);
+
+	UINT32 SpawnMessageBase(float pos_x,float pos_y,const wchar_t* MSG,const char* PMSG,int FontIndex,int ColorFlag);
 	UINT32 SpawnMessage(const wchar_t* msg,float pos_x,float pos_y);
 	UINT32 SpawnMessage(const wchar_t* msg,float pos_y);
+	UINT32 SpawnMessage(const wchar_t* msg,const char* picturemsg,float pos_x,float pos_y);
 
 
 	//OriginalLog

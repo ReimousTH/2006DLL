@@ -31,6 +31,8 @@ namespace DebugLogV2{
 		PlayerLIB_GlobalInstall(LS);
 		STRLIB_GlobalInstall(LS);
 		MemoryLIB_GlobalInstall(LS);
+		VectorLIB_GlobalInstall(LS);
+
 
 		return sub_825DB498H(LS);
 	}
@@ -65,10 +67,40 @@ namespace DebugLogV2{
 
 
 
+	int __fastcall sub_821E0970(int a1, _BYTE r4_0){
+		return BranchTo(0x821E0978,int,a1 -0x20,r4_0);
+	}
 
+	HOOK(void,__fastcall,nullsub_restore,0x821E0968,char* a1,char* a2,char* a3){
+		if ((unsigned int)a1 > 0x40000000 && (unsigned int)a1 < 0x92000000){
+
+
+	
+		
+
+			char chr = *a1;
+			if (chr != 0 && isalpha(chr)){
+				DebugLogV2::log.push_back(new std::string(a1));
+			}
+					
+			
+	
+	
+
+			
+
+		}
+
+	}
 
 	void GlobalInstall()
 	{
+
+
+		
+		//WRITE_DWORD(0x820079F4,sub_821E0970); //MOVE
+		//INSTALL_HOOK(nullsub_restore);
+
 		INSTALL_HOOK(sub_825DB498); //MathLibReplacement
 		INSTALL_HOOK(PlayBGM); //FIX
 
