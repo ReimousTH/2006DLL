@@ -57,8 +57,12 @@ namespace DebugLogV2{
 
 
 
+		
 		int dt =   (int)lua_touserdata(LS, -10002); 
 		BranchTo(0x8216B360,int,dt,lua_tostring(LS,1));
+
+
+		GameLIB_GlobalInstall(LS);
 
 		return PlayBGMH(LS);
 	}
@@ -106,6 +110,7 @@ namespace DebugLogV2{
 
 
 
+		GameLIB_GlobalInstall(0);
 		MessageUtilGlobalInstall();
 
 

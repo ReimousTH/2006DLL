@@ -360,7 +360,7 @@
 				ModuleDefinitionFile="DllModule.def"
 				GenerateDebugInformation="true"
 				GenerateMapFile="true"
-				OptimizeReferences="1"
+				OptimizeReferences="2"
 				EnableCOMDATFolding="1"
 				SetChecksum="true"
 			/>
@@ -908,6 +908,14 @@
 					</File>
 					<File
 						RelativePath=".\Marathon\Player\State\CommonObject.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Player\State\FastContext.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Player\State\FastContext.h"
 						>
 					</File>
 					<File

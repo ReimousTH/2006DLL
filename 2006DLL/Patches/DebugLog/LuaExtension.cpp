@@ -164,6 +164,19 @@ namespace DebugLogV2{
 
 		lua_register06(LS,"Vector",Vector_NEW);
 
+		luaL_newmetatable06(LS,"Vector");
+		lua_pushstring06(LS, "__gc"); lua_pushcfunction06(LS, Vector__GC); lua_settable06(LS, -3);
+		lua_pushstring06(LS, "__tostring"); lua_pushcfunction06(LS, Vector__tostring); lua_settable06(LS, -3);
+		lua_pushstring06(LS, "__add"); lua_pushcfunction06(LS, Vector__add); lua_settable06(LS, -3);
+		lua_pushstring06(LS, "__sub"); lua_pushcfunction06(LS, Vector__sub); lua_settable06(LS, -3);
+
+		lua_pushvalue(LS, -1);  lua_pushstring06(LS, "__index"); lua_pushvalue(LS,-2);  lua_settable06(LS,-3);
+		lua_pushstring06(LS, "GetTable"); lua_pushcfunction06(LS, Vector_GetTable); 	lua_settable06(LS, -3);
+
+		lua_pop(L,1);
+
+
+		lua_register06(LS,"VectorNew",Vector_NEW);
 
 		luaL_newmetatable06(LS,"Vector");
 		lua_pushstring06(LS, "__gc"); lua_pushcfunction06(LS, Vector__GC); lua_settable06(LS, -3);
@@ -173,6 +186,8 @@ namespace DebugLogV2{
 
 		lua_pushvalue(LS, -1);  lua_pushstring06(LS, "__index"); lua_pushvalue(LS,-2);  lua_settable06(LS,-3);
 		lua_pushstring06(LS, "GetTable"); lua_pushcfunction06(LS, Vector_GetTable); 	lua_settable06(LS, -3);
+
+		lua_pop(L,1);
 
 
 		return 1;
@@ -270,6 +285,7 @@ namespace DebugLogV2{
 
 
 
+
 	extern "C" Vector_NEW(lua_State* L)
 	{
 		int args = lua_gettop(L);
@@ -293,11 +309,192 @@ namespace DebugLogV2{
 		{"GetPlayerInput", GetPlayerInput},
 		{"GetPlayerRawInput", GetPlayerRawInput},
 		{"GetPlayerPosition",GetPlayerPosition},
+		{"SetPlayerPosition",SetPlayerPosition},
 		{"print",PrintNext},
 		{NULL, NULL}  /* sentinel */
 	};
 
 
+	struct ObjectSetParamData{
+
+	};
+
+	struct ObjectSetData{
+
+		ObjectSetData(const char* ObjectName,const char* ObjectTypeName,XMVECTOR* Position){
+			this->ObjectName = ObjectName;
+			this->ObjectTypeName = ObjectTypeName;
+			this->Position.x = Position->x;
+			this->Position.y = Position->y;
+			this->Position.z = Position->z;
+			this->ObjectUnkFloat1 = 2;
+			this->ObjectUnkFloat2 = 0;
+			this->ObjectUnkFloat3 = 0;
+			this->ObjectUnkFloat4 = 0;
+			this->ObjectUnkFloat5 = 40000;
+
+
+			this->Rotation.x = 0;
+			this->Rotation.y = 0;
+			this->Rotation.z = 0;
+			this->Rotation.w = 1;
+
+			this->ParamsCount = 0;
+			
+	/*
+
+			this->ObjectUnkFloat6 = 0;
+			this->ObjectUnkFloat7 = 0;
+			this->ObjectUnkFloat8 = 2;
+			*/
+
+		}
+	
+		const char* ObjectName;
+		const char* ObjectTypeName;
+		//BELL INFO
+		float ObjectUnkFloat1; //=2
+		float ObjectUnkFloat2; //=0
+		float ObjectUnkFloat3; //=0
+		float ObjectUnkFloat4; //=0
+		XMFLOAT3 Position;
+		float ObjectUnkFloat5; //40000
+		XMFLOAT4 Rotation;
+
+		unsigned int ParamsCount;
+
+		ObjectSetParamData* Params;
+
+	};
+
+
+
+	extern "C" GameLIB_NewActorRestore(lua_State* L){
+		XMVECTOR Pos;
+
+	
+		int atgs = lua_gettop(L);
+		if (atgs >= 4){
+			for (int i = 0;i<3;i++){
+				Pos.v[i] = lua_tonumber(L,i+2);
+			}
+		}
+
+		XMVECTOR Rot;
+		if (atgs >= (7)){
+			for (int i = 0;i<4;i++){
+				Rot.v[i] = lua_tonumber(L,3+(i+1));
+			}
+		}
+
+
+
+
+
+
+
+
+
+		const char* OBJ_ID =  lua_tostring(L,1);
+
+		Sonicteam::DocMarathonImp* impl = 	*(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
+		UINT32 gameimp = *(UINT32*)(impl->DocCurrentMode + 0x6C);
+		int UnkMGR =   *(_DWORD *)(gameimp  + 0x1278);
+		int PropSceneClass = *(_DWORD *)(UnkMGR + 0x44);
+
+		int RefObjectTypePropClass;
+		BranchTo(0x82456DA0,int,&RefObjectTypePropClass,PropSceneClass,&std::string(OBJ_ID)); //GetObjectTypePropClass
+		int PlacementTypePTRB[2] = {0,0};
+		//default,design,....
+		BranchTo(0x82461848,int,&PlacementTypePTRB, *(_DWORD *)(gameimp + 0x1278), 0);
+		int PlacementTypePTR = PlacementTypePTRB[0];
+		ObjectSetData ObjData = ObjectSetData("dashpanel01",OBJ_ID,&Pos);
+		ObjData.Params = (ObjectSetParamData*)malloc06(0x40);
+		memset(ObjData.Params,0,0x40);
+
+		int InstnceProp =  BranchTo(0x8245A080,int,malloc06(0x14),PlacementTypePTR,&ObjData,&RefObjectTypePropClass);
+		
+		int obj_index = 100;
+		int EntityHandle = BranchTo(0x82461128,int,malloc06(0x1c),PlacementTypePTR,obj_index);
+
+		
+		int buffer[0x30] = {0};
+		BranchTo(0x8245C680,int,&buffer,&InstnceProp,&EntityHandle,0,&std::string(OBJ_ID));
+
+
+
+		int* PropManger = *(int**)PlacementTypePTR;
+		int result = BranchTo(0x824619C8,int,(PropManger)[0xF], OBJ_ID, buffer);
+
+
+
+
+
+
+
+		/*
+		int buff[0x10];
+		Sonicteam::DocMarathonImp* impl = 	*(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
+		UINT32 gameimp = *(UINT32*)(impl->DocCurrentMode + 0x6C);
+		int v15[2];
+		v15[0] = 0;
+		v15[1] = 0;
+		int UnkMGR =   *(_DWORD *)(gameimp  + 0x1278);
+		int PropSceneClass = *(_DWORD *)(UnkMGR + 0x44);
+		int unk_ref_3;
+		int unk_ref_2 = BranchTo(0x82456DA0,int,&unk_ref_3,PropSceneClass,&std::string("dashpanel"));
+		//last index
+		BranchTo(0x82461848,int,&v15, *(_DWORD *)(gameimp + 0x1278), 0);
+		_DWORD **PropManger  = (_DWORD**)v15[0];
+		int OBJDATA[0x40];
+		int OBJDATA1[0x40];
+		memset(&OBJDATA1,0,0x40);
+		float param_2 = 2.0;
+		OBJDATA[0] = (int)"dashpanel01";
+		OBJDATA[1] = (int)"dashpanel";
+		OBJDATA[2] = *(int*)&param_2;
+		OBJDATA[3] = 0;
+		OBJDATA[4] = 0;
+		OBJDATA[5] = 0;
+		OBJDATA[5] = 0;
+		//POS ??
+		OBJDATA[6] = *(int*)&Pos.x;
+		OBJDATA[7] = *(int*)&Pos.y;
+		OBJDATA[8] = *(int*)&Pos.z;
+		OBJDATA[9] = 0;
+		//ROT
+		OBJDATA[10] = Rot.x;
+		OBJDATA[11] = Rot.y;
+		OBJDATA[12] = Rot.z;
+		OBJDATA[13] = Rot.w; // 1.0
+		OBJDATA[14] = 2; //
+		float flt_1800 = 1800;
+		OBJDATA1[0] = 2;
+		OBJDATA1[1] = *(int*)&flt_1800;
+		OBJDATA[15] = (int)&OBJDATA1; //Params I guess
+		int no_ref = 0; //CLASS PROP
+		int InstancePROP =  BranchTo(0x8245A080,int,malloc06(0x14),PropManger,OBJDATA,&unk_ref_2);
+		int obj_index = 100;
+		int EntityHandle = BranchTo(0x82461128,int,malloc06(0x1c),PropManger,obj_index);
+		char buffer[0x30];
+		int tunux = 0;
+		BranchTo(0x8245C680,int,&buffer,&InstancePROP,&EntityHandle,0,&std::string("dashpanel"));
+		int result = BranchTo(0x824619C8,int,(*PropManger)[0xF], "dashpanel", buffer);
+
+		*/
+
+
+
+		lua_pushlightuserdata(L,(void*)0);
+
+		return 1;
+	}
+
+	int GameLIB_GlobalInstall(lua_State* LS)
+	{	
+		WRITE_DWORD(0x82026A04,GameLIB_NewActorRestore);
+		return 0;
+	}
 
 
 	int PlayerLIB_GlobalInstall(lua_State* LS)
@@ -913,6 +1110,11 @@ namespace DebugLogV2{
 	//Size 4
 	void GetPlayerActors(UINT32* pstack){
 	
+		pstack[0] = 0;
+		pstack[1] = 0;
+		pstack[2] = 0;
+		pstack[3] = 0;
+
 		Sonicteam::DocMarathonImp* impl = 	*(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
 		UINT32 vft =  *(UINT32*)impl->DocCurrentMode;
 	
@@ -929,13 +1131,33 @@ namespace DebugLogV2{
 				if (ActorVFT == 0x82003564){ //Object_Player
 
 
+					byte IsObjectPlayerHaveControll = *(byte*)(Actor + 0xC8);
+					if (IsObjectPlayerHaveControll){
+						pstack[PIX++] = Actor;
+					}
+					/*
 					Sonicteam::Player::State::IMachine* PlayerMashine = *(Sonicteam::Player::State::IMachine**)(Actor+0xE4);
 					if (PlayerMashine){
-						Sonicteam::Player::State::CommonContext* PCC = (Sonicteam::Player::State::CommonContext*)PlayerMashine->GetMashineContext().get();
-						UINT32 PCC_AI = (UINT32)PCC->PlayerAIAmigoPlugin.get();
-						UINT32 PCC_AI_FLAG = *(UINT32*)(PCC_AI + 0x24);
-						if (PCC_AI_FLAG == 0) pstack[PIX++] = Actor;
+
+						Sonicteam::Player::State::IContext* context  =  PlayerMashine->GetMashineContext().get();
+						Sonicteam::Player::State::CommonContext* PCC0 = dynamic_cast<Sonicteam::Player::State::CommonContext*>(context);
+						Sonicteam::Player::State::FastContext* PCF0 = dynamic_cast<Sonicteam::Player::State::FastContext*>(context);
+						bool flag = false;
+						if (PCC0){
+							Sonicteam::Player::Input::IListener* Listener =  PCC0->ListenerNormalInputPlugin.get();
+							flag =  Listener->Listener5();
+							
+						}
+						else if (PCF0){
+							Sonicteam::Player::Input::IListener* Listener =  PCF0->ListenerNormalInputPlugin.get();
+							flag = Listener->Listener5();
+						}
+
+						if (flag ) pstack[PIX++] = Actor;
 					}
+					*/
+
+
 				}
 			}
 		}
@@ -1000,6 +1222,40 @@ namespace DebugLogV2{
 
 
 	
+
+	extern "C" int SetPlayerPosition(lua_State* L)
+	{
+
+		int n = lua_gettop(L);  
+		if (n <= 0) return 0;
+		UINT32 PlayerIndex = (UINT32)lua_tonumber(L,1);
+		UINT32 pstack[4] = {};
+
+
+
+		GetPlayerActors((UINT32*)&pstack);
+
+		XMFLOAT4 POS;
+		if (pstack[PlayerIndex] != 0){
+			UINT32 ObjectPlayer = pstack[PlayerIndex];
+			UINT32 PlayerPosture = GetPlayerPosture(ObjectPlayer);
+			XMFLOAT4* PlayerPos = GetPlayerPosition(PlayerPosture);
+			PlayerPos->x = lua_tonumber(L,2);
+			PlayerPos->y = lua_tonumber(L,3);
+			PlayerPos->z = lua_tonumber(L,4);
+
+
+		}
+
+
+	
+
+
+
+
+
+		return 0;
+	}
 
 	int STRLIB_GlobalInstall(lua_State* LS)
 	{

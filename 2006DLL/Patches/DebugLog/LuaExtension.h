@@ -13,6 +13,7 @@ extern "C" {
 #include <Player/Input/IListener.h>
 #include <Player/State/IMachine.h>
 #include <Player/State/CommonContext.h>
+#include <Player/State/FastContext.h>
 
 #define _DWORD DWORD
 #define _BYTE BYTE
@@ -47,6 +48,9 @@ namespace DebugLogV2 {
 	extern "C" Vector__add(lua_State* L);
 	extern "C" Vector__sub(lua_State* L);
 
+
+	int GameLIB_GlobalInstall(lua_State* LS);
+
 	int PlayerLIB_GlobalInstall(lua_State* LS);
 
 	struct Player_NEWS{
@@ -77,7 +81,7 @@ namespace DebugLogV2 {
 	extern "C" int GetPlayerInput(lua_State* L);
 	extern "C" int PrintNext(lua_State* L);
 	extern "C" int GetPlayerPosition(lua_State* L);
-
+	extern "C" int SetPlayerPosition(lua_State* L);
 
 
 
