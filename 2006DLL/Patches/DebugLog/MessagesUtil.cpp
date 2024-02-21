@@ -199,6 +199,29 @@ static int luaB_print (lua_State *L) {
 	return 0;
 }
 
+static int Printf (lua_State *L) {
+
+	int n = lua_gettop(L);  /* number of arguments */
+	int i;
+	for (i=1; i<=n; i++) {
+		const char *s;
+
+		if (lua_isstring(L,i)){
+			s = lua_tostring(L, i);  /* get result */
+			DebugLogV2::log.push_back(new std::string(s));
+		}
+		else{
+			s = lua_tostring(L, -1);  /* get result */
+			DebugLogV2::log.push_back(new std::string("[PrintF]FailedMessage"));
+		}
+	
+
+	}
+
+	return 0;
+}
+
+
 
 }
 
@@ -208,7 +231,7 @@ void DebugLogV2::MessageUtilGlobalInstall()
 {
 
 
-	WRITE_DWORD(0x8203B8AC,luaB_print);
+	WRITE_DWORD(0x8203B8AC,Printf);
 	WRITE_DWORD(0x82049094,luaB_print);
 
 	const int stackSize = 65536;

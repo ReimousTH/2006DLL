@@ -606,6 +606,22 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Patches\DebugLog\LuaExtension_BIT.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\DebugLog\LuaExtension_BIT.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\DebugLog\LuaExtension_Memory.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\DebugLog\LuaExtension_Memory.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Patches\DebugLog\MessagesUtil.cpp"
 						>
 					</File>

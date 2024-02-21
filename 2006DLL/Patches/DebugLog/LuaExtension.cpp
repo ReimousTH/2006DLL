@@ -2,70 +2,7 @@
 
 namespace DebugLogV2{
 
-	static const struct luaL_reg BitLIBX [] = {
-		{"AND", BIT_ANDEXY},
-		{"OR", BIT_OREXY},
-		{"SR", BIT_ShiftRightEXY},
-		{"SL", BIT_ShiftLeftEXY},
-		{NULL,NULL}
-	};
-
-
-	int BitLibGlobalInstall(lua_State*L)
-	{
-		luaL_openlib06(L,"bit",BitLIBX,0);
-		return 1;
-
-	}
-
-	int BitBaseEXY(lua_State*L,int cs)
-	{
-
-		int v1 = lua_tonumber(L,1);
-		int v2 = lua_tonumber(L,2);
-		int result = 0;
-		switch (cs){
-
-			case 0:
-				result = v1 << v2;
-				break;
-			case 1:
-				result = v1 >> v2;
-				break;
-			case 2:
-				result = v1 & v2;
-				break;
-			case 3:
-				result = v1 | v2;
-				break; 
-
-			default:
-				lua_pushnil(L);
-				return 1;
-		}
-		lua_pushnumber(L,result);
-		return 1;
-	}
-
-	int BIT_ShiftLeftEXY(lua_State* L)
-	{
-		return BitBaseEXY(L,0);
-	}
-
-	int BIT_ShiftRightEXY(lua_State* L)
-	{
-		return BitBaseEXY(L,1);
-	}
-
-	int BIT_ANDEXY(lua_State* L)
-	{
-		return BitBaseEXY(L,2);
-	}
-
-	int BIT_OREXY(lua_State* L)
-	{
-		return BitBaseEXY(L,3);
-	}
+	
 
 
 
@@ -171,115 +108,97 @@ namespace DebugLogV2{
 		lua_pushstring06(LS, "__sub"); lua_pushcfunction06(LS, Vector__sub); lua_settable06(LS, -3);
 
 		lua_pushvalue(LS, -1);  lua_pushstring06(LS, "__index"); lua_pushvalue(LS,-2);  lua_settable06(LS,-3);
-		lua_pushstring06(LS, "GetTable"); lua_pushcfunction06(LS, Vector_GetTable); 	lua_settable06(LS, -3);
+		//lua_pushstring06(LS, "GetTable"); lua_pushcfunction06(LS, Vector_GetTable); 	lua_settable06(LS, -3);
 
-		lua_pop(L,1);
+		//lua_pop(LS,1);
 
 
-		lua_register06(LS,"VectorNew",Vector_NEW);
-
-		luaL_newmetatable06(LS,"Vector");
-		lua_pushstring06(LS, "__gc"); lua_pushcfunction06(LS, Vector__GC); lua_settable06(LS, -3);
-		lua_pushstring06(LS, "__tostring"); lua_pushcfunction06(LS, Vector__tostring); lua_settable06(LS, -3);
-		lua_pushstring06(LS, "__add"); lua_pushcfunction06(LS, Vector__add); lua_settable06(LS, -3);
-		lua_pushstring06(LS, "__sub"); lua_pushcfunction06(LS, Vector__sub); lua_settable06(LS, -3);
-
-		lua_pushvalue(LS, -1);  lua_pushstring06(LS, "__index"); lua_pushvalue(LS,-2);  lua_settable06(LS,-3);
-		lua_pushstring06(LS, "GetTable"); lua_pushcfunction06(LS, Vector_GetTable); 	lua_settable06(LS, -3);
-
-		lua_pop(L,1);
 
 
 		return 1;
 	}
 
 	extern "C" Vector__GC(lua_State* L){
-		BranchTo(0x82186190,int,*reinterpret_cast<XMVECTOR**>(lua_touserdata(L, 1))); //Destroy from mem
+		//BranchTo(0x82186190,int,*reinterpret_cast<XMVECTOR**>(lua_touserdata(L, 1))); //Destroy from mem
 		return 0;
 	}
 
-	extern "C" Vector_GetTable(lua_State* L){
 
+	extern "C"  XMVECTOR Vector__GetVector(lua_State* L,int idx){
+		XMVECTOR vector1;
+		for (int i = 1; i <= 4; ++i) {
+			lua_rawgeti06(L, idx, i); // Get value at index i
 
-		XMVECTOR* vector = (*reinterpret_cast<XMVECTOR**>(luaL_checkudata(L, 1, "Vector")));
-	
+			if (lua_isnumber(L, -1)) {
+				float value = lua_tonumber(L, -1);
+				vector1.v[i-1] = value;
+			}
 
-		lua_newtable06(L);
-
-		lua_pushstring06(L, "X");
-		lua_pushnumber(L, vector->x);
-		lua_settable06(L, -3);
-
-		lua_pushstring06(L, "Y");
-		lua_pushnumber(L, vector->y);
-		lua_settable06(L, -3);
-
-		lua_pushstring06(L, "Z");
-		lua_pushnumber(L, vector->z);
-		lua_settable06(L, -3);
-
-		lua_pushstring06(L, "W");
-		lua_pushnumber(L, vector->w);
-		lua_settable06(L, -3);
-
-	
-
-
-		return 1;
+			// Pop the value from the stack
+			lua_pop(L, 1);
+		}
+		return vector1;
 	}
+
 	extern "C" Vector__tostring(lua_State* L){
 
 		int args = lua_gettop(L);
+		XMVECTOR vector = Vector__GetVector(L,1);
 
 
-		XMVECTOR* vector = (*reinterpret_cast<XMVECTOR**>(luaL_checkudata(L, 1, "Vector")));
-		//PE->ObjectPlayer
-		const char* format = "(X = %.2f, Y = %.2f, Z = %.2f, W = %.2f)";
+		const char* format = "(X = %.3f, Y = %.3f, Z = %.3f, W = %.3f)";
 		if (args > 1){
 			format = lua_tostring(L,2);
 		}
 		char buffer[100];
 
-		std::sprintf(buffer, format,vector->x, vector->y, vector->z,vector->w);
+		std::sprintf(buffer, format,vector.x, vector.y, vector.z,vector.w);
 		lua_pushstring06(L, buffer);
-
 
 
 		return 1;
 	}
 
+
+
+	extern "C" Vector__CreateMetatableFromXMVECTOR(lua_State* L,XMVECTOR* vector){
+
+		lua_newtable06(L);
+
+		lua_pushnumber(L, vector->x);
+		lua_rawseti06(L, -2, 1); // Set value 1 at index 0
+
+		lua_pushnumber(L,vector->y);
+		lua_rawseti06(L, -2, 2); // Set value 1 at index 1
+
+		lua_pushnumber(L, vector->z);
+		lua_rawseti06(L, -2, 3); // Set value 1 at index 1
+
+		lua_pushnumber(L, vector->w);
+		lua_rawseti06(L, -2, 4); // Set value 1 at index 1
+
+
+		luaL_getmetatable06(L,"Vector");
+		lua_setmetatable06(L, -2);
+
+	}
 	extern "C" Vector__add(lua_State* L){
 
 
-		XMVECTOR vector1 = *(*reinterpret_cast<XMVECTOR**>(luaL_checkudata(L, 1, "Vector")));
-		XMVECTOR vector2 = *(*reinterpret_cast<XMVECTOR**>(luaL_checkudata(L, 2, "Vector")));
-
-
-		//why i dont use operators well because (they allocate memory either and i dont too)
-		XMVECTOR* z = (XMVECTOR*)malloc06(sizeof(XMVECTOR));
-		*z = vector1 + vector2;
-		*reinterpret_cast<XMVECTOR**>(lua_newuserdata06(L, sizeof(XMVECTOR*))) = z;
-		// Set the metatable for the new userdata
-		luaL_getmetatable(L, "Vector");
-		lua_setmetatable(L, -2);
+		XMVECTOR vector1 = Vector__GetVector(L,1);
+		XMVECTOR vector2 = Vector__GetVector(L,2);
+		vector1 = vector1 + vector2;
+		Vector__CreateMetatableFromXMVECTOR(L,&vector1);
 
 
 		return 1;
 	}
 	extern "C" Vector__sub(lua_State* L){
 
-
-		XMVECTOR vector1 = *(*reinterpret_cast<XMVECTOR**>(luaL_checkudata(L, 1, "Vector")));
-		XMVECTOR vector2 = *(*reinterpret_cast<XMVECTOR**>(luaL_checkudata(L, 2, "Vector")));
-		//why i dont use operators well because (they allocate memory either and i dont too)
-		XMVECTOR* z = (XMVECTOR*)malloc06(sizeof(XMVECTOR));
-		*z = vector1 - vector2;
-		*reinterpret_cast<XMVECTOR**>(lua_newuserdata06(L, sizeof(XMVECTOR*))) = z;
-		// Set the metatable for the new userdata
-		luaL_getmetatable(L, "Vector");
-		lua_setmetatable(L, -2);
-
-
+		XMVECTOR vector1 = Vector__GetVector(L,1);
+		XMVECTOR vector2 = Vector__GetVector(L,2);
+		vector1 = vector1 + vector2;
+		Vector__CreateMetatableFromXMVECTOR(L,&vector1);
 		return 1;
 	}
 
@@ -290,17 +209,14 @@ namespace DebugLogV2{
 	{
 		int args = lua_gettop(L);
 
-		XMVECTOR* z = (XMVECTOR*)malloc06(sizeof(XMVECTOR));
+		XMVECTOR z = {0};
 
 		for (int i = 0;i<args;i++){
-			z->v[i] = lua_tonumber(L,i+1);
+			z.v[i] = lua_tonumber(L,i+1);
 		}
-		
 
-		*reinterpret_cast<XMVECTOR**>(lua_newuserdata06(L, sizeof(XMVECTOR*))) = z;
+		Vector__CreateMetatableFromXMVECTOR(L,&z);
 
-		luaL_getmetatable06(L,"Vector");
-		lua_setmetatable06(L, -2);
 
 		return 1;
 	}
@@ -315,29 +231,38 @@ namespace DebugLogV2{
 	};
 
 
+
+
+
 	struct ObjectSetParamData{
 
 	};
 
 	struct ObjectSetData{
 
-		ObjectSetData(const char* ObjectName,const char* ObjectTypeName,XMVECTOR* Position){
+		ObjectSetData(const char* ObjectName,const char* ObjectTypeName,XMVECTOR* Position,XMVECTOR* Rotation){
 			this->ObjectName = ObjectName;
 			this->ObjectTypeName = ObjectTypeName;
 			this->Position.x = Position->x;
 			this->Position.y = Position->y;
 			this->Position.z = Position->z;
-			this->ObjectUnkFloat1 = 2;
+
+			this->ObjectUnkFloatArray [0] = 0x40;
+			this->ObjectUnkFloatArray [1] = 0x0;
+			this->ObjectUnkFloatArray [2] = 0x0;
+			this->StartInactive = 0;
+
+
 			this->ObjectUnkFloat2 = 0;
 			this->ObjectUnkFloat3 = 0;
 			this->ObjectUnkFloat4 = 0;
 			this->ObjectUnkFloat5 = 40000;
 
 
-			this->Rotation.x = 0;
-			this->Rotation.y = 0;
-			this->Rotation.z = 0;
-			this->Rotation.w = 1;
+			this->Rotation.x = Rotation->x;
+			this->Rotation.y = Rotation->y;
+			this->Rotation.z = Rotation->z;
+			this->Rotation.w = Rotation->w;
 
 			this->ParamsCount = 0;
 			
@@ -353,7 +278,9 @@ namespace DebugLogV2{
 		const char* ObjectName;
 		const char* ObjectTypeName;
 		//BELL INFO
-		float ObjectUnkFloat1; //=2
+		char ObjectUnkFloatArray[3]; // 40 00 00
+		char StartInactive; //0
+
 		float ObjectUnkFloat2; //=0
 		float ObjectUnkFloat3; //=0
 		float ObjectUnkFloat4; //=0
@@ -368,29 +295,139 @@ namespace DebugLogV2{
 	};
 
 
+	 enum ObjectDataType
+	{
+		Boolean,
+		Int32,
+		Single,
+		String,
+		Vector3,
+		UInt32 = 6
+	};
 
+
+	struct dummy_container_entityhandle_Object{
+		int V1;
+		int V2;
+		int EntityHandle;
+		int EntityObject;
+
+		dummy_container_entityhandle_Object(int EntityHandle,int EntityObject){
+			this->V1 = 4;
+			this->V2 = 0;
+			this->EntityObject = EntityObject;
+			this->EntityHandle = EntityHandle;
+		}
+
+
+	 };
+
+	extern "C" GameLIB_PlayerIndexToActorIDRestore(lua_State* L){
+
+		int args = lua_gettop(L);
+
+		int index = 0;
+		if (args > 1){
+			index = lua_tonumber(L,1);
+		}
+
+
+		
+		UINT32 pstack[0x10];
+		GetPlayerActors((UINT32*)&pstack,index);
+
+		if (pstack[index] != 0){
+
+			Sonicteam::DocMarathonImp* impl = 	*(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
+			UINT32 vft =  *(UINT32*)impl->DocCurrentMode;
+
+			if (vft == 0x82033534){ //GameMode
+
+				UINT32 gameimp = *(UINT32*)(impl->DocCurrentMode + 0x6C);
+				UINT32 ActorManager = *(UINT32*)(gameimp+0x11C4);
+				UINT32 ActorMangerActorsCount = *(UINT32*)(ActorManager+0x80000);
+				UINT32 PIX = 0;
+				for (int i = 0;i<ActorMangerActorsCount;i++)
+				{
+					UINT32 Actor = *(UINT32*)(ActorManager+0x40000+(i*4));
+					UINT32 ActorID = *(UINT32*)(ActorManager+0x4 +(0x4*i));
+					if (Actor == pstack[index]){
+						lua_pushnumber(L,ActorID);
+						return 1;
+					}
+
+				}
+			}
+		}
+		else{
+			lua_pushnumber(L,-1);
+		}
+
+		return 1;
+
+
+	}
 	extern "C" GameLIB_NewActorRestore(lua_State* L){
-		XMVECTOR Pos;
+	
+	
+
+		int atgs = lua_gettop(L);
+		XMVECTOR Pos = {0};
+		XMVECTOR Rot = {0};
+
+		if (lua_istable(L,3)){
+
+			lua_pushvalue06(L,3);
+			lua_pushstring06(L,"Position");
+			lua_gettable(L,-2); 
+			Pos = Vector__GetVector(L,-1);
+
+			lua_pushvalue06(L,3);
+			lua_pushstring06(L,"Rotation");
+			lua_gettable(L,-2); 
+			Rot = Vector__GetVector(L,-1);
+
+		}
+	
+
 
 	
-		int atgs = lua_gettop(L);
-		if (atgs >= 4){
-			for (int i = 0;i<3;i++){
-				Pos.v[i] = lua_tonumber(L,i+2);
+
+	
+		std::map<std::string, boost::any> _params;
+
+		
+		lua_pushnil(L);
+		while (lua_next(L, 2) != 0) {
+			if (lua_isstring(L, -2)) {
+				const char* keyF = lua_tostring(L, -2);
+				std::string key = keyF;
+				int valueType = lua_type(L, -1);
+			
+
+				switch (valueType) {
+			case LUA_TBOOLEAN:
+				_params[key] = static_cast<bool>(lua_toboolean(L, -1));
+				break;
+			case LUA_TNUMBER:
+				_params[key] = static_cast<float>(lua_tonumber(L, -1));
+				break;
+			case LUA_TSTRING:
+	
+				_params[key] = std::string(lua_tostring(L, -1));
+				break;
+				}
+
 			}
+		
+			// Pop the value, keep the key for the next iteration
+			lua_pop(L, 1);
 		}
 
-		XMVECTOR Rot;
-		if (atgs >= (7)){
-			for (int i = 0;i<4;i++){
-				Rot.v[i] = lua_tonumber(L,3+(i+1));
-			}
-		}
+		// Assuming Lua state is initialized and used in the code
 
 
-
-
-
+		lua_pop(L, 1);
 
 
 
@@ -404,27 +441,169 @@ namespace DebugLogV2{
 
 		int RefObjectTypePropClass;
 		BranchTo(0x82456DA0,int,&RefObjectTypePropClass,PropSceneClass,&std::string(OBJ_ID)); //GetObjectTypePropClass
+
+		///
+		std::map<std::string,int> _props_origin_params;
+
+
+		std::vector<std::pair<std::string,boost::any>> _sorted_params;
+	//	std::map<std::string,boost::any> _sorted_params; //need unordered
+		unsigned int PropData =   *(unsigned int*)(RefObjectTypePropClass + 0x8);
+		int PropParamsCount =  *(int*)(PropData + 0x4);
+		int PropParamsDataPTR =  *(int*)(PropData + 0x8);
+
+
+		for (int i = 0;i<PropParamsCount;i++){
+			int ParameterDataPTR = PropParamsDataPTR + (i*0x18);
+			const char* ParameterName = (const char*)ParameterDataPTR;
+			int ParameterType = *(int*)(ParameterDataPTR + 0x10);
+			
+			std::string key = std::string(ParameterName);
+			_props_origin_params[key] = ParameterType;
+
+			if (_params.find(key) ==  _params.end()){
+
+				switch (ParameterType){
+				case Boolean:
+					_params[key] = boost::any(false);
+					break;
+				case Int32:
+					_params[key] = boost::any(0.0f);
+					break;
+				case Single:
+					_params[key] = boost::any(0.0f);
+					break;
+				case String:
+					_params[key] = std::string("");
+					break;
+				case UInt32:
+					_params[key] = boost::any(0.0f);
+					break;
+				default:
+					break;
+
+				}
+
+			}
+
+			
+
+			_sorted_params.push_back(std::make_pair(std::string(ParameterName),_params[std::string(ParameterName)]));
+
+			//ShowXenonMessage(L"MSG",ParameterType,0);
+		}
+
+
+	
+		
+		///
+
 		int PlacementTypePTRB[2] = {0,0};
 		//default,design,....
 		BranchTo(0x82461848,int,&PlacementTypePTRB, *(_DWORD *)(gameimp + 0x1278), 0);
 		int PlacementTypePTR = PlacementTypePTRB[0];
-		ObjectSetData ObjData = ObjectSetData("dashpanel01",OBJ_ID,&Pos);
-		ObjData.Params = (ObjectSetParamData*)malloc06(0x40);
-		memset(ObjData.Params,0,0x40);
 
-		int InstnceProp =  BranchTo(0x8245A080,int,malloc06(0x14),PlacementTypePTR,&ObjData,&RefObjectTypePropClass);
-		
+
+
 		int obj_index = 100;
-		int EntityHandle = BranchTo(0x82461128,int,malloc06(0x1c),PlacementTypePTR,obj_index);
+		char bufferX[512];
+		sprintf(bufferX,"%s%d",OBJ_ID,obj_index); //dashpanel 101
+
+		ObjectSetData* ObjData = new ObjectSetData(bufferX,OBJ_ID,&Pos,&Rot);
+		ObjData->ParamsCount = PropParamsCount;
+
 
 		
-		int buffer[0x30] = {0};
+
+		ObjData->Params = (ObjectSetParamData*)malloc06(0x28 * ObjData->ParamsCount);
+		memset(ObjData->Params,0,0x28 * ObjData->ParamsCount);
+
+		
+
+		int prm = (int)ObjData->Params;
+
+		for (int i = 0;i<PropParamsCount;i++){
+			int IPrm = prm + (i * 0x14);
+
+
+			int ParamType = _props_origin_params[_sorted_params[i].first];
+
+			*(unsigned int*)IPrm = ParamType;
+			const char* s = 0;
+		//	ShowXenonMessage(L"MSG",it->first.c_str());
+
+			
+		
+		
+			switch (ParamType){
+				case Boolean:
+					*(int*)(IPrm + 0x4) = 	(int)boost::any_cast<bool>(_sorted_params[i].second);
+					break;
+				case Int32:
+					*(int*)(IPrm + 0x4) = 	(int)boost::any_cast<float>(_sorted_params[i].second);
+					//ShowXenonMessage(L"MSG",(int)boost::any_cast<float>(it->second),0);
+					break;
+				case Single:
+					*(float*)(IPrm + 0x4) = (float)boost::any_cast<float>(_sorted_params[i].second);
+					//ShowXenonMessage(L"MSG",(float)boost::any_cast<float>(it->second),0);
+					break;
+					//TODO : Free (mem later)
+				case String:
+					if (boost::any_cast<std::string>(_sorted_params[i].second).size() > 0)
+					{
+						s  =  (const char*)malloc06(boost::any_cast<std::string>(_sorted_params[i].second).size());
+						memcpy((void*)s,
+							boost::any_cast<std::string>(_sorted_params[i].second).c_str(),
+							boost::any_cast<std::string>(_sorted_params[i].second).size());
+						*(const char**)(IPrm + 0x4) = s;
+					}
+
+					
+					//	ShowXenonMessage(L"MSG",boost::any_cast<std::string>(it->second)->
+					break;
+				case UInt32:
+					//ShowXenonMessage(L"MSG",(int)boost::any_cast<float>(it->second),0);
+					*(unsigned int*)(IPrm + 0x4) = (unsigned int)boost::any_cast<float>(_sorted_params[i].second);
+				//	ShowXenonMessage(L"MSG",(int)boost::any_cast<float>(it->second),0);
+					break;
+				default:
+					break;
+
+			}
+			
+			
+
+
+		}
+		
+
+
+
+
+
+
+		int InstnceProp =  BranchTo(0x8245A080,int,malloc06(0x14),PlacementTypePTR,ObjData,&RefObjectTypePropClass);
+
+		int EntityHandle = BranchTo(0x82461128,int,malloc06(0x1c),PlacementTypePTR,obj_index);		
+		int buffer[0x30]= {0};
 		BranchTo(0x8245C680,int,&buffer,&InstnceProp,&EntityHandle,0,&std::string(OBJ_ID));
 
 
 
+
+
+
+		//Complete Creation
+		std::vector<dummy_container_entityhandle_Object>* EntityHandleAndObjectVector = (std::vector<dummy_container_entityhandle_Object>*)(PlacementTypePTR + 0x74-0x4); //0xD,0xE
+		std::vector<int>* InstancePropVector = (std::vector<int>*)(PlacementTypePTR + 0x2C-0x4); //0xD,0xE
+		
+
+
 		int* PropManger = *(int**)PlacementTypePTR;
 		int result = BranchTo(0x824619C8,int,(PropManger)[0xF], OBJ_ID, buffer);
+
+		EntityHandleAndObjectVector->push_back(dummy_container_entityhandle_Object(EntityHandle,result));
+		InstancePropVector->push_back(InstnceProp);
 
 
 
@@ -493,10 +672,12 @@ namespace DebugLogV2{
 	int GameLIB_GlobalInstall(lua_State* LS)
 	{	
 		WRITE_DWORD(0x82026A04,GameLIB_NewActorRestore);
+		WRITE_DWORD(0x820269C4,GameLIB_PlayerIndexToActorIDRestore);
 		return 0;
 	}
 
 
+	// PlayerCamera
 	int PlayerLIB_GlobalInstall(lua_State* LS)
 	{
 		luaL_openlib06(LS,"player",PET,0);
@@ -507,7 +688,6 @@ namespace DebugLogV2{
 
 
 		lua_pushstring06(LS, "__gc"); lua_pushcfunction06(LS, Player___GC); lua_settable06(LS, -3);
-
 		lua_pushvalue(LS, -1);  lua_pushstring06(LS, "__index"); lua_pushvalue(LS,-2);  lua_settable06(LS,-3);
 
 		lua_pushstring06(LS, "GetPTR"); lua_pushcfunction06(LS, Player_GetPTR); 	lua_settable06(LS, -3);
@@ -516,14 +696,44 @@ namespace DebugLogV2{
 
 		lua_pushstring06(LS, "Swap"); lua_pushcfunction06(LS, Player_SWAP); 	lua_settable06(LS, -3);
 
+		lua_pushstring06(LS, "GetName"); lua_pushcfunction06(LS, Player__GetName); 	lua_settable06(LS, -3);
+
+
+		lua_pushstring06(LS, "GetCamera"); lua_pushcfunction06(LS, Player__GetCamera); 	lua_settable06(LS, -3);
+
+		lua_pushstring06(LS, "GetPosition"); lua_pushcfunction06(LS, Player__GetPosition); 	lua_settable06(LS, -3);
+		lua_pushstring06(LS, "SetPosition"); lua_pushcfunction06(LS, Player__SetPosition); 	lua_settable06(LS, -3);
+
+		lua_pushstring06(LS, "GetRotation"); lua_pushcfunction06(LS, Player__GetRotation); 	lua_settable06(LS, -3);
+		lua_pushstring06(LS, "SetRotation"); lua_pushcfunction06(LS, Player__SetRotation); 	lua_settable06(LS, -3);
+
+
 		lua_pushstring06(LS, "OpenPostureControl"); lua_pushcfunction06(LS, Player_OpenPostureControl); 	lua_settable06(LS, -3);
 		lua_pushstring06(LS, "OpenInput"); lua_pushcfunction06(LS, Player_OpenInput); 	lua_settable06(LS, -3);
 		lua_pushstring06(LS, "OpenPackage"); lua_pushcfunction06(LS, Player_OpenPackage); 	lua_settable06(LS, -3);
 		lua_pushstring06(LS, "OpenModel"); lua_pushcfunction06(LS, Player_OpenModel); 	lua_settable06(LS, -3);
 		lua_pushstring06(LS, "OpenFrame"); lua_pushcfunction06(LS, Player_OpenFrame); 	lua_settable06(LS, -3);
 
+		lua_pop(LS,1);
+
+
+		//lua_register06(LS,"Player",Player_NEW);
+		luaL_newmetatable06(LS,"Cameraman");
+		lua_register06(LS,"Cameraman",Camera__NEW);
+
+
+	//	lua_pushstring06(LS, "__gc"); lua_pushcfunction06(LS, Player___GC); lua_settable06(LS, -3);
+		lua_pushvalue(LS, -1);  lua_pushstring06(LS, "__index"); lua_pushvalue(LS,-2);  lua_settable06(LS,-3);
+
+		lua_pushstring06(LS, "GetPTR"); lua_pushcfunction06(LS, Camera_GetPTR); 	lua_settable06(LS, -3);
+		lua_pushstring06(LS, "GetPosition"); lua_pushcfunction06(LS, Camera_GetPosition); 	lua_settable06(LS, -3);
+		lua_pushstring06(LS, "GetRotation"); lua_pushcfunction06(LS, Camera_GetRotation); 	lua_settable06(LS, -3);
+
+
 
 		lua_pop(LS,1);
+
+
 
 		return 1;
 
@@ -549,8 +759,8 @@ namespace DebugLogV2{
 	extern "C" Player_RELOAD(lua_State* L){
 	
 		Player_NEWS* PE = (*reinterpret_cast<Player_NEWS**>(luaL_checkudata(L, 1, "Player")));
-		UINT32 pstack[4];
-		GetPlayerActors((UINT32*)&pstack);
+		UINT32 pstack[16];
+		GetPlayerActors((UINT32*)&pstack,PE->IsAI);
 		PE->ObjectPlayer = (int*) pstack[PE->Index];
 
 
@@ -582,9 +792,19 @@ namespace DebugLogV2{
 		}
 		
 
-		UINT32 pstack[4];
-		GetPlayerActors((UINT32*)&pstack);
+		UINT32 pstack[16];
+
+		if (lua_isboolean(L,2))
+			z->IsAI  = lua_toboolean(L,2);
+		else{
+			z->IsAI = false;
+		}
+
+
+		GetPlayerActors((UINT32*)&pstack,z->IsAI);
 		z->ObjectPlayer = (int*) pstack[z->Index];
+
+
 	
 
 	
@@ -602,6 +822,47 @@ namespace DebugLogV2{
 
 
 
+	extern "C" Player__GetCamera(lua_State* L)
+	{
+		Player_NEWS* PE = (*reinterpret_cast<Player_NEWS**>(luaL_checkudata(L, 1, "Player")));
+
+	
+		int OBJPlayer = (int)PE->ObjectPlayer;
+
+		int PlayerCAM = (OBJPlayer+ 0x94);
+
+		if (PlayerCAM > 0x94){
+			PlayerCAM  = *(int*)PlayerCAM;
+		}
+		else{
+			PlayerCAM = 0;
+		}
+
+
+
+
+		lua_newtable06(L);
+
+		lua_pushstring06(L,"ptr");
+		lua_pushlightuserdata(L,(void*)(PlayerCAM-0x20));
+		lua_settable06(L,-3);
+
+		lua_pushstring06(L,"index");
+		lua_pushnumber(L,PE->Index);
+		lua_settable06(L,-3);
+
+
+
+		luaL_getmetatable06(L,"Cameraman");
+		lua_setmetatable06(L, -2);
+
+
+		return 1;
+
+
+
+	}
+
 	extern "C" Player_SWAP(lua_State* L){
 
 		int args = lua_gettop(L);
@@ -617,8 +878,200 @@ namespace DebugLogV2{
 
 
 	}
+
+
+
+
+	
+	extern "C" Player__GetName(lua_State* L)
+	{
+		Player_NEWS* PE = (*reinterpret_cast<Player_NEWS**>(luaL_checkudata(L, 1, "Player")));
+
+
+		int OBJPlayer = (int)PE->ObjectPlayer;
+ 
+		std::string* c_player_name =  (std::string*)(OBJPlayer + 0x1D8);
+
+
+
+
+		lua_pushstring06(L,	c_player_name->c_str());
+	
+		return 1;
+
+
+
+	}
+
+
+
+	extern "C" Player__GetPosition(lua_State* L)
+	{
+		
+		Player_NEWS* PE = (*reinterpret_cast<Player_NEWS**>(luaL_checkudata(L, 1, "Player")));
+		int OBJPlayer = (int)PE->ObjectPlayer;
+		XMVECTOR vector = {0};
+		UINT32 PlayerPosture = GetPlayerPosture(OBJPlayer);
+		vector =  *(GetPlayerPosition(PlayerPosture));
+		Vector__CreateMetatableFromXMVECTOR(L,&vector);
+
+		return 1;
+	}
+
+	extern "C" Player__SetPosition(lua_State* L)
+	{
+		Player_NEWS* PE = (*reinterpret_cast<Player_NEWS**>(luaL_checkudata(L, 1, "Player")));
+		int OBJPlayer = (int)PE->ObjectPlayer;
+
+		XMVECTOR vector = {0};
+		vector = Vector__GetVector(L,2);
+		UINT32 PlayerPosture = GetPlayerPosture(OBJPlayer);
+		*GetPlayerPosition(PlayerPosture) = vector;
+
+
+		return 0;
+	}
+
+
+
+
+
+
+	extern "C" Player__GetRotation(lua_State* L)
+	{
+		
+		return 0;
+	}
+
+	extern "C" Player__SetRotation(lua_State* L)
+	{
+		
+		return 0;
+	}
+
+	extern "C" Player__GetScoreCount(lua_State* L)
+	{
+
+
+	}
+
+	extern "C" Player__GetLiveCount(lua_State* L)
+	{
+
+	}
+
+	extern "C" Player__GetRingsCount(lua_State* L)
+	{
+
+	}
+
+	extern "C" Player__SetScoreCount(lua_State* L)
+	{
+
+	}
+
+	extern "C" Player__SetLiveCount(lua_State* L)
+	{
+
+	}
+
+	extern "C" Player__SetRingsCount(lua_State* L)
+	{
+
+	}
+
+	extern "C" Camera__NEW(lua_State* L){
+
+
+
+		int args = lua_gettop(L);
+			int index = 0;
+		if (args > 1){
+			index  = lua_tonumber(L,1);
+		}
+
+		UINT32 cstack[0x10];
+		GetCameraManActors((UINT32*)&cstack);
+
 	
 
+
+		lua_newtable06(L);
+
+
+		lua_pushstring06(L,"ptr");
+		lua_pushlightuserdata(L,(void*)(cstack[index]));
+		lua_settable06(L,-3);
+
+
+		lua_pushstring06(L,"index");
+		lua_pushnumber(L,index);
+		lua_settable06(L,-3);
+
+
+
+		luaL_getmetatable06(L,"Cameraman");
+		lua_setmetatable06(L, -2);
+
+
+
+
+		return 1;
+	}
+	extern "C" Camera_GetPTR(lua_State* L)
+	{
+		lua_pushstring06(L,"ptr");
+		lua_gettable(L,1);
+		return 1;
+
+
+		
+
+
+	}
+
+	extern "C" Camera_GetPosition(lua_State* L)
+	{
+		lua_pushstring06(L,"ptr");
+		lua_gettable(L,1);
+		unsigned int ptr =  (unsigned int)lua_touserdata(L,-1);
+
+		XMVECTOR vector = {0};
+		if (ptr == 0){
+
+
+		}
+		else{
+				vector =  *(XMVECTOR*)(ptr + 0x80 + 0x20);
+		}
+	
+	
+		Vector__CreateMetatableFromXMVECTOR(L,&vector);	
+		return 1;
+
+	}
+
+	extern "C" Camera_GetRotation(lua_State* L)
+	{
+		lua_pushstring06(L,"ptr");
+		lua_gettable(L,1);
+		unsigned int ptr =  (unsigned int)lua_touserdata(L,-1);
+
+		XMVECTOR vector = {0};
+		if (ptr == 0){
+
+		}
+		else{
+			vector =  *(XMVECTOR*)(ptr + 0x70 + 0x20);
+		}
+
+
+		Vector__CreateMetatableFromXMVECTOR(L,&vector);	
+		return 1;
+	}
+
+
+	
 	extern "C" Player_OpenFrame(lua_State* L){
 
 		Player_NEWS* PE = (*reinterpret_cast<Player_NEWS**>(luaL_checkudata(L, 1, "Player")));
@@ -1108,7 +1561,70 @@ namespace DebugLogV2{
 
 
 	//Size 4
-	void GetPlayerActors(UINT32* pstack){
+
+	void GetCameraManActors(UINT32* pstack){
+	
+		pstack[0] = 0;
+		pstack[1] = 0;
+		pstack[2] = 0;
+		pstack[3] = 0;
+
+		Sonicteam::DocMarathonImp* impl = 	*(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
+		UINT32 vft =  *(UINT32*)impl->DocCurrentMode;
+	
+		if (vft == 0x82033534){ //GameMode
+
+			UINT32 gameimp = *(UINT32*)(impl->DocCurrentMode + 0x6C);
+			UINT32 ActorManager = *(UINT32*)(gameimp+0x11C4);
+			UINT32 ActorMangerActorsCount = *(UINT32*)(ActorManager+0x80000);
+			UINT32 PIX = 0;
+			for (int i = 0;i<ActorMangerActorsCount;i++)
+			{
+				UINT32 Actor = *(UINT32*)(ActorManager+0x40000+(i*4));
+				UINT32 ActorVFT = *(UINT32*)Actor;
+				if (ActorVFT == 0x82001F2C){ //Object_Player
+
+
+					byte IsObjectPlayerHaveControll = *(byte*)(Actor + 0xC8);
+					byte AIFLAG = *(byte*)(Actor + 0xCA);
+						if (IsObjectPlayerHaveControll){
+							pstack[PIX++] = Actor;
+						}
+			
+
+				
+				
+
+	
+					/*
+					Sonicteam::Player::State::IMachine* PlayerMashine = *(Sonicteam::Player::State::IMachine**)(Actor+0xE4);
+					if (PlayerMashine){
+
+						Sonicteam::Player::State::IContext* context  =  PlayerMashine->GetMashineContext().get();
+						Sonicteam::Player::State::CommonContext* PCC0 = dynamic_cast<Sonicteam::Player::State::CommonContext*>(context);
+						Sonicteam::Player::State::FastContext* PCF0 = dynamic_cast<Sonicteam::Player::State::FastContext*>(context);
+						bool flag = false;
+						if (PCC0){
+							Sonicteam::Player::Input::IListener* Listener =  PCC0->ListenerNormalInputPlugin.get();
+							flag =  Listener->Listener5();
+							
+						}
+						else if (PCF0){
+							Sonicteam::Player::Input::IListener* Listener =  PCF0->ListenerNormalInputPlugin.get();
+							flag = Listener->Listener5();
+						}
+
+						if (flag ) pstack[PIX++] = Actor;
+					}
+					*/
+
+
+				}
+			}
+		}
+	}
+
+	void GetPlayerActors(UINT32* pstack,bool AI){
 	
 		pstack[0] = 0;
 		pstack[1] = 0;
@@ -1132,9 +1648,25 @@ namespace DebugLogV2{
 
 
 					byte IsObjectPlayerHaveControll = *(byte*)(Actor + 0xC8);
-					if (IsObjectPlayerHaveControll){
-						pstack[PIX++] = Actor;
+					byte AIFLAG = *(byte*)(Actor + 0xCA);
+					if (AI)
+					{
+						if (IsObjectPlayerHaveControll == 0 && AIFLAG){
+							pstack[PIX++] = Actor;
+						}
+					
+
 					}
+					else{
+						if (IsObjectPlayerHaveControll){
+							pstack[PIX++] = Actor;
+						}
+					}
+
+				
+				
+
+	
 					/*
 					Sonicteam::Player::State::IMachine* PlayerMashine = *(Sonicteam::Player::State::IMachine**)(Actor+0xE4);
 					if (PlayerMashine){
@@ -1166,8 +1698,8 @@ namespace DebugLogV2{
 	UINT32 GetPlayerPosture(UINT32 ObjectPlayer){
 		return *(UINT32 *)(ObjectPlayer + 0xDC);
 	}
-	XMFLOAT4* GetPlayerPosition(UINT32 PlayerPosture){
-		return (XMFLOAT4*)(PlayerPosture + 0xB0);
+	XMVECTOR* GetPlayerPosition(UINT32 PlayerPosture){
+		return (XMVECTOR*)(PlayerPosture + 0xB0);
 	}
 
 
@@ -1187,7 +1719,7 @@ namespace DebugLogV2{
 		if (pstack[PlayerIndex] != 0){
 			UINT32 ObjectPlayer = pstack[PlayerIndex];
 			UINT32 PlayerPosture = GetPlayerPosture(ObjectPlayer);
-			XMFLOAT4* PlayerPos = GetPlayerPosition(PlayerPosture);
+			XMVECTOR* PlayerPos = GetPlayerPosition(PlayerPosture);
 			memcpy(&POS,PlayerPos,sizeof(XMFLOAT4));
 		}
 
@@ -1239,7 +1771,7 @@ namespace DebugLogV2{
 		if (pstack[PlayerIndex] != 0){
 			UINT32 ObjectPlayer = pstack[PlayerIndex];
 			UINT32 PlayerPosture = GetPlayerPosture(ObjectPlayer);
-			XMFLOAT4* PlayerPos = GetPlayerPosition(PlayerPosture);
+			XMVECTOR* PlayerPos = GetPlayerPosition(PlayerPosture);
 			PlayerPos->x = lua_tonumber(L,2);
 			PlayerPos->y = lua_tonumber(L,3);
 			PlayerPos->z = lua_tonumber(L,4);
@@ -1265,277 +1797,6 @@ namespace DebugLogV2{
 
 
 
-	static const struct luaL_reg MEM [] = {
-		{"ADD",Memory_ADD},
-		{"GetPointer", Memory_GetPointer},
-		{"SetPointerValue", Memory_SetPointerValue},
-		{"SetBYTE", Memory_SetBYTE},
-		{"GetBYTE", Memory_GetBYTE},
-		{"SetDWORD", Memory_SetDWORD},
-		{"GetDWORD", Memory_GetDWORD},
-		{"SetFLOAT", Memory_SetFLOAT},
-		{"GetFLOAT", Memory_GetFLOAT},
-		{NULL, NULL}  /* sentinel */
-	};
-
-
-
-	int MemoryLIB_GlobalInstall(lua_State* LS)
-	{
-		luaL_openlib06(LS,"memory",MEM,0);
-		return 0;
-	}
-
-
-	extern "C" Memory_GetBYTE(lua_State* L){
-
-		int args = lua_gettop(L);
-		UINT ptr = 0;
-		UINT mv = 0; 
-
-		if (args < 1){ lua_pushnil(L); return 1;}
-
-		if (lua_isuserdata(L,1)){
-			ptr = (UINT)lua_touserdata(L,1);
-		}
-
-		else{
-			ptr = (UINT)lua_tonumber(L,1);
-		}
-
-		if (args > 1){
-			mv = (UINT)lua_tonumber(L,2);
-		}
-
-	
-		if ((ptr + mv) > mv && (ptr + mv) != 0 ){
-			lua_pushnumber(L,*(char*)(ptr + mv));
-		}
-		else{
-			lua_pushnil(L);
-		}
-		return 1;
-	}
-	extern "C" Memory_SetBYTE(lua_State* L){
-
-		int args = lua_gettop(L);
-		UINT ptr = 0;
-		if (args < 2) return 0;
-
-		if (lua_isuserdata(L,1)){
-			ptr = (UINT)lua_touserdata(L,1);
-		}
-		else{
-			ptr = lua_tonumber(L,1);
-		}
-
-		*(char*)(ptr) =  lua_tonumber(L,2);
-
-		return 0;
-	}
-
-	extern "C" Memory_GetDWORD(lua_State* L){
-
-		int args = lua_gettop(L);
-		UINT ptr = 0;
-		UINT mv = 0; 
-
-		if (args < 1){ lua_pushnil(L); return 1;}
-
-		if (lua_isuserdata(L,1)){
-			ptr = (UINT)lua_touserdata(L,1);
-		}
-
-		else{
-			ptr = (UINT)lua_tonumber(L,1);
-		}
-
-		if (args > 1){
-			mv = (UINT)lua_tonumber(L,2);
-		}
-
-		if ((ptr + mv) > mv && (ptr + mv) != 0 ){
-			lua_pushnumber(L,*(int*)(ptr + mv));
-		}
-		else{
-			lua_pushnil(L);
-		}
-		return 1;
-	}
-	extern "C" Memory_SetDWORD(lua_State* L){
-
-		int args = lua_gettop(L);
-		UINT ptr = 0;
-		if (args < 2) return 0;
-
-		if (lua_isuserdata(L,1)){
-			ptr = (UINT)lua_touserdata(L,1);
-		}
-		else{
-			ptr = lua_tonumber(L,1);
-		}
-
-		*(unsigned int*)(ptr) =  lua_tonumber(L,2);
-		
-	
-		return 0;
-	}
-	extern "C" Memory_GetFLOAT(lua_State* L){
-
-		int args = lua_gettop(L);
-		UINT ptr = 0;
-		UINT mv = 0; 
-
-		if (args < 1){ lua_pushnil(L); return 1;}
-
-		if (lua_isuserdata(L,1)){
-			ptr = (UINT)lua_touserdata(L,1);
-		}
-
-		else{
-			ptr = (UINT)lua_tonumber(L,1);
-		}
-
-		if (args > 1){
-			mv = (UINT)lua_tonumber(L,2);
-		}
-
-
-
-		void* result_ptr = 0;
-		if ((ptr + mv) > mv && (ptr + mv) != 0 ){
-			result_ptr = *(void**)(ptr + mv);
-		}
-
-		if ((ptr + mv) > mv && (ptr + mv) != 0 ){
-			lua_pushnumber(L,*(float*)(ptr + mv));
-		}
-		else{
-			lua_pushnil(L);
-		}
-		return 1;
-	}
-	extern "C" Memory_SetFLOAT(lua_State* L){
-
-		int args = lua_gettop(L);
-		UINT ptr = 0;
-		if (args < 2) return 0;
-
-		if (lua_isuserdata(L,1)){
-			ptr = (UINT)lua_touserdata(L,1);
-		}
-		else{
-			ptr = lua_tonumber(L,1);
-		}
-		*(float*)(ptr) =  lua_tonumber(L,2);
-		return 0;
-	}
-
-
-
-
-	extern "C" Memory_GetPointer(lua_State* L){
-
-		int args = lua_gettop(L);
-		UINT ptr = 0;
-		UINT mv = 0; 
-
-		if (args < 1){ lua_pushnil(L); return 1;}
-
-		if (lua_isuserdata(L,1)){
-			ptr = (UINT)lua_touserdata(L,1);
-		}
-	
-		else{
-			ptr = (UINT)lua_tonumber(L,1);
-		}
-		
-		if (args > 1){
-			mv = (UINT)lua_tonumber(L,2);
-		}
-		
-
-
-		void* result_ptr = 0;
-		if ((ptr + mv) > mv && (ptr + mv) != 0 ){
-			result_ptr = *(void**)(ptr + mv);
-		}
-		
-		if ((ptr + mv) > mv && (ptr + mv) != 0 ){
-			lua_pushlightuserdata(L,*(void**)(ptr + mv));
-		}
-		else{
-			lua_pushnil(L);
-		}
-		return 1;
-	}
-	extern "C" Memory_ADD(lua_State* L){
-
-		int args = lua_gettop(L);
-		UINT ptr = 0;
-		UINT mv = 0; 
-
-		if (args < 2){ lua_pushnil(L); return 1;}
-
-		if (lua_isuserdata(L,1)){
-			ptr = (UINT)lua_touserdata(L,1);
-		}
-
-		else{
-			ptr = (UINT)lua_tonumber(L,1);
-		}
-
-		if (lua_isuserdata(L,2)){
-			mv = (UINT)lua_touserdata(L,2);
-		}
-
-		else{
-			mv = (UINT)lua_tonumber(L,2);
-		}
-
-		lua_pushlightuserdata(L,(void*)(ptr+mv));
-
-
-		return 1;
-	}
-	extern "C" Memory_SetPointerValue(lua_State* L){
-
-		int args = lua_gettop(L);
-		UINT ptr = 0;
-
-		UINT mv = 0;
-		if (args < 2) return 0;
-
-		if (lua_isuserdata(L,1)){
-			ptr = (UINT)lua_touserdata(L,1);
-		}
-		else{
-			ptr = lua_tonumber(L,1);
-		}
-
-		bool isString = false;
-		if (lua_isuserdata(L,2)){
-			mv = (UINT)lua_touserdata(L,2);
-		}
-		else if (lua_isstring(L,2)){
-			mv = (UINT)lua_tostring(L,2);
-			isString = true;
-		}
-		else{
-			mv = lua_tonumber(L,2);
-		}
-
-		if (isString){
-		
-			strcpy((char*)ptr,(char*)mv);
-		}
-		else{
-			*(UINT*)(ptr) = mv;
-		}
-
-
-		return 0;
-	}
 
 
 

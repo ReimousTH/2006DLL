@@ -25,7 +25,7 @@ namespace Sonicteam{
 			///Fields
 
 			int RingsCount; //0x28
-			int ScoreCount; //0x2C ?????
+			int ScoreCount; //0x2C ????? (Rings PR Count)
 
 			int PtrRootFrame; //0x30
 			int PtrObjectPlayer; //0x34

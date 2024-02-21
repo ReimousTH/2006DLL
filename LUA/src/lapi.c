@@ -535,6 +535,10 @@ LUA_API void lua_rawgeti (lua_State *L, int idx, int n) {
   lua_unlock(L);
 }
 
+LUA_API void lua_rawgeti06 (lua_State *L, int idx, int n) {
+	((void (__fastcall *)(lua_State *L, int idx, int n))0x825D5BD8)(L,idx,n);
+}
+
 
 LUA_API void lua_newtable06 (lua_State *L) {
 	((void (__fastcall *)(lua_State *L))0x825D5C30)(L);
@@ -619,6 +623,10 @@ LUA_API void lua_rawset (lua_State *L, int idx) {
   lua_unlock(L);
 }
 
+LUA_API void lua_rawseti06 (lua_State *L, int idx, int n) {
+
+		 	 ((void* (__fastcall *)(lua_State *L, int idx, int))0x825D5E50)(L,idx,n);
+}
 
 LUA_API void lua_rawseti (lua_State *L, int idx, int n) {
   StkId o;
@@ -707,6 +715,9 @@ LUA_API int lua_setfenv (lua_State *L, int idx) {
 /*
 ** `load' and `call' functions (run Lua code)
 */
+
+
+
 
 LUA_API void lua_call (lua_State *L, int nargs, int nresults) {
   StkId func;

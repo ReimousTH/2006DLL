@@ -32,6 +32,8 @@ namespace DebugLogV2{
 		STRLIB_GlobalInstall(LS);
 		MemoryLIB_GlobalInstall(LS);
 		VectorLIB_GlobalInstall(LS);
+	
+
 
 
 		return sub_825DB498H(LS);
@@ -62,7 +64,6 @@ namespace DebugLogV2{
 		BranchTo(0x8216B360,int,dt,lua_tostring(LS,1));
 
 
-		GameLIB_GlobalInstall(LS);
 
 		return PlayBGMH(LS);
 	}
