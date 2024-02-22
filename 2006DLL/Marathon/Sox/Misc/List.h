@@ -72,8 +72,8 @@ namespace Sonicteam{
 			}
 		};
 
-		template <typename Z = RNodeF<T,Y>>
-		class LinkedNodeListB:RNodeH<int>{
+		template <typename Z = RNodeF<T,Y>,typename Y = RNodeH<int>>
+		class LinkedNodeListB:Y{
 		public:
 
 			LinkedNodeListB(){this->Next = this; this->Previous = this;}

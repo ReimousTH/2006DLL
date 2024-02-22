@@ -24,6 +24,7 @@ extern "C" {
 #include <Player/State/CommonContext.h>
 #include <Player/State/FastContext.h>
 
+#include <Sox/Engine/Task.h>
 
 
 #include <boost/any.hpp>
@@ -56,7 +57,12 @@ namespace DebugLogV2 {
 
 
 
-	extern "C" int GameLIB_GetActorID(lua_State* L,int index,bool AI_MODE);
+	extern "C" int GameLIB_PlayerObjSetActorID(int ObjPlayer,int ID);
+	extern "C" int GameLIB_DocGamemodeGetActorManager();
+	extern "C" int GameLIB_PlayerObjSetActorPTR(int ObjPlayer,int ID);
+	extern "C" int GameLIB_PlayerObjToActorID(int ObjPlayer);
+	extern "C" UINT32* GameLIB_PlayerObjGetActorPTR(int ObjPlayer);
+
 	int GameLIB_GlobalInstall(lua_State* LS);
 
 	int PlayerLIB_GlobalInstall(lua_State* LS);
@@ -65,6 +71,7 @@ namespace DebugLogV2 {
 		int* ObjectPlayer;
 		int Index;
 		bool IsAI; //mostly 
+		UINT32* ObjectPlayerActorPTR;
 	};
 
 
@@ -93,6 +100,11 @@ namespace DebugLogV2 {
 	extern "C" Player__SetRingsCount(lua_State* L);
 
 
+	extern "C" int Player__GetActorID(lua_State* L);
+	extern "C" int Player__SetActorID(lua_State* L);
+	extern "C" int Player__SetActorPTR(lua_State* L);
+
+
 
 	extern "C" Camera__NEW(lua_State* L);
 	extern "C" Camera_GetPTR(lua_State* L);
@@ -106,6 +118,8 @@ namespace DebugLogV2 {
 	extern "C" Player_OpenPackage(lua_State* L);
 	extern "C" Player_OpenInput(lua_State* L);
 	extern "C" Player_OpenPostureControl(lua_State* L);
+
+
 
 	void GetCameraManActors(UINT32* pstack);
 	void GetPlayerActors(UINT32* pstack,bool AI = false);
@@ -123,6 +137,12 @@ namespace DebugLogV2 {
 
 
 	int STRLIB_GlobalInstall(lua_State* LS);
+
+
+
+	extern "C" int MainDisplayTask_GlobalInstall(lua_State* LS);
+	extern "C" int MainDisplayTask__NEW(lua_State* L);
+	extern "C" int MainDisplayTask__SendMessage(lua_State* L);
 
 
 	

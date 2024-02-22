@@ -23,16 +23,16 @@ bool HookV2::CheckIsNotEmulatedHardWare()
 {
 	//VirtualProtectEx does not work in XENIA at all
 
-	DWORD OPrct;
-	bool OK =  VirtualProtectEx(GetModuleHandle(NULL),(void*)0x82000600,1,4,&OPrct); // Change Protection
-	if (OK){
-		VirtualProtectEx(GetModuleHandle(NULL),(void*)0x82000600,1,OPrct,&OPrct); // Change Protection
-		return true;
-	}
-	else{
-			
+
+	MEMORY_BASIC_INFORMATION data;
+	VirtualQuery((void*)0x92000600, &data,0);
+	if (data.Protect){
 		return false;
 	}
+	return true;
+	
+
+
 
 
 }

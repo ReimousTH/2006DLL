@@ -25,7 +25,7 @@ namespace Sonicteam{
 
 			//std::list<Component*> CompList;
 
-			Sonicteam::SoX::LinkedNodeListB<Sonicteam::SoX::RNodeF<Component>> UCLNLB0x14; //0x14,0x18,0x1C
+			Sonicteam::SoX::LinkedNodeListB<Sonicteam::SoX::RNodeF<Component>,Sonicteam::SoX::RNodeF<Component>> UCLNLB0x14; //0x14,0x18,0x1C
 			//0x20...
 
 

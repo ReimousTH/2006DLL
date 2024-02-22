@@ -322,6 +322,92 @@ namespace DebugLogV2{
 
 	 };
 
+	extern "C" int GameLIB_DocGamemodeGetActorManager(){
+
+		Sonicteam::DocMarathonImp* impl = 	*(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
+		UINT32 vft =  *(UINT32*)impl->DocCurrentMode;
+
+		if (vft == 0x82033534){ //GameMode
+
+			UINT32 gameimp = *(UINT32*)(impl->DocCurrentMode + 0x6C);
+			UINT32 ActorManager = *(UINT32*)(gameimp+0x11C4);
+			return ActorManager;
+		}
+		return 0;
+	}
+
+
+	extern "C" UINT32* GameLIB_PlayerObjGetActorPTR(int ObjPlayer){
+
+		Sonicteam::DocMarathonImp* impl = 	*(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
+		UINT32 vft =  *(UINT32*)impl->DocCurrentMode;
+
+		if (vft == 0x82033534){ //GameMode
+
+			UINT32 ActorManager = GameLIB_DocGamemodeGetActorManager();
+			UINT32 ActorMangerActorsCount = *(UINT32*)(ActorManager+0x80000);
+			for (int i = 0;i<ActorMangerActorsCount;i++)
+			{
+				UINT32 Actor = *(UINT32*)(ActorManager+0x40000+(i*4));
+				UINT32 ActorID = *(UINT32*)(ActorManager+0x4 +(0x4*i));
+				if (Actor == ObjPlayer){
+					return (UINT32*)(ActorManager+0x40000+(i*4)) ;
+				}
+			}
+
+		}
+		return 0;
+
+	}
+
+	extern "C" int GameLIB_PlayerObjSetActorID(int ObjPlayer,int ID){
+
+		Sonicteam::DocMarathonImp* impl = 	*(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
+		UINT32 vft =  *(UINT32*)impl->DocCurrentMode;
+
+		if (vft == 0x82033534){ //GameMode
+
+
+			UINT32 ActorManager = GameLIB_DocGamemodeGetActorManager();
+			UINT32 ActorMangerActorsCount = *(UINT32*)(ActorManager+0x80000);
+			for (int i = 0;i<ActorMangerActorsCount;i++)
+			{
+				UINT32 Actor = *(UINT32*)(ActorManager+0x40000+(i*4));
+				UINT32 ActorID = *(UINT32*)(ActorManager+0x4 +(0x4*i));
+				if (Actor == ObjPlayer){
+					*(UINT32*)(ActorManager+0x4 +(0x4*i)) = ID;
+					return 0;
+				}
+
+			}
+		}
+		return -1;
+	}
+
+	extern "C" int GameLIB_PlayerObjToActorID(int ObjPlayer){
+
+		Sonicteam::DocMarathonImp* impl = 	*(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
+		UINT32 vft =  *(UINT32*)impl->DocCurrentMode;
+
+		if (vft == 0x82033534){ //GameMode
+
+
+			UINT32 ActorManager = GameLIB_DocGamemodeGetActorManager();
+			UINT32 ActorMangerActorsCount = *(UINT32*)(ActorManager+0x80000);
+			for (int i = 0;i<ActorMangerActorsCount;i++)
+			{
+				UINT32 Actor = *(UINT32*)(ActorManager+0x40000+(i*4));
+				UINT32 ActorID = *(UINT32*)(ActorManager+0x4 +(0x4*i));
+				if (Actor == ObjPlayer){
+					return ActorID;
+				}
+
+			}
+		}
+		return -1;
+	}
+
+
 	extern "C" GameLIB_PlayerIndexToActorIDRestore(lua_State* L){
 
 		int args = lua_gettop(L);
@@ -337,27 +423,8 @@ namespace DebugLogV2{
 		GetPlayerActors((UINT32*)&pstack,index);
 
 		if (pstack[index] != 0){
-
-			Sonicteam::DocMarathonImp* impl = 	*(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
-			UINT32 vft =  *(UINT32*)impl->DocCurrentMode;
-
-			if (vft == 0x82033534){ //GameMode
-
-				UINT32 gameimp = *(UINT32*)(impl->DocCurrentMode + 0x6C);
-				UINT32 ActorManager = *(UINT32*)(gameimp+0x11C4);
-				UINT32 ActorMangerActorsCount = *(UINT32*)(ActorManager+0x80000);
-				UINT32 PIX = 0;
-				for (int i = 0;i<ActorMangerActorsCount;i++)
-				{
-					UINT32 Actor = *(UINT32*)(ActorManager+0x40000+(i*4));
-					UINT32 ActorID = *(UINT32*)(ActorManager+0x4 +(0x4*i));
-					if (Actor == pstack[index]){
-						lua_pushnumber(L,ActorID);
-						return 1;
-					}
-
-				}
-			}
+			lua_pushnumber(L,GameLIB_PlayerObjToActorID(pstack[index]));
+		
 		}
 		else{
 			lua_pushnumber(L,-1);
@@ -551,7 +618,10 @@ namespace DebugLogV2{
 				case String:
 					if (boost::any_cast<std::string>(_sorted_params[i].second).size() > 0)
 					{
-						s  =  (const char*)malloc06(boost::any_cast<std::string>(_sorted_params[i].second).size());
+
+						s  =  (const char*)malloc06(boost::any_cast<std::string>(_sorted_params[i].second).size() + 1);
+						memset((void*)s,0,(boost::any_cast<std::string>(_sorted_params[i].second).size() + 1));
+
 						memcpy((void*)s,
 							boost::any_cast<std::string>(_sorted_params[i].second).c_str(),
 							boost::any_cast<std::string>(_sorted_params[i].second).size());
@@ -708,6 +778,12 @@ namespace DebugLogV2{
 		lua_pushstring06(LS, "SetRotation"); lua_pushcfunction06(LS, Player__SetRotation); 	lua_settable06(LS, -3);
 
 
+		lua_pushstring06(LS, "GetActorID"); lua_pushcfunction06(LS, Player__GetActorID); 	lua_settable06(LS, -3);
+		lua_pushstring06(LS, "SetActorID"); lua_pushcfunction06(LS, Player__SetActorID); 	lua_settable06(LS, -3);
+		lua_pushstring06(LS, "SetActorPTR"); lua_pushcfunction06(LS, Player__SetActorPTR); 	lua_settable06(LS, -3);
+
+
+
 		lua_pushstring06(LS, "OpenPostureControl"); lua_pushcfunction06(LS, Player_OpenPostureControl); 	lua_settable06(LS, -3);
 		lua_pushstring06(LS, "OpenInput"); lua_pushcfunction06(LS, Player_OpenInput); 	lua_settable06(LS, -3);
 		lua_pushstring06(LS, "OpenPackage"); lua_pushcfunction06(LS, Player_OpenPackage); 	lua_settable06(LS, -3);
@@ -762,6 +838,7 @@ namespace DebugLogV2{
 		UINT32 pstack[16];
 		GetPlayerActors((UINT32*)&pstack,PE->IsAI);
 		PE->ObjectPlayer = (int*) pstack[PE->Index];
+		PE->ObjectPlayerActorPTR = GameLIB_PlayerObjGetActorPTR((int)PE->ObjectPlayer);
 
 
 		return 0;
@@ -979,6 +1056,45 @@ namespace DebugLogV2{
 	{
 
 	}
+
+
+	extern "C" int Player__GetActorID(lua_State* L)
+	{
+
+		Player_NEWS* PE = (*reinterpret_cast<Player_NEWS**>(luaL_checkudata(L, 1, "Player")));
+		int OBJPlayer = (int)PE->ObjectPlayer;
+
+		lua_pushnumber(L,GameLIB_PlayerObjToActorID(OBJPlayer));
+
+		return 1;
+	}
+
+	extern "C" int Player__SetActorID(lua_State* L)
+	{
+		Player_NEWS* PE = (*reinterpret_cast<Player_NEWS**>(luaL_checkudata(L, 1, "Player")));
+		int OBJPlayer = (int)PE->ObjectPlayer;
+
+		GameLIB_PlayerObjSetActorID(OBJPlayer,lua_tonumber(L,2));
+
+		return 0;
+	}
+
+	extern "C" int Player__SetActorPTR(lua_State* L)
+	{
+		Player_NEWS* PE = (*reinterpret_cast<Player_NEWS**>(luaL_checkudata(L, 1, "Player")));
+		int OBJPlayer = (int)PE->ObjectPlayer;
+		int ID = (int)lua_touserdata(L,2);
+
+		*PE->ObjectPlayerActorPTR = ID;
+
+	
+
+		return 0;
+	}
+
+
+
+
 
 	extern "C" Camera__NEW(lua_State* L){
 
@@ -1800,6 +1916,112 @@ namespace DebugLogV2{
 
 
 
+
+
+
+
+
+
+	extern "C" int MainDisplayTask_GlobalInstall(lua_State* LS)
+	{
+
+		lua_register06(LS,"MainDisplayTask",MainDisplayTask__NEW);
+
+		luaL_newmetatable06(LS,"MainDisplayTask");
+
+		lua_pushstring06(LS, "__gc"); lua_pushcfunction06(LS, Vector__GC); lua_settable06(LS, -3);
+	//	lua_pushstring06(LS, "__tostring"); lua_pushcfunction06(LS, Vector__tostring); lua_settable06(LS, -3);
+	//	lua_pushstring06(LS, "__add"); lua_pushcfunction06(LS, Vector__add); lua_settable06(LS, -3);
+	//	lua_pushstring06(LS, "__sub"); lua_pushcfunction06(LS, Vector__sub); lua_settable06(LS, -3);
+
+		lua_pushvalue(LS, -1);  lua_pushstring06(LS, "__index"); lua_pushvalue(LS,-2);  lua_settable06(LS,-3);
+
+		lua_pushstring06(LS, "SendMessage"); lua_pushcfunction06(LS, MainDisplayTask__SendMessage); 	lua_settable06(LS, -3);
+
+		//lua_pop(LS,1);
+		return 1;
+	}
+
+	extern "C" int MainDisplayTask__CreateMetatable(lua_State* L,int ID,int MainDisplayTask){
+
+		lua_newtable06(L);
+
+
+		lua_pushstring06(L,"ptr");
+		lua_pushlightuserdata(L,(void*)MainDisplayTask);
+		lua_settable06(L,-3);
+
+
+		lua_pushstring06(L,"id");
+		lua_pushnumber(L,ID);
+		lua_settable06(L,-3);
+
+
+
+		luaL_getmetatable06(L,"MainDisplayTask");
+		lua_setmetatable06(L, -2);
+
+
+
+		return 0;
+
+	}
+
+	extern "C" int MainDisplayTask__NEW(lua_State* L){
+
+		int args = lua_gettop(L);
+
+		int id =  lua_tonumber(L,2);
+		
+		Sonicteam::DocMarathonImp* impl = 	*(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
+		UINT32 vft =  *(UINT32*)impl->DocCurrentMode;
+
+		int PTRX = 0;
+
+		if (vft == 0x82033534){ //GameMode
+
+			UINT32 gameimp = *(UINT32*)(impl->DocCurrentMode + 0x6C);
+
+			 PTRX =  *(UINT32*)(0x10 * (id + 0x123) + gameimp);
+		
+
+		
+		}	
+		MainDisplayTask__CreateMetatable(L,id,PTRX);
+
+		return 1;
+
+
+	}
+
+	extern "C" int MainDisplayTask__SendMessage(lua_State* L){
+
+
+		lua_pushstring06(L,"ptr");
+		lua_gettable(L,1);
+		Sonicteam::SoX::Engine::Task* ptr =  (Sonicteam::SoX::Engine::Task*)lua_touserdata(L,-1);
+
+		UINT32 Messages[5] = {0};
+
+		//RAW
+		for (int i = 0;i<5;i++){
+			Messages[i] = lua_tonumber(L,2+i);
+		}
+		
+		
+		
+		Sonicteam::SoX::Message msg  = Sonicteam::SoX::Message(Messages[0],Messages[1],Messages[2],Messages[3],Messages[4]);
+
+	
+		
+		ptr->OnMessageRecieved(&msg);
+
+	
+
+		return 0;
+
+
+	}
 
 
 }

@@ -32,6 +32,7 @@ namespace DebugLogV2{
 		STRLIB_GlobalInstall(LS);
 		MemoryLIB_GlobalInstall(LS);
 		VectorLIB_GlobalInstall(LS);
+		MainDisplayTask_GlobalInstall(LS);
 	
 
 
