@@ -33,6 +33,8 @@ namespace DebugLogV2{
 		MemoryLIB_GlobalInstall(LS);
 		VectorLIB_GlobalInstall(LS);
 		MainDisplayTask_GlobalInstall(LS);
+		GameImp_GlobalInstall(LS);
+		MessageReceiver_GlobalInstall(LS);
 	
 
 

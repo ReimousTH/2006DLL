@@ -642,6 +642,18 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="AIRework"
+					>
+					<File
+						RelativePath=".\Patches\AIRework\AIRework.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\AIRework\AIRework.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Hook"

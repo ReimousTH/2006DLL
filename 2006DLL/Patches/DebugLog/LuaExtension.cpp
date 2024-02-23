@@ -597,6 +597,7 @@ namespace DebugLogV2{
 
 			*(unsigned int*)IPrm = ParamType;
 			const char* s = 0;
+			std::string STRX;
 		//	ShowXenonMessage(L"MSG",it->first.c_str());
 
 			
@@ -619,12 +620,12 @@ namespace DebugLogV2{
 					if (boost::any_cast<std::string>(_sorted_params[i].second).size() > 0)
 					{
 
-						s  =  (const char*)malloc06(boost::any_cast<std::string>(_sorted_params[i].second).size() + 1);
-						memset((void*)s,0,(boost::any_cast<std::string>(_sorted_params[i].second).size() + 1));
+						STRX = boost::any_cast<std::string>(_sorted_params[i].second);
+						const char* s = (const char*)malloc06(STRX.length()+1);
+						memset((void*)s,0,STRX.length()+1);
 
-						memcpy((void*)s,
-							boost::any_cast<std::string>(_sorted_params[i].second).c_str(),
-							boost::any_cast<std::string>(_sorted_params[i].second).size());
+						memcpy((void*)s,STRX.c_str(),STRX.size());
+
 						*(const char**)(IPrm + 0x4) = s;
 					}
 
@@ -778,6 +779,11 @@ namespace DebugLogV2{
 		lua_pushstring06(LS, "SetRotation"); lua_pushcfunction06(LS, Player__SetRotation); 	lua_settable06(LS, -3);
 
 
+		lua_pushstring06(LS, "GetStateID"); lua_pushcfunction06(LS, Player__GetCurrentStateID); 	lua_settable06(LS, -3);
+		lua_pushstring06(LS, "SetStateID"); lua_pushcfunction06(LS, Player__SetCurrentStateID); 	lua_settable06(LS, -3);
+
+
+
 		lua_pushstring06(LS, "GetActorID"); lua_pushcfunction06(LS, Player__GetActorID); 	lua_settable06(LS, -3);
 		lua_pushstring06(LS, "SetActorID"); lua_pushcfunction06(LS, Player__SetActorID); 	lua_settable06(LS, -3);
 		lua_pushstring06(LS, "SetActorPTR"); lua_pushcfunction06(LS, Player__SetActorPTR); 	lua_settable06(LS, -3);
@@ -863,7 +869,7 @@ namespace DebugLogV2{
 
 		int args = lua_gettop(L);
 		
-		Player_NEWS* z = (Player_NEWS*)malloc06(0x8);
+		Player_NEWS* z = (Player_NEWS*)malloc06(sizeof(Player_NEWS));
 		if (args > 0){
 			z->Index = lua_tonumber(L,1);
 		}
@@ -1057,6 +1063,48 @@ namespace DebugLogV2{
 
 	}
 
+
+	extern "C" int Player__GetCurrentStateID(lua_State* L)
+	{
+		Player_NEWS* PE = (*reinterpret_cast<Player_NEWS**>(luaL_checkudata(L, 1, "Player")));
+		int OBJPlayer = (int)PE->ObjectPlayer;
+		if (OBJPlayer ){
+			Sonicteam::Player::State::IMachine* Mashine = *(Sonicteam::Player::State::IMachine**)(OBJPlayer + 0xE4);
+			if (Mashine){
+				lua_pushnumber(L,Mashine->GetCurrentMashineStateID());
+			}
+			else{
+				lua_pushnil(L);
+			}
+			
+		}
+		else{
+			lua_pushnil(L);
+		}
+	
+		return 1;
+
+
+	}
+
+	extern "C" int Player__SetCurrentStateID(lua_State* L)
+	{
+		Player_NEWS* PE = (*reinterpret_cast<Player_NEWS**>(luaL_checkudata(L, 1, "Player")));
+		int OBJPlayer = (int)PE->ObjectPlayer;
+		if (OBJPlayer){
+			Sonicteam::Player::State::IMachine* Mashine = *(Sonicteam::Player::State::IMachine**)(OBJPlayer + 0xE4);
+			if (Mashine){
+				int ID = lua_tonumber(L,2);
+				Mashine->ChangeMashineState(ID);
+			}
+		}
+
+
+
+
+		return 0;
+
+	}
 
 	extern "C" int Player__GetActorID(lua_State* L)
 	{
@@ -1913,7 +1961,101 @@ namespace DebugLogV2{
 
 
 
+	
 
+
+
+	extern "C" int MessageReceiver_GlobalInstall(lua_State* LS)
+	{
+
+		lua_register06(LS,"MessageReceiver",MessageReceiver__NEW);
+
+		luaL_newmetatable06(LS,"MessageReceiver");
+
+		//lua_pushstring06(LS, "__gc"); lua_pushcfunction06(LS, Vector__GC); lua_settable06(LS, -3);
+		//	lua_pushstring06(LS, "__tostring"); lua_pushcfunction06(LS, Vector__tostring); lua_settable06(LS, -3);
+		//	lua_pushstring06(LS, "__add"); lua_pushcfunction06(LS, Vector__add); lua_settable06(LS, -3);
+		//	lua_pushstring06(LS, "__sub"); lua_pushcfunction06(LS, Vector__sub); lua_settable06(LS, -3);
+
+		lua_pushvalue(LS, -1);  lua_pushstring06(LS, "__index"); lua_pushvalue(LS,-2);  lua_settable06(LS,-3);
+
+		lua_pushstring06(LS, "SendMessage"); lua_pushcfunction06(LS, MessageReceiver__SendMessage); 	lua_settable06(LS, -3);
+
+		//lua_pop(LS,1);
+		return 1;
+
+	}
+
+	extern "C" int MessageReceiver__CreateMetatable(lua_State* L,int PTR){
+
+		lua_newtable06(L);
+
+
+		lua_pushstring06(L,"ptr");
+		lua_pushlightuserdata(L,(void*)PTR);
+		lua_settable06(L,-3);
+
+
+
+		luaL_getmetatable06(L,"MessageReceiver");
+		lua_setmetatable06(L, -2);
+
+
+
+		return 0;
+
+	}
+
+	extern "C" int MessageReceiver__NEW(lua_State* L){
+
+		int args = lua_gettop(L);
+
+		int id =  0;
+
+		if (lua_isuserdata(L,1)){
+			id = (int)lua_touserdata(L,1);
+		}
+		else{
+			id = lua_tonumber(L,1);
+		}
+
+	
+
+		MessageReceiver__CreateMetatable(L,id);
+
+		return 1;
+
+
+	}
+
+	extern "C" int MessageReceiver__SendMessage(lua_State* L){
+
+
+		lua_pushstring06(L,"ptr");
+		lua_gettable(L,1);
+		Sonicteam::SoX::MessageReceiver* ptr =  (Sonicteam::SoX::MessageReceiver*)lua_touserdata(L,-1);
+
+		UINT32 Messages[5] = {0};
+
+		//RAW
+		for (int i = 0;i<5;i++){
+			Messages[i] = lua_tonumber(L,2+i);
+		}
+
+
+
+		Sonicteam::SoX::Message msg  = Sonicteam::SoX::Message(Messages[0],Messages[1],Messages[2],Messages[3],Messages[4]);
+
+
+
+		ptr->OnMessageRecieved(&msg);
+
+
+
+		return 0;
+
+
+	}
 
 
 
@@ -1929,7 +2071,7 @@ namespace DebugLogV2{
 
 		luaL_newmetatable06(LS,"MainDisplayTask");
 
-		lua_pushstring06(LS, "__gc"); lua_pushcfunction06(LS, Vector__GC); lua_settable06(LS, -3);
+		//lua_pushstring06(LS, "__gc"); lua_pushcfunction06(LS, Vector__GC); lua_settable06(LS, -3);
 	//	lua_pushstring06(LS, "__tostring"); lua_pushcfunction06(LS, Vector__tostring); lua_settable06(LS, -3);
 	//	lua_pushstring06(LS, "__add"); lua_pushcfunction06(LS, Vector__add); lua_settable06(LS, -3);
 	//	lua_pushstring06(LS, "__sub"); lua_pushcfunction06(LS, Vector__sub); lua_settable06(LS, -3);
@@ -2023,5 +2165,72 @@ namespace DebugLogV2{
 
 	}
 
+
+	extern "C" int GameImp_GlobalInstall(lua_State* LS)
+	{
+
+		lua_register06(LS,"GameImp",GameImp_NEW);
+
+		luaL_newmetatable06(LS,"GameImp");
+
+		//lua_pushstring06(LS, "__gc"); lua_pushcfunction06(LS, Vector__GC); lua_settable06(LS, -3);
+		//	lua_pushstring06(LS, "__tostring"); lua_pushcfunction06(LS, Vector__tostring); lua_settable06(LS, -3);
+		//	lua_pushstring06(LS, "__add"); lua_pushcfunction06(LS, Vector__add); lua_settable06(LS, -3);
+		//	lua_pushstring06(LS, "__sub"); lua_pushcfunction06(LS, Vector__sub); lua_settable06(LS, -3);
+
+		lua_pushvalue(LS, -1);  lua_pushstring06(LS, "__index"); lua_pushvalue(LS,-2);  lua_settable06(LS,-3);
+
+	//	lua_pushstring06(LS, "SendMessage"); lua_pushcfunction06(LS, MainDisplayTask__SendMessage); 	lua_settable06(LS, -3);
+
+		//lua_pop(LS,1);
+
+
+		return 1;
+	}
+
+
+	extern "C" int GameImp__CreateMetatable(lua_State* L,int GameIMP){
+
+		lua_newtable06(L);
+
+
+		lua_pushstring06(L,"ptr");
+		lua_pushlightuserdata(L,(void*)GameIMP);
+		lua_settable06(L,-3);
+
+
+
+
+		luaL_getmetatable06(L,"GameImp");
+		lua_setmetatable06(L, -2);
+
+
+
+		return 0;
+
+	}
+
+	extern "C" int GameImp_NEW(lua_State* LS)
+	{
+
+
+		int args = lua_gettop(LS);
+
+		Sonicteam::DocMarathonImp* impl = 	*(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
+		UINT32 vft =  *(UINT32*)impl->DocCurrentMode;
+
+		int PTRX = 0;
+		UINT32 gameimp  = 0;
+
+		if (vft == 0x82033534){ //GameMode
+
+			 gameimp = *(UINT32*)(impl->DocCurrentMode + 0x6C);
+
+
+		}	
+		GameImp__CreateMetatable(LS,gameimp);
+
+		return 1;
+	}
 
 }

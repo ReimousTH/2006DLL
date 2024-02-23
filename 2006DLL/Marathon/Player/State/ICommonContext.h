@@ -63,9 +63,9 @@ namespace Sonicteam{
 				//or 
 			
 				float CurrentSpeed; //Can Be Added //0x30
-				float VelocityX; //0x44
-				float VelocityY; //0x48
-				float VelocityZ; //0x4C
+				float VelocityX; //0x34
+				float VelocityY; //0x38
+				float VelocityZ; //0x3C
 			
 				DWORD CurrentAnimation; //0x40
 				float LockInputTime;

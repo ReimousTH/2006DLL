@@ -234,9 +234,13 @@ void DebugLogV2::MessageUtilGlobalInstall()
 	WRITE_DWORD(0x8203B8AC,Printf);
 	WRITE_DWORD(0x82049094,luaB_print);
 
-	const int stackSize = 65536;
-	HANDLE Thr = CreateThread( NULL, stackSize, ThreadProc, (VOID *)0, CREATE_SUSPENDED, NULL );
-	ResumeThread(Thr);
+
+	if (!HookV2::IsNotEmulatedHardWare){
+		const int stackSize = 65536;
+		HANDLE Thr = CreateThread( NULL, stackSize, ThreadProc, (VOID *)0, CREATE_SUSPENDED, NULL );
+		ResumeThread(Thr);
+	}
+
 
 }
 

@@ -12,9 +12,10 @@ extern "C" {
 #include <xtl.h>
 
 #include <iostream>
+#include <tchar.h>
 #include <map>
-
 #include <string>
+
 
 
 #include <Player/Input/IListener.h>
@@ -35,6 +36,26 @@ namespace DebugLogV2 {
 
 
 	int MemoryLIB_GlobalInstall(lua_State* LS);
+
+
+
+	extern "C" Memory__NEW(lua_State* L);
+
+
+	extern "C" Memory__Move(lua_State* L);
+
+
+	extern "C" Memory__SetDWORD(lua_State* L);
+	extern "C" Memory__SetFLOAT(lua_State* L);
+	extern "C" Memory__SetBYTE(lua_State* L);
+	extern "C" Memory__SetPointer(lua_State* L);
+
+	extern "C" Memory__GetDWORD(lua_State* L);
+	extern "C" Memory__GetFLOAT(lua_State* L);
+	extern "C" Memory__GetBYTE(lua_State* L);
+	extern "C" Memory__GetPointer(lua_State* L);
+
+
 	extern "C" Memory_GetPointer(lua_State* L);
 	extern "C" Memory_ADD(lua_State* L);
 	extern "C" Memory_SetPointerValue(lua_State* L);

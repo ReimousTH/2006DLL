@@ -88,6 +88,9 @@ namespace DebugLogV2 {
 	extern "C" Player__GetPosition(lua_State* L);
 	extern "C" Player__SetPosition(lua_State* L);
 
+
+
+
 	extern "C" Player__GetRotation(lua_State* L);
 	extern "C" Player__SetRotation(lua_State* L);
 
@@ -98,6 +101,16 @@ namespace DebugLogV2 {
 	extern "C" Player__SetScoreCount(lua_State* L);
 	extern "C" Player__SetLiveCount(lua_State* L);
 	extern "C" Player__SetRingsCount(lua_State* L);
+
+
+	extern "C" int Player__GetCurrentStateID(lua_State* L);
+	extern "C" int Player__SetCurrentStateID(lua_State* L);
+
+
+
+
+
+
 
 
 	extern "C" int Player__GetActorID(lua_State* L);
@@ -140,9 +153,18 @@ namespace DebugLogV2 {
 
 
 
+	extern "C" int MessageReceiver__NEW(lua_State* L);
+	extern "C" int MessageReceiver_GlobalInstall(lua_State* LS);
+	extern "C" int MessageReceiver__SendMessage(lua_State* L);
+
 	extern "C" int MainDisplayTask_GlobalInstall(lua_State* LS);
 	extern "C" int MainDisplayTask__NEW(lua_State* L);
 	extern "C" int MainDisplayTask__SendMessage(lua_State* L);
+
+
+
+	extern "C" int GameImp_GlobalInstall(lua_State* LS);
+	extern "C" int GameImp_NEW(lua_State* LS);
 
 
 	
