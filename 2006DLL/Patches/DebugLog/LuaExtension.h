@@ -25,6 +25,9 @@ extern "C" {
 #include <Player/State/FastContext.h>
 
 #include <Sox/Engine/Task.h>
+#include "Player/INotification.h"
+
+#include "LuaSystem.h"
 
 
 #include <boost/any.hpp>
@@ -126,6 +129,8 @@ namespace DebugLogV2 {
 
 
 
+	extern "C" Player_ReloadContext(lua_State* L);
+	extern "C" Player_ReloadSound(lua_State* L);
 	extern "C" Player_OpenFrame(lua_State* L);
 	extern "C" Player_OpenModel(lua_State* L);
 	extern "C" Player_OpenPackage(lua_State* L);

@@ -2,7 +2,7 @@
 
 using namespace Sonicteam::Player;
 
-IScore::IScore(void):IPlugIn("score"),IVarible()
+IScore::IScore(void):IPlugIn("score"),IVariable()
 {
 	
 }

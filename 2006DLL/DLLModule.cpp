@@ -34,6 +34,7 @@
 #include "PatchData.h"
 #include "Patches/DebugLog/DebugLog.h"
 #include "Patches/DevTitle/DevTitle.h"
+#include "Patches/CompleteGauge/CompleteGauge.h"
 
 
 
@@ -52,7 +53,7 @@ DFastActions _PreLoadPatches[] = {
 	{"NoArcMode",ArcRemover::GlobalInstall},
 	{"TimeSystemRestore",TimeSystemRestore::GlobalInstall},
 	{"OmegaHoverGauge",OmegaF::GlobalInstall},
-	{"CompleteGauge",WhiteGameRestored::GlobalInstall},
+	{"CompleteGauge",CompleteGauge::GlobalInstall},
 	{"AmyV2",AmyRework::GlobalInstall},
 	{"TagStory",TagStory::GlobalInstall},
 	{"TailsGauge",TailsGauge::GlobalInstall},

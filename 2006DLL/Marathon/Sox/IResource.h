@@ -2,14 +2,18 @@
 
 #include <string>
 
+#include <Sox/RefCountObject.h>
+
 namespace Sonicteam{
 	namespace SoX{
-		class IResource
+		class IResource:public Sonicteam::SoX::RefCountObject
 		{
 		public:
 			//size0x60
 			IResource(void);
-			virtual ~IResource(void);
+			~IResource();
+			//virtual ~IResource(void);
+			virtual void DestroyObject(unsigned int flag) override;
 
 
 

@@ -93,6 +93,13 @@ const DWORD JumpASMNoPreserveI[] = { /*Dont always have enough space to preserve
 
 
 
+
+
+
+
+
+
+
 #define BranchTo(offset,rtype,...) \
 	((rtype (__fastcall *)(...))offset)(__VA_ARGS__) \
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "IPlugIn.h"
-#include "IVarible.h"
+#include "IVariable.h"
 #include "IStepable/IStepable.h"
 #include "IScore.h"
 #include <xtl.h> //replace to xbox math soon

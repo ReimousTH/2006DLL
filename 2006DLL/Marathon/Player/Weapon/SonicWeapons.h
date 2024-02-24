@@ -4,7 +4,7 @@
 #include "../IFlagCommunicator.h"
 #include "../IStepable/IStepable.h"
 #include "../IDynamicLink.h"
-#include "../IVarible.h"
+#include "../IVariable.h"
 #include "../INotification.h"
 
 #include <boost/weak_ptr.hpp>
@@ -15,7 +15,7 @@ namespace Sonicteam{
 	namespace Player{
 		namespace Weapon{
 
-			class SonicWeapons:IPlugIn,IFlagCommunicator,IStepable,IDynamicLink,IVarible,INotification
+			class SonicWeapons:IPlugIn,IFlagCommunicator,IStepable,IDynamicLink,IVariable,INotification
 			{
 			public:
 				SonicWeapons(void);

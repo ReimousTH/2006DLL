@@ -4,7 +4,7 @@ using namespace Sonicteam::Player;
 
 
 
-Input::ListenerNormal::ListenerNormal(unsigned int a1, unsigned int a2):Sonicteam::Player::IPlugIn("input"),Sonicteam::Player::IVarible(),Sonicteam::Player::IStepable()
+Input::ListenerNormal::ListenerNormal(unsigned int a1, unsigned int a2):Sonicteam::Player::IPlugIn("input"),Sonicteam::Player::IVariable(),Sonicteam::Player::IStepable()
 {
 
 	this->ptr0x40= a1;

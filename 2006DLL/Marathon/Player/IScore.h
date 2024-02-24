@@ -1,7 +1,7 @@
 #pragma once
 
 #include "IPlugIn.h"
-#include "IVarible.h"
+#include "IVariable.h"
 #include "IStepable/IStepable.h"
 #include <xtl.h> //replace to only XMFLOAT4
 
@@ -9,7 +9,7 @@ namespace Sonicteam{
 	namespace Player{
 
 		
-		class IScore:public IPlugIn, public IVarible, public IStepable
+		class IScore:public IPlugIn, public IVariable, public IStepable
 		{
 		public:
 			IScore(void);

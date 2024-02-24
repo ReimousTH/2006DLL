@@ -10,7 +10,7 @@ IGauge::~IGauge(void)
 
 }
 
-IGauge::IGauge(char* plug):IPlugIn(plug),IVarible(),IStepable()
+IGauge::IGauge(char* plug):IPlugIn(plug),IVariable(),IStepable()
 {
 
 }

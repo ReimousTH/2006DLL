@@ -25,6 +25,7 @@ bool HookV2::CheckIsNotEmulatedHardWare()
 
 
 	MEMORY_BASIC_INFORMATION data;
+
 	VirtualQuery((void*)0x92000600, &data,0);
 	if (data.Protect){
 		return false;

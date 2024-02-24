@@ -441,26 +441,50 @@ namespace DebugLogV2{
 		int atgs = lua_gettop(L);
 		XMVECTOR Pos = {0};
 		XMVECTOR Rot = {0};
-
+		const char* Placement = "default";
+		int PlacementIndex = 0;
 		if (lua_istable(L,3)){
 
 			lua_pushvalue06(L,3);
 			lua_pushstring06(L,"Position");
 			lua_gettable(L,-2); 
 			Pos = Vector__GetVector(L,-1);
+			lua_pop(L,2);
 
 			lua_pushvalue06(L,3);
 			lua_pushstring06(L,"Rotation");
 			lua_gettable(L,-2); 
 			Rot = Vector__GetVector(L,-1);
+			lua_pop(L,2);
+
+			lua_pushvalue06(L,3);
+			lua_pushstring06(L,"Placement");
+			lua_gettable(L,-2); 
+
+
+			if (lua_isstring(L,-1)){
+				Placement = lua_tostring(L,-1);
+			}
+		
 
 		}
+		const char* PlacementTypeTable[] = {"default","design","particle","test","area","pathobj"};
+		for (int i = 0;i<6;i++){
+			if (strcmp(PlacementTypeTable[i],Placement) == 0){
+				PlacementIndex = i;
+				break;;
+			}
+		}
+
+
+
 	
 
 
 	
 
-	
+
+
 		std::map<std::string, boost::any> _params;
 
 		
@@ -567,7 +591,7 @@ namespace DebugLogV2{
 
 		int PlacementTypePTRB[2] = {0,0};
 		//default,design,....
-		BranchTo(0x82461848,int,&PlacementTypePTRB, *(_DWORD *)(gameimp + 0x1278), 0);
+		BranchTo(0x82461848,int,&PlacementTypePTRB, *(_DWORD *)(gameimp + 0x1278), PlacementIndex);
 		int PlacementTypePTR = PlacementTypePTRB[0];
 
 
@@ -655,7 +679,16 @@ namespace DebugLogV2{
 
 		int InstnceProp =  BranchTo(0x8245A080,int,malloc06(0x14),PlacementTypePTR,ObjData,&RefObjectTypePropClass);
 
-		int EntityHandle = BranchTo(0x82461128,int,malloc06(0x1c),PlacementTypePTR,obj_index);		
+		int EntityHandle = BranchTo(0x82461128,int,malloc06(0x1c),PlacementTypePTR,obj_index);
+
+		*(int*)(EntityHandle + 0x18) = InstnceProp;
+
+		Sonicteam::SoX::RefCountObject* RUU = (Sonicteam::SoX::RefCountObject*)EntityHandle;
+
+
+
+
+
 		int buffer[0x30]= {0};
 		BranchTo(0x8245C680,int,&buffer,&InstnceProp,&EntityHandle,0,&std::string(OBJ_ID));
 
@@ -680,64 +713,7 @@ namespace DebugLogV2{
 
 
 
-
-
-		/*
-		int buff[0x10];
-		Sonicteam::DocMarathonImp* impl = 	*(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
-		UINT32 gameimp = *(UINT32*)(impl->DocCurrentMode + 0x6C);
-		int v15[2];
-		v15[0] = 0;
-		v15[1] = 0;
-		int UnkMGR =   *(_DWORD *)(gameimp  + 0x1278);
-		int PropSceneClass = *(_DWORD *)(UnkMGR + 0x44);
-		int unk_ref_3;
-		int unk_ref_2 = BranchTo(0x82456DA0,int,&unk_ref_3,PropSceneClass,&std::string("dashpanel"));
-		//last index
-		BranchTo(0x82461848,int,&v15, *(_DWORD *)(gameimp + 0x1278), 0);
-		_DWORD **PropManger  = (_DWORD**)v15[0];
-		int OBJDATA[0x40];
-		int OBJDATA1[0x40];
-		memset(&OBJDATA1,0,0x40);
-		float param_2 = 2.0;
-		OBJDATA[0] = (int)"dashpanel01";
-		OBJDATA[1] = (int)"dashpanel";
-		OBJDATA[2] = *(int*)&param_2;
-		OBJDATA[3] = 0;
-		OBJDATA[4] = 0;
-		OBJDATA[5] = 0;
-		OBJDATA[5] = 0;
-		//POS ??
-		OBJDATA[6] = *(int*)&Pos.x;
-		OBJDATA[7] = *(int*)&Pos.y;
-		OBJDATA[8] = *(int*)&Pos.z;
-		OBJDATA[9] = 0;
-		//ROT
-		OBJDATA[10] = Rot.x;
-		OBJDATA[11] = Rot.y;
-		OBJDATA[12] = Rot.z;
-		OBJDATA[13] = Rot.w; // 1.0
-		OBJDATA[14] = 2; //
-		float flt_1800 = 1800;
-		OBJDATA1[0] = 2;
-		OBJDATA1[1] = *(int*)&flt_1800;
-		OBJDATA[15] = (int)&OBJDATA1; //Params I guess
-		int no_ref = 0; //CLASS PROP
-		int InstancePROP =  BranchTo(0x8245A080,int,malloc06(0x14),PropManger,OBJDATA,&unk_ref_2);
-		int obj_index = 100;
-		int EntityHandle = BranchTo(0x82461128,int,malloc06(0x1c),PropManger,obj_index);
-		char buffer[0x30];
-		int tunux = 0;
-		BranchTo(0x8245C680,int,&buffer,&InstancePROP,&EntityHandle,0,&std::string("dashpanel"));
-		int result = BranchTo(0x824619C8,int,(*PropManger)[0xF], "dashpanel", buffer);
-
-		*/
-
-
-
-		lua_pushlightuserdata(L,(void*)0);
-
-		return 1;
+		return 0;
 	}
 
 	int GameLIB_GlobalInstall(lua_State* LS)
@@ -795,6 +771,8 @@ namespace DebugLogV2{
 		lua_pushstring06(LS, "OpenPackage"); lua_pushcfunction06(LS, Player_OpenPackage); 	lua_settable06(LS, -3);
 		lua_pushstring06(LS, "OpenModel"); lua_pushcfunction06(LS, Player_OpenModel); 	lua_settable06(LS, -3);
 		lua_pushstring06(LS, "OpenFrame"); lua_pushcfunction06(LS, Player_OpenFrame); 	lua_settable06(LS, -3);
+		lua_pushstring06(LS, "ReloadContext"); lua_pushcfunction06(LS, Player_ReloadContext); 	lua_settable06(LS, -3);
+		lua_pushstring06(LS, "ReloadSound"); lua_pushcfunction06(LS, Player_ReloadSound); 	lua_settable06(LS, -3);
 
 		lua_pop(LS,1);
 
@@ -1305,98 +1283,28 @@ namespace DebugLogV2{
 		Player_NEWS* PE = (*reinterpret_cast<Player_NEWS**>(luaL_checkudata(L, 1, "Player")));
 		_DWORD ObjPlayer =  (_DWORD)PE->ObjectPlayer;
 		int index = 0;
+		int ModelPlayer = *(int*)(ObjPlayer + 0xD4);
+
+		const char* lua_name = lua_tostring(L,2);
+
+
+		Sonicteam::LuaSystem* p;
+
+
+		BranchTo(0x821EA260,int,&p,&std::string(lua_name),0x82003380,0x1D);
+
+
+		//Sonicteam::LuaSystem::LoadInitResource(p,std::string("player/shadow.lua"));
+
+		BranchTo(0x82239740,int,ModelPlayer + 0x20,&p);
+		p->LoseObject();
+
+		
+
+
+		
+
 	
-		int v25[2];
-		int v31[2];
-		int v8;
-		v31[0] = 0;
-		v31[1] = 0;
-
-
-		v25[0] = 0;
-		v8 = (int)malloc06(0xC8);
-		int v5 = 0; //FLAG
-		int v9;
-		int v10;
-		if ( v8 )
-		{
-			v25[1] = *(_DWORD *)(ObjPlayer + 0xCC);
-			if ( v25[1] )
-				BranchTo(0x82659610,int,v25[1]);
-			v5 = 1;
-		
-			int AnimationTableSetup  = 0x820032C0 + (0xC * v25[0]);
-
-
-			v9 = BranchTo(0x822392D8,int,v8,*(_DWORD *)(ObjPlayer + 0x154), &v25[1], AnimationTableSetup);
-		}
-		else
-		{
-			v9 = 0;
-		}
-		v31[0] = v9;
-		BranchTo(0x821C04B0,int,&v31[1],v9,0);
-		if ( (v5 & 1) != 0 && v25[1] )
-			BranchTo(0x82581E38,int,v25[1]);
-		BranchTo(0x821B8F28,int,ObjPlayer,v31,2u);
-
-		*(_DWORD *)(ObjPlayer + 0xD4) = v31[0];
-		BranchTo(0x821600C0,int,ObjPlayer + 0xD8,&v31[1]);
-
-		v10 = v31[1];
-		if ( v10 )
-			BranchTo(0x821601B8,int,v10);
-
-		int v51[2];
-		v51[0] =0;
-		v51[1] = 0;
-
-		v51[0] = *(_DWORD *)(ObjPlayer + 0x154);
-		BranchTo(0x82160248,int,&v51[1],(int *)(ObjPlayer + 0x158));
-		BranchTo(0x821BFA70,int,ObjPlayer + 0x114,v51);
-
-		if ( v51[1] )
-			sub_821601B8(v51[1]);
-
-		int v43 = *(_DWORD *)(ObjPlayer + 0xDC);
-		if ( v43  )
-		{
-			XMMATRIX matrix;
-			//BranchTo(0x821F1A18,int,v43,&matrix); POS
-		
-		}
-		//TODO ELSE
-		//BranchTo(0x82195B98,int,ObjPlayer);
-
-
-
-		int v60[2];
-		v60[0] = 0;
-		v60[1] = 0;
-		//BranchTo(0x8219FBB8,int,v60,(int *)(ObjPlayer + 0x144));
-
-		if ( v60[0]  )
-		{
-			//(*(void (__fastcall **)(int, int))(*(_DWORD *)v60[0] + 0x18))(v60[0], *(_DWORD *)(ObjPlayer + 0x1F4));
-		}
-
-	//	if ( v61[1] )
-	//		sub_821601B8(v61[1]);
-		BranchTo(0x821966E0,int,ObjPlayer);
-		BranchTo(0x82196CF8,int,ObjPlayer);
-		BranchTo(0x82196768,int,ObjPlayer);
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1407,6 +1315,139 @@ namespace DebugLogV2{
 
 
 
+
+
+	extern "C" Player_ReloadContext(lua_State* L){
+
+		Player_NEWS* PE = (*reinterpret_cast<Player_NEWS**>(luaL_checkudata(L, 1, "Player")));
+		_DWORD ObjPlayer =  (_DWORD)PE->ObjectPlayer;
+		int index = 0;
+		Sonicteam::Player::State::IMachine* Mashine = *(Sonicteam::Player::State::IMachine**)(ObjPlayer + 0xE4);
+		
+
+		Sonicteam::Player::State::IContext* context =  Mashine->GetMashineContext().get();
+
+
+
+		const char* lua_name = lua_tostring(L,2);
+
+
+		Sonicteam::LuaSystem* p;
+		BranchTo(0x821EA260,int,&p,&std::string(lua_name),0x82003380,0x1D);
+
+		context->OnVarible(&p);
+
+
+	
+		p->LoseObject();
+
+
+
+
+
+
+
+
+
+
+
+		return 0;
+	}
+
+
+
+
+
+	extern "C" Player_ReloadSound(lua_State* L)
+	{
+		Player_NEWS* PE = (*reinterpret_cast<Player_NEWS**>(luaL_checkudata(L, 1, "Player")));
+		_DWORD ObjPlayer =  (_DWORD)PE->ObjectPlayer;
+		int index = 0;
+	
+
+
+		Sonicteam::LuaSystem* p;
+			const char* lua_name = lua_tostring(L,2);
+		BranchTo(0x821EA260,int,&p,&std::string(lua_name),0x82003380,0x1D);
+	
+
+
+		std::vector<boost::shared_ptr<Sonicteam::Player::INotification>>* Plugins = reinterpret_cast<std::vector<boost::shared_ptr<Sonicteam::Player::INotification>>*>(ObjPlayer + 0x2DC);
+
+		for (std::vector<boost::shared_ptr<Sonicteam::Player::INotification>>::iterator it = Plugins->begin(); it != Plugins->end(); it++) {
+			boost::shared_ptr<Sonicteam::Player::INotification> pluginPtr = *it;
+
+			if (Sonicteam::Player::IPlugIn* plugin = dynamic_cast<Sonicteam::Player::IPlugIn*>(pluginPtr.get())) {
+
+				if (plugin->PluginName == "sound"){
+
+					int a1 = (int)plugin;
+
+					int *v6; // r27
+					int v7 = 0x8200EB78;
+					int v8; // r11
+					int v9; // r3
+					char *v10; // r28
+					int v11; // r3
+					int v12; // r3
+					int result; // r3
+
+
+					v6 = (int *)(a1 + 0x5C);
+					
+					int ModelPlayer = *(int*)(ObjPlayer + 0xD4);
+
+					v9 = *(_DWORD *)(a1 + 0x2C);
+					Sonicteam::SoX::RefCountObject* CommonSound;
+					Sonicteam::SoX::RefCountObject* SpecificSound;
+					BranchTo(0x82618068,int,&CommonSound,ObjPlayer + 0xD0,"common");
+					BranchTo(0x82618068,int,&SpecificSound,ObjPlayer + 0xD0,"specific");
+
+					(*(void (__fastcall **)(int, int))(*(_DWORD *)v9 + 4))(v9, (int)&CommonSound);
+					(*(void (__fastcall **)(int, int))(*(_DWORD *)v9 + 4))(v9, (int)&SpecificSound);
+
+
+
+
+
+					do
+					{
+						v8 = *(_DWORD *)v7;
+						if ( !*(_DWORD *)v7 )
+							v8 = (int)lua_name;
+						v9 = *(_DWORD *)(a1 + 0x2C);
+						v10 = *(char **)(v7 + 4);
+						if ( v9  )
+						{
+							v11 = (*(int (__fastcall **)(int, int))(*(_DWORD *)v9 + 0x14))(v9, v8);
+							v12 = (*(int (__fastcall **)(_DWORD, int, char *))(**(_DWORD **)(a1 + 0x2C) + 0x1C))(
+								*(_DWORD *)(a1 + 0x2C),
+								v11,
+								v10);
+						}
+						else
+						{
+							v12 = 0;
+						}
+						v7 += 8;
+						*v6++ = v12;
+					}
+					while (v7 != 0x8200ED20 );
+	
+
+						BranchTo(0x822668A8,int,a1 + 0x20,&ModelPlayer);
+
+
+
+					break;
+				}
+			
+			}
+		}
+		if (p) p->LoseObject();
+
+	}
+
 	extern "C" Player_OpenPackage(lua_State* L){
 
 		Player_NEWS* PE = (*reinterpret_cast<Player_NEWS**>(luaL_checkudata(L, 1, "Player")));
@@ -1415,8 +1456,9 @@ namespace DebugLogV2{
 		const char* v3 = lua_tostring(L, 2);
 		if ( v3 ){
 
+			std::string* S1 =  (std::string *)(ObjPlayer + 0x74);
+			*S1 = v3;
 
-			std::string* S1 =  (std::string *)(ObjPlayer + 0x74); S1->assign(v3);
 			int v6 = *(_DWORD *)(ObjPlayer + 0x154);
 			if ( v6 )
 			{
@@ -1424,8 +1466,7 @@ namespace DebugLogV2{
 				{
 					int v11[8];
 					int* v7 = (int *)(*(int (__fastcall **)(int *, int, int))(*(_DWORD *)v6 + 4))(v11, v6, ObjPlayer + 0x74);
-					int v8 = *v7;
-		
+					int v8 = *v7;		
 				
 					Sonicteam::SoX::RefCountObject* v9 = *(	Sonicteam::SoX::RefCountObject*  *)(ObjPlayer + 0xD0);
 					*(_DWORD *)(ObjPlayer + 0xD0) = v8;

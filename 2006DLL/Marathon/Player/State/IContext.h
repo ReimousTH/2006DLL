@@ -2,7 +2,7 @@
 
 
 #include "..\IPlugIn.h"
-#include "..\IVarible.h"
+#include "..\IVariable.h"
 #include "..\IDynamicLink.h"
 #include "..\IFlagCommunicator.h"
 
@@ -15,7 +15,7 @@ namespace Sonicteam{
 		namespace State{
 
 		
-			class IContext:public IPlugIn,IVarible,IDynamicLink,IFlagCommunicator
+			class IContext:public IPlugIn,IVariable,IDynamicLink,IFlagCommunicator
 			{
 			public:
 				IContext(char*);

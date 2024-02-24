@@ -654,6 +654,66 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="CompleteGauge"
+					>
+					<File
+						RelativePath=".\Patches\CompleteGauge\CompleteGauge.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\CompleteGauge\CompleteGauge.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\CompleteGauge\CompleteGauge_CommonStates.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\CompleteGauge\CompleteGauge_CommonStates.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\CompleteGauge\CompleteGauge_SonicContext.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\CompleteGauge\CompleteGauge_SonicContext.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\CompleteGauge\CompleteGauge_SonicEffect.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\CompleteGauge\CompleteGauge_SonicEffect.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\CompleteGauge\CompleteGauge_SonicGauge.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\CompleteGauge\CompleteGauge_SonicGauge.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\CompleteGauge\CompleteGauge_SonicSound.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\CompleteGauge\CompleteGauge_SonicSound.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\CompleteGauge\CompleteGauge_SonicStates.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\CompleteGauge\CompleteGauge_SonicStates.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Hook"
@@ -827,11 +887,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Marathon\Player\IVarible.cpp"
+					RelativePath=".\Marathon\Player\IVariable.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Marathon\Player\IVarible.h"
+					RelativePath=".\Marathon\Player\IVariable.h"
 					>
 				</File>
 				<File

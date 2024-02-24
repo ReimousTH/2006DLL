@@ -1,7 +1,7 @@
 #pragma once
 
 #include "..\IPlugIn.h"
-#include "..\IVarible.h"
+#include "..\IVariable.h"
 #include "..\IStepable\IStepable.h"
 
 
@@ -9,7 +9,7 @@
 
 namespace Sonicteam{
 	namespace Player{
-		class IGauge:public IPlugIn,IVarible,IStepable
+		class IGauge:public IPlugIn,IVariable,IStepable
 		{
 		public:
 			IGauge(char*);

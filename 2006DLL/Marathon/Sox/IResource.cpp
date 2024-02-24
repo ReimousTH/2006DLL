@@ -23,3 +23,8 @@ int IResource::Unk04()
 {
 	return 1;
 }
+
+void Sonicteam::SoX::IResource::DestroyObject(unsigned int flag)
+{
+
+}

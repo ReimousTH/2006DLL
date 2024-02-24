@@ -4,7 +4,7 @@
 #include <list>
 #include "IListener.h"
 #include "../IPlugIn.h"
-#include "../IVarible.h"
+#include "../IVariable.h"
 #include "../IStepable/IStepable.h"
 
 
@@ -16,7 +16,7 @@ namespace Sonicteam{
 
 
 			//size 0x18
-			class ListenerNormal:Sonicteam::Player::Input::IListener,Sonicteam::Player::IPlugIn,Sonicteam::Player::IVarible,Sonicteam::Player::IStepable
+			class ListenerNormal:Sonicteam::Player::Input::IListener,Sonicteam::Player::IPlugIn,Sonicteam::Player::IVariable,Sonicteam::Player::IStepable
 			{
 			public:
 

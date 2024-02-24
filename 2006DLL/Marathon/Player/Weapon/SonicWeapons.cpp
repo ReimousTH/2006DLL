@@ -6,7 +6,7 @@ Weapon::SonicWeapons::~SonicWeapons(void)
 
 }
 
-Weapon::SonicWeapons::SonicWeapons(void):IPlugIn("sonic_weapons"),IFlagCommunicator(),IStepable(),IDynamicLink(),IVarible(),INotification()
+Weapon::SonicWeapons::SonicWeapons(void):IPlugIn("sonic_weapons"),IFlagCommunicator(),IStepable(),IDynamicLink(),IVariable(),INotification()
 {
 
 }
