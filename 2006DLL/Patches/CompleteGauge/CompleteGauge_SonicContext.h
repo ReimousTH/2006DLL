@@ -2,6 +2,9 @@
 
 #include <Head.h>
 #include "Player/State/SonicContext.h"
+#include "CompleteGauge_SonicStates.h"
+
+
 namespace CompleteGauge{
 	
 

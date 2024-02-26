@@ -9,12 +9,66 @@
 namespace CompleteGauge{
 	
 
+	class SonicSuperStateExtended:public Sonicteam::Player::State::BasedObject<SonicContextExtended>{
+	public:
+		float time;
+		float time_max;
+		bool Trigger;
+	};
 
 
-	void Switch(Sonicteam::Player::State::CommonContext* _context,const char* lua_name,const char* package_name,const char* sound_name){
+	float ObjPlayerGetCurrentAnimTime(Sonicteam::Player::State::CommonContext* _context){
 
 		Sonicteam::Player::Score* score =  _context->ScorePlugin.get();
 		int ObjPlayer = score->PtrObjectPlayer;
+		int ModelPlayer = *(int*)(ObjPlayer + 0xD4);
+		int ObjectPackageModel = *(int*)(ModelPlayer + 0x30);
+		int IntrpoalateAnimationPackageModel = *(int*)(ObjectPackageModel + 0x98); //InterpolateAnimation Mostly
+		int AnimationPackageModel;
+		if (*(int*)IntrpoalateAnimationPackageModel == 0x8200CA6C){
+			AnimationPackageModel = *(int*)(IntrpoalateAnimationPackageModel +0xC);
+		}
+		else{
+			AnimationPackageModel = IntrpoalateAnimationPackageModel;
+		}
+
+		int AnimationHierarchyCommon = *(int*)(AnimationPackageModel + 0x4);
+		return  *(float*)(AnimationHierarchyCommon +0x18);
+
+	}
+	void ObjPlayerSetCurrentAnimTime(Sonicteam::Player::State::CommonContext* _context,float value){
+
+		Sonicteam::Player::Score* score =  _context->ScorePlugin.get();
+		int ObjPlayer = score->PtrObjectPlayer;
+		int ModelPlayer = *(int*)(ObjPlayer + 0xD4);
+		int ObjectPackageModel = *(int*)(ModelPlayer + 0x30);
+		int IntrpoalateAnimationPackageModel = *(int*)(ObjectPackageModel + 0x98); //InterpolateAnimation Mostly
+		int AnimationPackageModel;
+		if (*(int*)IntrpoalateAnimationPackageModel == 0x8200CA6C){
+			AnimationPackageModel = *(int*)(IntrpoalateAnimationPackageModel +0xC);
+		}
+		else{
+			AnimationPackageModel = IntrpoalateAnimationPackageModel;
+		}
+
+		int AnimationHierarchyCommon = *(int*)(AnimationPackageModel + 0x4);
+		*(float*)(AnimationHierarchyCommon +0x18) = value;
+
+	}
+
+
+	void Switch(Sonicteam::Player::State::CommonContext* _context,const char* lua_name,const char* package_name,const char* sound_name,const char* char_name){
+
+		Sonicteam::Player::Score* score =  _context->ScorePlugin.get();
+		int ObjPlayer = score->PtrObjectPlayer;
+
+		if (*(std::string*)(ObjPlayer + 0x1D8) == char_name ){
+			return;
+		}
+
+
+
+		int ModelPlayer = *(int*)(ObjPlayer + 0xD4);
 		
 		Sonicteam::LuaSystem* p;
 		if (!lua_name)
@@ -26,6 +80,9 @@ namespace CompleteGauge{
 
 
 	    BranchTo(0x821EA260,int,&p,&std::string(lua_name),0x82003380,0x1D);
+
+
+	
 
 
 		//Reload Package
@@ -45,40 +102,93 @@ namespace CompleteGauge{
 		}
 
 
-		//Reload others(model include)
+		
+		
 
-		std::vector<boost::shared_ptr<Sonicteam::Player::IDynamicLink>>* PluginsXX = reinterpret_cast<std::vector<boost::shared_ptr<Sonicteam::Player::IDynamicLink>>*>(ObjPlayer + 0x21C);
-		for (std::vector<boost::shared_ptr<Sonicteam::Player::IDynamicLink>>::iterator it = PluginsXX->begin(); it != PluginsXX->end(); it++) {
+		float Save0x18 = ObjPlayerGetCurrentAnimTime(_context);
+	
+		
 
-			boost::shared_ptr<Sonicteam::Player::IDynamicLink> pluginPtr = *it;
+		//Reload (IVarible)) (input,model, gravity, state_context, zock, path, path_gd, path_col, score, physicsbody, automatic_dead, lockon, homing, lockon_homing, path_ld, lockon_lightdash, gauge, sonic_weapons,input vehicle, waterslider, item, ai)
+		std::vector<boost::shared_ptr<Sonicteam::Player::IVariable>>* PluginsXX = reinterpret_cast<std::vector<boost::shared_ptr<Sonicteam::Player::IVariable>>*>(ObjPlayer + 0x21C);
+		
+		
 
-			if (Sonicteam::Player::IVariable* plugin = dynamic_cast<Sonicteam::Player::IVariable*>(pluginPtr.get())) {
-				plugin->OnVarible(&p);
+
+	
+		for (std::vector<boost::shared_ptr<Sonicteam::Player::IVariable>>::iterator it = PluginsXX->begin(); it != PluginsXX->end(); it++) {
+			boost::shared_ptr<Sonicteam::Player::IVariable> pluginPtr = *it;
+
+			if (Sonicteam::Player::IPlugIn* plugin = dynamic_cast<Sonicteam::Player::IPlugIn*>(pluginPtr.get())) {
+				if  (plugin->PluginName == "item"){
+					_DWORD* v1 = (_DWORD *)plugin;
+					int v2 = (int)(plugin) + 0x38;
+					int v3 = *(_DWORD *)((int)(plugin) + 0x3C);
+
+
+					int PlayerLoad = *(_DWORD *)(ObjPlayer + 0x154);
+					int PlayerRootFrame = *(_DWORD *)(ObjPlayer + 0xCC);
+					int a1 = (int)plugin;
+					BranchTo(0x8223C560,int,plugin); //Destroy
+					memset((void*)plugin,0,0x4C);
+					BranchTo(0x8223C480,int,plugin,PlayerLoad,&PlayerRootFrame); //Destroy
+
+				
+
+				}
+				if (plugin->PluginName == "model"){
+					BranchTo(0x82237A20,int,plugin);
+					int PlayerLoad = *(_DWORD *)(ObjPlayer + 0x154);
+					int PlayerRootFrame = *(_DWORD *)(ObjPlayer + 0xCC);
+					memset((void*)plugin,0,0x150);
+					BranchTo(0x82237878,int,plugin,PlayerLoad,&PlayerRootFrame,0x820032C0);
+		
+				}
+
+
 			}
 
 		}
 
 
-		//Reload Items
 
-		std::vector<boost::shared_ptr<Sonicteam::Player::IDynamicLink>>* PluginsX = reinterpret_cast<std::vector<boost::shared_ptr<Sonicteam::Player::IDynamicLink>>*>(ObjPlayer + 0x22C);
-		for (std::vector<boost::shared_ptr<Sonicteam::Player::IDynamicLink>>::iterator it = PluginsX->begin(); it != PluginsX->end(); it++) {
-
-			boost::shared_ptr<Sonicteam::Player::IDynamicLink> pluginPtr = *it;
-
-			if (Sonicteam::Player::IVariable* plugin = dynamic_cast<Sonicteam::Player::IVariable*>(pluginPtr.get())) {
-
-				plugin->OnVarible(&p);
-
-			}
-
-		}
-
-
-		int ModelPlayer = *(int*)(ObjPlayer + 0xD4);
 	
 
 
+		BranchTo(0x82195C70,int,ObjPlayer);
+		BranchTo(0x82195ED0,int,ObjPlayer); //I Dont know what this does but it fixing upgrades
+		BranchTo(0x821962E8,int,ObjPlayer,&p); //This instead 
+
+	
+
+
+		BranchTo(0x821966E0,int,ObjPlayer);
+		BranchTo(0x82196CF8,int,ObjPlayer);
+		BranchTo(0x82196768,int,ObjPlayer);
+
+
+	
+
+
+		
+		
+		ObjPlayerSetCurrentAnimTime(_context,Save0x18);
+
+		//Reload (IDynamicLink) (model, StateContext, zock, impulse, path, path_gd, path_col, homing, path_ld, sonic_weapons, rodeo, amigo change, talk, waterslider, item, ai)
+		std::vector<boost::shared_ptr<Sonicteam::Player::IDynamicLink>>* PluginsX = reinterpret_cast<std::vector<boost::shared_ptr<Sonicteam::Player::IDynamicLink>>*>(ObjPlayer + 0x22C);
+		for (std::vector<boost::shared_ptr<Sonicteam::Player::IDynamicLink>>::iterator it = PluginsX->begin(); it != PluginsX->end(); it++) {
+			boost::shared_ptr<Sonicteam::Player::IDynamicLink> pluginPtr = *it;
+		}
+
+
+		/*
+		BranchTo(0x821966E0,int,ObjPlayer);
+		BranchTo(0x82196CF8,int,ObjPlayer);
+		BranchTo(0x82196768,int,ObjPlayer);
+		*/
+
+	
+	
 		//Reload Sound
 
 		std::vector<boost::shared_ptr<Sonicteam::Player::INotification>>* Plugins = reinterpret_cast<std::vector<boost::shared_ptr<Sonicteam::Player::INotification>>*>(ObjPlayer + 0x2DC);
@@ -170,7 +280,7 @@ namespace CompleteGauge{
 
 
 
-		p->LoseObject();
+		//p->LoseObject();
 
 
 	}
@@ -180,20 +290,48 @@ namespace CompleteGauge{
 
 
 
-
-	void SonicSuperOnStateEnd(Sonicteam::Player::State::BasedObject<SonicContextExtended>* _this){
 
 	
-		Switch(_this->CObjContext,"player/sonic_super.lua","player/sonic_super","player_sonic");
-		_this->BOContext->IsSuper = true;
-		_this->BOContext->c_super_ring_dec_time = true;
+	
+	void SonicSuperOnStart(SonicSuperStateExtended* _this){
+		BranchTo(0x821A3318,int,_this);
+		_this->time = 0;
+		_this->time_max = 1.5f;
+		_this->Trigger = false;
+
+	}
+	//Complete REDO
+	void SonicSuperOnUpdate(SonicSuperStateExtended* _this,float delta){
+		_this->time+=delta;
+		if (_this->time > _this->time_max && _this->Trigger == false){
+			_this->Trigger = true;
+
+
+			Switch(_this->CObjContext,"player/sonic_super.lua","player/sonic_super","player_sonic","supersonic");
+			
+		}
+		
+		BranchTo(0x821A3328,int,_this,delta);
+
 
 
 	}
+	void SonicSuperOnStateEnd(SonicSuperStateExtended* _this){
+		_this->BOContext->IsSuper = true;
+		_this->BOContext->c_super_ring_dec_time = 1.0f;
+	}
 
+	
+	
+	
+	
+	
 	void GlobalInstall_SonicStates()
 	{
+		WRITE_DWORD(0x82003B5C,SonicSuperOnStart);
+		WRITE_DWORD(0x82003B60,SonicSuperOnUpdate);
 		WRITE_DWORD(0x82003B64,SonicSuperOnStateEnd);
+		WRITE_DWORD(0x821A32B8,POWERPC_ADDI(3,0,sizeof(SonicSuperStateExtended)));
 	}
 	
 }

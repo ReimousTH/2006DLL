@@ -26,6 +26,8 @@ namespace CompleteGauge{
 
 		bool LVL_UP = false;
 		bool FULL_GAUGE = false;
+		bool Homing_Smash_Charge = false;
+		bool Homing_Smash_Release = false;
 		
 		if ( SonicGaugeExtended* gauge = (SonicGaugeExtended*)_this->GaugePlugin.get())
 		{
@@ -63,19 +65,26 @@ namespace CompleteGauge{
 		}
 
 		if (_this->IsSuper) {
+
+			_this->IsInvulnerable = 1; 
 			_this->c_super_ring_dec_time += a2;
 			if (_this->c_super_ring_dec_time > 1.0){
 				_this->c_super_ring_dec_time = 0.0f;
-				_this->ScorePlugin.get()->RingsCount--;
+				if (_this->ScorePlugin.get()->RingsCount > 0) _this->ScorePlugin.get()->RingsCount--;
 
 
 			}
-			if (_this->ScorePlugin.get()->RingsCount <= 0){
+		
+
+			if (_this->ScorePlugin.get()->RingsCount <= 0 || _this->IsSonicDied){
+				_this->IsInvulnerable = 0;
 				_this->IsSuper = false;
 				//Switch back
+				Switch(_this,"player/sonic_new.lua","player/sonic_new","player_sonic","sonic");
 
 			}
 		}
+	
 
 
 		BranchTo(0x82219530,int,_this,a2);
@@ -86,11 +95,45 @@ namespace CompleteGauge{
 
 	}
 
+
+	void __declspec( naked ) SonicContextConstructorH(SonicContextExtended* _this){
+		__asm{
+				mflr r12
+				stw       r12, -0x8(r1)
+				std		  r31, -0x10(r1)
+				stwu      r1, -0x60(r1)
+				lis r11,0x8221
+				ori r11,r11,0x9330
+				mtctr r11
+				bctr r11
+		}
+	}	
+
+	HOOK(void,__fastcall,SonicContextConstructor,0x82219320,SonicContextExtended* _this){
+		SonicContextConstructorH(_this);
+		_this->IsSuper = false;
+	}
+	
+
+
+	void __fastcall ScaleVisibleSwitchAuraController(int a1, int a2, double a3){
+
+	}
+	INT __fastcall ModelController_Sonic_Effects(INT result, unsigned int a2){
+
+		return 0;
+	}
+
+
+
 	void GlobalInstall_SonicContext(){
 
 
 		WRITE_DWORD(0x821B5BCC,POWERPC_ADDI(3,0,sizeof(SonicContextExtended)));
+		INSTALL_HOOK(SonicContextConstructor);
 		WRITE_DWORD(0x8200B564,SonicContextOnStep);
+	//	WRITE_DWORD(0x8200CFF0,ScaleVisibleSwitchAuraController);
+	//	WRITE_DWORD(0x8200CFB8,ModelController_Sonic_Effects);
 	}
 	
 }

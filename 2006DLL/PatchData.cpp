@@ -7100,8 +7100,13 @@ int addWrapper(int a, int b) {
 	return 0;
 }
 
+
 void CheckEmulated::GlobalInstall()
 {
+	
+
+	
+
 
 	 //boost::function<int()> operation = boost::bind(addWrapper, 10, 20);
 
