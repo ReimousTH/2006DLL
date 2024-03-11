@@ -37,6 +37,8 @@ namespace CompleteGauge{
 		*(int*)(a1 + 0x1D8) = BranchTo(0x82265810,int,a1,"obj_common",(DWORD)"gauge_max");
 		*(int*)(a1 + 0x1DC) = BranchTo(0x82265810,int,a1,a4,(DWORD)"levelup");
 
+		*(int*)(a1 + 0x1E0) = BranchTo(0x82265810,int,a1,a4,(DWORD)"super");
+
 		return a1;
 
 	}
@@ -56,8 +58,6 @@ namespace CompleteGauge{
 	
 			BranchTo(0x82265898,int,&RefSound, _this - 0x20, *(_DWORD *)(_this + 0x1D8-0x20));
 			if (RefSound) RefSound->LoseObject();
-
-
 		}
 
 
@@ -70,7 +70,7 @@ namespace CompleteGauge{
 
 	void GlobalInstall_SonicSound()
 	{
-		WRITE_DWORD(0x8219DF94,POWERPC_ADDI(3,0,0x1E0)); //Allocate More Mem
+		WRITE_DWORD(0x8219DF94,POWERPC_ADDI(3,0,0x1E4)); //Allocate More Mem
 		WRITE_DWORD(0x8200FD9C,StateSoundOnUnknownFlags01);
 		INSTALL_HOOK(State_Sound_Sonic_Constructor);
 		

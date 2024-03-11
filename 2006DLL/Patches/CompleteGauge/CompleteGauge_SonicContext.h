@@ -16,6 +16,10 @@ namespace CompleteGauge{
 		float c_super_ring_dec_time;
 
 	};
+	//temp story values
+	static float gauge_storage[8] = {0};
+	static int gauge_levels_storage[8] = {0};
+
 	
 	void GlobalInstall_SonicContext();
 	

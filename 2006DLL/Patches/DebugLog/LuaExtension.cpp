@@ -14,7 +14,7 @@ namespace DebugLogV2{
 		luaL_newmetatable06(LS,"DebugLabel");
 
 
-		// lua_setfield(L, -2, "__gc");
+
 		lua_pushstring06(LS, "__gc"); lua_pushcfunction06(LS, DebugLabel_delete); lua_settable06(LS, -3);
 
 		lua_pushvalue(LS, -1);  lua_pushstring06(LS, "__index"); lua_pushvalue(LS,-2);  lua_settable06(LS,-3);
@@ -93,133 +93,6 @@ namespace DebugLogV2{
 	
 	
 
-
-
-
-	int VectorLIB_GlobalInstall(lua_State* LS)
-	{
-
-		lua_register06(LS,"Vector",Vector_NEW);
-
-		luaL_newmetatable06(LS,"Vector");
-		lua_pushstring06(LS, "__gc"); lua_pushcfunction06(LS, Vector__GC); lua_settable06(LS, -3);
-		lua_pushstring06(LS, "__tostring"); lua_pushcfunction06(LS, Vector__tostring); lua_settable06(LS, -3);
-		lua_pushstring06(LS, "__add"); lua_pushcfunction06(LS, Vector__add); lua_settable06(LS, -3);
-		lua_pushstring06(LS, "__sub"); lua_pushcfunction06(LS, Vector__sub); lua_settable06(LS, -3);
-
-		lua_pushvalue(LS, -1);  lua_pushstring06(LS, "__index"); lua_pushvalue(LS,-2);  lua_settable06(LS,-3);
-		//lua_pushstring06(LS, "GetTable"); lua_pushcfunction06(LS, Vector_GetTable); 	lua_settable06(LS, -3);
-
-		//lua_pop(LS,1);
-
-
-
-
-		return 1;
-	}
-
-	extern "C" Vector__GC(lua_State* L){
-		//BranchTo(0x82186190,int,*reinterpret_cast<XMVECTOR**>(lua_touserdata(L, 1))); //Destroy from mem
-		return 0;
-	}
-
-
-	extern "C"  XMVECTOR Vector__GetVector(lua_State* L,int idx){
-		XMVECTOR vector1;
-		for (int i = 1; i <= 4; ++i) {
-			lua_rawgeti06(L, idx, i); // Get value at index i
-
-			if (lua_isnumber(L, -1)) {
-				float value = lua_tonumber(L, -1);
-				vector1.v[i-1] = value;
-			}
-
-			// Pop the value from the stack
-			lua_pop(L, 1);
-		}
-		return vector1;
-	}
-
-	extern "C" Vector__tostring(lua_State* L){
-
-		int args = lua_gettop(L);
-		XMVECTOR vector = Vector__GetVector(L,1);
-
-
-		const char* format = "(X = %.3f, Y = %.3f, Z = %.3f, W = %.3f)";
-		if (args > 1){
-			format = lua_tostring(L,2);
-		}
-		char buffer[100];
-
-		std::sprintf(buffer, format,vector.x, vector.y, vector.z,vector.w);
-		lua_pushstring06(L, buffer);
-
-
-		return 1;
-	}
-
-
-
-	extern "C" Vector__CreateMetatableFromXMVECTOR(lua_State* L,XMVECTOR* vector){
-
-		lua_newtable06(L);
-
-		lua_pushnumber(L, vector->x);
-		lua_rawseti06(L, -2, 1); // Set value 1 at index 0
-
-		lua_pushnumber(L,vector->y);
-		lua_rawseti06(L, -2, 2); // Set value 1 at index 1
-
-		lua_pushnumber(L, vector->z);
-		lua_rawseti06(L, -2, 3); // Set value 1 at index 1
-
-		lua_pushnumber(L, vector->w);
-		lua_rawseti06(L, -2, 4); // Set value 1 at index 1
-
-
-		luaL_getmetatable06(L,"Vector");
-		lua_setmetatable06(L, -2);
-
-	}
-	extern "C" Vector__add(lua_State* L){
-
-
-		XMVECTOR vector1 = Vector__GetVector(L,1);
-		XMVECTOR vector2 = Vector__GetVector(L,2);
-		vector1 = vector1 + vector2;
-		Vector__CreateMetatableFromXMVECTOR(L,&vector1);
-
-
-		return 1;
-	}
-	extern "C" Vector__sub(lua_State* L){
-
-		XMVECTOR vector1 = Vector__GetVector(L,1);
-		XMVECTOR vector2 = Vector__GetVector(L,2);
-		vector1 = vector1 + vector2;
-		Vector__CreateMetatableFromXMVECTOR(L,&vector1);
-		return 1;
-	}
-
-
-
-
-	extern "C" Vector_NEW(lua_State* L)
-	{
-		int args = lua_gettop(L);
-
-		XMVECTOR z = {0};
-
-		for (int i = 0;i<args;i++){
-			z.v[i] = lua_tonumber(L,i+1);
-		}
-
-		Vector__CreateMetatableFromXMVECTOR(L,&z);
-
-
-		return 1;
-	}
 
 	static const struct luaL_reg PET [] = {
 		{"GetPlayerInput", GetPlayerInput},
@@ -448,13 +321,13 @@ namespace DebugLogV2{
 			lua_pushvalue06(L,3);
 			lua_pushstring06(L,"Position");
 			lua_gettable(L,-2); 
-			Pos = Vector__GetVector(L,-1);
+			Pos = Vector__GetVectorTable(L,-1);
 			lua_pop(L,2);
 
 			lua_pushvalue06(L,3);
 			lua_pushstring06(L,"Rotation");
 			lua_gettable(L,-2); 
-			Rot = Vector__GetVector(L,-1);
+			Rot = Vector__GetVectorTable(L,-1);
 			lua_pop(L,2);
 
 			lua_pushvalue06(L,3);
@@ -724,9 +597,14 @@ namespace DebugLogV2{
 	}
 
 
+	int PlayerLIB_GlobalInstall(lua_State* LS){
+		luaL_openlib06(LS,"player",PET,0);
+		return 1;
+	}
 	// PlayerCamera
-	int PlayerLIB_GlobalInstall(lua_State* LS)
+	int PlayerLIB_GlobalInstallOLD(lua_State* LS)
 	{
+
 		luaL_openlib06(LS,"player",PET,0);
 
 
@@ -947,14 +825,9 @@ namespace DebugLogV2{
 	extern "C" Player__GetName(lua_State* L)
 	{
 		Player_NEWS* PE = (*reinterpret_cast<Player_NEWS**>(luaL_checkudata(L, 1, "Player")));
-
-
 		int OBJPlayer = (int)PE->ObjectPlayer;
  
 		std::string* c_player_name =  (std::string*)(OBJPlayer + 0x1D8);
-
-
-
 
 		lua_pushstring06(L,	c_player_name->c_str());
 	
@@ -974,7 +847,9 @@ namespace DebugLogV2{
 		XMVECTOR vector = {0};
 		UINT32 PlayerPosture = GetPlayerPosture(OBJPlayer);
 		vector =  *(GetPlayerPosition(PlayerPosture));
-		Vector__CreateMetatableFromXMVECTOR(L,&vector);
+
+		
+		Vector__CallLUAConstructor(L,&vector);
 
 		return 1;
 	}
@@ -985,7 +860,7 @@ namespace DebugLogV2{
 		int OBJPlayer = (int)PE->ObjectPlayer;
 
 		XMVECTOR vector = {0};
-		vector = Vector__GetVector(L,2);
+		vector = Vector__GetVectorTable(L,2);
 		UINT32 PlayerPosture = GetPlayerPosture(OBJPlayer);
 		*GetPlayerPosition(PlayerPosture) = vector;
 
@@ -1188,7 +1063,7 @@ namespace DebugLogV2{
 		}
 	
 	
-		Vector__CreateMetatableFromXMVECTOR(L,&vector);	
+		Vector__CallLUAConstructor(L,&vector);	
 		return 1;
 
 	}
@@ -1208,7 +1083,7 @@ namespace DebugLogV2{
 		}
 
 
-		Vector__CreateMetatableFromXMVECTOR(L,&vector);	
+		Vector__CallLUAConstructor(L,&vector);	
 		return 1;
 	}
 
@@ -1718,7 +1593,7 @@ namespace DebugLogV2{
 
 		int n = lua_gettop(L);  /* number of arguments */
 		int i;
-		lua_getglobal(L, "tostring");
+		lua_getglobal06(L, "tostring");
 		for (i=1; i<=n; i++) {
 			const char *s;
 			lua_pushvalue(L, -1);  /* function to be called */
@@ -1867,32 +1742,6 @@ namespace DebugLogV2{
 							pstack[PIX++] = Actor;
 						}
 					}
-
-				
-				
-
-	
-					/*
-					Sonicteam::Player::State::IMachine* PlayerMashine = *(Sonicteam::Player::State::IMachine**)(Actor+0xE4);
-					if (PlayerMashine){
-
-						Sonicteam::Player::State::IContext* context  =  PlayerMashine->GetMashineContext().get();
-						Sonicteam::Player::State::CommonContext* PCC0 = dynamic_cast<Sonicteam::Player::State::CommonContext*>(context);
-						Sonicteam::Player::State::FastContext* PCF0 = dynamic_cast<Sonicteam::Player::State::FastContext*>(context);
-						bool flag = false;
-						if (PCC0){
-							Sonicteam::Player::Input::IListener* Listener =  PCC0->ListenerNormalInputPlugin.get();
-							flag =  Listener->Listener5();
-							
-						}
-						else if (PCF0){
-							Sonicteam::Player::Input::IListener* Listener =  PCF0->ListenerNormalInputPlugin.get();
-							flag = Listener->Listener5();
-						}
-
-						if (flag ) pstack[PIX++] = Actor;
-					}
-					*/
 
 
 				}

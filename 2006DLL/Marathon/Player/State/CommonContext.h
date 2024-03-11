@@ -84,7 +84,7 @@ namespace Sonicteam{
 				char IsInActionsRunJumpBound_MB;
 				char IsUnkEB;
 				char IsUnkEC;
-				char IsUnkED;
+				char IsUnkED; //IsGrindFlag
 				char IsUnkEE;
 				char IsUnkEF;
 

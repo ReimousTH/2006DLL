@@ -23,35 +23,60 @@ namespace DebugLogV2{
 
 
 
-	int MemoryLIB_GlobalInstall(lua_State* LS)
+	const char* memoryScript = "\
+							   Memory = { ptr = nil } \n\
+							   \n\
+							   function Memory:new(o) \n\
+							   o = o or {} \n\
+							   setmetatable(o, self) \n\
+							   self.__index = self \n\
+							   return o \n\
+							   end \n\
+							   \n\
+							   function Memory:getPtr() \n\
+							   return self.ptr \n\
+							   end \n\
+							   ";
+
+	int MemoryLIB_GlobalInstall(lua_State* L)
 	{
-		luaL_openlib06(LS,"memory",MEM,0);
+		luaL_openlib06(L,"memory",MEM,0);
 
 
 
-		lua_register06(LS,"Memory",Memory__NEW);
 
-		luaL_newmetatable06(LS,"Memory");
-
-		//lua_pushstring06(LS, "__gc"); lua_pushcfunction06(LS, Vector__GC); lua_settable06(LS, -3);
-		//	lua_pushstring06(LS, "__tostring"); lua_pushcfunction06(LS, Vector__tostring); lua_settable06(LS, -3);
-		//	lua_pushstring06(LS, "__add"); lua_pushcfunction06(LS, Vector__add); lua_settable06(LS, -3);
-		//	lua_pushstring06(LS, "__sub"); lua_pushcfunction06(LS, Vector__sub); lua_settable06(LS, -3);
-
-		lua_pushvalue(LS, -1);  lua_pushstring06(LS, "__index"); lua_pushvalue(LS,-2);  lua_settable06(LS,-3);
-
-		lua_pushstring06(LS, "Move"); lua_pushcfunction06(LS, Memory__Move); 	lua_settable06(LS, -3);
-
-		lua_pushstring06(LS, "GetDWORD"); lua_pushcfunction06(LS, Memory__GetDWORD); 	lua_settable06(LS, -3);
-		lua_pushstring06(LS, "GetFLOAT"); lua_pushcfunction06(LS, Memory__GetFLOAT); 	lua_settable06(LS, -3);
-		lua_pushstring06(LS, "GetBYTE"); lua_pushcfunction06(LS, Memory__GetBYTE); 	lua_settable06(LS, -3);
-		lua_pushstring06(LS, "GetPointer"); lua_pushcfunction06(LS, Memory__GetPointer); 	lua_settable06(LS, -3);
+		luaL_newmetatable06(L, "MemoryMeta");
+		lua_pushstring06(L,"__index"); lua_pushvalue(L,-2); lua_settable06(L,-3); // __index = MemoryMeta
+		lua_pushstring06(L,"ptr"); lua_pushlightuserdata(L,(void*)0); lua_settable06(L,-3); // __index = MemoryMeta
 
 
-		lua_pushstring06(LS, "SetDWORD"); lua_pushcfunction06(LS, Memory__SetDWORD); 	lua_settable06(LS, -3);
-		lua_pushstring06(LS, "SetFLOAT"); lua_pushcfunction06(LS, Memory__SetFLOAT); 	lua_settable06(LS, -3);
-		lua_pushstring06(LS, "SetBYTE"); lua_pushcfunction06(LS, Memory__SetBYTE); 	lua_settable06(LS, -3);
-		lua_pushstring06(LS, "SetPointer"); lua_pushcfunction06(LS, Memory__SetPointer); 	lua_settable06(LS, -3);
+		lua_pushstring06(L, "Move"); lua_pushcfunction06(L, Memory__Move); 	lua_settable06(L, -3);
+		lua_pushstring06(L, "GetDWORD"); lua_pushcfunction06(L, Memory__GetDWORD); 	lua_settable06(L, -3);
+		lua_pushstring06(L, "GetFLOAT"); lua_pushcfunction06(L, Memory__GetFLOAT); 	lua_settable06(L, -3);
+		lua_pushstring06(L, "GetBYTE"); lua_pushcfunction06(L, Memory__GetBYTE); 	lua_settable06(L, -3);
+		lua_pushstring06(L, "GetPointer"); lua_pushcfunction06(L, Memory__GetPointer); 	lua_settable06(L, -3);
+
+		lua_pushstring06(L, "SetDWORD"); lua_pushcfunction06(L, Memory__SetDWORD); 	lua_settable06(L, -3);
+		lua_pushstring06(L, "SetFLOAT"); lua_pushcfunction06(L, Memory__SetFLOAT); 	lua_settable06(L, -3);
+		lua_pushstring06(L, "SetBYTE"); lua_pushcfunction06(L, Memory__SetBYTE); 	lua_settable06(L, -3);
+		lua_pushstring06(L, "SetPointer"); lua_pushcfunction06(L, Memory__SetPointer); 	lua_settable06(L, -3);
+		lua_pushstring06(L, "IsValidPTR"); lua_pushcfunction06(L, Memory__IsValidPTR); 	lua_settable06(L, -3);
+
+		lua_pushstring06(L, "GetPTR"); lua_pushcfunction06(L, Memory__GetPTR); 	lua_settable06(L, -3);
+
+
+
+
+
+		lua_pop(L,1);
+
+		lua_register06(L,"Memory",Memory__NEW);
+
+
+	
+		
+
+
 
 
 
@@ -60,18 +85,33 @@ namespace DebugLogV2{
 		return 0;
 	}
 
-	extern "C" Memory__CreateMetatable(lua_State* L,int value){
-
-		lua_newtable06(L);
+	extern "C" Memory__CreateMetatableFields(lua_State* L,int value,int move){
 
 		lua_pushstring06(L,"ptr");
 		lua_pushlightuserdata(L,(void*)value);
 		lua_settable06(L,-3);
 
+		// required for save check
+		lua_pushstring06(L,"move");
+		lua_pushlightuserdata(L,(void*)move);
+		lua_settable06(L,-3);
+		return 0;
+	}
+	extern "C" Memory__CreateMetatable(lua_State* L,int value,int move){
 
-		luaL_getmetatable06(L,"Memory");
-		lua_setmetatable06(L, -2);
-		return 1;
+		lua_newtable06(L); // Create a new table for the instance // local self = {}
+
+		// Second table for metatable set
+		lua_newtable06(L);
+		lua_pushstring06(L, "__index");luaL_getmetatable06(L, "MemoryMeta");lua_settable06(L, -3); // { __index = MemoryMeta }
+		lua_setmetatable06(L, -2); // setmetatable(self, { __index = MemoryMeta })
+
+	    lua_pushstring06(L, "ptr");lua_pushlightuserdata(L, (void*)value);lua_settable06(L, -3); // self.ptr = ptr
+		lua_pushstring06(L, "move");lua_pushlightuserdata(L, (void*)move);lua_settable06(L, -3); // self.move = move
+
+	
+
+		return 1; // Return the new table
 
 	}
 	extern "C" Memory__NEW(lua_State* L){
@@ -94,7 +134,7 @@ namespace DebugLogV2{
 		}
 
 
-		Memory__CreateMetatable(L,value);
+		Memory__CreateMetatable(L,value,0);
 
 
 
@@ -107,27 +147,31 @@ namespace DebugLogV2{
 		lua_pushstring06(L,"ptr");
 		lua_gettable(L,1);
 		int ptr =  (int)lua_touserdata(L,-1);
-		int move = 0;
+
+		lua_pushstring06(L,"move");
+		lua_gettable(L,1);
+		int move =  (int)lua_touserdata(L,-1);
+
 
 
 		if (lua_isuserdata(L,2)){
-			move = (int)lua_touserdata(L,2);
+			move += (int)lua_touserdata(L,2);
 		}
 		else if (lua_isnumber(L,2)){
-			move = lua_tonumber(L,2);
+			move += lua_tonumber(L,2);
 		}
 		else if (lua_isstring(L,2)){
 
 			const char* s = lua_tostring(L,2);
 			const TCHAR* hexString = _T(s); // Hex string to convert
-			move = _tcstoul(hexString, NULL, 16); // Convert hex string to unsigned long integer
+			move += _tcstoul(hexString, NULL, 16); // Convert hex string to unsigned long integer
 		}
 		else{
-			move = lua_tonumber(L,2);
+			move += lua_tonumber(L,2);
 		}
 		
 
-		Memory__CreateMetatable(L,ptr+move);
+		Memory__CreateMetatable(L,ptr,move);
 	
 
 
@@ -140,7 +184,14 @@ namespace DebugLogV2{
 
 		lua_pushstring06(L,"ptr");
 		lua_gettable(L,1);
-		int* ptr =  (int*)lua_touserdata(L,-1);
+		int ptr =  (int)lua_touserdata(L,-1);
+
+
+		lua_pushstring06(L,"move");
+		lua_gettable(L,1);
+		int move =  (int)lua_touserdata(L,-1);
+
+
 		unsigned int value = 0;
 
 		if (lua_isuserdata(L,2)){
@@ -151,28 +202,25 @@ namespace DebugLogV2{
 			if (type == 1){
 				float hvalue = (float)lua_tonumber(L,2);
 				value = *(unsigned int*)&hvalue;
-
 			}
 			else{
 					value = (unsigned int)lua_tonumber(L,2);
-				
 			}
 		}
-
+		
 	
-
-		switch (type){
-			//DWORD 
+			switch (type){
+				//DWORD 
 			case  0: 
 			case  1:
 			case  3:
-				*(unsigned int*)ptr = value;
+				*(unsigned int*)(ptr + move) = value;
 				break;
 			case  2:
-				*(char*)ptr = value;
+				*(char*)(ptr + move) = value;
 
+			}
 
-		}
 
 
 	
@@ -204,55 +252,59 @@ namespace DebugLogV2{
 
 
 
-	extern "C" Memory__GET(lua_State* L, int type){
+	extern int "C" Memory__GET(lua_State* L, int type){
 
 		lua_pushstring06(L,"ptr");
 		lua_gettable(L,1);
-		int* ptr =  (int*)lua_touserdata(L,-1);
-		int move = 0;
+		int ptr =  (int)lua_touserdata(L,-1);
 
-		switch (type){
-			//DWORD 
+		lua_pushstring06(L,"move");
+		lua_gettable(L,1);
+		int move =  (int)lua_touserdata(L,-1);
+
+	
+			switch (type){
+				//DWORD 
 			case  0 : 
-				lua_pushnumber(L,*(unsigned int*)ptr);
+				lua_pushnumber(L,*(unsigned int*)(ptr + move));
 				break;
-			//FLOAT
+				//FLOAT
 			case  1:
-				lua_pushnumber(L,*(float*)ptr);
+				lua_pushnumber(L,*(float*)(ptr + move));
 				break;
-			//BYTE
+				//BYTE
 			case  2:
-				lua_pushnumber(L,*(char*)ptr);
+				lua_pushnumber(L,*(char*)(ptr + move));
 				break;
-			//pointer
+				//pointer
 			case  3:
-				Memory__CreateMetatable(L,*ptr);
+				Memory__CreateMetatable(L,*(unsigned int*)(ptr + move),0);
 				break;
 
-
-		}
+			}
+	
 
 
 		return 1;
 	}
 
 
-	extern "C" Memory__GetDWORD(lua_State* L){
+	extern "C" int Memory__GetDWORD(lua_State* L){
 
 		return Memory__GET(L,0);
 
 	}
-	extern "C" Memory__GetFLOAT(lua_State* L){
+	extern "C" int Memory__GetFLOAT(lua_State* L){
 
 		return Memory__GET(L,1);
 
 	}
-	extern "C" Memory__GetBYTE(lua_State* L){
+	extern "C" int Memory__GetBYTE(lua_State* L){
 
 		return Memory__GET(L,2);
 
 	}
-	extern "C" Memory__GetPointer(lua_State* L){
+	extern "C" int Memory__GetPointer(lua_State* L){
 
 		return Memory__GET(L,3);
 
@@ -270,6 +322,37 @@ namespace DebugLogV2{
 
 	
 	
+	extern "C" int Memory__GetPTR(lua_State* L)
+	{
+
+		lua_pushstring06(L,"ptr");
+		lua_gettable(L,1);
+		return 1;
+	}
+
+	extern "C" int Memory__IsValidPTR(lua_State* L)
+	{
+
+		lua_pushstring06(L,"ptr");
+		lua_gettable(L,1);
+		unsigned int ptr =  (unsigned int)lua_touserdata(L,-1);
+
+
+		//Save Check
+		if (ptr > 0x40000000){
+
+			lua_pushboolean(L,true);
+		}
+		else{
+			lua_pushboolean(L,false);
+		}
+
+
+
+		return 1;
+
+	}
+
 	extern "C" Memory_GetBYTE(lua_State* L){
 
 		int args = lua_gettop(L);

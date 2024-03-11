@@ -27,6 +27,9 @@ extern "C" {
 #include <Sox/Engine/Task.h>
 #include "Player/INotification.h"
 
+#include "LuaExtension_PlayerRework.h"
+#include "LuaExtension_Vector.h"
+
 #include "LuaSystem.h"
 
 

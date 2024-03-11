@@ -145,9 +145,12 @@ LUALIB_API void luaL_pushresult06 (luaL_Buffer *B);
 
 LUALIB_API int   lua_dofile (lua_State *L, const char *filename);
 LUALIB_API int   lua_dostring (lua_State *L, const char *str);
+LUALIB_API int   lua_dostring06 (lua_State *L, const char *str);
 LUALIB_API int   lua_dobuffer (lua_State *L, const char *buff, size_t sz,
                                const char *n);
 
+LUALIB_API int   lua_dobuffer06 (lua_State *L, const char *buff, size_t sz,
+							   const char *n);
 
 #define luaL_check_lstr 	luaL_checklstring
 #define luaL_opt_lstr 	luaL_optlstring 

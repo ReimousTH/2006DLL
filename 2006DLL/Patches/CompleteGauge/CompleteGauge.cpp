@@ -7,10 +7,10 @@ namespace CompleteGauge{
 
 
 		CompleteGauge::GlobalInstall_SonicSound();
-		CompleteGauge::GlobalInstall_SonicGauge();
-		CompleteGauge::GlobalInstall_SonicContext();
 		CompleteGauge::GlobalInstall_SonicEffect();
+		CompleteGauge::GlobalInstall_SonicContext();
 		CompleteGauge::GlobalInstall_SonicStates();
+		CompleteGauge::GlobalInstall_SonicGauge();
 
 	}
 

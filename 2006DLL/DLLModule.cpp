@@ -31,6 +31,19 @@
 //#include "Marathon.h"
 //#include "Patches.cpp"
 
+
+#include <xtl.h>
+void* operator new(size_t size) {
+	return HeapAlloc(GetProcessHeap(), 0, size);
+}
+
+void operator delete(void* ptr) {
+	HeapFree(GetProcessHeap(), 0, ptr);
+}
+
+
+
+
 #include "PatchData.h"
 #include "Patches/DebugLog/DebugLog.h"
 #include "Patches/DevTitle/DevTitle.h"
@@ -82,6 +95,7 @@ extern "C" void OnDLLStart(){
 
 
 
+	//new SonicGaugeExtended()
 	BaseLua.DoFile(true);
 
 	if (BaseLua.executed){

@@ -27,7 +27,7 @@ namespace Sonicteam{
 				template <typename T>
 				inline static void DestroyObject(T& obj,unsigned int flag){
 					if ((flag & 1) != 0) {
-						free(obj);
+						delete obj;
 					}
 				}
 			};

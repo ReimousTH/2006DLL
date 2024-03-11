@@ -195,6 +195,10 @@ LUA_API void lua_insert (lua_State *L, int idx) {
   lua_unlock(L);
 }
 
+LUA_API void lua_insert06 (lua_State *L, int idx) {
+	((void (__fastcall *)(lua_State *L, int idx))0x825D5278)(L,idx);
+}
+
 
 LUA_API void lua_replace (lua_State *L, int idx) {
   lua_lock(L);
@@ -759,6 +763,10 @@ LUA_API int lua_pcall (lua_State *L, int nargs, int nresults, int errfunc) {
   return status;
 }
 
+LUA_API int lua_pcall06 (lua_State *L, int nargs, int nresults, int errfunc) {
+	 
+	return ((int (__fastcall *)(lua_State *L, int nargs, int nresults, int errfunc))0x825D5FE0)(L,nargs,nresults,errfunc);;
+}
 
 /*
 ** Execute a protected C call.
@@ -807,6 +815,14 @@ LUA_API int lua_load (lua_State *L, lua_Chunkreader reader, void *data,
   lua_unlock(L);
   return status;
 }
+
+LUA_API int lua_load06 (lua_State *L, lua_Chunkreader reader, void *data,
+					  const char *chunkname) {
+
+						  return ((int (__fastcall *)(lua_State *L, lua_Chunkreader reader, void *data,
+							  const char *chunkname))0x825D6070 )(L,reader,data,chunkname);
+}
+
 
 
 LUA_API int lua_dump (lua_State *L, lua_Chunkwriter writer, void *data) {

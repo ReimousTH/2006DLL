@@ -436,3 +436,8 @@ int main (int argc, char *argv[]) {
   return (status || s.status) ? EXIT_FAILURE : EXIT_SUCCESS;
 }
 
+LUA_API int lua_load06(lua_State *L, lua_Chunkreader reader, void *dt, const char *chunkname)
+{
+	return ((int (__fastcall *)(lua_State *L, lua_Chunkreader reader, void *dt, const char *chunkname))0x825D6070)(L,reader,dt,chunkname);
+}
+

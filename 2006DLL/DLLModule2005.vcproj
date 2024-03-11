@@ -314,10 +314,10 @@
 			<Tool
 				Name="VCCLX360CompilerTool"
 				AdditionalOptions="-mcpu=powerpc64"
-				Optimization="3"
+				Optimization="0"
 				InlineFunctionExpansion="1"
 				EnableIntrinsicFunctions="true"
-				FavorSizeOrSpeed="2"
+				FavorSizeOrSpeed="0"
 				EnableFiberSafeOptimizations="false"
 				WholeProgramOptimization="false"
 				AdditionalIncludeDirectories="..\Boost1690;..\ATG;..\LUA\src;Marathon\;Hook\;$(NOINHERIT)"
@@ -360,7 +360,7 @@
 				ModuleDefinitionFile="DllModule.def"
 				GenerateDebugInformation="true"
 				GenerateMapFile="true"
-				OptimizeReferences="2"
+				OptimizeReferences="1"
 				EnableCOMDATFolding="1"
 				SetChecksum="true"
 			/>
@@ -619,6 +619,22 @@
 					</File>
 					<File
 						RelativePath=".\Patches\DebugLog\LuaExtension_Memory.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\DebugLog\LuaExtension_PlayerRework.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\DebugLog\LuaExtension_PlayerRework.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\DebugLog\LuaExtension_Vector.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\DebugLog\LuaExtension_Vector.h"
 						>
 					</File>
 					<File

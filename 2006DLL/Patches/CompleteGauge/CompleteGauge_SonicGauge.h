@@ -12,6 +12,9 @@ namespace CompleteGauge{
 	public:
 		float c_current_gauge_maturity;
 		float c_current_gauge_maturity_add;
+		float c_current_gauge_fatigue;
+
+
 		int c_current_gauge_level;
 		bool IsFull;
 

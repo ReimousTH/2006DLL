@@ -6558,7 +6558,9 @@ namespace TailsGauge{
 
 	class TailsContextEX:public Sonicteam::Player::State::TailsContext{
 	public:
-		boost::weak_ptr<Sonicteam::Player::GaugeStandard> GaugePlugin;
+		Sonicteam::Player::GaugeStandard* GaugePlugin;
+
+
 		TailsContextEX(){
 
 		}
@@ -6578,14 +6580,17 @@ namespace TailsGauge{
 
 
 		BranchTo(0x8220F330,int,_thi,&plugin);
-		 Sonicteam::Player::State::TailsContext* _this = dynamic_cast<Sonicteam::Player::State::TailsContext*>(_thi);
+		Sonicteam::Player::State::TailsContext* _this = dynamic_cast<Sonicteam::Player::State::TailsContext*>(_thi);
 
-		 
 		 TailsContextEX* ex = (TailsContextEX*)_this;
 		if (plugin->PluginName == "gauge"){
 			
 		//	plugin.lock().reset(new Sonicteam::Player::GaugeStandard());
-			ex->GaugePlugin = boost::dynamic_pointer_cast<Sonicteam::Player::GaugeStandard>(plugin);
+
+			ex->GaugePlugin =  *(Sonicteam::Player::GaugeStandard**)(&plugin);
+			
+
+
 		}
 
 
@@ -6594,7 +6599,7 @@ namespace TailsGauge{
 
 		BranchTo(0x8221A7D8,int,_this,delta);
 
-		if ( Sonicteam::Player::GaugeStandard* gauge =  _this->GaugePlugin.lock().get() ){
+		if ( Sonicteam::Player::GaugeStandard* gauge =  dynamic_cast<Sonicteam::Player::GaugeStandard*>(_this->GaugePlugin)){
 			
 		//	ShowXenonMessage(L"MSG","Ge");
 			gauge->GaugeValue = _this->TCuint0x230 * gauge->c_s_max;
@@ -6628,8 +6633,8 @@ namespace TailsGauge{
 		WRITE_DWORD(0x8200B868,TailsContextOnUpdate);
 
 
-		//Need to think about how to do it (
-		WRITE_DWORD(0x8200B860,TailsContextDestructor);
+		//Need to think about how to do it ( (not need because do not use boost copy))
+	//	WRITE_DWORD(0x8200B860,TailsContextDestructor);
 
 	}
 }

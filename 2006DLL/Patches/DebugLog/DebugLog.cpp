@@ -31,10 +31,12 @@ namespace DebugLogV2{
 		PlayerLIB_GlobalInstall(LS);
 		STRLIB_GlobalInstall(LS);
 		MemoryLIB_GlobalInstall(LS);
-		VectorLIB_GlobalInstall(LS);
+		//VectorLIB_GlobalInstall(LS);
+		VectorRLIB_GlobalInstall(LS);
 		MainDisplayTask_GlobalInstall(LS);
 		GameImp_GlobalInstall(LS);
 		MessageReceiver_GlobalInstall(LS);
+		GlobalInstall_PlayerRework(LS);
 	
 
 

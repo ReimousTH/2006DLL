@@ -50,10 +50,16 @@ namespace DebugLogV2 {
 	extern "C" Memory__SetBYTE(lua_State* L);
 	extern "C" Memory__SetPointer(lua_State* L);
 
-	extern "C" Memory__GetDWORD(lua_State* L);
-	extern "C" Memory__GetFLOAT(lua_State* L);
-	extern "C" Memory__GetBYTE(lua_State* L);
-	extern "C" Memory__GetPointer(lua_State* L);
+	extern "C" int Memory__GetDWORD(lua_State* L);
+	extern "C" int Memory__GetFLOAT(lua_State* L);
+	extern "C" int Memory__GetBYTE(lua_State* L);
+	extern "C" int Memory__GetPointer(lua_State* L);
+
+	extern "C" int Memory__GetPTR(lua_State* L);
+
+	extern "C" int Memory__IsValidPTR(lua_State* L);
+	extern "C" Memory__CreateMetatableFields(lua_State* L,int value,int move);
+	extern "C" Memory__CreateMetatable(lua_State* L,int value,int move);
 
 
 	extern "C" Memory_GetPointer(lua_State* L);

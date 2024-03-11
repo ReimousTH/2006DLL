@@ -46,7 +46,7 @@ namespace Sonicteam{
 				float GaugeValue;  //0x28
 				float GaugeGroundTime; //0x2C
 				unsigned int Unknown0x30; //maybe start from zero instead max  0x30
-				unsigned int IsNotGrounded; // Or Is Can Heal 0x34
+				int IsNotGrounded; // Or Is Can Heal 0x34
 				float c_gauge_max; // 0x38
 				float c_green; //0x3C
 				float c_red; // 0x40

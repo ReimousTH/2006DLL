@@ -115,6 +115,7 @@ LUA_API void  lua_pushvalue (lua_State *L, int idx);
 LUA_API void  lua_pushvalue06 (lua_State *L, int idx);
 LUA_API void  lua_remove (lua_State *L, int idx);
 LUA_API void  lua_insert (lua_State *L, int idx);
+LUA_API void  lua_insert06 (lua_State *L, int idx);
 LUA_API void  lua_replace (lua_State *L, int idx);
 LUA_API int   lua_checkstack (lua_State *L, int sz);
 
@@ -197,9 +198,13 @@ LUA_API int   lua_setfenv (lua_State *L, int idx);
 */
 LUA_API void  lua_call (lua_State *L, int nargs, int nresults);
 LUA_API int   lua_pcall (lua_State *L, int nargs, int nresults, int errfunc);
+LUA_API int   lua_pcall06 (lua_State *L, int nargs, int nresults, int errfunc);
 LUA_API int lua_cpcall (lua_State *L, lua_CFunction func, void *ud);
 LUA_API int   lua_load (lua_State *L, lua_Chunkreader reader, void *dt,
                         const char *chunkname);
+
+LUA_API int   lua_load06 (lua_State *L, lua_Chunkreader reader, void *dt,
+						const char *chunkname);
 
 LUA_API int lua_dump (lua_State *L, lua_Chunkwriter writer, void *data);
 
@@ -257,6 +262,11 @@ LUA_API void  lua_concat06 (lua_State *L, int n);
 	lua_pushcfunction06(L, f), \
 	lua_settable06(L, LUA_GLOBALSINDEX))
 
+#define lua_register06ex(L,n,f,idx) \
+	(lua_pushstring06(L, n), \
+	lua_pushcfunction06(L, f), \
+	lua_settable06(L, idx))
+
 
 #define lua_pushcfunction(L,f)	lua_pushcclosure(L, f, 0)
 
@@ -291,8 +301,15 @@ LUA_API int lua_pushupvalues (lua_State *L);
 #define lua_setglobal(L,s)	\
    (lua_pushstring(L, s), lua_insert(L, -2), lua_settable(L, LUA_GLOBALSINDEX))
 
+#define lua_setglobal06(L,s)	\
+	(lua_pushstring06(L, s), lua_insert06(L, -2), lua_settable06(L, LUA_GLOBALSINDEX))
+
+
 #define lua_getglobal(L,s)	\
 		(lua_pushstring(L, s), lua_gettable(L, LUA_GLOBALSINDEX))
+
+#define lua_getglobal06(L,s)	\
+	(lua_pushstring06(L, s), lua_gettable(L, LUA_GLOBALSINDEX))
 
 
 #define lua_registerex1(L,n,f,i) \

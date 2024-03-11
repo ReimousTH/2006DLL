@@ -632,6 +632,16 @@ LUALIB_API int luaL_loadbuffer (lua_State *L, const char *buff, size_t size,
   return lua_load(L, getS, &ls, name);
 }
 
+
+
+LUALIB_API int luaL_loadbuffer06 (lua_State *L, const char *buff, size_t size,
+								const char *name) {
+									LoadS ls;
+									ls.s = buff;
+									ls.size = size;
+									return lua_load06(L, getS, &ls, name);
+}
+
 /* }====================================================== */
 
 
@@ -665,6 +675,11 @@ static int aux_do (lua_State *L, int status) {
   return status;
 }
 
+static int aux_do06 (lua_State *L, int status) {
+	return 	((int (__fastcall *)(lua_State *L, int status))0x825D6BD0 )(L,status);
+}
+
+
 
 LUALIB_API int lua_dofile (lua_State *L, const char *filename) {
   return aux_do(L, luaL_loadfile(L, filename));
@@ -677,8 +692,22 @@ LUALIB_API int lua_dobuffer (lua_State *L, const char *buff, size_t size,
 }
 
 
+
 LUALIB_API int lua_dostring (lua_State *L, const char *str) {
   return lua_dobuffer(L, str, strlen(str), str);
+}
+
+LUALIB_API int lua_dostring06(lua_State *L, const char *str)
+{
+	return lua_dobuffer06(L, str, strlen(str), str);
+}
+
+//i try do short version
+LUALIB_API int lua_dobuffer06(lua_State *L, const char *buff, size_t size,
+							  const char *name)
+{
+	luaL_loadbuffer06(L, buff, size, name);
+	return lua_pcall06(L,0,-1,0);
 }
 
 /* }====================================================== */

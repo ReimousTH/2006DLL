@@ -1,6 +1,8 @@
 #pragma once
 #include <Player/IPlugIn.h>
 
+
+
 namespace Sonicteam{
 	namespace Player{
 		class IDynamicLink

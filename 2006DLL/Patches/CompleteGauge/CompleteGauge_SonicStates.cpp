@@ -6,6 +6,12 @@
 #include <Player/INotification.h>
 
 
+#include <boost/shared_ptr.hpp>
+#include <boost/enable_shared_from_this.hpp>
+
+#include <boost/cast.hpp>
+
+
 namespace CompleteGauge{
 	
 
@@ -80,6 +86,7 @@ namespace CompleteGauge{
 
 
 	    BranchTo(0x821EA260,int,&p,&std::string(lua_name),0x82003380,0x1D);
+	
 
 
 	
@@ -111,37 +118,35 @@ namespace CompleteGauge{
 
 		//Reload (IVarible)) (input,model, gravity, state_context, zock, path, path_gd, path_col, score, physicsbody, automatic_dead, lockon, homing, lockon_homing, path_ld, lockon_lightdash, gauge, sonic_weapons,input vehicle, waterslider, item, ai)
 		std::vector<boost::shared_ptr<Sonicteam::Player::IVariable>>* PluginsXX = reinterpret_cast<std::vector<boost::shared_ptr<Sonicteam::Player::IVariable>>*>(ObjPlayer + 0x21C);
-		
-		
-
-
+	
 	
 		for (std::vector<boost::shared_ptr<Sonicteam::Player::IVariable>>::iterator it = PluginsXX->begin(); it != PluginsXX->end(); it++) {
 			boost::shared_ptr<Sonicteam::Player::IVariable> pluginPtr = *it;
 
 			if (Sonicteam::Player::IPlugIn* plugin = dynamic_cast<Sonicteam::Player::IPlugIn*>(pluginPtr.get())) {
 				if  (plugin->PluginName == "item"){
-					_DWORD* v1 = (_DWORD *)plugin;
-					int v2 = (int)(plugin) + 0x38;
-					int v3 = *(_DWORD *)((int)(plugin) + 0x3C);
+				//	_DWORD* v1 = (_DWORD *)plugin;
+				//	int v2 = (int)(plugin) + 0x38;
+				//	int v3 = *(_DWORD *)((int)(plugin) + 0x3C);
 
-
-					int PlayerLoad = *(_DWORD *)(ObjPlayer + 0x154);
-					int PlayerRootFrame = *(_DWORD *)(ObjPlayer + 0xCC);
-					int a1 = (int)plugin;
-					BranchTo(0x8223C560,int,plugin); //Destroy
-					memset((void*)plugin,0,0x4C);
-					BranchTo(0x8223C480,int,plugin,PlayerLoad,&PlayerRootFrame); //Destroy
-
-				
+				//	int PlayerLoad = *(_DWORD *)(ObjPlayer + 0x154);
+				//	int PlayerRootFrame = *(_DWORD *)(ObjPlayer + 0xCC);
+				//	int a1 = (int)plugin;
+				//	BranchTo(0x8223C560,int,plugin); //Destroy
+				//	memset((void*)plugin,0,0x4C);
+				//	BranchTo(0x8223C480,int,plugin,PlayerLoad,&PlayerRootFrame); //Destroy
+					//pluginPtr.get()->OnVarible(&p);
+					
+					
 
 				}
 				if (plugin->PluginName == "model"){
-					BranchTo(0x82237A20,int,plugin);
-					int PlayerLoad = *(_DWORD *)(ObjPlayer + 0x154);
-					int PlayerRootFrame = *(_DWORD *)(ObjPlayer + 0xCC);
-					memset((void*)plugin,0,0x150);
-					BranchTo(0x82237878,int,plugin,PlayerLoad,&PlayerRootFrame,0x820032C0);
+				//	BranchTo(0x82237A20,int,plugin);
+				//	int PlayerLoad = *(_DWORD *)(ObjPlayer + 0x154);
+				//	int PlayerRootFrame = *(_DWORD *)(ObjPlayer + 0xCC);
+				//	memset((void*)plugin,0,0x150);
+				//	BranchTo(0x82237878,int,plugin,PlayerLoad,&PlayerRootFrame,0x820032C0);
+				//	pluginPtr.get()->OnVarible(&p);
 		
 				}
 
@@ -149,36 +154,21 @@ namespace CompleteGauge{
 			}
 
 		}
-
-
-
+		
+		
+	
 	
 
-
-		BranchTo(0x82195C70,int,ObjPlayer);
 		BranchTo(0x82195ED0,int,ObjPlayer); //I Dont know what this does but it fixing upgrades
 		BranchTo(0x821962E8,int,ObjPlayer,&p); //This instead 
 
-	
 
 
-		BranchTo(0x821966E0,int,ObjPlayer);
-		BranchTo(0x82196CF8,int,ObjPlayer);
-		BranchTo(0x82196768,int,ObjPlayer);
 
 
-	
-
-
-		
-		
 		ObjPlayerSetCurrentAnimTime(_context,Save0x18);
 
-		//Reload (IDynamicLink) (model, StateContext, zock, impulse, path, path_gd, path_col, homing, path_ld, sonic_weapons, rodeo, amigo change, talk, waterslider, item, ai)
-		std::vector<boost::shared_ptr<Sonicteam::Player::IDynamicLink>>* PluginsX = reinterpret_cast<std::vector<boost::shared_ptr<Sonicteam::Player::IDynamicLink>>*>(ObjPlayer + 0x22C);
-		for (std::vector<boost::shared_ptr<Sonicteam::Player::IDynamicLink>>::iterator it = PluginsX->begin(); it != PluginsX->end(); it++) {
-			boost::shared_ptr<Sonicteam::Player::IDynamicLink> pluginPtr = *it;
-		}
+
 
 
 		/*
@@ -280,7 +270,7 @@ namespace CompleteGauge{
 
 
 
-		//p->LoseObject();
+		p->LoseObject();
 
 
 	}
