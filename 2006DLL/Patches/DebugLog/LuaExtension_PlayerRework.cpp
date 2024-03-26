@@ -7,8 +7,17 @@
 namespace DebugLogV2{
 
 
+
+
+
 	void GlobalInstall_PlayerRework(lua_State* LS)
 	{
+		if (LS == 0){
+			WRITE_DWORD(0x82195AAC,POWERPC_ADDIS(11,0,POWERPC_HI((unsigned int)&FixedPlayerFunctionsTables)));
+			WRITE_DWORD(0x82195AB4,POWERPC_ADDI(11,11,POWERPC_LO((unsigned int)&FixedPlayerFunctionsTables)));
+	
+			return;
+		}
 
 		
 		lua_register06(LS, PLIB_NAME, Player__NEW);
@@ -18,6 +27,7 @@ namespace DebugLogV2{
 		lua_pushstring06(LS,"ID"); lua_pushnumber(LS,0); lua_settable06(LS,-3); // ID = 0
 		lua_pushstring06(LS,"ActorPTR"); lua_pushlightuserdata(LS,0); lua_settable06(LS,-3); // ActorPTR = 0
 		lua_pushstring06(LS,"AI"); lua_pushboolean(LS,false); lua_settable06(LS,-3); // AI = 0
+		lua_pushstring06(LS,"__index"); lua_pushvalue(LS,-2); lua_settable06(LS,-3); // __index = PlayerMeta
 
 	
 		lua_newtable06(LS);lua_pushstring06(LS, "__index");luaL_getmetatable06(LS, "MemoryMeta");lua_settable06(LS, -3); lua_setmetatable06(LS, -2); //setmetatable(PlayerMeta, { __index = MemoryMeta })
@@ -30,6 +40,7 @@ namespace DebugLogV2{
 		lua_pushstring06(LS, "SetActorPTR");lua_pushcfunction06(LS, PlayerR__SetActorPTR);lua_settable06(LS, -3); // Equivalent to table["SetActorPTR"] = PlayerR__SetActorPTR
 		lua_pushstring06(LS, "GetStateID");lua_pushcfunction06(LS, PlayerR__GetStateID);lua_settable06(LS, -3); // Equivalent to table["GetStateID"] = PlayerR__GetStateID
 		lua_pushstring06(LS, "SetStateID");lua_pushcfunction06(LS, PlayerR__SetStateID);lua_settable06(LS, -3); // Equivalent to table["SetStateID"] = PlayerR__SetStateID
+		lua_pushstring06(LS, "GetMachine2");lua_pushcfunction06(LS, PlayerR__GetMachine2);lua_settable06(LS, -3); // Equivalent to table["SetStateID"] = PlayerR__SetStateID
 
 		
 
@@ -148,10 +159,13 @@ namespace DebugLogV2{
 
 
 		// Second table for metatable set
-		lua_newtable06(L);
-		lua_pushstring06(L, "__index");luaL_getmetatable06(L, PLIB_NAME_META);lua_settable06(L, -3); // { __index = MemoryMeta }
-		lua_setmetatable06(L, -2); // setmetatable(self, { __index = MemoryMeta })
+	//	lua_newtable06(L);
+	//	lua_pushstring06(L, "__index");luaL_getmetatable06(L, PLIB_NAME_META);lua_settable06(L, -3); // { __index = MemoryMeta }
+	//	lua_setmetatable06(L, -2); // setmetatable(self, { __index = MemoryMeta })
 
+
+		luaL_getmetatable06(L, PLIB_NAME_META);
+		lua_setmetatable06(L,-2);
 
 		lua_pushstring06(L, "ID");
 		lua_pushnumber(L, ID);
@@ -235,7 +249,10 @@ namespace DebugLogV2{
 
 		int args = lua_gettop(L);
 		if (args <= 1) return 0;
-		const char* chara = lua_tostring(L,2);
+		const char* chara = lua_tostring(L,2); //arg2
+		
+		
+		
 		lua_pushstring06(L,"ptr");
 		lua_gettable(L,1);
 		void* ObjectPlayerPTR = lua_touserdata(L,-1);
@@ -283,7 +300,8 @@ namespace DebugLogV2{
 	}
 
 	extern "C"  XMVECTOR Vector__GetVectorTable(lua_State* L,int idx){
-		XMVECTOR vector1;
+		XMVECTOR vector1 = {0,0,0,1};
+		if (lua_istable(L,idx))
 		for (int i = 1; i <= 4; ++i) {
 			lua_rawgeti06(L, idx, i); // Get value at index i
 
@@ -392,13 +410,33 @@ namespace DebugLogV2{
 		if (OBJPlayer ){
 			Sonicteam::Player::State::IMachine* Mashine = *(Sonicteam::Player::State::IMachine**)(OBJPlayer + 0xE4);
 			Mashine->CompleteChangeMashineState(StateID);
-			
 
 		}
 	
 
-
 		return 0;
+	}
+
+	extern "C" int PlayerR__GetMachine2(lua_State* L)
+	{
+
+		lua_pushstring06(L,"ptr");
+		lua_gettable(L,1);
+		int OBJPlayer = (int)lua_touserdata(L,-1);
+		int StateID = lua_tonumber(L,2);
+
+		if (OBJPlayer ){
+			Sonicteam::Player::State::IMachine* Mashine = *(Sonicteam::Player::State::IMachine**)(OBJPlayer + 0xE4);
+			Sonicteam::Player::State::Machine2* Machine2 = dynamic_cast<Sonicteam::Player::State::Machine2*>(Mashine);
+
+			lua_getglobal06(L,"StateIMachine");
+			lua_pushlightuserdata(L,(void*)Machine2);
+			lua_pcall06(L,1,1,0);
+		}
+
+		return 1;
+
+
 	}
 
 }

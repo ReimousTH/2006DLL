@@ -31,6 +31,8 @@ LUALIB_API void luaL_openlib (lua_State *L, const char *libname,
                                const luaL_reg *l, int nup);
 LUALIB_API void luaL_openlib06 (lua_State *L, const char *libname,
 							  const luaL_reg *l, int nup);
+LUALIB_API void luaL_openlibf06 (lua_State *L, const char *libname,
+								const luaL_reg *l,int num);
 LUALIB_API int luaL_getmetafield (lua_State *L, int obj, const char *e);
 LUALIB_API int luaL_callmeta (lua_State *L, int obj, const char *e);
 LUALIB_API int luaL_typerror (lua_State *L, int narg, const char *tname);

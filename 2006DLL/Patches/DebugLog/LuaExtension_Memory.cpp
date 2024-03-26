@@ -50,6 +50,7 @@ namespace DebugLogV2{
 		lua_pushstring06(L,"ptr"); lua_pushlightuserdata(L,(void*)0); lua_settable06(L,-3); // __index = MemoryMeta
 
 
+		lua_pushstring06(L, "__eq"); lua_pushcfunction06(L, Memory__eq); 	lua_settable06(L, -3);
 		lua_pushstring06(L, "Move"); lua_pushcfunction06(L, Memory__Move); 	lua_settable06(L, -3);
 		lua_pushstring06(L, "GetDWORD"); lua_pushcfunction06(L, Memory__GetDWORD); 	lua_settable06(L, -3);
 		lua_pushstring06(L, "GetFLOAT"); lua_pushcfunction06(L, Memory__GetFLOAT); 	lua_settable06(L, -3);
@@ -63,6 +64,8 @@ namespace DebugLogV2{
 		lua_pushstring06(L, "IsValidPTR"); lua_pushcfunction06(L, Memory__IsValidPTR); 	lua_settable06(L, -3);
 
 		lua_pushstring06(L, "GetPTR"); lua_pushcfunction06(L, Memory__GetPTR); 	lua_settable06(L, -3);
+
+		
 
 
 
@@ -102,9 +105,13 @@ namespace DebugLogV2{
 		lua_newtable06(L); // Create a new table for the instance // local self = {}
 
 		// Second table for metatable set
-		lua_newtable06(L);
-		lua_pushstring06(L, "__index");luaL_getmetatable06(L, "MemoryMeta");lua_settable06(L, -3); // { __index = MemoryMeta }
+	//	lua_newtable06(L);
+	//	lua_pushstring06(L, "__index");luaL_getmetatable06(L, "MemoryMeta");lua_settable06(L, -3); // { __index = MemoryMeta }
+	//	lua_setmetatable06(L, -2); // setmetatable(self, { __index = MemoryMeta })
+
+		luaL_getmetatable06(L, "MemoryMeta");
 		lua_setmetatable06(L, -2); // setmetatable(self, { __index = MemoryMeta })
+
 
 	    lua_pushstring06(L, "ptr");lua_pushlightuserdata(L, (void*)value);lua_settable06(L, -3); // self.ptr = ptr
 		lua_pushstring06(L, "move");lua_pushlightuserdata(L, (void*)move);lua_settable06(L, -3); // self.move = move
@@ -142,6 +149,22 @@ namespace DebugLogV2{
 
 	}
 
+
+	extern "C" Memory__eq(lua_State* L){
+
+		lua_pushstring06(L,"ptr");lua_gettable(L,1);unsigned int V1 = (unsigned int)lua_touserdata(L,-1);
+		lua_pushstring06(L,"ptr");lua_gettable(L,2);unsigned int V2 = (unsigned int)lua_touserdata(L,-1);
+
+		bool result = false;
+		if (V1 == V2){
+			result = true;
+		}
+
+		lua_pushboolean(L,result);
+		return 1;
+	
+
+	}
 	extern "C" Memory__Move(lua_State* L){
 
 		lua_pushstring06(L,"ptr");
@@ -182,6 +205,8 @@ namespace DebugLogV2{
 
 	extern "C" Memory__SET(lua_State* L,int type){
 
+		int args = lua_gettop(L);
+
 		lua_pushstring06(L,"ptr");
 		lua_gettable(L,1);
 		int ptr =  (int)lua_touserdata(L,-1);
@@ -191,20 +216,44 @@ namespace DebugLogV2{
 		lua_gettable(L,1);
 		int move =  (int)lua_touserdata(L,-1);
 
+	
 
 		unsigned int value = 0;
+		int arg_value_num = 2;
 
-		if (lua_isuserdata(L,2)){
-			value = (unsigned int)lua_touserdata(L,2);
+		if (args > 2){
+
+			if (lua_isuserdata(L,2)){
+				move += (int)lua_touserdata(L,2);
+			}
+			else if (lua_isnumber(L,2)){
+				move += lua_tonumber(L,2);
+			}
+			else if (lua_isstring(L,2)){
+
+				const char* s = lua_tostring(L,2);
+				const TCHAR* hexString = _T(s); // Hex string to convert
+				move += _tcstoul(hexString, NULL, 16); // Convert hex string to unsigned long integer
+			}
+			else{
+				move += lua_tonumber(L,2);
+			}
+
+			arg_value_num = 3;
+		}
+
+
+		if (lua_isuserdata(L,arg_value_num)){
+			value = (unsigned int)lua_touserdata(L,arg_value_num);
 		}
 		//
-		else if (lua_isnumber(L,2)){
+		else if (lua_isnumber(L,arg_value_num)){
 			if (type == 1){
-				float hvalue = (float)lua_tonumber(L,2);
+				float hvalue = (float)lua_tonumber(L,arg_value_num);
 				value = *(unsigned int*)&hvalue;
 			}
 			else{
-					value = (unsigned int)lua_tonumber(L,2);
+					value = (unsigned int)lua_tonumber(L,arg_value_num);
 			}
 		}
 		
@@ -254,6 +303,7 @@ namespace DebugLogV2{
 
 	extern int "C" Memory__GET(lua_State* L, int type){
 
+		int args = lua_gettop(L);
 		lua_pushstring06(L,"ptr");
 		lua_gettable(L,1);
 		int ptr =  (int)lua_touserdata(L,-1);
@@ -261,6 +311,28 @@ namespace DebugLogV2{
 		lua_pushstring06(L,"move");
 		lua_gettable(L,1);
 		int move =  (int)lua_touserdata(L,-1);
+
+
+		if (args > 1) {
+
+			if (lua_isuserdata(L,2)){
+				move += (int)lua_touserdata(L,2);
+			}
+			else if (lua_isnumber(L,2)){
+				move += lua_tonumber(L,2);
+			}
+			else if (lua_isstring(L,2)){
+
+				const char* s = lua_tostring(L,2);
+				const TCHAR* hexString = _T(s); // Hex string to convert
+				move += _tcstoul(hexString, NULL, 16); // Convert hex string to unsigned long integer
+			}
+			else{
+				move += lua_tonumber(L,2);
+			}
+		}
+		
+
 
 	
 			switch (type){

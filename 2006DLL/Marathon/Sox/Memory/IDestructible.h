@@ -32,7 +32,16 @@ namespace Sonicteam{
 				}
 			};
 
+			template <typename T>
+			class BoostDestructorHelper {
+			public:
+				void operator()(T* obj) const {
+					if (obj) obj->DestroyObject(1);
 
+				}
+			};
+
+		
 
 
 

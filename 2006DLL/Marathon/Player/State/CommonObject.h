@@ -23,16 +23,18 @@ namespace Sonicteam{
 			{
 			public:
 				CommonObject(IMachine*);
-				virtual ~CommonObject(void);
+				~CommonObject(void);
 
 
 
-				virtual void Object2Start()  = 0 ;
-				virtual unsigned int Object2Update() = 0;	
-				virtual void Object2End() = 0;	
+				virtual void Object2Start() override  = 0 ;
+				virtual unsigned int Object2Update(float) override;
+				virtual void Object2End() override = 0;	
 
 				virtual void Object2PreUpdateCmn(float) override;	
 				virtual void Object2PostUpdateCmn(float) override;	
+
+				virtual void DestroyObject(unsigned int flag) override;
 
 
 

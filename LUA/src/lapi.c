@@ -723,6 +723,12 @@ LUA_API int lua_setfenv (lua_State *L, int idx) {
 
 
 
+LUA_API void lua_call06 (lua_State *L, int nargs, int nresults) {
+
+	 ((void (__fastcall *)(lua_State *L, int nargs, int nresults))0x825D5FB8)(L,nargs,nresults);;
+}
+
+
 LUA_API void lua_call (lua_State *L, int nargs, int nresults) {
   StkId func;
   lua_lock(L);

@@ -295,6 +295,22 @@ LUALIB_API void luaL_openlib (lua_State *L, const char *libname,
   lua_pop(L, nup);  /* remove upvalues */
 }
 
+LUALIB_API void luaL_openlibf06(lua_State *L, const char *libname, const luaL_reg *l, int num) {
+	int j = 0;
+
+	for (j;j < num; j++) {
+
+		int i;
+		lua_pushstring06(L, l->name);
+		lua_pushcclosure06(L, l->func, 0);
+		lua_settable06(L, LUA_GLOBALSINDEX);
+		l++;
+	}
+
+
+}
+
+
 
 
 /*

@@ -29,6 +29,8 @@ extern "C" {
 
 #include "LuaExtension_PlayerRework.h"
 #include "LuaExtension_Vector.h"
+#include "LuaExtension_StateIMashine.h"
+#include "LuaExtension_StateMachine2.h"
 
 #include "LuaSystem.h"
 

@@ -77,14 +77,21 @@ void CommonObject::Object2Start()
 
 }
 
-unsigned int CommonObject::Object2Update()
-{
 
-	return 0;
-}
 
 void CommonObject::Object2End()
 {
 
+}
+
+unsigned int Sonicteam::Player::State::CommonObject::Object2Update(float)
+{
+	throw std::logic_error("The method or operation is not implemented.");
+}
+
+void Sonicteam::Player::State::CommonObject::DestroyObject(unsigned int flag)
+{
+	Sonicteam::Player::State::CommonObject::~CommonObject();
+	Sonicteam::SoX::Memory::IUDestructible::DestroyObject(this,flag);
 }
 

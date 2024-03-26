@@ -25,6 +25,13 @@ namespace DebugLogV2{
 	HOOK(int,__cdecl ,sub_825DB498,0x825DB498,lua_State* LS){
 		
 
+
+		BranchTo(0x825D9660,int,LS); //luaopen_base06
+		BranchTo(0x825D7D18,int,LS); //luaopen_table06
+
+		luaL_openlibf06(LS, 0,(const luaL_reg*)0x8203B8A8,15);
+
+
 	
 		DebugLabel_GlobalInstall(LS);
 		BitLibGlobalInstall(LS);
@@ -32,12 +39,19 @@ namespace DebugLogV2{
 		STRLIB_GlobalInstall(LS);
 		MemoryLIB_GlobalInstall(LS);
 		//VectorLIB_GlobalInstall(LS);
+	
+
+
+
 		VectorRLIB_GlobalInstall(LS);
 		MainDisplayTask_GlobalInstall(LS);
 		GameImp_GlobalInstall(LS);
 		MessageReceiver_GlobalInstall(LS);
+		
+		GlobalInstall_StateIMachine(LS);
+		GlobalInstall_StateMachine2(LS);
 		GlobalInstall_PlayerRework(LS);
-	
+		
 
 
 
@@ -116,6 +130,7 @@ namespace DebugLogV2{
 
 
 
+		GlobalInstall_PlayerRework(0);
 		GameLIB_GlobalInstall(0);
 		MessageUtilGlobalInstall();
 

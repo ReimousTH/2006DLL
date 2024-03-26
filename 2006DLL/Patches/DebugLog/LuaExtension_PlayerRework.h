@@ -34,6 +34,12 @@ extern "C" {
 
 namespace DebugLogV2 {
 
+	static const char* FixedPlayerFunctionsTables[] = {
+		"SetupModule",
+		"SetupModule",
+		"SetupModuleDebug"
+
+	};
 
 	void GlobalInstall_PlayerRework(lua_State* LS);
 
@@ -57,6 +63,9 @@ namespace DebugLogV2 {
 
 	extern "C" int PlayerR__GetStateID(lua_State* L);
 	extern "C" int PlayerR__SetStateID(lua_State* L);
+
+
+	extern "C" int PlayerR__GetMachine2(lua_State* L);
 	
 
 

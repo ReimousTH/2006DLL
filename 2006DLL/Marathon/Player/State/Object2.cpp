@@ -40,3 +40,9 @@ Object2::~Object2(void)
 {
 
 }
+
+void Sonicteam::Player::State::Object2::DestroyObject(unsigned int flag)
+{
+	Sonicteam::Player::State::Object2::~Object2();
+	Sonicteam::SoX::Memory::IUDestructible::DestroyObject(this,flag);
+}

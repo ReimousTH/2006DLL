@@ -43,6 +43,7 @@ namespace DebugLogV2 {
 
 
 	extern "C" Memory__Move(lua_State* L);
+	extern "C" Memory__eq(lua_State* L);
 
 
 	extern "C" Memory__SetDWORD(lua_State* L);

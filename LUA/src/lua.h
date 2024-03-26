@@ -197,6 +197,7 @@ LUA_API int   lua_setfenv (lua_State *L, int idx);
 ** `load' and `call' functions (load and run Lua code)
 */
 LUA_API void  lua_call (lua_State *L, int nargs, int nresults);
+LUA_API void  lua_call06 (lua_State *L, int nargs, int nresults);
 LUA_API int   lua_pcall (lua_State *L, int nargs, int nresults, int errfunc);
 LUA_API int   lua_pcall06 (lua_State *L, int nargs, int nresults, int errfunc);
 LUA_API int lua_cpcall (lua_State *L, lua_CFunction func, void *ud);

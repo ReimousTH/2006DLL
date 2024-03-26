@@ -11,6 +11,7 @@ namespace DebugLogV2{
 	
 
 	const char* VectorRLIBScript = """VectorMeta = { [1] = 0, [2] = 0, [3] = 0, [4] = 0, __index = VectorMeta } \
+									 VectorMeta.__index = VectorMeta \
 									 function Vector(x, y, z, w)                                               \
 									 local self = {}                                                       \
 									 setmetatable(self, VectorMeta)                                        \

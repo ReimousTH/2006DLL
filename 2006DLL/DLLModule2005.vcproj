@@ -360,7 +360,7 @@
 				ModuleDefinitionFile="DllModule.def"
 				GenerateDebugInformation="true"
 				GenerateMapFile="true"
-				OptimizeReferences="1"
+				OptimizeReferences="2"
 				EnableCOMDATFolding="1"
 				SetChecksum="true"
 			/>
@@ -614,6 +614,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Patches\DebugLog\LuaExtension_LuaLCommonObject.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\DebugLog\LuaExtension_LuaLCommonObject.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Patches\DebugLog\LuaExtension_Memory.cpp"
 						>
 					</File>
@@ -627,6 +635,22 @@
 					</File>
 					<File
 						RelativePath=".\Patches\DebugLog\LuaExtension_PlayerRework.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\DebugLog\LuaExtension_StateIMashine.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\DebugLog\LuaExtension_StateIMashine.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\DebugLog\LuaExtension_StateMachine2.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\DebugLog\LuaExtension_StateMachine2.h"
 						>
 					</File>
 					<File

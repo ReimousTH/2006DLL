@@ -148,8 +148,8 @@ DWORD WINAPI ThreadProc( LPVOID lpParameter )
 			XOVERLAPPED m_Overlapped; 
 			XShowMessageBoxUI(0,L"Debug.Log(Result)",convertCharArrayToLPCWSTR(si->c_str()),1,g_pwstrButtonsXx,1,XMB_ALERTICON,&result,&m_Overlapped);
 
-			while (result.dwButtonPressed != 0){
-			}
+		//	while (result.dwButtonPressed != 0){
+		//	}
 			Sleep(1000);
 
 
@@ -179,12 +179,12 @@ static int luaB_print (lua_State *L) {
 
 	int n = lua_gettop(L);  /* number of arguments */
 	int i;
-	lua_getglobal(L, "tostring");
+	lua_getglobal06(L, "tostring");
 	for (i=1; i<=n; i++) {
 		const char *s;
 		lua_pushvalue(L, -1);  /* function to be called */
 		lua_pushvalue(L, i);   /* value to print */
-		lua_call(L, 1, 1);
+		lua_call06(L, 1, 1);
 		s = lua_tostring(L, -1);  /* get result */
 		if (s == NULL)
 			return luaL_error(L, "`tostring' must return a string to `print'");

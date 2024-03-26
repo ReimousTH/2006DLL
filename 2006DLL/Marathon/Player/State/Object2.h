@@ -1,9 +1,6 @@
 #pragma once
 
-
-
 #include "IMachine.h"
-
 #include "..\..\Sox\AI\State.h"
 #include "IContext.h"
 #include <boost/weak_ptr.hpp>
@@ -22,7 +19,10 @@ namespace Sonicteam{
 			{
 			public:
 				Object2(IMachine*);
-				virtual ~Object2(void);
+				~Object2(void);
+				
+				virtual void DestroyObject(unsigned int flag) override;
+	
 
 
 

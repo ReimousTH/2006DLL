@@ -3,6 +3,7 @@
 
 
 
+#include <Player/State/Object2.h>
 #include "IMachine.h"
 #include "IContext.h"
 #include "CommonContext.h"
@@ -10,9 +11,13 @@
 #include <boost/weak_ptr.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/scoped_ptr.hpp>
+#include <functional>
 
 
 using namespace Sonicteam::SoX::AI;
+
+
+typedef boost::shared_ptr<Sonicteam::Player::State::Object2> *(*StateConstructor)(Sonicteam::Player::State::IMachine*);
 
 
 namespace Sonicteam{
@@ -42,7 +47,7 @@ namespace Sonicteam{
 		
 				//Mashine Fields
 				unsigned int field_0x3C;
-				std::vector<unsigned int> MashineStates; //0x40
+				std::vector<std::pair<int,StateConstructor>> MashineStates; //0x40
 				unsigned int field_0x50; //-1 (at constuctor)
 				unsigned int field_0x54;
 						 byte MashineStateFlag1; //0x58
