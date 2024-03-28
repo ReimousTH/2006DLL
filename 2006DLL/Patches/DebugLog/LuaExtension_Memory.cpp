@@ -64,6 +64,7 @@ namespace DebugLogV2{
 		lua_pushstring06(L, "IsValidPTR"); lua_pushcfunction06(L, Memory__IsValidPTR); 	lua_settable06(L, -3);
 
 		lua_pushstring06(L, "GetPTR"); lua_pushcfunction06(L, Memory__GetPTR); 	lua_settable06(L, -3);
+		lua_pushstring06(L, "GetClassName"); lua_pushcfunction06(L, Memory__GetClassName); 	lua_settable06(L, -3);
 
 		
 
@@ -352,6 +353,10 @@ namespace DebugLogV2{
 			case  3:
 				Memory__CreateMetatable(L,*(unsigned int*)(ptr + move),0);
 				break;
+			case 4:
+			
+				lua_pushstring06(L,"");
+				break;
 
 			}
 	
@@ -383,6 +388,10 @@ namespace DebugLogV2{
 	}
 
 
+	extern "C" int Memory__GetClassName(lua_State* L)
+	{
+		return Memory__GET(L,4);
+	}
 
 
 
@@ -402,6 +411,7 @@ namespace DebugLogV2{
 		return 1;
 	}
 
+	
 	extern "C" int Memory__IsValidPTR(lua_State* L)
 	{
 

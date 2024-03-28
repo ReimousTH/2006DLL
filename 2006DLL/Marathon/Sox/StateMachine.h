@@ -1,6 +1,8 @@
 #pragma once
 
 #include <boost/weak_ptr.hpp>
+#include <boost/shared_ptr.hpp>
+#include <Sox/AI/State.h>
 
 
 namespace Sonicteam{
@@ -24,7 +26,7 @@ namespace Sonicteam{
 				virtual unsigned int Unk06() { return 0;}; // For now nothing
 
 				//FIELDS
-				boost::weak_ptr<T> CurrentState; //0x4
+				boost::shared_ptr<Sonicteam::SoX::AI::State<T>> CurrentState; //0x4
 				unsigned int field0xC; //0xC
 				unsigned int field0x10; //0x10
 				unsigned int field0x14; //0x14

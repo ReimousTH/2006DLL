@@ -27,7 +27,7 @@ namespace Sonicteam{
 
 	
 			//8200BAD8
-			class Machine2:StateMashine<IContext>,IMachine
+			class Machine2:public StateMashine<IContext>,IMachine
 			{
 			public:
 				Machine2(void);
@@ -46,7 +46,7 @@ namespace Sonicteam{
 
 		
 				//Mashine Fields
-				unsigned int field_0x3C;
+				//unsigned int field_0x3C; // why did i even add this????????
 				std::vector<std::pair<int,StateConstructor>> MashineStates; //0x40
 				unsigned int field_0x50; //-1 (at constuctor)
 				unsigned int field_0x54;

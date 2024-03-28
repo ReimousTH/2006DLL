@@ -49,15 +49,13 @@ namespace DebugLogV2{
 		lua_dostring06(LS,"LObject2Meta = {OnStart=function(self) end,OnUpdate=function(self,delta) end,OnEnd=function(self) end,PreUpdateCmn=function(self,delta) end,PostUpdateCmn = function(self,delta) end}");
 
 
-		lua_dostring06(LS,"""\
-			function CommonObjectRef(arg1,arg2,arg3)\
-			local self = {}\
-			self.IMachine = IMachine(arg1)\
+		lua_dostring06(LS,"""function CommonObjectRef(arg0,arg1,arg2,arg3)\
+			local self = Memory(arg0)\
+			self.IMachine = StateIMachine(arg1)\
 			self.Context = Memory(arg2)\
 			self.Fields = Memory(arg3)\
 			return self\
-			end\
-			""");
+			end""");
 
 	
 

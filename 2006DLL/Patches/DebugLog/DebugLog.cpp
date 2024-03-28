@@ -48,6 +48,7 @@ namespace DebugLogV2{
 		GameImp_GlobalInstall(LS);
 		MessageReceiver_GlobalInstall(LS);
 		
+		GlobalInstall_LuaLCommonObject(LS);
 		GlobalInstall_StateIMachine(LS);
 		GlobalInstall_StateMachine2(LS);
 		GlobalInstall_PlayerRework(LS);
@@ -130,6 +131,7 @@ namespace DebugLogV2{
 
 
 
+		GlobalInstall_StateMachine2(0);
 		GlobalInstall_PlayerRework(0);
 		GameLIB_GlobalInstall(0);
 		MessageUtilGlobalInstall();

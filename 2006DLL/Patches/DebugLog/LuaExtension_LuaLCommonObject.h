@@ -54,12 +54,14 @@ namespace DebugLogV2 {
 		lua_State* LuaHandle;
 		int LuaRefObject;
 		int _type;
+		bool ReplaceMode;
 
 	public:
-		LuaLCommonObjectSaveC(lua_State* LuaHandle,int LuaRefObject,int _type){
+		LuaLCommonObjectSaveC(lua_State* LuaHandle,int LuaRefObject,int _type,bool ReplaceMode){
 			this->LuaHandle = LuaHandle;
 			this->LuaRefObject = LuaRefObject; 
 			this->_type = _type;
+			this->ReplaceMode = ReplaceMode;
 		}
 		LuaLCommonObjectSaveC(){}
 	};

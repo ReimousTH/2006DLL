@@ -58,6 +58,8 @@ namespace DebugLogV2 {
 
 	extern "C" int Memory__GetPTR(lua_State* L);
 
+	extern "C" int Memory__GetClassName(lua_State* L);
+
 	extern "C" int Memory__IsValidPTR(lua_State* L);
 	extern "C" Memory__CreateMetatableFields(lua_State* L,int value,int move);
 	extern "C" Memory__CreateMetatable(lua_State* L,int value,int move);

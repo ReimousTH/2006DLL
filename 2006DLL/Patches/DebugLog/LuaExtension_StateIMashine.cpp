@@ -25,8 +25,8 @@ namespace DebugLogV2{
 	
 		lua_newtable06(LS);lua_pushstring06(LS, "__index");luaL_getmetatable06(LS, "MemoryMeta");lua_settable06(LS, -3); lua_setmetatable06(LS, -2); //setmetatable(StateMashineMeta, { __index = MemoryMeta })
 
-		lua_pushstring06(LS, "GetStateID");lua_pushcfunction06(LS, StateIMachine__SetStateID);lua_settable06(LS, -3); // Equivalent to table["GetStateID"] = StateIMachine__SetStateID
-		lua_pushstring06(LS, "SetStateID");lua_pushcfunction06(LS, StateIMachine__GetStateID);lua_settable06(LS, -3); // Equivalent to table["SetStateID"] = StateIMachine__GetStateID
+		lua_pushstring06(LS, "GetStateID");lua_pushcfunction06(LS, StateIMachine__GetStateID);lua_settable06(LS, -3); // Equivalent to table["GetStateID"] = StateIMachine__SetStateID
+		lua_pushstring06(LS, "SetStateID");lua_pushcfunction06(LS, StateIMachine__SetStateID);lua_settable06(LS, -3); // Equivalent to table["SetStateID"] = StateIMachine__GetStateID
 		lua_pushstring06(LS, "GetStateContext");lua_pushcfunction06(LS, StateIMachine__GetContext);lua_settable06(LS, -3); // Equivalent to table["GetStateContext"] = StateIMachine__GetContext
 
 		
