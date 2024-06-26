@@ -20,7 +20,7 @@ namespace Sonicteam{
 			virtual void SetFlag06(DWORD flag_value){};
 			virtual void ImportAnimationStateFlag(DWORD flag_value){}; // (ImportAnimationFlags)
 			virtual void SetFlag08(DWORD flag_value){};
-			virtual void SetFlag09(DWORD flag_value){}; // Set Weapons Flags (ImportWeaponsFlags)	
+			virtual void SetFlag09(DWORD flag_value){};			
 			virtual void SetFlag10(DWORD flag_value){};
 			virtual void SetFlag11(DWORD flag_value){};
 			virtual void SetFlag12(DWORD flag_value){};

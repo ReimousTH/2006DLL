@@ -141,10 +141,89 @@ namespace DebugLogV2{
 		lua_pop(LS,1);
 
 
+		lua_register06(LS,"LuaCommonStateConnectRef",LuaCommonStateConnectRefConstructor);
+
+
+
+		lua_State* L = LS;
+
+		luaL_newmetatable06(L, "LuaCommonStateConnectRefMeta");
+		lua_pushstring06(L,"__index"); lua_pushvalue(L,-2); lua_settable06(L,-3); // __index = MemoryMeta
+	//	lua_pushstring06(L,"ptr"); lua_pushlightuserdata(L,(void*)0); lua_settable06(L,-3); // __index = MemoryMeta
+
+
+		lua_pushstring06(L, "Disconnect"); lua_pushcfunction06(L,LuaCommonStateConnectRef__Disconnect);lua_settable06(L, -3);
+
+
+
+
+		lua_pop(LS,1);
+
+
+
 		return;
 
 
 	}
+
+	extern "C" int LuaCommonStateConnectRefConstructor(lua_State* L){
+
+		lua_newtable06(L); // Create a new table for the instance // local self = {}
+
+		// Second table for metatable set
+		//	lua_newtable06(L);
+		//	lua_pushstring06(L, "__index");luaL_getmetatable06(L, "MemoryMeta");lua_settable06(L, -3); // { __index = MemoryMeta }
+		//	lua_setmetatable06(L, -2); // setmetatable(self, { __index = MemoryMeta })
+
+		luaL_getmetatable06(L, "LuaCommonStateConnectRefMeta");
+		lua_setmetatable06(L, -2); // setmetatable(self, { __index = MemoryMeta })
+
+
+		lua_pushstring06(L, "StateIDType");lua_pushvalue06(L,1);lua_settable06(L, -3); // self.ptr = ptr
+		lua_pushstring06(L, "StateID");lua_pushvalue06(L,2);lua_settable06(L, -3); // self.ptr = ptr
+		lua_pushstring06(L, "FunctionRef");lua_pushvalue06(L,3);lua_settable06(L, -3); // self.ptr = ptr
+		lua_pushstring06(L, "IMachinePTR");lua_pushvalue06(L,4);lua_settable06(L, -3); // self.ptr = ptr
+
+
+
+
+		return 1;
+
+	}
+	extern "C" int LuaCommonStateConnectRef__Disconnect(lua_State* L){
+
+	
+		lua_pushstring06(L,"StateIDType");lua_gettable(L,1);
+		int StateIDType = lua_tonumber(L,-1);
+
+		lua_pushstring06(L,"StateID");lua_gettable(L,1);
+		int StateID = lua_tonumber(L,-1);
+
+
+		lua_pushstring06(L,"FunctionRef");lua_gettable(L,1);
+		int FunctionRef = (int)lua_touserdata(L,-1);
+
+		lua_pushstring06(L,"IMachinePTR");lua_gettable(L,1);
+		Sonicteam::Player::State::IMachine* ptr = (Sonicteam::Player::State::IMachine*)lua_touserdata(L,-1);
+
+
+
+		std::vector<LuaLCommonObjectSaveC>* vec = &CachedStatesConnect[ptr][StateID][StateIDType];
+
+		for (std::vector<LuaLCommonObjectSaveC>::iterator it = vec->begin();it!=vec->end();it++ ){
+			if (it->LuaRefObject == FunctionRef){
+				vec->erase(it);
+				break;
+			}
+
+		}
+
+		return 1;
+	}
+
+
+
+
 
 
 	extern "C" int StateMachine2__CreateMetatable(lua_State* L,int ptr){
@@ -266,11 +345,23 @@ namespace DebugLogV2{
 		lua_pushvalue06(L,4);
 		int ref = luaL_ref(L,LUA_REGISTRYINDEX);
 
+	
 		//ShowXenonMessage(L"MSG",(int)dynamic_cast<Sonicteam::Player::State::IMachine*>(ptr),0);
 		CachedStatesConnect[dynamic_cast<Sonicteam::Player::State::IMachine*>(ptr)][StateID][_type].push_back(LuaLCommonObjectSaveC(L,ref,_type,ReplaceMode));
 
 
-		return 0;
+
+
+
+		lua_getglobal06(L, "LuaCommonStateConnectRef");
+		lua_pushnumber(L,_type);
+		lua_pushnumber(L,StateID);
+		lua_pushlightuserdata(L,(void*)ref);
+		lua_pushlightuserdata(L,(void*)dynamic_cast<Sonicteam::Player::State::IMachine*>(ptr));
+		lua_pcall06(L,4, 1, 0); // Memory(ptr) -> {}::Memory
+
+
+		return 1;
 
 
 

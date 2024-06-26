@@ -2,12 +2,21 @@
 
 
 #include "../../Sox/Object.h"
-
-
 #include <xtl.h>
+
+#define SO_GAMEPAD_RAW_BUTTON_A 1
+#define SO_GAMEPAD_RAW_BUTTON_B 2
+#define SO_GAMEPAD_RAW_BUTTON_X 8
+#define SO_GAMEPAD_RAW_BUTTON_Y 0x10
+
+#define SO_GAMEPAD_RAW_BUTTON_DPAD_UP 0x40
+#define SO_GAMEPAD_RAW_BUTTON_DPAD_DOWN 0x80
+#define SO_GAMEPAD_RAW_BUTTON_DPAD_LEFT 0x100
+#define SO_GAMEPAD_RAW_BUTTON_DPAD_RIGHT 0x200
 
 namespace Sonicteam{
 	namespace Player{
+
 
 
 		namespace Input{
@@ -17,9 +26,10 @@ namespace Sonicteam{
 				Sonicteam::SoX::Object* PtrKhronoControlInputListener; //0x8
 				unsigned int unk0xC; //0xC
 				unsigned int wLastButtons; //Triggers & DPAD includ //0x10 :
-				unsigned int ComplementwLastButtons; //Binary One's Complement (in short = ~wLastButtons)
-				unsigned int unk14;
+				unsigned int ComplementwLastButtons; //Binary One's Complement (in short = ~wLastButtons) //0x14
+
 				unsigned int unk18;
+				unsigned int unk1C;
 				
 				// Thumb stick values converted to range [-1,+1]
 				FLOAT      fX1;

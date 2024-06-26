@@ -4,7 +4,7 @@
 #include "Player/State/SonicContext.h"
 #include "CompleteGauge_SonicStates.h"
 
-
+#include "../DebugLog/DebugLog.h"
 namespace CompleteGauge{
 	
 

@@ -125,28 +125,38 @@ wchar_t *convertCharArrayToLPCWSTR(const char* charArray)
 	return wString;
 }
 
+
+// Assuming DebugLog is your std::vector<std::string>
+std::wstring ConcatenateStrings(const std::vector<std::string>& debugLog)
+{
+	std::wstringstream ss;
+
+	for (std::vector<std::string>::const_iterator it = debugLog.begin(); it != debugLog.end(); ++it)
+	{
+		ss << std::wstring(it->begin(), it->end());
+		ss << "\r\n";
+	}
+
+	return ss.str();
+}
+
 DWORD WINAPI ThreadProc( LPVOID lpParameter )
 {
 
 	DWORD dwThreadNumber = (DWORD) lpParameter;
 
 
-
+/*
 	while (true){
 
 		ATG::GAMEPAD* gc = ATG::Input::GetMergedInput(0);
 
 
 		if (gc->wPressedButtons & XINPUT_GAMEPAD_DPAD_UP){
-			std::string* si = new std::string();
-			for (int i = 0;i<DebugLogV2::log.size();i++){
-				si->append(*DebugLogV2::log[i]);
-				si->append("\n");
-			}
-
+		
 			MESSAGEBOX_RESULT result;
 			XOVERLAPPED m_Overlapped; 
-			XShowMessageBoxUI(0,L"Debug.Log(Result)",convertCharArrayToLPCWSTR(si->c_str()),1,g_pwstrButtonsXx,1,XMB_ALERTICON,&result,&m_Overlapped);
+			XShowMessageBoxUI(0,L"DebugLog V2.0",ConcatenateStrings(log).c_str(),1,g_pwstrButtonsXx,1,XMB_ALERTICON,&result,&m_Overlapped);
 
 		//	while (result.dwButtonPressed != 0){
 		//	}
@@ -158,17 +168,13 @@ DWORD WINAPI ThreadProc( LPVOID lpParameter )
 		}
 		if (gc->wPressedButtons & XINPUT_GAMEPAD_DPAD_DOWN){
 
-			for (int i = 0;i<DebugLogV2::log.size();i++){
-				delete DebugLogV2::log[i];
-			}
+			DebugLogV2::log.clear();
 
-
-			DebugLogV2::log.resize(0);
 		}
 
 
 	}
-
+*/
 
 	return 0;
 }
@@ -189,7 +195,7 @@ static int luaB_print (lua_State *L) {
 		if (s == NULL)
 			return luaL_error(L, "`tostring' must return a string to `print'");
 
-		DebugLogV2::log.push_back(new std::string(s));
+		DebugLogV2::log.push_back(std::string(s));
 
 		//if (i>1) fputs("\t", stdout);
 		//fputs(s, stdout);
@@ -208,11 +214,11 @@ static int Printf (lua_State *L) {
 
 		if (lua_isstring(L,i)){
 			s = lua_tostring(L, i);  /* get result */
-			DebugLogV2::log.push_back(new std::string(s));
+			DebugLogV2::log.push_back(std::string(s));
 		}
 		else{
 			s = lua_tostring(L, -1);  /* get result */
-			DebugLogV2::log.push_back(new std::string("[PrintF]FailedMessage"));
+			DebugLogV2::log.push_back(std::string("[PrintF]FailedMessage"));
 		}
 	
 
@@ -225,7 +231,7 @@ static int Printf (lua_State *L) {
 
 }
 
-
+std::vector<std::string> DebugLogV2::log = std::vector<std::string>();
 
 void DebugLogV2::MessageUtilGlobalInstall()
 {

@@ -52,8 +52,8 @@ namespace Sonicteam{
 				virtual void ICCIF_03() override = 0;
 				virtual void ICCIF_04() override = 0;
 				virtual void ICCIF_05() override = 0;
-				virtual float ICCIF_06() override;
-				virtual float ICCIF_07() override;
+				virtual float GetTotalSpeedY() override;
+				virtual float GetTotalSpeedZ() override;
 				///
 
 
@@ -62,10 +62,10 @@ namespace Sonicteam{
 				//fields_but i not sure  that all should be here
 				//or 
 			
-				float CurrentSpeed; //Can Be Added //0x30
-				float VelocityX; //0x34
-				float VelocityY; //0x38
-				float VelocityZ; //0x3C
+				float base_speed_z; //Can Be Added //0x30
+				float gimmick_speed_z; //0x34
+				float base_speed_y; //0x38
+				float gimmick_speed_y; //0x3C
 			
 				DWORD CurrentAnimation; //0x40
 				float LockInputTime;

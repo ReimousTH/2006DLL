@@ -50,7 +50,7 @@ namespace Sonicteam{
 			Sonicteam::HUDOption* MMHudOption ; //HudOption (HudMainMenu untill i make hudoption)
 			unsigned int MMTuint0x7C;
 			unsigned int MMTuint0x80;
-			unsigned int MMTuint0x84;
+			unsigned int CSD_tag_character;
 			unsigned int MMTuint0x88;
 			unsigned int MMTuint0x8C;
 			unsigned int MMTuint0x90;
@@ -70,7 +70,7 @@ namespace Sonicteam{
 			unsigned int MMTuint0xC8; //CurrentActTrailSelectedLevelIndex
 			unsigned int MMTuint0xCC; //
 			unsigned int MMTuint0xD0; //CurrentSelectedLeveldifficultyIndex;
-			unsigned int MMTuint0xD4;
+			unsigned int MMP1SelectedIndex;
 			unsigned int P2SelectedChr;
 			unsigned int MMTuint0xDC;
 			unsigned int MMTuint0xE0;
@@ -101,41 +101,41 @@ namespace Sonicteam{
 			unsigned int TBmsg_gold_results; //8204AF48 0x144
 			unsigned int TBmsg_options; //8204AF48 (0x148)
 
-			boost::shared_ptr<unsigned int> MMTextCard_msg_singleplayer_c; //0x14c
-			boost::shared_ptr<unsigned int> MMTextCard_msg_singleplayer_c_2; //0x154
-			boost::shared_ptr<unsigned int> MMTextCard_msg_extra_c; //0x15C
-			boost::shared_ptr<unsigned int> MMTextCard_msg_options_c; //0x164
-			boost::shared_ptr<unsigned int> MMTextCard_msg_episodeselect_c; //0x16c
-			boost::shared_ptr<unsigned int> MMTextCard_msg_trial_c; //0x174
-			boost::shared_ptr<unsigned int> MMTextCard_msg_msg_goldmedalresults_c; //0x17C
-			boost::shared_ptr<unsigned int> MMTextCard_msg_episodesonic_c; //0x184
-			boost::shared_ptr<unsigned int> MMTextCard_msg_episodeshadow_c; //0x18c
-			boost::shared_ptr<unsigned int> MMTextCard_msg_episodesilver_c; //0x194
-			boost::shared_ptr<unsigned int> MMTextCard_msg_lastepisode_c; //0x19c
-			boost::shared_ptr<unsigned int> MMTextCard_msg_acttrial_c; //0x1A4
-			boost::shared_ptr<unsigned int> MMTextCard_msg_twntrial_c; //0x1AC
-			boost::shared_ptr<unsigned int> MMTextCard_msg_trial_sonic; //0x1B4
-			boost::shared_ptr<unsigned int> MMTextCard_msg_trial_shadow; //0x1BC
-			boost::shared_ptr<unsigned int> MMTextCard_msg_trial_silver; //0x1C4
-			boost::shared_ptr<unsigned int> MMTextCard_msg_trial_last; //0x1CC
-			boost::shared_ptr<unsigned int> MMTextCard_msg_trial_dlcharacter; //0x1D4
-			boost::shared_ptr<unsigned int> MMTextCard_msg_trial_msg_stageselect_c; //0x1DC
-			boost::shared_ptr<unsigned int> MMTextCard_msg_selectmission_c; //0x1E4
-			boost::shared_ptr<unsigned int> MMTextCard_msg_sonic_c; //0x1EC
-			boost::shared_ptr<unsigned int> MMTextCard_msg_shadow_c; //0x1F4
-			boost::shared_ptr<unsigned int> MMTextCard_msg_silver_c; //0x1FC
-			boost::shared_ptr<unsigned int> MMTextCard_msg_last_c; //0x204
-			boost::shared_ptr<unsigned int> MMTextCard_msg_tag_c; //0x20C
-			boost::shared_ptr<unsigned int> MMTextCard_msg_battle_c; //0x214
-			boost::shared_ptr<unsigned int> MMTextCard_msg_characterselect_c; //0x21c
-			boost::shared_ptr<unsigned int> MMTextCard_msg_ranking_c; //0x224
-			boost::shared_ptr<unsigned int> MMTextCard_msg_download_c; //0x22c
-			boost::shared_ptr<unsigned int> MMTextCard_msg_audioroom_c; //0x234
-			boost::shared_ptr<unsigned int> MMTextCard_msg_theaterroom_c; //0x23c
-			boost::shared_ptr<unsigned int> MMTextCard_msg_audio_c; //0x244
-			boost::shared_ptr<unsigned int> MMTextCard_msg_subtitile_c; //0x24c
-			boost::shared_ptr<unsigned int> MMTextCard_msg_vibe_c; //0x254
-			boost::shared_ptr<unsigned int> MMTextCard_EmptyMenuCard; //0x25C
+			boost::shared_ptr<Sonicteam::SoX::RefCountObject> MMTextCard_msg_singleplayer_c; //0x14c
+			boost::shared_ptr<Sonicteam::SoX::RefCountObject> MMTextCard_msg_singleplayer_c_2; //0x154
+			boost::shared_ptr<Sonicteam::SoX::RefCountObject> MMTextCard_msg_extra_c; //0x15C
+			boost::shared_ptr<Sonicteam::SoX::RefCountObject> MMTextCard_msg_options_c; //0x164
+			boost::shared_ptr<Sonicteam::SoX::RefCountObject> MMTextCard_msg_episodeselect_c; //0x16c
+			boost::shared_ptr<Sonicteam::SoX::RefCountObject> MMTextCard_msg_trial_c; //0x174
+			boost::shared_ptr<Sonicteam::SoX::RefCountObject> MMTextCard_msg_msg_goldmedalresults_c; //0x17C
+			boost::shared_ptr<Sonicteam::SoX::RefCountObject> MMTextCard_msg_episodesonic_c; //0x184
+			boost::shared_ptr<Sonicteam::SoX::RefCountObject> MMTextCard_msg_episodeshadow_c; //0x18c
+			boost::shared_ptr<Sonicteam::SoX::RefCountObject> MMTextCard_msg_episodesilver_c; //0x194
+			boost::shared_ptr<Sonicteam::SoX::RefCountObject> MMTextCard_msg_lastepisode_c; //0x19c
+			boost::shared_ptr<Sonicteam::SoX::RefCountObject> MMTextCard_msg_acttrial_c; //0x1A4
+			boost::shared_ptr<Sonicteam::SoX::RefCountObject> MMTextCard_msg_twntrial_c; //0x1AC
+			boost::shared_ptr<Sonicteam::SoX::RefCountObject> MMTextCard_msg_trial_sonic; //0x1B4
+			boost::shared_ptr<Sonicteam::SoX::RefCountObject> MMTextCard_msg_trial_shadow; //0x1BC
+			boost::shared_ptr<Sonicteam::SoX::RefCountObject> MMTextCard_msg_trial_silver; //0x1C4
+			boost::shared_ptr<Sonicteam::SoX::RefCountObject> MMTextCard_msg_trial_last; //0x1CC
+			boost::shared_ptr<Sonicteam::SoX::RefCountObject> MMTextCard_msg_trial_dlcharacter; //0x1D4
+			boost::shared_ptr<Sonicteam::SoX::RefCountObject> MMTextCard_msg_trial_msg_stageselect_c; //0x1DC
+			boost::shared_ptr<Sonicteam::SoX::RefCountObject> MMTextCard_msg_selectmission_c; //0x1E4
+			boost::shared_ptr<Sonicteam::SoX::RefCountObject> MMTextCard_msg_sonic_c; //0x1EC
+			boost::shared_ptr<Sonicteam::SoX::RefCountObject> MMTextCard_msg_shadow_c; //0x1F4
+			boost::shared_ptr<Sonicteam::SoX::RefCountObject> MMTextCard_msg_silver_c; //0x1FC
+			boost::shared_ptr<Sonicteam::SoX::RefCountObject> MMTextCard_msg_last_c; //0x204
+			boost::shared_ptr<Sonicteam::SoX::RefCountObject> MMTextCard_msg_tag_c; //0x20C
+			boost::shared_ptr<Sonicteam::SoX::RefCountObject> MMTextCard_msg_battle_c; //0x214
+			boost::shared_ptr<Sonicteam::SoX::RefCountObject> MMTextCard_msg_characterselect_c; //0x21c
+			boost::shared_ptr<Sonicteam::SoX::RefCountObject> MMTextCard_msg_ranking_c; //0x224
+			boost::shared_ptr<Sonicteam::SoX::RefCountObject> MMTextCard_msg_download_c; //0x22c
+			boost::shared_ptr<Sonicteam::SoX::RefCountObject> MMTextCard_msg_audioroom_c; //0x234
+			boost::shared_ptr<Sonicteam::SoX::RefCountObject> MMTextCard_msg_theaterroom_c; //0x23c
+			boost::shared_ptr<Sonicteam::SoX::RefCountObject> MMTextCard_msg_audio_c; //0x244
+			boost::shared_ptr<Sonicteam::SoX::RefCountObject> MMTextCard_msg_subtitile_c; //0x24c
+			boost::shared_ptr<Sonicteam::SoX::RefCountObject> MMTextCard_msg_vibe_c; //0x254
+			boost::shared_ptr<Sonicteam::SoX::RefCountObject> MMTextCard_EmptyMenuCard; //0x25C
 			unsigned int MMTuint0x264;
 			unsigned int MMTuint0x268;
 			unsigned int MMTuint0x26C;
@@ -153,11 +153,11 @@ namespace Sonicteam{
 			unsigned int MMObjectPlayer3; //0x2A4 0x82003564
 			unsigned int MMObjectPlayer4; //0x2A8 0x82003564
 
-			unsigned int MMuint0x2AC;
-			unsigned int MMuint0x2B0;
-			unsigned int MMuint0x2B4;
-			unsigned int MMuint0x2B8;
-			unsigned int MMuint0x2BC;
+			unsigned int MMObjectPlayer5;
+			unsigned int MMObjectPlayer6;
+			unsigned int MMObjectPlayer7;
+			unsigned int MMObjectPlayer8;
+			unsigned int MMObjectPlayer9;
 
 			unsigned int MMuint0x2C0; //unkptr
 			unsigned int MMObjectPlayerBuffer; //Contains Each Character Loaded PTR ,0x2C4

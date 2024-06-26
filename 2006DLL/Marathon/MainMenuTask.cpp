@@ -19,3 +19,8 @@ void MainMenuTask::OnTaskUpdate(float)
 	throw std::logic_error("The method or operation is not implemented.");
 }
 
+Sonicteam::DocMarathonImp* Sonicteam::MainMenuTask::GetCurrentDoc()
+{
+	return (DocMarathonImp*)this->TaskEngineDoc;
+}
+

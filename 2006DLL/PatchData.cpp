@@ -515,7 +515,7 @@ namespace Multiplayer4P
 						v8 = 0;
 					}
 					v45[0] = (DWORD)v8;
-					sub_824FD4F8(&v45[1], (int)v8,0);
+					sub_824FD4F8(&v45[1], (int)v8);
 					BoostWeakPtr(P3N->P2U1, v45);
 					if ( v45[1] )
 						sub_821601B8(( int)v45[1]);
@@ -5899,7 +5899,7 @@ namespace AmyRework{
 			
 
 
-	ptr->VelocityY =  ptr->c_jump_double_speed;
+	ptr->base_speed_y =  ptr->c_jump_double_speed;
 	
 
 	}
@@ -5936,9 +5936,9 @@ namespace AmyRework{
 
 		if ( a1->CObjContext->CurrentStickBorder == 0.0){
 
-			a1->CObjContext->CurrentSpeed = 0;
-			a1->CObjContext->VelocityY = 0;
-			a1->CObjContext->VelocityX = 0;
+			a1->CObjContext->base_speed_z = 0;
+			a1->CObjContext->base_speed_y = 0;
+			a1->CObjContext->gimmick_speed_z = 0;
 			a1->CObjContext->IsGravityDisabled = 1;
 			a1->Flags0 |= AmyAtk06;
 		}
@@ -5961,7 +5961,7 @@ namespace AmyRework{
 			if ( (a1->CObjContext->AnimationState & 1) != 0 &&  IsAttack(AmyAtk03,a1->Flags0)) {
 
 				a1->CObjContext->IsJumped_PostureVelocityYHandle=1;
-				a1->CObjContext->VelocityY = a1->BOContext->c_jump_double_speed;
+				a1->CObjContext->base_speed_y = a1->BOContext->c_jump_double_speed;
 				a1->CObjContext->SetAnimation(0xAF);
 				a1->Flags0 |= AmyAtk04;
 				a1->Time = 0.035f;
@@ -5984,8 +5984,8 @@ namespace AmyRework{
 			}
 
 
-			if (a1->CObjContext->CurrentSpeed > 0.0f){
-				a1->CObjContext->CurrentSpeed -= a1->CObjContext->c_brake_acc *delta * 0.1f;
+			if (a1->CObjContext->base_speed_z > 0.0f){
+				a1->CObjContext->base_speed_z -= a1->CObjContext->c_brake_acc *delta * 0.1f;
 
 			}
 		}
@@ -6083,7 +6083,7 @@ namespace AmyRework{
 	
 		//a1->CObjContext->IsForcedMovement = 1;
 		//a1->CObjContext->CurrentSpeed = 0;
-		a1->CObjContext->VelocityX = 0;
+		a1->CObjContext->gimmick_speed_z = 0;
 		a1->CObjContext->IsInvulnerable2 = 1;
 		(*(byte*)(&a1->BOContext->AmyUnkFlags )) = 1;
 				a1->Time = 0;
@@ -6423,117 +6423,8 @@ namespace TagStory{
 
 	int MainMenuProcess(Sonicteam::MainMenuTask* a1){
 
-		
+		return 0;
 
-		if (a1->MMCurrentCase == 0x33){
-			a1->MMCurrentCase = 0x200;
-		}
-
-		if (a1->MMCurrentCase == 0x16){
-			a1->MMCurrentCase = 0x100;
-		}
-
-		switch (a1->MMCurrentCase)
-		{
-		case 0x200:
-
-
-			if (!BranchTo(0X824FE3B8,int,a1,a1->MMP1Input,8,&a1->MMTuint0xE0)){
-				a1->MMP1Input = 0;
-				return 0;
-			}
-
-			
-			a1->MMHudOption->OnMessageRecieved(&Sonicteam::SoX::Message(0x1B055,5,0,0,a1->MMTuint0xE0));
-			a1->MMP1Input = 0;
-
-
-
-			break;
-			//new multiplayer
-		case 0x100:
-			if ( !a1->MMTuint0x270 )
-				return 0;
-			{
-				a1->MMHudMainMenu->OnMessageRecieved(&Sonicteam::SoX::Message(0x1B053,0x64,a1->MMTuint0xA8 | 0x20000)); //mst (
-			}
-			a1->MMCurrentCase = 0x101;
-			a1->MMP1Input = 0;
-			BranchTo(0x824FDBC0,int,a1->MMTuint0x9C,(int*)&a1->MMTextCard_msg_tag_c);
-			a1->MMTuint0x270 = 0;
-			return 0;
-		case  0x101:
-
-			//X
-			if ((a1->MMP1Input & 0x10)  != 0){
-
-					int s[] = {a1->MMHudMainMenu->HMMCSDSpriteMainMenu};
-					BranchTo(0x824CE9D0,int,(int*)s,"main_menu","tagstory_select"); //PLAY
-					a1->MMHudMainMenu->OnMessageRecieved(&Sonicteam::SoX::Message(0x1B053,0x66,a1->MMTuint0xAC | 0x20000)); //show select3 arrow
-					a1->MMHudMainMenu->OnMessageRecieved(&Sonicteam::SoX::Message(0x1B053,0x65,a1->MMTuint0xA8 | 0x20000)); //hide select2 arrow
-					BranchTo(0x824FD460,int,a1,"main_deside");
-					a1->MMCurrentCase = a1->MMTuint0xA8 == 0 ? 0x102 : 0x103;
-					a1->MMP1Input = 0;
-					return 0;
-			
-			}
-
-
-			if (!BranchTo(0X824FE3B8,int,a1,a1->MMP1Input,2,&a1->MMTuint0xA8)){
-				a1->MMP1Input = 0;
-				return 0;
-			}
-			a1->MMP1Input = 0;
-			{
-
-			BranchTo(0x824FDBC0,int,a1->MMTuint0x9C,a1->MMTextCard_msg_tag_c);
-			a1->MMHudMainMenu->OnMessageRecieved(&Sonicteam::SoX::Message(0x1B053,0xB,a1->MMTuint0xA8 |  0x20000)); //mst 
-			
-			BranchTo(0x824FDBC0,int,a1->MMTuint0x9C,&a1->MMTextCard_msg_tag_c + a1->MMTuint0xA8);
-			}
-			
-			return 0;
-		case 0x102:
-			//Back
-			if ((a1->MMP1Input & 0x20) != 0){
-				int s[] = {a1->MMHudMainMenu->HMMCSDSpriteMainMenu};
-				BranchTo(0x824CE670,int,(int*)s,"main_menu","tagstory_select"); //PLAY
-
-				a1->MMHudMainMenu->OnMessageRecieved(&Sonicteam::SoX::Message(0x1B053,0x4E,a1->MMTuint0xA8 | 0x20000)); //mst (
-				a1->MMHudMainMenu->OnMessageRecieved(&Sonicteam::SoX::Message(0x1B053,0xB,a1->MMTuint0xA8 |  0x20000)); //mst (
-				a1->MMHudMainMenu->OnMessageRecieved(&Sonicteam::SoX::Message(0x1B053,0x67,a1->MMTuint0xAC | 0x20000)); //Select3 Arrow Show(Position)
-
-				BranchTo(0x824FD460,int,a1,"main_deside");
-				a1->MMCurrentCase = 0x101;
-				return 0;
-			}
-			//select
-			if ((a1->MMP1Input & 0x10) != 0){
-
-				int s[] = {a1->MMHudMainMenu->HMMCSDSpriteMainMenu};
-				BranchTo(0x824CE670,int,(int*)s,"main_menu","tagstory_select"); //PLAY
-
-				a1->MMHudMainMenu->OnMessageRecieved(&Sonicteam::SoX::Message(0x1B053,0x67,a1->MMTuint0xAC | 0x20000)); //Select3 Arrow Show(Position)
-				a1->MMCurrentCase = 0x103;
-				BranchTo(0x824FD460,int,a1,"main_deside");
-				return 0;
-
-			}
-
-
-			if (!BranchTo(0X824FE3B8,int,a1,a1->MMP1Input,2,&a1->MMTuint0xAC)){
-				a1->MMP1Input = 0;
-				return 0;
-			}
-			a1->MMP1Input = 0;
-			a1->MMHudMainMenu->OnMessageRecieved(&Sonicteam::SoX::Message(0x1B053,0x66,a1->MMTuint0xAC | 0x20000)); //Select3 Arrow Show(Position)
-
-			return 0;
-		}
-
-
-
-		return BranchTo(0x824FFCF8,int,a1);
 
 		
 	}
@@ -6759,7 +6650,7 @@ namespace AmyLOS{
 		BranchTo(0x821AB7D0,int,a1);
 
 
-		ptr->VelocityY =  ptr->c_jump_double_speed;
+		ptr->base_speed_y =  ptr->c_jump_double_speed;
 
 
 	}
@@ -6803,9 +6694,9 @@ namespace AmyLOS{
 
 			if ((a1->CObjContext->GroundAirDataFlags & 1) != 0){
 					a1->CObjContext->IsGravityDisabled = 0;
-					a1->CObjContext->CurrentSpeed = 0;
-					a1->CObjContext->VelocityY = 0;
-					a1->CObjContext->VelocityX = 0;
+					a1->CObjContext->base_speed_z = 0;
+					a1->CObjContext->base_speed_y = 0;
+					a1->CObjContext->gimmick_speed_z = 0;
 			}
 		
 		}
@@ -6829,14 +6720,14 @@ namespace AmyLOS{
 			if ( (a1->CObjContext->AnimationState & 1) != 0 &&  IsAttack(AmyAtk01,a1->Flags0)) {
 
 				a1->CObjContext->IsJumped_PostureVelocityYHandle=1;
-				a1->CObjContext->VelocityY = a1->BOContext->c_jump_double_speed;
+				a1->CObjContext->base_speed_y = a1->BOContext->c_jump_double_speed;
 				a1->CObjContext->SetAnimation(0xAF);
 				a1->Flags0 |= AmyAtk02;
 				a1->Time = 0.035f;
 			}
 
-			if (a1->CObjContext->CurrentSpeed > 0.0f){
-				a1->CObjContext->CurrentSpeed -= a1->CObjContext->c_brake_acc *delta * 0.1f;
+			if (a1->CObjContext->base_speed_z > 0.0f){
+				a1->CObjContext->base_speed_z -= a1->CObjContext->c_brake_acc *delta * 0.1f;
 
 			}
 		}
@@ -6926,7 +6817,7 @@ namespace AmyLOS{
 
 		//a1->CObjContext->IsForcedMovement = 1;
 		//a1->CObjContext->CurrentSpeed = 0;
-		a1->CObjContext->VelocityX = 0;
+		a1->CObjContext->gimmick_speed_z = 0;
 		a1->CObjContext->IsInvulnerable2 = 1;
 		(*(byte*)(&a1->BOContext->AmyUnkFlags )) = 1;
 		a1->Time = 0;
@@ -7119,7 +7010,7 @@ void CheckEmulated::GlobalInstall()
 
 	//Sonicteam::Player::PhantomEnterListener* le = new Sonicteam::Player::PhantomEnterListener(operation);
 
-
+	
 //	(new Sonicteam::SoX::Component(0))->DestroyObject(1);
 //	(new Sonicteam::SoX::Graphics::Frame())->DestroyObject(1);
 	
@@ -7128,7 +7019,7 @@ void CheckEmulated::GlobalInstall()
 
 	HookV2::IsNotEmulatedHardWare = HookV2::CheckIsNotEmulatedHardWare();
 }
-
+	
 
 namespace DevTitle{
 

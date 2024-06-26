@@ -95,6 +95,7 @@ namespace DebugLogV2{
 		lua_pushlightuserdata(L,(void*)value);
 		lua_settable06(L,-3);
 
+
 		// required for save check
 		lua_pushstring06(L,"move");
 		lua_pushlightuserdata(L,(void*)move);

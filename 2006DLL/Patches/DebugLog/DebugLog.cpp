@@ -52,6 +52,8 @@ namespace DebugLogV2{
 		GlobalInstall_StateIMachine(LS);
 		GlobalInstall_StateMachine2(LS);
 		GlobalInstall_PlayerRework(LS);
+
+	
 		
 
 
@@ -105,7 +107,7 @@ namespace DebugLogV2{
 
 			char chr = *a1;
 			if (chr != 0 && isalpha(chr)){
-				DebugLogV2::log.push_back(new std::string(a1));
+				DebugLogV2::log.push_back(std::string(a1));
 			}
 					
 			

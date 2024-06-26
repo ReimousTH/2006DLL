@@ -360,7 +360,7 @@
 				ModuleDefinitionFile="DllModule.def"
 				GenerateDebugInformation="true"
 				GenerateMapFile="true"
-				OptimizeReferences="2"
+				OptimizeReferences="1"
 				EnableCOMDATFolding="1"
 				SetChecksum="true"
 			/>
@@ -738,6 +738,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Patches\CompleteGauge\CompleteGauge_SonicModel.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\CompleteGauge\CompleteGauge_SonicModel.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Patches\CompleteGauge\CompleteGauge_SonicSound.cpp"
 						>
 					</File>
@@ -751,6 +759,35 @@
 					</File>
 					<File
 						RelativePath=".\Patches\CompleteGauge\CompleteGauge_SonicStates.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="TagBattleExtension"
+					>
+					<File
+						RelativePath=".\Patches\TagBattleExtension\TagBattleMain.cpp"
+						>
+						<FileConfiguration
+							Name="Release|Xbox 360"
+							>
+			<Tool
+				Name="VCCLX360CompilerTool"
+				InlineFunctionExpansion="2"
+				EnableIntrinsicFunctions="false"
+			/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath=".\Patches\TagBattleExtension\TagBattleMain.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\TagBattleExtension\TagBattleMain_InBattle.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\TagBattleExtension\TagBattleMain_InBattle.h"
 						>
 					</File>
 				</Filter>
@@ -771,6 +808,38 @@
 		<Filter
 			Name="Marathon"
 			>
+			<File
+				RelativePath=".\Marathon\CMemoryAllocMarathon.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Marathon\CMemoryAllocMarathon.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Marathon\CPlatformMarathon.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Marathon\CPlatformMarathon.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Marathon\CsdLink.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Marathon\CsdLink.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Marathon\CsdObject.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Marathon\CsdObject.h"
+				>
+			</File>
 			<File
 				RelativePath=".\Marathon\DocMarathonImp.cpp"
 				>
@@ -793,6 +862,14 @@
 			</File>
 			<File
 				RelativePath=".\Marathon\HUDOption.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Marathon\ICMemoryAllocMarathon.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Marathon\ICMemoryAllocMarathon.h"
 				>
 			</File>
 			<File
@@ -1245,6 +1322,78 @@
 				</File>
 			</Filter>
 			<Filter
+				Name="Other"
+				>
+				<File
+					RelativePath=".\Marathon\Other\06BoostDestructor.hpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Chao"
+				>
+				<Filter
+					Name="CSD"
+					>
+					<File
+						RelativePath=".\Marathon\Chao\CSD\CPlatform.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Chao\CSD\CPlatform.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Chao\CSD\CProject.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Chao\CSD\CProject.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Chao\CSD\CReadFile.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Chao\CSD\CReadFile.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Chao\CSD\CResourceBase.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Chao\CSD\CResourceBase.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Chao\CSD\CScene.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Chao\CSD\CScene.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Chao\CSD\Project.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Chao\CSD\Project.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Chao\CSD\RCObject.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Chao\CSD\RCObject.h"
+						>
+					</File>
+				</Filter>
+			</Filter>
+			<Filter
 				Name="SoX"
 				>
 				<File
@@ -1571,14 +1720,6 @@
 						>
 					</File>
 				</Filter>
-			</Filter>
-			<Filter
-				Name="Other"
-				>
-				<File
-					RelativePath=".\Marathon\Other\06BoostDestructor.hpp"
-					>
-				</File>
 			</Filter>
 		</Filter>
 		<Filter

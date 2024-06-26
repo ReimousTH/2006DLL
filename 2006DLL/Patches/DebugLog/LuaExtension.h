@@ -177,5 +177,5 @@ namespace DebugLogV2 {
 	extern "C" int GameImp_NEW(lua_State* LS);
 
 
-	
+	extern "C" int PrintNextFixed(std::string msg);
 }

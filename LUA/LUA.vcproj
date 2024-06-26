@@ -550,19 +550,19 @@
 			>
 		</File>
 		<File
-			RelativePath=".\src\Makefile"
-			>
-		</File>
-		<File
 			RelativePath=".\src\lib\Makefile"
 			>
 		</File>
 		<File
-			RelativePath=".\src\README"
+			RelativePath=".\src\Makefile"
 			>
 		</File>
 		<File
 			RelativePath=".\src\lib\README"
+			>
+		</File>
+		<File
+			RelativePath=".\src\README"
 			>
 		</File>
 	</Files>

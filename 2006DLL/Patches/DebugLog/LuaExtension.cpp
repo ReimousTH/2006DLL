@@ -377,8 +377,8 @@ namespace DebugLogV2{
 				_params[key] = static_cast<float>(lua_tonumber(L, -1));
 				break;
 			case LUA_TSTRING:
-	
 				_params[key] = std::string(lua_tostring(L, -1));
+		
 				break;
 				}
 
@@ -1589,6 +1589,34 @@ namespace DebugLogV2{
 		return 1;
 	}
 
+	extern "C" int PrintNextFixed(std::string msg){
+		int length = msg.length() + 1;
+		wchar_t* wcharPtr = new wchar_t[length];
+		std::memset(wcharPtr, 0, length * sizeof(wchar_t));
+		std::mbstowcs(wcharPtr, msg.c_str(), length);
+
+
+
+		int MCount = DebugMessages.size();
+		if (MCount > 5){
+			MCount--;
+			std::vector<int>::iterator it = DebugMessages.begin();
+			BranchTo(0x8262BA68,int,*it,1); //Destroy from mem
+			std::advance(it, 0);
+			DebugMessages.erase(it);
+
+			//Re Order Messages
+
+			int cc = 0;
+			for (std::vector<int>::iterator it = DebugMessages.begin(); it != DebugMessages.end(); ++it) {
+				ChangeMessagePositionY( *it,(cc * 28) );
+				cc++;
+			}
+		}
+
+		DebugMessages.push_back( SpawnMessage(wcharPtr,(MCount * 28)));
+		return 0;
+	}
 	extern "C" int PrintNext(lua_State* L){
 
 		int n = lua_gettop(L);  /* number of arguments */

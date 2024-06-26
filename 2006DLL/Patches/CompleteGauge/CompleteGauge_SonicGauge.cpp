@@ -58,6 +58,8 @@ namespace CompleteGauge{
 		 _this->c_current_gauge_maturity = 0;
 		 _this->c_current_gauge_level = 0;
 		 _this->c_current_gauge_fatigue = 100;
+		 _this->HomingSmash = false;
+		 _this->HomingSmash_Release = false;
 		
 	}
 
@@ -69,8 +71,6 @@ namespace CompleteGauge{
 		
 		_this->c_current_gauge_fatigue = clamp(_this->c_current_gauge_fatigue,1,100);
 	
-		
-		
 		_this->GaugeGroundTime +=delta;
 		if (_this->GaugeGroundTime > _this->c_gauge_heal_delay){
 			
@@ -81,6 +81,25 @@ namespace CompleteGauge{
 		}
 
 	
+	}
+
+
+	void __fastcall SonicGaugeIVarible(Sonicteam::Player::IVariable* _this, Sonicteam::LuaSystem** lua){
+		BranchTo(0x8223F360,int,_this,lua);
+		CompleteGauge::SonicGaugeExtended* _this_fx = (CompleteGauge::SonicGaugeExtended*)dynamic_cast<Sonicteam::Player::SonicGauge*>(_this);
+
+		_this_fx->c_gauge_fatigue_green =  (*lua)->GetFloatValue(std::string("c_fatigue_green"));
+		_this_fx->c_gauge_fatigue_red =    (*lua)->GetFloatValue(std::string("c_fatigue_red"));
+		_this_fx->c_gauge_fatigue_blue =   (*lua)->GetFloatValue(std::string("c_fatigue_blue"));
+		_this_fx->c_gauge_fatigue_white =  (*lua)->GetFloatValue(std::string("c_fatigue_white"));
+		_this_fx->c_gauge_fatigue_sky =    (*lua)->GetFloatValue(std::string("c_fatigue_sky"));
+		_this_fx->c_gauge_fatigue_yellow = (*lua)->GetFloatValue(std::string("c_fatigue_yellow"));
+		_this_fx->c_gauge_fatigue_purple = (*lua)->GetFloatValue(std::string("c_fatigue_purple"));
+		_this_fx->c_gauge_fatigue_super =  (*lua)->GetFloatValue(std::string("c_fatigue_super"));
+
+
+
+
 	}
 
 
@@ -105,6 +124,7 @@ namespace CompleteGauge{
 		WRITE_DWORD(0X8200D4C8,GaugeModuleStep);
 
 
+		WRITE_DWORD(0x8200D4D0,SonicGaugeIVarible);
 
 
 	}

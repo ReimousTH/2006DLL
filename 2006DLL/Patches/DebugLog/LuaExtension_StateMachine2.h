@@ -49,6 +49,12 @@ namespace DebugLogV2 {
 	extern "C" int StateMachine2__OnStateConnect(lua_State*L);
 
 
+	extern "C" int LuaCommonStateConnectRefConstructor(lua_State* L);
+	extern "C" int LuaCommonStateConnectRef__Disconnect(lua_State* L);
+
+	
+
+
 	
 
 

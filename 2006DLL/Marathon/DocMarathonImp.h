@@ -120,6 +120,14 @@ namespace Sonicteam{
 			virtual unsigned int SetRealControllerID(unsigned int,unsigned int); //need complete struct ,index
 			virtual unsigned int GetRealControllerID(unsigned int); //need complete struct ,index
 
+			virtual unsigned int DocGet0x55C54();
+			virtual unsigned int DocSet0x55C54(int value);
+			virtual unsigned int DocSet0x55C58(char flag);
+			virtual unsigned int DocGet0x5C5C();
+			virtual unsigned int DocSet0x5C5C(int v);
+			virtual unsigned int DocProcessShaderMode(int mode);
+
+
 
 			//field
 			unsigned int DocCurrentDocMode; //MainMode (0x5C) But ... StateGamemode .....

@@ -27,6 +27,15 @@ namespace CompleteGauge{
 		bool Homing_Smash_Release = false;
 		bool SuperSoundFlag = false;
 		bool LockGaugeHeal = false;
+		bool IsSpeedUPGEM = false;
+
+
+		IsSpeedUPGEM = (bool)_this->IsMachSpeed;
+
+		std::stringstream sus;
+		sus << std::hex<< _this->Input;
+
+		DebugLogV2::PrintNextFixed(sus.str());
 
 		//decide 
 		Sonicteam::Player::Score* score =  _this->ScorePlugin.get();
@@ -85,11 +94,15 @@ namespace CompleteGauge{
 			//ExportFlagRequest
 			if (gauge->IsFull) FULL_GAUGE = true;
 
+			if (gauge->HomingSmash) Homing_Smash_Charge = true;
+			if (gauge->HomingSmash_Release) Homing_Smash_Release = true;
 
 			//Always
 
 			gauge->c_current_gauge_maturity = gauge_storage[_this->CurrentGem];
 			gauge->c_current_gauge_level = gauge_levels_storage[_this->CurrentGem];
+
+		
 
 
 		}
@@ -109,7 +122,7 @@ namespace CompleteGauge{
 			if (_this->ScorePlugin.get()->RingsCount <= 0 || _this->IsSonicDied){
 				_this->IsInvulnerable = 0;
 				_this->IsSuper = false;
-				//Switch back
+				//Switch backB
 				Switch(_this,"player/sonic_new.lua","player/sonic_new","player_sonic","sonic");
 
 			}
@@ -128,8 +141,19 @@ namespace CompleteGauge{
 
 
 		//Complete Output Flag
-		_this->UnknownFlags01 |= (LVL_UP ? 0x10000000 : 0) | (FULL_GAUGE ? 0x20000000 : 0);
+		_this->UnknownFlags01 |= (LVL_UP ? 0x10000000 : 0) | 
+                         (FULL_GAUGE ? 0x20000000 : 0) |
+                         (Homing_Smash_Charge ? 0x8000000 : 0) |
+                         (Homing_Smash_Release ? 0x4000000 : 0) ;
+                        
 
+		_this->ExportWeaponRequestFlag |= (IsSpeedUPGEM ? 0x2000000 : 0);
+
+
+		if ( CompleteGauge::SonicGaugeExtended* gauge = (SonicGaugeExtended*)_this->GaugePlugin.get()){
+
+			gauge->HomingSmash_Release = false;
+		}
 
 	}
 
@@ -162,7 +186,7 @@ namespace CompleteGauge{
 		return 0;
 	}
 
-	HOOK(bool,__fastcall,ContextIsCanDrainGauge,0x82217FC0,SonicContextExtended* _this,int index) {
+	HOOK(bool,__fastcall,ContextIsCanDrainGauge,0x82217FC0,SonicContextExtended* _this,int index,float delta) {
 
 		int index_table[9] = {0,3,2,1,7,5,4,6,8};
 		index = index_table[index];
@@ -176,8 +200,8 @@ namespace CompleteGauge{
 				drain_value = gauge->c_green;
 				break;
 			case 2:
-				//drain_value = gauge->c_red;
-				drain_value = 0.0f;
+				drain_value = gauge->c_red * delta;
+			
 				break;
 			case 3:
 				drain_value = gauge->c_blue;
@@ -192,8 +216,7 @@ namespace CompleteGauge{
 				drain_value = gauge->c_yellow;
 				break;
 			case 7:
-				//drain_value = gauge->c_purple;
-				drain_value = 0.0f;
+				drain_value = gauge->c_purple * delta;
 				break;
 			case 8:
 				drain_value = gauge->c_super;
@@ -204,6 +227,14 @@ namespace CompleteGauge{
 			}
 
 			if (gauge->GaugeValue >= drain_value) return true;
+			else if (index == 2 || index == 7){
+
+				if (   (_this->Input & LN_GAMEPAD_BUTTON_RT_HOLD) != 0)
+					
+					gauge->GaugeValue = 0.0f;
+				return false;
+			}
+
 			return false;
 
 		}
@@ -224,35 +255,35 @@ namespace CompleteGauge{
 			{
 			case 1:
 				drain_value = gauge->c_green;
-				fatigue_flag = 1;
+				fatigue_flag = gauge->c_gauge_fatigue_green;
 				break;
 			case 2:
 				drain_value = gauge->c_red * delta;
-				fatigue_flag = 1;
+				fatigue_flag = gauge->c_gauge_fatigue_red * delta;
 				break;
 			case 3:
 				drain_value = gauge->c_blue;
-				fatigue_flag = 1;
+				fatigue_flag = gauge->c_gauge_fatigue_blue;
 				break;
 			case 4:
 				drain_value = gauge->c_white;
-				fatigue_flag = 1;
+				fatigue_flag = gauge->c_gauge_fatigue_white;
 				break;
 			case 5:
 				drain_value = gauge->c_sky;
-				fatigue_flag= 1;
+				fatigue_flag= gauge->c_gauge_fatigue_sky;
 				break;
 			case 6:
 				drain_value = gauge->c_yellow;
-				fatigue_flag= 1;
+				fatigue_flag= gauge->c_gauge_fatigue_yellow;
 				break;
 			case 7:
 				drain_value = gauge->c_purple * delta;
-				fatigue_flag = 1;
+				fatigue_flag = gauge->c_gauge_fatigue_purple;
 				break;
 			case 8:
 				drain_value = gauge->c_super;
-				fatigue_flag = 1;
+				fatigue_flag = gauge->c_gauge_fatigue_super;
 				break;
 
 	

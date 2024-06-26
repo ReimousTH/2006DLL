@@ -38,7 +38,9 @@ namespace DebugLogV2{
 
 
 	//OriginalLog
-	static std::vector<std::string*> log;
+	
+	extern std::vector<std::string> log;
+
 	void MessageUtilGlobalInstall();
 
 }

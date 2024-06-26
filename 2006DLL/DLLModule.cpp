@@ -48,6 +48,7 @@ void operator delete(void* ptr) {
 #include "Patches/DebugLog/DebugLog.h"
 #include "Patches/DevTitle/DevTitle.h"
 #include "Patches/CompleteGauge/CompleteGauge.h"
+#include "Patches/TagBattleExtension/TagBattleMain.h"
 
 
 
@@ -71,6 +72,7 @@ DFastActions _PreLoadPatches[] = {
 	{"TagStory",TagStory::GlobalInstall},
 	{"TailsGauge",TailsGauge::GlobalInstall},
 	{"AmyLOS",AmyLOS::GlobalInstall},
+	{"TagBattleExtension",TagBattleMain::GlobalInstall}
 };
 
 bool _NoArcMode = false;
@@ -79,16 +81,200 @@ bool _Multiplayer4P = false;
 bool _DebugLogRestore = false;
 bool _OmegaHoverGauge = false;
 
+int __declspec( naked ) MainAsmHookIline(_DWORD *a1, int* HandleManager, std::string* a3, std::string *a4, int* a5, int a6){
+	__asm{
+		mflr r12
+			std       r29, -0x20(r1)
+			std       r30, -0x18(r1)
+			std       r31, -0x10(r1)
+			stw       r12, -0x8(r1)
+			stwu      r1, -0xC0(r1)
+			mr        r29, r3
+			lis r11,0x8258  
+			ori r11,r11,0x2658 
+			mtctr r11
+			bctr r11
+	}
+}	
+bool TOGLE = true;
+
+HOOK(int,__fastcall,LoadFromArcHOOK_GLOBAL,0x82582648,_DWORD *a1, int* HandleManager, std::string* a3, std::string *a4, int* a5, int ShowErrors){
+
+
+
+	DWORD test;
+	__asm{
+		mflr r12;
+		stw r12,test
+	}
+
+	if (TOGLE){
+
+
+		//ShowXenonMessage(L"MSG",a3->c_str());
+
+
+	}
+
+	//std::string* po = new std::string();
+	//po->append(a3->c_str());
+	//po->append(" : ");
+	//po->append(a4->c_str());
+
+
+	//std::stringstream ss;
+	//std::stringstream ss1;
+
+	//if (a5 == 0){
+	//	ss << a5;
+	//}
+	//else{
+	//	ss << *a5;
+	//}
+
+
+	//ss1 << ShowErrors;
+
+
+
+	//	po->append(" : ");
+	//	po->append(ss.str().c_str());
+
+	//	po->append(" : ");
+	//	po->append(ss1.str().c_str());
 
 
 
 
 
+
+
+
+
+
+	if (a3->find("player.arc") != std::string::npos)
+	{
+		
+//		    std::stringstream ss;
+//		    ss << std::hex << test;
+///			ShowXenonMessage(L"MSG",ss.str().c_str());
+//			Sleep(1000);
+//			while (true){
+//
+	//		}
+	//		return MainAsmHookIline(a1,HandleManager,a3,a4,a5,0);
+
+
+
+	}
+
+
+	return MainAsmHookIline(a1,HandleManager,a3,a4,a5,ShowErrors);
+
+
+
+};
+
+bool TOOGLE = false;
+DWORD WINAPI ThreadProc( LPVOID lpParameter )
+{
+	while (1){
+		if (ATG::Input::GetMergedInput(0)->wLastButtons & XINPUT_GAMEPAD_Y)
+		{
+			TOOGLE = true;
+		}
+
+	}
+}
+
+
+
+
+
+
+HOOK(DWORD*,__fastcall,DocMarathonState_GLOBAL,0x82160B98,DWORD* a1,int a2){
+
+  // Create a thread in a suspended state
+    HANDLE hThread = CreateThread(
+        NULL,                      // lpThreadAttributes
+        0,                         // dwStackSize
+        ThreadProc,                // lpStartAddress
+        (LPVOID)THREAD_SUSPEND_RESUME,  // lpParameter
+        CREATE_SUSPENDED,          // dwCreationFlags
+        NULL                       // lpThreadId
+    );
+
+	byte s0[0x1C];
+	byte s1[0x1C];
+	byte s2[0x1C];
+	byte s3[0x1C];
+
+
+	DWORD handle1;
+	DWORD handle2;
+	DWORD handle3;
+
+
+
+
+	BranchTo(0x821620E8,int,&s1,"DLL/cache_3P.arc");
+	BranchTo(0x821620E8,int,&s3,"DLL/sprites_4P.arc");
+	BranchTo(0x821620E8,int,&s2,"DLL/scripts_4P.arc");
+
+
+
+	sub_825EB070((int)a1, a2);
+	*a1 = 0x8200094C;
+
+
+
+	int result1 = ArcHandle(&handle1,&s1,2,2);
+	int result2 = ArcHandle(&handle1,&s2,2,2);
+	int result3 = ArcHandle(&handle1,&s3,2,2);
+
+
+
+	sub_82582C10(*(DWORD*)result1);
+	sub_82582C10(*(DWORD*)result2);
+	sub_82582C10(*(DWORD*)result3);
+
+
+	return a1;
+}
+
+
+int __fastcall sub_8264E068(int a1, int a2, int a3) {
+    Sonicteam::SoX::IResource* resource = (Sonicteam::SoX::IResource*)a1;
+
+    if (resource->str1.find("archive.pkg") != std::string::npos) {
+        int FixedArchive = (*(int(__fastcall**)(int, const char*))(*(_DWORD*)a1 + 0x30))(a1, "archive_fixed");
+        int Handle;
+
+ //       if (int* FileToProcess = (int*)(*(int(__fastcall**)(int*, int, std::string*))(*(_DWORD*)FixedArchive + 4))(&Handle, FixedArchive, &std::string("DLL/player_Super.arc"))) {
+   //         // Process the file
+     //   }
+    }
+
+    int r = BranchTo(0x8264E068, int, a1, a2, a3);
+
+    if (resource->str1.find("archive.pkg") != std::string::npos) {
+        int Handle;
+
+        if (Sonicteam::SoX::IResource** ArcFile = (Sonicteam::SoX::IResource**)ArcHandle(&Handle, &std::string("DLL/player_Super.arc"), 2, 2)) {
+            // Process the archive file
+        }
+    }
+
+    // ExtraPackage
+
+    return r;
+}
 
 extern "C" void OnDLLStart(){
-
+	TagBattleMain::GlobalInstall();
 	std::string Loaded;
 
+	DebugLogV2::GlobalInstall();
 	CheckEmulated::GlobalInstall();
 	//DevTitleV2::GlobalInstall();
 	//DevTitle::GlobalInstall();
@@ -116,6 +302,9 @@ extern "C" void OnDLLStart(){
 
 
 
+	WRITE_DWORD(0x8204D3A8,sub_8264E068);
+	INSTALL_HOOK(DocMarathonState_GLOBAL);
+	INSTALL_HOOK(LoadFromArcHOOK_GLOBAL);
 	
 	ShowXenonMessage(L"LoadedDLLPatches",Loaded.c_str());
 	Loaded.clear();

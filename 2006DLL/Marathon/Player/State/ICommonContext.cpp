@@ -26,14 +26,14 @@ void ICommonContext::ICCIF_02(float a1,float a2,float a3,float a4)
 	this->field_80 = a4;
 }
 
-float ICommonContext::ICCIF_06()
+float ICommonContext::GetTotalSpeedY()
 {
-	return this->VelocityY + this->VelocityZ;
+	return this->base_speed_y + this->gimmick_speed_y;
 }
 
-float ICommonContext::ICCIF_07()
+float ICommonContext::GetTotalSpeedZ()
 {
-	return this->CurrentSpeed + this->VelocityX;
+	return this->base_speed_z + this->gimmick_speed_z;
 }
 
 void ICommonContext::ImportAnimationStateFlag(DWORD flag_value)

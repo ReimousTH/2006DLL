@@ -11,6 +11,7 @@ namespace CompleteGauge{
 		CompleteGauge::GlobalInstall_SonicContext();
 		CompleteGauge::GlobalInstall_SonicStates();
 		CompleteGauge::GlobalInstall_SonicGauge();
+		CompleteGauge::GlobalInstall_SonicModel();
 
 	}
 

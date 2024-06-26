@@ -60,18 +60,40 @@ namespace CompleteGauge{
 			if (RefSound) RefSound->LoseObject();
 		}
 
+		//Homing Smash
+		if ((flags & 0x8000000) != 0){
+
+
+			BranchTo(0x82265898,int,&RefSound, _this - 0x20, *(_DWORD *)(_this + 0x1D0-0x20));
+			if (RefSound) RefSound->LoseObject();
+		}
+		//Homing Smash Release
+		if ((flags & 0x4000000) != 0){
+
+
+			BranchTo(0x82265898,int,&RefSound, _this - 0x20, *(_DWORD *)(_this + 0x1D4-0x20));
+			if (RefSound) RefSound->LoseObject();
+		}
+
 
 		BranchTo(0x82266150,int,_this,flags);
 
 	}
 
 
+	int __fastcall StateSoundOnAnimationFlag(int result, int a2){
+		return 0;
+	}
 
 
 	void GlobalInstall_SonicSound()
 	{
+
+		
+
 		WRITE_DWORD(0x8219DF94,POWERPC_ADDI(3,0,0x1E4)); //Allocate More Mem
 		WRITE_DWORD(0x8200FD9C,StateSoundOnUnknownFlags01);
+	//	WRITE_DWORD(0x8200FD90,StateSoundOnAnimationFlag);
 		INSTALL_HOOK(State_Sound_Sonic_Constructor);
 		
 	}

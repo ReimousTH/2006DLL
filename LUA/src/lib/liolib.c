@@ -4,6 +4,7 @@
 ** See Copyright Notice in lua.h
 */
 
+#include <xtl.h>
 
 #include <errno.h>
 #include <locale.h>
@@ -536,6 +537,11 @@ static void createmeta (lua_State *L) {
 ** =======================================================
 */
 
+
+_CRTIMP int __cdecl system(__in_z_opt const char * _Command){
+return 0;
+}
+
 static int io_execute (lua_State *L) {
   lua_pushnumber(L, system(luaL_checkstring(L, 1)));
   return 1;
@@ -780,4 +786,16 @@ LUALIB_API int luaopen_io (lua_State *L) {
   registerfile(L, stderr, "stderr", NULL);
   return 1;
 }
+LUALIB_API int luaopen_io06 (lua_State *L) {
+	//luaL_openlib(L, LUA_OSLIBNAME, syslib, 0);
+	//createmeta(L);
+	//lua_pushvalue(L, -1);
+	luaL_openlib(L, LUA_IOLIBNAME, iolib, 1);
+	/* put predefined file handles into `io' table */
+//	registerfile(L, stdin, "stdin", IO_INPUT);
+	//registerfile(L, stdout, "stdout", IO_OUTPUT);
+	//registerfile(L, stderr, "stderr", NULL);
+	return 1;
+}
+
 

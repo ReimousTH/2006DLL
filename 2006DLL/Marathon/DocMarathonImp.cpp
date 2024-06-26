@@ -356,3 +356,34 @@ unsigned int Sonicteam::DocMarathonImp::DocProcessSubtitleFlag(char*,unsigned in
 {
 return 0;
 }
+
+unsigned int Sonicteam::DocMarathonImp::DocGet0x55C54()
+{
+return 0;
+}
+
+unsigned int Sonicteam::DocMarathonImp::DocSet0x55C54(int value)
+{
+
+	return 0;
+}
+
+unsigned int Sonicteam::DocMarathonImp::DocSet0x55C58(char flag)
+{
+return 0;
+}
+
+unsigned int Sonicteam::DocMarathonImp::DocGet0x5C5C()
+{
+return 0;
+}
+
+unsigned int Sonicteam::DocMarathonImp::DocSet0x5C5C(int v)
+{
+return 0;
+}
+
+unsigned int Sonicteam::DocMarathonImp::DocProcessShaderMode(int mode)
+{
+return 0;
+}

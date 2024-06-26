@@ -8,7 +8,7 @@
 #include "CompleteGauge_SonicSound.h"
 #include "CompleteGauge_SonicEffect.h"
 #include "CompleteGauge_SonicStates.h"
-
+#include "CompleteGauge_SonicModel.h"
 
 
 extern "C" {

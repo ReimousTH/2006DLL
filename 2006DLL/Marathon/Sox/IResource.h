@@ -28,8 +28,7 @@ namespace Sonicteam{
 
 
 			//fields
-
-			unsigned int field4;	
+	
 			unsigned int field8;
 
 			std::string str1;

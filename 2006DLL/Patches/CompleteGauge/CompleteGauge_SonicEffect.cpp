@@ -33,8 +33,10 @@ namespace CompleteGauge{
 
 
 
-		memset((void*)(a1 +0x680),0,0x1C);
+		memset((void*)(a1 +0x680),0,0x1C * 3);
 		BranchTo(0x82225A18,int,a1 + 0x680,a1 +0x2C,&std::string("superchange"));
+		BranchTo(0x82225A18,int,a1 + 0x69C,a1 +0x2C,&std::string("homing_smash"));
+		BranchTo(0x82225A18,int,a1 + 0x6B8,a1 +0x2C,&std::string("homing_00"));
 
 
 
@@ -46,13 +48,13 @@ namespace CompleteGauge{
 
 	void Sonic_Effect_OnAnimationChange(int _this,int flag,int flag2){
 
-		BranchTo(0x82227E70,int,_this,flag,flag2);
+	
 		DWORD _fake_boost_container[2] = {0};
 
 		//Super-Sonic Transformation
 		if (flag == 0xCE){
 
-			  BranchTo(0x82225BD8,int,
+			BranchTo(0x82225BD8,int,
 				&_fake_boost_container, //r3
 				_this + 0xC, // (GE1,GE2,GE3 and some like this, buffers) r4
 				*(UINT64*)(_this + 0x680 - 0x20), //r5
@@ -68,16 +70,74 @@ namespace CompleteGauge{
 
 
 		}
+		//HELP (my effects)
+		else if (flag != 0x47)
+		{
+
+			BranchTo(0x82227E70,int,_this,flag,flag2);
+		}
+
+	}
+	void Sonic_Effect_OnUnknownFlags01(int _this,int flags){
+
+		
+		DWORD _fake_boost_container[2] = {0};
+		
+
+		//Homing Smash
+		if ((flags & 0x8000000) != 0){
+	
+			BranchTo(0x82225BD8,int,
+				&_fake_boost_container, //r3
+				_this + 0xC, // (GE1,GE2,GE3 and some like this, buffers) r4
+				*(UINT64*)(_this + 0x69C - 0x20), //r5
+				*(UINT64*)(_this + 0x69C - 0x20 + 8), //r6
+				*(UINT64*)(_this + 0x69C - 0x20 + 0x10), //r7
+				(UINT64)*(unsigned int*)(_this + 0x69C	 - 0x2C + 0x18), //r8
+				(_this + 0x488) //Effect Group (GE1,GE2,GE3) maybe
+				); //LoadEffectFunc
+
+			BranchTo(0x8221F3C8,int,_this + 0x48C,&_fake_boost_container);
+			if (_fake_boost_container[1])
+				BranchTo(0x821601B8,int,_fake_boost_container[1]);
+
+
+		}
+		//Homing Smash Release
+		else if ((flags & 0x4000000) != 0){
+			BranchTo(0x82225BD8,int,
+				&_fake_boost_container, //r3
+				_this + 0xC, // (GE1,GE2,GE3 and some like this, buffers) r4
+				*(UINT64*)(_this + 0x6B8 - 0x20), //r5
+				*(UINT64*)(_this + 0x6B8 - 0x20 + 8), //r6
+				*(UINT64*)(_this + 0x6B8 - 0x20 + 0x10), //r7
+				(UINT64)*(unsigned int*)(_this + 0x6B8 - 0x2C + 0x18), //r8
+				(_this + 0x488) //Effect Group (GE1,GE2,GE3) maybe
+				); //LoadEffectFunc
+
+			BranchTo(0x8221F3C8,int,_this + 0x48C,&_fake_boost_container);
+			if (_fake_boost_container[1])
+				BranchTo(0x821601B8,int,_fake_boost_container[1]);
+
+		
+		}
+		else
+		{
+
+		BranchTo(0x82228DF0,int,_this,flags);
+		}
+
 
 	}
 
 
 	void GlobalInstall_SonicEffect()
 	{
-		WRITE_DWORD(0x8219DB40,POWERPC_ADDI(3,0,0x680 + (1*0x1C)));
+		WRITE_DWORD(0x8219DB40,POWERPC_ADDI(3,0,0x680 + (3*0x1C)));
 
 		INSTALL_HOOK(EffectModuleSonicHook);
 		WRITE_DWORD(0x8200C410,Sonic_Effect_OnAnimationChange);
+		WRITE_DWORD(0x8200C424,Sonic_Effect_OnUnknownFlags01);
 		
 	}
 	

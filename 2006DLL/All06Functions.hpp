@@ -24,7 +24,16 @@ FUNCTION_PTR(int,__fastcall,CellLoadSprite,0x824CE670,int* a1,int a2,int a3);
 FUNCTION_PTR(int,__fastcall,sub_824EAF9C,0x824EAF9C,int* a1,int* a2,int* a3);
 
 
-FUNCTION_PTR(int,__fastcall,CellLoadSpriteWithAnim,0x824CE670,int* XNCP_CELL,char* Scene_Name,char* Scene_Cast_Name);
+FUNCTION_PTR(int,__fastcall,CellLoadSpriteWithAnim,0x824CE670,int* CSD_OBJECT,char* Scene_Name,char* Scene_Cast_Name);
+FUNCTION_PTR(int,__fastcall,CellUnLoadSpriteWithAnim,0x824CEFF0,int* CSD_OBJECT,char* Scene_Name,char* Scene_Cast_Name);
+
+
+FUNCTION_PTR(int,__fastcall,CellLoadSpriteWithSubAndSpriteIndex,0x824CDCE0,int* CSD_OBJECT,char* Scene_Name,char* Scene_Cast_Name,int sprite_index);
+
+
+FUNCTION_PTR(int,__fastcall,CellLoadSpriteLoop,0x824CEE20,int* CSD_OBJECT,char* Scene_Name,char* Scene_Cast_Name);
+FUNCTION_PTR(int,__fastcall,CellUnLoadSpriteLoop,0x824CDA90,int* CSD_OBJECT,char* Scene_Name,char* Scene_Cast_Name);
+
 
 //XNCP SOME
 FUNCTION_PTR(int,__fastcall,sub_825CC718,0x825CC718,_DWORD **a1, int a2, int a3);
@@ -89,7 +98,7 @@ template <typename A1,typename A2,typename A3> int __fastcall sub_824FD5C0(A1 a1
 template <typename A1,typename A2> int __fastcall sub_824FD460(A1 a1,A2 a2){return ((int (__fastcall *)(A1,A2))0x824FD460)(a1,a2);}
 template <typename A1> int __fastcall sub_82581078(A1 a1){return ((int (__fastcall *)(A1))0x82581078)(a1);}
 
-template <typename A1,typename A2,typename A3> int __fastcall sub_824FD4F8(A1 a1,A2 a2,A3 a3){return ((int (__fastcall *)(A1,A2,A3))0x824FD4F8)(a1,a2,a3);}
+template <typename A1,typename A2> int __fastcall sub_824FD4F8(A1 a1,A2 a2){return ((int (__fastcall *)(A1,A2))0x824FD4F8)(a1,a2);}
 template <typename A1,typename A2> int __fastcall BoostWeakPtr(A1 a1,A2 a2){return ((int (__fastcall *)(A1,A2))0x8221F3C8)(a1,a2);}
 
 

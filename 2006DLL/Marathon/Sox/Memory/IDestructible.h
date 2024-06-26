@@ -30,8 +30,15 @@ namespace Sonicteam{
 						delete obj;
 					}
 				}
+				template <typename T>
+				inline static void DestroyObjectEX(T& obj,unsigned int flag){
+					&obj->~T();
+					if ((flag & 1) != 0) {
+						delete obj;
+					}
+				}
 			};
-
+			
 			template <typename T>
 			class BoostDestructorHelper {
 			public:
