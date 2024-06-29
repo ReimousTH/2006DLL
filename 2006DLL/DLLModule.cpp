@@ -72,7 +72,7 @@ DFastActions _PreLoadPatches[] = {
 	{"TagStory",TagStory::GlobalInstall},
 	{"TailsGauge",TailsGauge::GlobalInstall},
 	{"AmyLOS",AmyLOS::GlobalInstall},
-	{"TagBattleExtension",TagBattleMain::GlobalInstall}
+	{"TagBattleExtension",TagBattleMain::GlobalInstall},
 };
 
 bool _NoArcMode = false;
@@ -175,68 +175,65 @@ HOOK(int,__fastcall,LoadFromArcHOOK_GLOBAL,0x82582648,_DWORD *a1, int* HandleMan
 
 };
 
-bool TOOGLE = false;
-DWORD WINAPI ThreadProc( LPVOID lpParameter )
-{
-	while (1){
-		if (ATG::Input::GetMergedInput(0)->wLastButtons & XINPUT_GAMEPAD_Y)
-		{
-			TOOGLE = true;
-		}
 
+
+
+
+
+
+
+bool CheckDLLFile(std::string* str_file_name)
+{
+	std::stringstream ss;
+	ss << "game://" << "common/" << str_file_name->c_str();
+
+
+	HANDLE handle = CreateFile( ss.str().c_str(), GENERIC_READ, 0, NULL, 
+		OPEN_EXISTING, 0, NULL );
+
+	if (handle != INVALID_HANDLE_VALUE)
+	{
+		CloseHandle(handle);
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }
 
+void LoadDLLArcFile(const char* file){
 
 
+	std::string _file = file;
+	if (CheckDLLFile(&_file))
+	{
+		Sonicteam::SoX::IResource* resouce;
+		ArcHandle(&resouce,_file,2,2);
+		sub_82582C10(resouce);
 
 
+	}
+
+}
 
 HOOK(DWORD*,__fastcall,DocMarathonState_GLOBAL,0x82160B98,DWORD* a1,int a2){
-
-  // Create a thread in a suspended state
-    HANDLE hThread = CreateThread(
-        NULL,                      // lpThreadAttributes
-        0,                         // dwStackSize
-        ThreadProc,                // lpStartAddress
-        (LPVOID)THREAD_SUSPEND_RESUME,  // lpParameter
-        CREATE_SUSPENDED,          // dwCreationFlags
-        NULL                       // lpThreadId
-    );
-
-	byte s0[0x1C];
-	byte s1[0x1C];
-	byte s2[0x1C];
-	byte s3[0x1C];
+    
+	
 
 
-	DWORD handle1;
-	DWORD handle2;
-	DWORD handle3;
-
-
-
-
-	BranchTo(0x821620E8,int,&s1,"DLL/cache_3P.arc");
-	BranchTo(0x821620E8,int,&s3,"DLL/sprites_4P.arc");
-	BranchTo(0x821620E8,int,&s2,"DLL/scripts_4P.arc");
-
-
+	
 
 	sub_825EB070((int)a1, a2);
 	*a1 = 0x8200094C;
 
 
+	
 
-	int result1 = ArcHandle(&handle1,&s1,2,2);
-	int result2 = ArcHandle(&handle1,&s2,2,2);
-	int result3 = ArcHandle(&handle1,&s3,2,2);
+	LoadDLLArcFile("DLL/cache_3P.arc");
+	LoadDLLArcFile("DLL/sprites_4P.arc");
+	LoadDLLArcFile("DLL/scripts_4P.arc");
 
-
-
-	sub_82582C10(*(DWORD*)result1);
-	sub_82582C10(*(DWORD*)result2);
-	sub_82582C10(*(DWORD*)result3);
 
 
 	return a1;
@@ -258,11 +255,10 @@ int __fastcall sub_8264E068(int a1, int a2, int a3) {
     int r = BranchTo(0x8264E068, int, a1, a2, a3);
 
     if (resource->str1.find("archive.pkg") != std::string::npos) {
-        int Handle;
+        
+		LoadDLLArcFile("DLL/player_Super.arc");
 
-        if (Sonicteam::SoX::IResource** ArcFile = (Sonicteam::SoX::IResource**)ArcHandle(&Handle, &std::string("DLL/player_Super.arc"), 2, 2)) {
-            // Process the archive file
-        }
+
     }
 
     // ExtraPackage
@@ -270,21 +266,128 @@ int __fastcall sub_8264E068(int a1, int a2, int a3) {
     return r;
 }
 
+
+
+unsigned long long& PerformanceFrequencyOutput = *(unsigned long long*)0x82D3B800;
+unsigned int& dword_82B7D6C8 = *(unsigned int*)0x82B7D6C8;
+
+
+
+
+
+
+
+HOOK(void,__fastcall,sub_825B19C0,0x825B1870,int a1,double delta)
+{
+	UINT start_ticks;
+	UINT end_ticks;
+	char _stack[0xD0];	
+
+	BranchTo(0x825D3F98,int,_stack[0x50]); //Perfomance some
+
+	BranchTo(0x825D3FD0,int,&_stack[0x58],&_stack[0x50]);
+	for ( ; (*(_BYTE *)(a1 + 4) & 1) != 1; ){
+
+		start_ticks = GetTickCount();
+		double f31 = 0.000001;
+
+		BranchTo(0x825D3FD0,int,&_stack[0x50],&_stack[0x60]);
+		BranchTo(0x825B0988,int,a1); //ProcessXboxSignNotifies
+		BranchTo(0x825B0AC0,int,a1); //Proess
+		int v2 = *(unsigned __int8 *)(a1 + 0x122);
+		if ( *(_DWORD *)(a1 + 0x148) == 1 )
+		{
+			if ( *(_DWORD *)(a1 + 0x12C) == 0x3E5 )
+			{
+				v2 = 1;
+			}
+			else
+			{
+
+				*(_DWORD *)(a1 + 0x148) = 0;
+				*(_DWORD *)(a1 + 0x128) = BranchTo(0x82AEA67C,int,dword_82B7D6C8);
+			}
+		}
+		*(_BYTE *)(a1 + 0x122) = (v2 & 0x20) != 0;
+		BranchTo(0x825D3FD0,int,&_stack[0x50],&_stack[0x68]);
+
+
+		unsigned long long* _stack0x58 = (unsigned long long*)&_stack[0x58];
+		unsigned long long* _stack0x68 = (unsigned long long*)&_stack[0x68];
+		unsigned long long* _stack0x70 = (unsigned long long*)&_stack[0x70];
+		unsigned long long* _stack0x78 = (unsigned long long*)&_stack[0x78];
+		unsigned long long _stack0x58x0x68_calc = *_stack0x58 - *_stack0x68;
+		*_stack0x58 = *_stack0x68;
+		*_stack0x70 = _stack0x58x0x68_calc;
+		unsigned long r11 =   BranchTo(0x825D4018,unsigned long,&_stack[0x70]); //825B1944 
+		*_stack0x78 = r11;
+
+
+
+		BranchTo(0x82580E90,int,a1,(double)*_stack0x78 * f31);
+	    unsigned long long* r11_pointer =  BranchTo(0x825D3FD0,unsigned long long*,&_stack[0x50],&_stack[0x90]);
+		unsigned long long* _stack0x60 = (unsigned long long*)&_stack[0x60];
+		unsigned long long* _stack0x80 = (unsigned long long*)&_stack[0x80];
+		unsigned long long _stack0x60_calc = *_stack0x60 - *r11_pointer;
+		*_stack0x80 = _stack0x60_calc;	
+	    unsigned long long r11_o =   BranchTo(0x825D4018,unsigned long long,&_stack[0x80]); //825B1944 
+		*(unsigned long long *)(a1 + 0xE8) = r11_o;
+		unsigned long long* r11_pointer_o =  BranchTo(0x825D3FD0,unsigned long long*,&_stack[0x50],&_stack[0x98]);
+		unsigned long long* _stack0x88 = (unsigned long long*)&_stack[0x88];
+		*_stack0x88 = *_stack0x60 - *r11_pointer_o;
+
+		unsigned long long r11_oo =   BranchTo(0x825D4018,unsigned long long ,&_stack[0x88]); //825B1944 
+		*(	unsigned long long *)(a1 + 0xE0) = r11_oo;
+
+
+		int Ticks = GetTickCount() - start_ticks;
+		if (Ticks < 33){
+			Sleep(33-Ticks);
+		}
+	
+
+	}
+
+
+}
+
+
+
 extern "C" void OnDLLStart(){
-	TagBattleMain::GlobalInstall();
+
+		
+
+	Sonicteam::SoX::Thread* _thread =  new Sonicteam::SoX::Thread("T",0,0);
+	ShowXenonMessage(L"MSG",_thread->m_ThreadName);
+
+
+
+	
+
+
 	std::string Loaded;
 
-	DebugLogV2::GlobalInstall();
+
 	CheckEmulated::GlobalInstall();
-	//DevTitleV2::GlobalInstall();
-	//DevTitle::GlobalInstall();
+
 
 
 
 	//new SonicGaugeExtended()
 	BaseLua.DoFile(true);
 
+
 	if (BaseLua.executed){
+
+
+		if (BaseLua.GetGlobalBool("FPS30") == true){
+
+			INSTALL_HOOK(sub_825B19C0);
+			WRITE_DWORD(0x820167AC,0x3D088886);
+			WRITE_DWORD(0x82000B88,0x3D088889);
+
+		}
+
 
 		for (int i = 0;i<sizeof(_PreLoadPatches) / sizeof(DFastActions);i++){
 
@@ -299,13 +402,25 @@ extern "C" void OnDLLStart(){
 
 
 	
+	bool disable = false;
+	if (BaseLua.executed){
 
 
+		if (BaseLua.GetGlobalBool("NoArcMode") == true){
 
-	WRITE_DWORD(0x8204D3A8,sub_8264E068);
-	INSTALL_HOOK(DocMarathonState_GLOBAL);
-	INSTALL_HOOK(LoadFromArcHOOK_GLOBAL);
+			disable = true;
+
+		}
+	}
+
 	
+	if (!disable){
+		WRITE_DWORD(0x8204D3A8,sub_8264E068);
+		INSTALL_HOOK(DocMarathonState_GLOBAL);
+		INSTALL_HOOK(LoadFromArcHOOK_GLOBAL);
+
+	}
+
 	ShowXenonMessage(L"LoadedDLLPatches",Loaded.c_str());
 	Loaded.clear();
 

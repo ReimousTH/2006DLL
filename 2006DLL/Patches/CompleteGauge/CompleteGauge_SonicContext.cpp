@@ -32,10 +32,10 @@ namespace CompleteGauge{
 
 		IsSpeedUPGEM = (bool)_this->IsMachSpeed;
 
-		std::stringstream sus;
-		sus << std::hex<< _this->Input;
+		//std::stringstream sus;
+		//sus << std::hex<< _this->Input;
 
-		DebugLogV2::PrintNextFixed(sus.str());
+		//DebugLogV2::PrintNextFixed(sus.str());
 
 		//decide 
 		Sonicteam::Player::Score* score =  _this->ScorePlugin.get();

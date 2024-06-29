@@ -17,7 +17,7 @@ namespace Sonicteam{
 			{
 			public:
 				//size0x60
-				PhantomEnterListener(boost::function<int()>&);
+				PhantomEnterListener(boost::function<int()>);
 				~PhantomEnterListener(void);
 
 				virtual void PhLsProcessMessage2(Sonicteam::SoX::Physics::PLMessage&);

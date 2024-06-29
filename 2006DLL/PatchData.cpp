@@ -2440,7 +2440,7 @@ luabridge:
 		std::stringstream conv;
 		DWORD StartOffset,LastOffset;
 
-		if (lua_type(L,-1) == LUA_TNUMBER){
+		if (lua_type(L,1) == LUA_TNUMBER){
 			StartOffset = lua_tonumber(L,1);
 		}
 		//STRING
@@ -2455,6 +2455,13 @@ luabridge:
 		VirtualProtectEx(GetModuleHandle(NULL),(void*)(ADDR(StartOffset)),4,dw,&dw);
 		memcpy((void*)ADDR(StartOffset),(byte*)&FloatValue,4);
 		VirtualProtectEx(GetModuleHandle(NULL),(void*)(ADDR(StartOffset)),4,dw,&dw);
+	
+	
+
+		return 0;
+
+
+
 
 
 	}
@@ -6996,17 +7003,35 @@ int addWrapper(int a, int b) {
 	return 0;
 }
 
+class MyClass {
+public:
+	MyClass(int value) : value_(value) {}
+
+	int multiply(int a, int b) {
+		// Access the object instance using the this pointer
+		std::cout << "Object value: " << this->value_ << std::endl;
+		return a * b;
+	}
+
+private:
+	int value_;
+};
+
 
 void CheckEmulated::GlobalInstall()
 {
 	
+	MyClass obj(42);
 
-	
+	// Bind the multiply member function using boost::bind
+	boost::function<int(int, int)> fnc1 = boost::bind(&MyClass::multiply, &obj, _1, _2);
 
 
-	 //boost::function<int()> operation = boost::bind(addWrapper, 10, 20);
+	boost::function<int()> operation = boost::bind(addWrapper, 10, 20);
+	boost::function<int()> operation1 = boost::bind(addWrapper, 10, 20);
 
 
+//	Sonicteam::SoX::StepableThread* le = new Sonicteam::SoX::StepableThread("Test",operation,operation1,1);
 
 	//Sonicteam::Player::PhantomEnterListener* le = new Sonicteam::Player::PhantomEnterListener(operation);
 

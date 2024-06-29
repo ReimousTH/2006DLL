@@ -48,3 +48,14 @@
 
 
 
+2006DLL/Release/BuildLog.htm
+*.idb
+2006DLL/Release/vc80.idb
+2006DLL/Release/vc80.pdb
+ATG/Release/BuildLog.htm
+ATG/Release/vc80.idb
+ATG/Release/vc80.pdb
+LUA/Release/BuildLog.htm
+LUA/Release/vc80.idb
+LUA/Release/vc80.pdb
+*.rsp

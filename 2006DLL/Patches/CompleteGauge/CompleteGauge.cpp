@@ -5,6 +5,7 @@ namespace CompleteGauge{
 
 	void GlobalInstall(){
 
+			
 
 		CompleteGauge::GlobalInstall_SonicSound();
 		CompleteGauge::GlobalInstall_SonicEffect();

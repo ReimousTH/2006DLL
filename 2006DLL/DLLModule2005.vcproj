@@ -1489,6 +1489,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Marathon\Sox\StepableThread.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Sox\StepableThread.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Marathon\Sox\Thread.cpp"
 					>
 				</File>
@@ -1711,6 +1719,10 @@
 				<Filter
 					Name="Memory"
 					>
+					<File
+						RelativePath=".\Marathon\Sox\Memory\DEFINITIONS.hpp"
+						>
+					</File>
 					<File
 						RelativePath=".\Marathon\Sox\Memory\IDestructible.cpp"
 						>

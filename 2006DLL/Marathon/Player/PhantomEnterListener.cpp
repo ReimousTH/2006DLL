@@ -3,7 +3,7 @@
 
 using namespace Sonicteam::Player;;
 
-Sonicteam::Player::PhantomEnterListener::PhantomEnterListener(boost::function<int()>& fnc)
+Sonicteam::Player::PhantomEnterListener::PhantomEnterListener(boost::function<int()> fnc)
 {
 
 	this->PELOnEnter = fnc;

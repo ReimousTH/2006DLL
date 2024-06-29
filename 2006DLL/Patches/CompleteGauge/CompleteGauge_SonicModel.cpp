@@ -7,19 +7,19 @@ namespace CompleteGauge{
 
 
 	
-	void Sonic_Model_WeaponsFlags(int _this,int flags){
+	void Sonic_Model_Standard_WeaponsFlags(int _this,int flags){
 
 
 		DWORD _fake_boost_container[2] = {0};
 		//BranchTo(0x822387C8,int,_this - 0x28,4,0.0);
+	//	std::stringstream sus;
+	//	sus << std::hex << flags;
+	//	DebugLogV2::PrintNextFixed(sus.str());
 
 		//SpeedGem
 		if ((flags & 0x400) != 0){
 		
-			std::stringstream sus;
-			sus << std::hex << flags;
-			DebugLogV2::PrintNextFixed(sus.str());
-
+		
 			BranchTo(0x822387C8,int,_this - 0x28,4,0.0);
 
 		}
@@ -46,8 +46,13 @@ namespace CompleteGauge{
 	//	WRITE_DWORD(0x8200CFAC,Sonic_Model_OnUnknownFlagsC8);
 	//	WRITE_DWORD(0x8200CFB0,Sonic_Model_OnUnknownFlagsC8);
 
-		WRITE_DWORD(0x822377B8,0x4E800020);
-		WRITE_DWORD(0x8200CFB4,Sonic_Model_WeaponsFlags);
+
+	//	WRITE_DWORD(0x822377B8,0x4E800020);
+		WRITE_DWORD(0X822383C4,0X60000000);
+		WRITE_DWORD(0x822371A8,0x4E800020);
+		
+		WRITE_DWORD(0x8200CFB4 ,Sonic_Model_Standard_WeaponsFlags);
+		WRITE_DWORD(0x82237804,0x60000000);
 		
 	}
 	

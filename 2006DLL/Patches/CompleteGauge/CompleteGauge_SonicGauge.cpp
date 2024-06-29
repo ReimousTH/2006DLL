@@ -103,12 +103,47 @@ namespace CompleteGauge{
 	}
 
 
+	HOOK(int,__fastcall,ObjectEventsGaugeAddMaturityGaugeValue,0x82198C08,int a1, int a2, char Maturity){
+
+		boost::shared_ptr<Sonicteam::Player::IGauge> *v4; // [sp+50h] [-20h] BYREF
+		int v5; // [sp+54h] [-1Ch]
+
+
+		*(_BYTE *)(a2 + 4) = 1;
+		*(_DWORD *)(a1 + 0x214) |= 4u;
+
+
+		v4 =  (boost::shared_ptr<Sonicteam::Player::IGauge> *)(a1 + 0x104);
+			if ( v4  )
+			{
+				if (dynamic_cast<Sonicteam::Player::SonicGauge*>(v4->get())){
+					v4->get()->AddMaturityValue();// 8200D4F0,8219F2E8
+				}
+				else if (dynamic_cast<Sonicteam::Player::IGauge*>(v4->get())){
+					if ( Maturity )
+						v4->get()->AddMaturityValue();// 8200D4F0,8219F2E8
+					else
+						v4->get()->AddGaugeValue(1.0);// 8223F328
+				}
+			}
+				
+			
+	
+			return 1;	
+
+
+	}
 	void GlobalInstall_SonicGauge()
 	{
 
 
+		//move to commonGuage
+		INSTALL_HOOK(ObjectEventsGaugeAddMaturityGaugeValue);
+	
+
+
 		//Later, Move To CompleteGauge_CommonGauge
-		WRITE_DWORD(0x82198C70,0x409A0018);//Fix Recieve
+		//WRITE_DWORD(0x82198C70,0x409A0018);//Fix Recieve
 
 		//Allocate more memory
 		WRITE_DWORD(0x8219F038,POWERPC_ADDI(3,0,sizeof(SonicGaugeExtended)));

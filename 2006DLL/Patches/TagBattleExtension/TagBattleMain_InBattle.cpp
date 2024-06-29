@@ -90,7 +90,7 @@ int __fastcall GoalRing_TriggerTouch(int a1, double a2){
 
 				if (IncrementPlayer(*i) >= ppls){
 				
-
+	
 					goto NORMAL;
 				}
 
