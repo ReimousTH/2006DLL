@@ -6,6 +6,58 @@ namespace Sonicteam{
 	namespace SoX{
 
 
+		//UPDATED
+
+
+
+		template <typename T>
+		struct LinkNodeBase {
+			T* PThread;
+			T* NThread;
+
+		public:
+			LinkNodeBase() : PThread(NULL), NThread(NULL) {}
+
+			void RemoveLink(){
+				PThread->NThread = NThread;
+				NThread->PThread = PThread;
+				NThread = NULL;
+				PThread = NULL;
+
+			}
+
+			~LinkNodeBase() {
+				if (PThread)
+					PThread->NThread = NThread;
+				if (NThread)
+					NThread->PThread = PThread;
+
+			}
+		};
+
+
+
+		template <typename T>
+		struct LinkNode:LinkNodeBase<LinkNode<T>> {
+		public:
+			T* TThread;
+			LinkNode() : LinkNodeBase<LinkNode<T>>() {}
+			LinkNode(T* TThread) : LinkNodeBase<LinkNode<T>>(), TThread(TThread) {}
+
+		};
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 		template <typename T = int>
 		class RNodeH {

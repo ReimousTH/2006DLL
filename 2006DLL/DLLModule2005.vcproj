@@ -980,6 +980,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Marathon\Player\ILoad.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Player\ILoad.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Marathon\Player\INotification.cpp"
 					>
 				</File>
@@ -1009,6 +1017,14 @@
 				</File>
 				<File
 					RelativePath=".\Marathon\Player\IVariable.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Player\Load.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Player\Load.h"
 					>
 				</File>
 				<File

@@ -74,6 +74,7 @@ unsigned int Sonicteam::DocMarathonImp::GSDocFrameSynchronizer(unsigned int)
 return 0;
 }
 
+//REWORK REQUIRED
 Sonicteam::DocMarathonPlayerInput Sonicteam::DocMarathonImp::DocGetPlayerInputCopy(unsigned int index)
 {
 return *(Sonicteam::DocMarathonPlayerInput*)(this->DocMarathonPlayerInputBostArray->get());

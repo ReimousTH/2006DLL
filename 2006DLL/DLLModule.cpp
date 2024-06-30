@@ -357,8 +357,8 @@ extern "C" void OnDLLStart(){
 
 		
 
-	Sonicteam::SoX::Thread* _thread =  new Sonicteam::SoX::Thread("T",0,0);
-	ShowXenonMessage(L"MSG",_thread->m_ThreadName);
+//	Sonicteam::SoX::Thread* _thread =  new Sonicteam::SoX::Thread("T",0,0);
+//	ShowXenonMessage(L"MSG",_thread->m_ThreadName);
 
 
 

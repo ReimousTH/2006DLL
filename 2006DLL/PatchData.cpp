@@ -7021,14 +7021,16 @@ private:
 void CheckEmulated::GlobalInstall()
 {
 	
-	MyClass obj(42);
+	//new Sonicteam::Player::Load(NULL);
+//	MyClass obj(42);
+
 
 	// Bind the multiply member function using boost::bind
-	boost::function<int(int, int)> fnc1 = boost::bind(&MyClass::multiply, &obj, _1, _2);
+//	boost::function<int(int, int)> fnc1 = boost::bind(&MyClass::multiply, &obj, _1, _2);
 
 
-	boost::function<int()> operation = boost::bind(addWrapper, 10, 20);
-	boost::function<int()> operation1 = boost::bind(addWrapper, 10, 20);
+//	boost::function<int()> operation = boost::bind(addWrapper, 10, 20);
+//	boost::function<int()> operation1 = boost::bind(addWrapper, 10, 20);
 
 
 //	Sonicteam::SoX::StepableThread* le = new Sonicteam::SoX::StepableThread("Test",operation,operation1,1);
