@@ -19,7 +19,7 @@ Sonicteam::SoX::Graphics::FrameObserver::~FrameObserver(void)
 void Sonicteam::SoX::Graphics::FrameObserver::DestroyObject(unsigned int flag)
 {
 	Sonicteam::SoX::Graphics::FrameObserver::~FrameObserver();
-	Sonicteam::SoX::Memory::IDestructible::DestroyObject(this,flag);
+	Sonicteam::SoX::Memory::IUDestructible::DestroyObject(this,flag);
 }
 
 void Sonicteam::SoX::Graphics::FrameObserver::OnRNodeHClear()

@@ -9,6 +9,9 @@
 #include <Sox/Misc/List.h>
 #include <Sox/Memory/IDestructible.h>
 
+#include <Sox/Memory/DEFINITIONS.hpp>
+
+
 namespace Sonicteam{
 	namespace SoX{
 		namespace Graphics{
@@ -80,6 +83,8 @@ namespace Sonicteam{
 			//just 
 			static Frame* New();
 
+
+	
 
 			
 			

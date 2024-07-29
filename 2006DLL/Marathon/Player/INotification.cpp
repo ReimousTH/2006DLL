@@ -18,6 +18,6 @@ INotification::~INotification(void)
 void Sonicteam::Player::INotification::DestroyObject()
 {
 	Sonicteam::Player::INotification::~INotification();
-	Sonicteam::SoX::Memory::IDestructible::DestroyObject(this,1);
+	Sonicteam::SoX::Memory::IUDestructible::DestroyObject(this,1);
 
 }

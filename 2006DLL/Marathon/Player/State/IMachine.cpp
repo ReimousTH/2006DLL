@@ -11,5 +11,5 @@ IMachine::~IMachine(void){
 
 void Sonicteam::Player::State::IMachine::DestroyObject(unsigned int flag)
 {
-	throw std::logic_error("The method or operation is not implemented.");
+	
 }

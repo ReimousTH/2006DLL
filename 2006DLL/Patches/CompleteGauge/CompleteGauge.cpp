@@ -7,6 +7,7 @@ namespace CompleteGauge{
 
 			
 
+		//CompleteGauge::GlobalInstall_CommonPosture();
 		CompleteGauge::GlobalInstall_SonicSound();
 		CompleteGauge::GlobalInstall_SonicEffect();
 		CompleteGauge::GlobalInstall_SonicContext();

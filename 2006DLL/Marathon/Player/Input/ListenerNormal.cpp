@@ -43,27 +43,27 @@ Input::ListenerNormal::~ListenerNormal(void)
 
 void Input::ListenerNormal::ListenerOnUpdate(int,float)
 {
-	throw std::logic_error("The method or operation is not implemented.");
+	
 }
 
 XMFLOAT4* Input::ListenerNormal::ListenerGetStickVector4()
 {
-	throw std::logic_error("The method or operation is not implemented.");
+return 0;	
 }
 
 float Input::ListenerNormal::ListenerGetStickPower()
 {
-	throw std::logic_error("The method or operation is not implemented.");
+	return 0;
 }
 
 unsigned int Input::ListenerNormal::ListenerGetResult()
 {
-	throw std::logic_error("The method or operation is not implemented.");
+	return 0;
 }
 
 int Input::ListenerNormal::Listener5()
 {
-	throw std::logic_error("The method or operation is not implemented.");
+	return 0;
 }
 
 void Input::ListenerNormal::OnVarible(Sonicteam::LuaSystem** l)
@@ -81,10 +81,10 @@ void Input::ListenerNormal::OnVarible(Sonicteam::LuaSystem** l)
 	this->c_input_border = c_input_border;
 
 
-	//throw std::logic_error("The method or operation is not implemented.");
+	//
 }
 
 void Input::ListenerNormal::OnStepable(float)
 {
-	throw std::logic_error("The method or operation is not implemented.");
+	
 }

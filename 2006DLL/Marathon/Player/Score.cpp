@@ -23,17 +23,17 @@ void Score::AddRings(int value)
 
 void Score::TakeDamage(void)
 {
-	throw std::logic_error("The method or operation is not implemented.");
+	
 }
 
 void Score::TakeDamageOld()
 {
-	throw std::logic_error("The method or operation is not implemented.");
+	
 }
 
 void Score::TakeDamageLittle()
 {
-	throw std::logic_error("The method or operation is not implemented.");
+	
 }
 
 int Score::GetRings()
@@ -53,11 +53,11 @@ void Score::SetUnknownVector(XMFLOAT4* value)
 
 void Score::OnVarible(void)
 {
-	throw std::logic_error("The method or operation is not implemented.");
+	
 }
 
 void Score::OnStepable(float)
 {
-	throw std::logic_error("The method or operation is not implemented.");
+	
 }
 

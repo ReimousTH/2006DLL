@@ -86,7 +86,7 @@ void CommonObject::Object2End()
 
 unsigned int Sonicteam::Player::State::CommonObject::Object2Update(float)
 {
-	throw std::logic_error("The method or operation is not implemented.");
+	return 0;
 }
 
 void Sonicteam::Player::State::CommonObject::DestroyObject(unsigned int flag)

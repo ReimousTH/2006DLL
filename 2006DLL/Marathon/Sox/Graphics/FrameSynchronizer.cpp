@@ -24,5 +24,5 @@ Sonicteam::SoX::Graphics::FrameSynchronizer::~FrameSynchronizer(void)
 void Sonicteam::SoX::Graphics::FrameSynchronizer::DestroyObject(unsigned int flag)
 {
 	Sonicteam::SoX::Graphics::FrameSynchronizer::~FrameSynchronizer();
-	Sonicteam::SoX::Memory::IDestructible::DestroyObject(this,flag);
+	Sonicteam::SoX::Memory::IUDestructible::DestroyObject(this,flag);
 }

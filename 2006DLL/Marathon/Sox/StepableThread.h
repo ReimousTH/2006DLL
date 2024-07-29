@@ -16,8 +16,6 @@ namespace Sonicteam{
 		/* 
 		boost::function<int(int, int)> fnc1 = boost::bind(&MyClass::multiply, &obj, _1, _2); Hoow To use For Example :) (where _a1,_a2 custom args) , yes place inside class(this yea too)
 
-
-
 		*/
 		///////////////////////////////////////////////////////////////////////////
 

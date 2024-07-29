@@ -106,6 +106,6 @@ void Sonicteam::Player::State::FastContext::SetAnimation(int num)
 void Sonicteam::Player::State::FastContext::DestroyObject(unsigned int flag)
 {
 	FastContext::~FastContext();
-	Sonicteam::SoX::Memory::IDestructible::DestroyObject(flag);
+	Sonicteam::SoX::Memory::IUDestructible::DestroyObject(this,flag);
 }
 

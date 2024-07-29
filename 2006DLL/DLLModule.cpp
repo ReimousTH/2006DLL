@@ -51,7 +51,7 @@ void operator delete(void* ptr) {
 #include "Patches/TagBattleExtension/TagBattleMain.h"
 
 
-
+#include <Player/LuaInfoInit.h>
 
 
 struct DFastActions{
@@ -101,6 +101,7 @@ bool TOGLE = true;
 HOOK(int,__fastcall,LoadFromArcHOOK_GLOBAL,0x82582648,_DWORD *a1, int* HandleManager, std::string* a3, std::string *a4, int* a5, int ShowErrors){
 
 
+	//ShowXenonMessage(L"MSG",Sonicteam::Player::CharacterStateAnimationTableCommon.RegisteredAnimations.items[0]);
 
 	DWORD test;
 	__asm{
@@ -277,6 +278,7 @@ unsigned int& dword_82B7D6C8 = *(unsigned int*)0x82B7D6C8;
 
 
 
+
 HOOK(void,__fastcall,sub_825B19C0,0x825B1870,int a1,double delta)
 {
 	UINT start_ticks;
@@ -355,6 +357,7 @@ HOOK(void,__fastcall,sub_825B19C0,0x825B1870,int a1,double delta)
 
 extern "C" void OnDLLStart(){
 
+	
 		
 
 //	Sonicteam::SoX::Thread* _thread =  new Sonicteam::SoX::Thread("T",0,0);
@@ -378,6 +381,9 @@ extern "C" void OnDLLStart(){
 
 
 	if (BaseLua.executed){
+
+
+		Socket::IP_ADDR = BaseLua.GetGlobalString("IP_ADRESS");	
 
 
 		if (BaseLua.GetGlobalBool("FPS30") == true){

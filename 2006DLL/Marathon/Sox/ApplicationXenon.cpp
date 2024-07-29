@@ -6,7 +6,7 @@ using namespace Sonicteam::SoX;
 
 char* Sonicteam::SoX::ApplicationXenon::GetObjectType()
 {
-	throw std::logic_error("The method or operation is not implemented.");
+	return "Object";
 }
 
 void Sonicteam::SoX::ApplicationXenon::ApplicationXenonM1(void)

@@ -3,7 +3,7 @@
 
 namespace Sonicteam{
 	namespace SoX{
-		class RefCountObject:public Sonicteam::SoX::Memory::IDestructible
+		class RefCountObject
 		{
 		public:
 			RefCountObject(void);
@@ -11,7 +11,7 @@ namespace Sonicteam{
 			//virtual void ObjectDestroy(unsigned int flag);
 			~RefCountObject(void);
 
-			virtual void DestroyObject(unsigned int flag) override;
+			virtual void DestroyObject(unsigned int flag);
 
 			//not sure, my custom for easier 
 			template <typename T>

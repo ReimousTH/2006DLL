@@ -8,7 +8,7 @@ void Sonicteam::SoX::Graphics::Frame::DestroyObject(unsigned int flag)
 {
 	Sonicteam::SoX::Graphics::Frame::~Frame();
 	//this->~Frame();
-	Sonicteam::SoX::Memory::IDestructible::DestroyObject(flag);
+	Sonicteam::SoX::Memory::IUDestructible::DestroyObject(this,flag);
 }
 
 Sonicteam::SoX::Graphics::Frame::Frame():FUULLB0x20(),BNF0x34(this),BNF0x40(this)

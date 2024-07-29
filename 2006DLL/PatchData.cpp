@@ -6467,7 +6467,7 @@ namespace TailsGauge{
 		}
 		void FakeDestroy(unsigned int a2){
 			TailsContextEX::~TailsContextEX();
-			Sonicteam::SoX::Memory::IDestructible::DestroyObject(a2);
+			Sonicteam::SoX::Memory::IUDestructible::DestroyObject(this,a2);
 		}
 		
 

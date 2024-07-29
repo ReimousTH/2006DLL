@@ -304,6 +304,8 @@ namespace CompleteGauge{
 	void GlobalInstall_SonicContext(){
 
 
+
+	
 		WRITE_DWORD(0x821B5BCC,POWERPC_ADDI(3,0,sizeof(SonicContextExtended)));
 		INSTALL_HOOK(SonicContextConstructor);
 		WRITE_DWORD(0x8200B564,SonicContextOnStep);

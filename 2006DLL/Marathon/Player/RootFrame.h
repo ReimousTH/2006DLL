@@ -44,7 +44,6 @@ namespace Sonicteam{
 		//	XMFLOAT4 RFPosition0xE0; //Position 0xE0
 
 			XMMATRIX RFTransformMatrix0xB0;
-		
 
 			XMFLOAT4 RFPosition0xF0; //Position 0xF0
 			XMFLOAT4 RFPosition0x100; //Position 0xF0

@@ -13,7 +13,7 @@ namespace Sonicteam{
 
 
 		
-		class ILoad:Sonicteam::Player::IPlugIn
+		class ILoad:public Sonicteam::Player::IPlugIn
 		{
 		public:
 			ILoad(void);
@@ -37,10 +37,10 @@ namespace Sonicteam{
 			virtual void* GetDGraphicDevice() = 0; 
 			virtual void* GetDUnkModules() = 0; 
 			//r4 (IDEK i say it like it)	
-			virtual void* DocProcessSFX(Sonicteam::SoX::RefCountObject**) = 0; 
+			virtual void DocProcessSFX(Sonicteam::SoX::RefCountObject**) = 0; 
 
 			//r4 (put model threead to update)
-			virtual void* DocProcessThread(Sonicteam::SoX::StepableThread*) = 0; 
+			virtual void DocProcessThread(Sonicteam::SoX::StepableThread*) = 0; 
 
 
 

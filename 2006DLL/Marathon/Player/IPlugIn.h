@@ -8,13 +8,13 @@ namespace Sonicteam{
 
 	namespace Player{
 
-		class IPlugIn:public Sonicteam::SoX::Memory::IDestructible
+		class IPlugIn
 		{
 		public:
 			IPlugIn(char*);
 			~IPlugIn(void);
 
-			virtual void DestroyObject(unsigned int flag) override;
+			virtual void DestroyObject(unsigned int flag);
 
 			std::string PluginName;
 

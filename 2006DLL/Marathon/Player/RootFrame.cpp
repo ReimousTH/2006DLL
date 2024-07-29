@@ -6,7 +6,7 @@ using namespace Sonicteam::Player;
 void Sonicteam::Player::RootFrame::DestroyObject(unsigned int flag)
 {
 	Sonicteam::Player::RootFrame::~RootFrame();
-	Sonicteam::SoX::Memory::IDestructible::DestroyObject(this,flag);
+	Sonicteam::SoX::Memory::IUDestructible::DestroyObject(this,flag);
 }
 
 

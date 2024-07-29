@@ -12,6 +12,7 @@
 #include <boost/enable_shared_from_this.hpp>
 
 #include <boost/cast.hpp>
+#include <Player/Load.h>
 
 
 namespace CompleteGauge{
@@ -133,6 +134,11 @@ namespace CompleteGauge{
 
 
 		
+		
+		Sonicteam::Player::Load* package_player =  (Sonicteam::Player::Load*)*(_DWORD *)(ObjPlayer + 0x154);
+
+		/*
+		
 		//Reload Package
 		std::string* S1 =  (std::string *)(ObjPlayer + 0x74);
 		*S1 = package_name;
@@ -145,12 +151,11 @@ namespace CompleteGauge{
 
 				Sonicteam::SoX::RefCountObject* v9 = *(	Sonicteam::SoX::RefCountObject**)(ObjPlayer + 0xD0);
 				*(_DWORD *)(ObjPlayer + 0xD0) = v8;
-				if ( v9 )
-					v9->LoseObject();
+			
 		}
-		
 
-		
+
+		*/
 		
 
 		float Save0x18 = ObjPlayerGetCurrentAnimTime(_context);
@@ -238,8 +243,16 @@ namespace CompleteGauge{
 				}
 			
 				if (plugin->PluginName == "model"){
-					ref_model = plugin;
+				//	ref_model = plugin;
 				//	IVari->OnVarible(&p);
+				//	ref_model->DestroyObject(0);
+
+				//	int RootFrame =  *(_DWORD *)(ObjPlayer + 0xCC);
+				//	BranchTo(0x82237878,int,ref_model,package_player,&RootFrame,0x820032C0);
+				//	IVari->OnVarible(&p);
+				}
+				if (plugin->PluginName == "context"){
+					IVari->OnVarible(&p);
 				}
 
 
@@ -248,6 +261,9 @@ namespace CompleteGauge{
 		}
 
 	
+	      *(std::string*)(ObjPlayer + 0x1D8) = p->LuaNodeUnknown0x0F("c_player_name");
+	
+
 
 		
 		Sonicteam::Player::IPlugIn* ModelPlug =   (Sonicteam::Player::IPlugIn*)*(_DWORD *)(ObjPlayer + 0xD4);
@@ -268,8 +284,8 @@ namespace CompleteGauge{
 
 	
 
-		BranchTo(0x821962E8,int,ObjPlayer,&p); //This instead 
-		BranchTo(0x82195ED0,int,ObjPlayer); //I Dont know what this does but it fixing upgrades
+	//	BranchTo(0x821962E8,int,ObjPlayer,&p); //This instead 
+	//	BranchTo(0x82195ED0,int,ObjPlayer); //I Dont know what this does but it fixing upgrades
 	
 
 
@@ -282,15 +298,16 @@ namespace CompleteGauge{
 
 
 	
-		BranchTo(0x821966E0,int,ObjPlayer);
-		BranchTo(0x82196CF8,int,ObjPlayer);
-		BranchTo(0x82196768,int,ObjPlayer);
+	//	BranchTo(0x821966E0,int,ObjPlayer);
+	//	BranchTo(0x82196CF8,int,ObjPlayer);
+	//	BranchTo(0x82196768,int,ObjPlayer);
 		
 
 	
 	
 		//Reload Sound
 
+		/*
 		std::vector<boost::shared_ptr<Sonicteam::Player::INotification>>* Plugins = reinterpret_cast<std::vector<boost::shared_ptr<Sonicteam::Player::INotification>>*>(ObjPlayer + 0x2DC);
 		for (std::vector<boost::shared_ptr<Sonicteam::Player::INotification>>::iterator it = Plugins->begin(); it != Plugins->end(); it++) {
 			boost::shared_ptr<Sonicteam::Player::INotification> pluginPtr = *it;
@@ -365,7 +382,7 @@ namespace CompleteGauge{
 
 
 
-
+*/
 	
 
 	
@@ -483,6 +500,8 @@ namespace CompleteGauge{
 
 	void GlobalInstall_SonicStates()
 	{
+	
+
 		WRITE_DWORD(0x8200B3F8,State_Sonic_HomingSmash_Action_Start);
 		WRITE_DWORD(0x8200B3FC,State_Sonic_HomingSmash_Action_Mid);
 		WRITE_DWORD(0x8200B400 ,State_Sonic_HomingSmash_Action_End	);

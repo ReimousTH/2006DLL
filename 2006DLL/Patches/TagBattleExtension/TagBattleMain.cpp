@@ -8,6 +8,7 @@
 #include "AtgInput.h"
 
 #include <CsdObject.h>
+#include <Sox/StepableThread.h>
 using namespace TagBattleMain;
 
 
@@ -510,7 +511,6 @@ int __fastcall MainMenuTask_UI(Sonicteam::MainMenuTask *a1,float delta){
 
 				TakeSlot(plr);
 			
-
 		
 				P_DATA[0].LastSelectionIndex = P_DATA[0].SelectionIndex;
 				GetSelectedCharacterLUA(a1, (int)&P_DATA[0].Rotation, P_DATA[0].SelectionIndex);
@@ -685,8 +685,9 @@ int __fastcall MainMenuTask_UI(Sonicteam::MainMenuTask *a1,float delta){
 						CellLoadSpriteWithAnim(&CSD_OBJECT,(char*)p_controller.str().c_str(),(char*)p_controller_anim.str().c_str());
 						plr->selected |= 1;
 
-						P_DATA[ID - 1].LastSelectionIndex = P_DATA[ID - 1].SelectionIndex;
-						BranchTo(0x824FD1F0,int,a1,&P_DATA[ID-1].Rotation,plr->SelectionIndex);
+						plr->LastSelectionIndex = plr->SelectionIndex;
+			
+						BranchTo(0x824FD1F0,int,a1,&plr->Rotation,plr->SelectionIndex);
 
 						
 					}
@@ -741,7 +742,7 @@ int __fastcall MainMenuTask_UI(Sonicteam::MainMenuTask *a1,float delta){
 				
 					
 			
-					
+					plr->LastSelectionIndex = plr->SelectionIndex;
 					BranchTo(0x824FD1F0,int,a1,&P_DATA[4].Rotation,plr->LastSelectionIndex);
 
 					plr->selected &= ~1;
@@ -990,13 +991,26 @@ extern "C" int RenderNeParticlePost_GetNumCHR(lua_State* L){
 	return 1;
 }
 
+
+
+
 void TagBattleMain::GlobalInstall()
 {
 
+
+	
+
+
+	
 	InitINPUT();
 	WRITE_DWORD(0x8204C5BC,RenderNeParticlePost_GetNumCHR);
 	WRITE_DWORD(0x82039C10,MainMenuTask_UI);
 
+
+
+
+
 	GlobalInstall_InBattle();
+	GlobalInstall_ONLINE();
 
 }

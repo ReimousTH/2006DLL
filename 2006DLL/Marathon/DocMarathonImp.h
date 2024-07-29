@@ -200,6 +200,18 @@ namespace Sonicteam{
 			unsigned int DocUnkFlag02;
 			unsigned int Docuint0x3BC;
 
+
+			/*GameIMP
+			Sonicteam::SoX::Engine::Task* GameRootTask; // 0x1418	
+			Sonicteam::SoX::Engine::Task* NamedActorDependGame; // 0x141C
+			Sonicteam::SoX::Engine::Task* NamedActorEntities; // 0x1420
+			Sonicteam::SoX::Engine::Task* NamedActorEnemyThread; // 0x1424
+			Sonicteam::SoX::Engine::Task* NamedActorPlayers; // 0x1428
+			Sonicteam::SoX::Engine::Task* NamedActorCameras; // 0x142C
+			Sonicteam::SoX::Engine::Task* NamedActorSystemDependCameras; // 0x1430
+			Sonicteam::SoX::Engine::Task* NamedActorDependCameras; // 0x1434
+*/
+
 			unsigned char Docuintgap0x3C0[0x2AC0C];
 			unsigned int Docuint0x2AFCC;
 			unsigned char Docuintgap0x2AFD0[0x2AC0C];

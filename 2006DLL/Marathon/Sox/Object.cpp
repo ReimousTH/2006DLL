@@ -26,7 +26,7 @@ void Sonicteam::SoX::Object::DestroyObject(unsigned int flag)
 {
 
 	Sonicteam::SoX::Object::~Object();
-	Sonicteam::SoX::Memory::IDestructible::DestroyObject(this,flag);
+	Sonicteam::SoX::Memory::IUDestructible::DestroyObject(this,flag);
 }
 
 Sonicteam::SoX::ObjectRework::ObjectRework(void)

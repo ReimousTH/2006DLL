@@ -313,7 +313,6 @@
 			/>
 			<Tool
 				Name="VCCLX360CompilerTool"
-				AdditionalOptions="-mcpu=powerpc64"
 				Optimization="0"
 				InlineFunctionExpansion="1"
 				EnableIntrinsicFunctions="true"
@@ -336,7 +335,7 @@
 				OpenMP="false"
 				UsePrecompiledHeader="0"
 				WarningLevel="0"
-				DebugInformationFormat="3"
+				DebugInformationFormat="1"
 				CompileAs="0"
 				Prescheduling="true"
 				CallAttributedProfiling="0"
@@ -353,14 +352,14 @@
 			<Tool
 				Name="VCX360LinkerTool"
 				UseLibraryDependencyInputs="false"
-				AdditionalOptions="/FORCE:MULTIPLE /ignore:4089 /dll /entry:&quot;_DllMainCRTStartup&quot; /include:&quot;XboxKrnlBuildNumber&quot;&#x0D;&#x0A;/-mcpu=powerpc64"
-				AdditionalDependencies="d3d9.lib d3dx9.lib xgraphics.lib xaudio.lib x3daudio.lib xboxkrnl.lib xbdm.lib xact.lib xuirunltcg.lib xuirenderltcg.lib LUA.lib hkaAnimation.lib hkaInternal.lib hkaRagdoll.lib hkBase.lib hkCompat.lib hkgBridge.lib hkgCommon.lib hkgDx9.lib hkgDx9s.lib hkgOgl.lib hkpCollide.lib hkpConstraintSolver.lib hkpDynamics.lib hkpInternal.lib hkpUtilities.lib hkpVehicle.lib hkSceneData.lib hkSerialize.lib hkVisualize.lib"
+				AdditionalOptions="/FORCE:MULTIPLE /ignore:4089 /dll /entry:&quot;_DllMainCRTStartup&quot; /include:&quot;XboxKrnlBuildNumber&quot;&#x0D;&#x0A;"
+				AdditionalDependencies="d3d9.lib d3dx9.lib xgraphics.lib xaudio.lib x3daudio.lib xboxkrnl.lib xbdm.lib xact.lib xuirunltcg.lib xuirenderltcg.lib LUA.lib hkaAnimation.lib hkaInternal.lib hkaRagdoll.lib hkBase.lib hkCompat.lib hkgBridge.lib hkgCommon.lib hkgDx9.lib hkgDx9s.lib hkgOgl.lib hkpCollide.lib hkpConstraintSolver.lib hkpDynamics.lib hkpInternal.lib hkpUtilities.lib hkpVehicle.lib hkSceneData.lib hkSerialize.lib hkVisualize.lib Xnet.lib"
 				OutputFile="$(OutDir)/$(ProjectName).dll"
 				AdditionalLibraryDirectories="D:\boost_1_69_0\boost_1_69_0\stage\lib;..\LUA\Release\;&quot;..\hkx550\Lib\win32_net_8-0\release_multithreaded&quot;"
 				ModuleDefinitionFile="DllModule.def"
 				GenerateDebugInformation="true"
 				GenerateMapFile="true"
-				OptimizeReferences="1"
+				OptimizeReferences="2"
 				EnableCOMDATFolding="1"
 				SetChecksum="true"
 			/>
@@ -714,6 +713,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Patches\CompleteGauge\CompleteGauge_PostureCommon.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\CompleteGauge\CompleteGauge_PostureCommon.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Patches\CompleteGauge\CompleteGauge_SonicContext.cpp"
 						>
 					</File>
@@ -790,6 +797,26 @@
 						RelativePath=".\Patches\TagBattleExtension\TagBattleMain_InBattle.h"
 						>
 					</File>
+					<Filter
+						Name="Online"
+						>
+						<File
+							RelativePath=".\Patches\TagBattleExtension\Online\Socket.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Patches\TagBattleExtension\Online\Socket.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Patches\TagBattleExtension\Online\TagBattleOnline.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Patches\TagBattleExtension\Online\TagBattleOnline.h"
+							>
+						</File>
+					</Filter>
 				</Filter>
 			</Filter>
 			<Filter
@@ -1025,6 +1052,14 @@
 				</File>
 				<File
 					RelativePath=".\Marathon\Player\Load.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Player\LuaInfoInit.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Player\LuaInfoInit.h"
 					>
 				</File>
 				<File
@@ -1313,6 +1348,18 @@
 					</File>
 					<File
 						RelativePath=".\Marathon\Player\Effect\ParticleScript.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="PackageModel"
+					>
+					<File
+						RelativePath=".\Marathon\Player\PackageModel\LocalAnimationUserDataListener.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Player\PackageModel\LocalAnimationUserDataListener.h"
 						>
 					</File>
 				</Filter>

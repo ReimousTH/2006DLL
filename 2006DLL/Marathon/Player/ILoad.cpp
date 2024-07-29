@@ -6,7 +6,7 @@ using namespace Sonicteam::Player;
 void Sonicteam::Player::ILoad::DestroyObject(unsigned int flag)
 {
 	Sonicteam::Player::ILoad::~ILoad();
-	Sonicteam::SoX::Memory::IDestructible::DestroyObject(this,flag);
+	Sonicteam::SoX::Memory::IUDestructible::DestroyObject(this,flag);
 }
 
 Sonicteam::Player::ILoad::ILoad(void):IPlugIn("load")

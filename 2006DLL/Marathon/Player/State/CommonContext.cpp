@@ -290,7 +290,7 @@ void Sonicteam::Player::State::CommonContext::SetAnimation(int num)
 void Sonicteam::Player::State::CommonContext::DestroyObject(unsigned int flag)
 {
 	CommonContext::~CommonContext();
-	Sonicteam::SoX::Memory::IDestructible::DestroyObject(flag);
+	Sonicteam::SoX::Memory::IUDestructible::DestroyObject(this,flag);
 }
 
 static OtherCommonContext::StateTableBase StateTable0x82009AB8[0x15] = {

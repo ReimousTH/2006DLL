@@ -18,7 +18,7 @@ void Sonicteam::SoX::RefCountObject::DestroyObject(unsigned int flag)
 {
 
 	this->~RefCountObject();
-	Sonicteam::SoX::Memory::IDestructible::DestroyObject(flag);
+	Sonicteam::SoX::Memory::IUDestructible::DestroyObject(this,flag);
 
 }
 
