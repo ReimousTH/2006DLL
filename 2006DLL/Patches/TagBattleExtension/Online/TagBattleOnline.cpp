@@ -55,26 +55,26 @@ struct MessageDataSpawnPlayer{
 public:
 	XUID xuid;
 	char chr_name[0x16];
-	DEFINE_MSG_DATA_ID(0x10);
+	DEFINE_SOCKET_MESSAGE_DATA_ID_PROTOCOL(0x10,IPPROTO_TCP);
 
 };
 
 struct MessageDataServerGetClientPlayerInfo{
 public:
-	DEFINE_MSG_DATA_ID(0x1);
+	DEFINE_SOCKET_MESSAGE_DATA_ID_PROTOCOL(0x1,IPPROTO_TCP);
 };
 
 struct MessageDataServerSetClientInfoToServer{
 public:
 	XUID xuid;
 	char chr_name[0x16];
-	DEFINE_MSG_DATA_ID(0x2);
+	DEFINE_SOCKET_MESSAGE_DATA_ID_PROTOCOL(0x2,IPPROTO_TCP);
 };
 struct MessageDataServerReplicateClientInfoToClients{
 public:
 	XUID xuid;
 	char chr_name[0x16];
-	DEFINE_MSG_DATA_ID(0x3);
+	DEFINE_SOCKET_MESSAGE_DATA_ID_PROTOCOL(0x3,IPPROTO_TCP);
 };
 
 
@@ -85,14 +85,14 @@ public:
 	XUID xuid;
 	int AnimID;
 	int AnimFL;	
-	DEFINE_MSG_DATA_ID(0x11);
+	DEFINE_SOCKET_MESSAGE_DATA_ID_PROTOCOL(0x11,IPPROTO_UDP);
 
 };
 
 struct RemoveClientByXuid{
 public:
 	XUID xuid;
-	DEFINE_MSG_DATA_ID(0x12);
+	DEFINE_SOCKET_MESSAGE_DATA_ID_PROTOCOL(0x12,IPPROTO_TCP);
 
 };
 
@@ -190,15 +190,15 @@ static void ClientMessages(Socket* socket, SOCKET client_socket, SocketMessage* 
 		MessageDataServerSetClientInfoToServer _data_;
 		_data_.xuid = socket->GetXUID(0);
 		strcpy(_data_.chr_name,players_chr_remap[GetLocalPKGPlayerName()].c_str());
-		SocketMessage msg = DEFINE_MESSAGE_FROM_DATA_CONST(_data_);
-		socket->SendMessageToServer(&msg);
+		SocketMessage msg = DEFINE_SOCKET_MESSAGE_FROM_CONST_DATA(_data_);
+		socket->SendTCPMessageToServer(&msg);
 	}
 
 	if (message->ID == RemoveClientByXuid::GetID()){
 
 		DebugLogV2::PrintNextFixed("[Client] Remove Client By XUID");
 
-		RemoveClientByXuid* _data_get = reinterpret_cast<RemoveClientByXuid*>(&message->buffer);
+		RemoveClientByXuid* _data_get = reinterpret_cast<RemoveClientByXuid*>(&message->_message_);
 
 		if (Players.find(_data_get->xuid) != Players.end() ){
 			SocketExtra* extra =  &Players[_data_get->xuid];
@@ -212,7 +212,7 @@ static void ClientMessages(Socket* socket, SOCKET client_socket, SocketMessage* 
 	}
 
 	if (message->ID == MessageDataServerReplicateClientInfoToClients::GetID()) {
-		MessageDataServerReplicateClientInfoToClients* _data_get = reinterpret_cast<MessageDataServerReplicateClientInfoToClients*>(&message->buffer);
+		MessageDataServerReplicateClientInfoToClients* _data_get = reinterpret_cast<MessageDataServerReplicateClientInfoToClients*>(&message->_message_);
 
 		// Check if the player already exists
 		if (Players.find(_data_get->xuid) == Players.end()) {
@@ -224,7 +224,7 @@ static void ClientMessages(Socket* socket, SOCKET client_socket, SocketMessage* 
 	}
 
 	if (message->ID == MessageDataSetPlayerPosition::GetID()) {
-		MessageDataSetPlayerPosition* _data_get = reinterpret_cast<MessageDataSetPlayerPosition*>(&message->buffer);
+		MessageDataSetPlayerPosition* _data_get = reinterpret_cast<MessageDataSetPlayerPosition*>(&message->_message_);
 
 		// Check if the player exists before updating position
 
@@ -256,7 +256,7 @@ static void ServerMessages(Socket* socket, SOCKET client_socket, SocketMessage* 
 	bool action_players_new = false;
 
 	if (message->ID == MessageDataServerSetClientInfoToServer::GetID()) {
-		MessageDataServerSetClientInfoToServer* _data_get = reinterpret_cast<MessageDataServerSetClientInfoToServer*>(&message->buffer);
+		MessageDataServerSetClientInfoToServer* _data_get = reinterpret_cast<MessageDataServerSetClientInfoToServer*>(&message->_message_);
 
 		// Check if the player already exists
 		if (Players.find(_data_get->xuid) == Players.end()) {
@@ -277,13 +277,13 @@ static void ServerMessages(Socket* socket, SOCKET client_socket, SocketMessage* 
 			MessageDataServerReplicateClientInfoToClients _data_;
 			_data_.xuid = player->first;
 			strcpy(_data_.chr_name,player->second.chr_lua.c_str());
-			SocketMessage msg = DEFINE_MESSAGE_FROM_DATA_CONST(_data_);
-			socket->SendMessageToClients(&msg);
+			SocketMessage msg = DEFINE_SOCKET_MESSAGE_FROM_CONST_DATA(_data_);
+			socket->SendTCPMessageToClients(&msg);
 		}
 	}
 
 	if (message->ID == MessageDataSetPlayerPosition::GetID()) {
-		MessageDataSetPlayerPosition* _data_get = reinterpret_cast<MessageDataSetPlayerPosition*>(&message->buffer);
+		MessageDataSetPlayerPosition* _data_get = reinterpret_cast<MessageDataSetPlayerPosition*>(&message->_message_);
 
 		// Check if the player exists before updating position
 
@@ -312,8 +312,8 @@ static void ServerMessages(Socket* socket, SOCKET client_socket, SocketMessage* 
 static void ServerClientConnected(Socket* socket, SOCKET client_socket) {
  
 	MessageDataServerGetClientPlayerInfo _data_;
-	SocketMessage msg =  DEFINE_MESSAGE_FROM_DATA_CONST(_data_);
-	socket->SendMessageTo(client_socket,&msg);
+	SocketMessage msg =  DEFINE_SOCKET_MESSAGE_FROM_CONST_DATA(_data_);
+	socket->SendTCPMessageTo(client_socket,&msg);
 
 }
 static void ServerClientLost(Socket* socket, SOCKET client_socket) {
@@ -322,7 +322,8 @@ static void ServerClientLost(Socket* socket, SOCKET client_socket) {
 
 	RemoveClientByXuid _data_;
 	_data_.xuid = Players_socket[client_socket];
-	SOCKET_SEND_MESSAGE_DATA_TO_CLIENTS(socket,_data_);
+	SocketMessage msg =  DEFINE_SOCKET_MESSAGE_FROM_CONST_DATA(_data_);
+	socket->SendTCPMessageToClients(&msg);
 
 	Players.erase(Players.find(Players_socket[client_socket]));
 
@@ -340,15 +341,15 @@ static void ClearSocketConInfo(){
 	}
 	LocalPlayer = 0;
 	Players.clear();
-	_socket.CloseSocket();
+	_socket.Cleanup();
 }
 extern "C" int EngineDocOnUpdateHE(Sonicteam::DocMarathonImp* a1, double a2) {
 
 	if (_socket.IsClient()){
-		_socket.UpdateClient();
+		_socket.UpdateClient(1.0);
 	}
 	else if (_socket.IsServer()){
-		_socket.UpdateServer();
+		_socket.UpdateServer(1.0);
 	}
 
 	if (LocalPlayer){
@@ -372,9 +373,9 @@ extern "C" int EngineDocOnUpdateHE(Sonicteam::DocMarathonImp* a1, double a2) {
 			s_pos.AnimID = contxt->CurrentAnimation;
 
 
-			SocketMessage msg =  DEFINE_MESSAGE_FROM_DATA_CONST(s_pos);
+			SocketMessage msg =  DEFINE_SOCKET_MESSAGE_FROM_CONST_DATA(s_pos);
 
-			_socket.SendMessageToServer(&msg);
+			_socket.SendUDPMessageToServer(&msg);
 		
 		}
 		else if (_socket.IsServer()){
@@ -398,8 +399,8 @@ extern "C" int EngineDocOnUpdateHE(Sonicteam::DocMarathonImp* a1, double a2) {
 				s_pos.AnimFL = contxt->AnimationState;
 				s_pos.AnimID = contxt->CurrentAnimation;
 
-				SocketMessage msg =  DEFINE_MESSAGE_FROM_DATA_CONST(s_pos);
-				_socket.SendMessageToClients(&msg);
+				SocketMessage msg =  DEFINE_SOCKET_MESSAGE_FROM_CONST_DATA(s_pos);
+				_socket.SendUDPMessageToClients(&msg);
 			}
 
 
@@ -438,10 +439,12 @@ extern "C" int EngineDocOnUpdateHE(Sonicteam::DocMarathonImp* a1, double a2) {
 
 				ClearSocketConInfo();
 	
-				_socket.InitSocket();
-				_socket.SetSocketBind(Socket::IP_ADDR, 27016, AF_INET);
-				_socket.SetSocketNonBlocking();
-				_socket.StartClient();
+				_socket.InitSockets();
+				_socket.SetAddress("26.175.28.206", 27017);
+				_socket.SetBind();
+				_socket.SetNonBlockingMode();
+				_socket.SetAddress("26.175.28.206", 27016);
+				_socket.InitClient();
 				_socket.MSG_HANDLE_SERVER_CLIENT_JOIN = ServerClientConnected;
 				_socket.MSG_HANDLE_CLIENT_MESSAGES = ClientMessages;
 		
@@ -451,7 +454,7 @@ extern "C" int EngineDocOnUpdateHE(Sonicteam::DocMarathonImp* a1, double a2) {
 
 				SocketBuff buff;
 				SocketExtra extra;
-				buff.address = _socket.GetAddressF();
+				buff.address = _socket.GetAddressTo();
 				extra.local = true;
 				extra.Player = LocalPlayer;
 				extra.chr_lua = players_chr_remap[GetLocalPKGPlayerName()];
@@ -466,10 +469,11 @@ extern "C" int EngineDocOnUpdateHE(Sonicteam::DocMarathonImp* a1, double a2) {
 			else if (result.dwButtonPressed == 0){
 
 				ClearSocketConInfo();
-				_socket.InitSocket();
-				_socket.SetSocketBind(Socket::IP_ADDR, 27016, AF_INET);
-				_socket.SetSocketNonBlocking();
-				_socket.StartServer();
+				_socket.InitSockets();
+				_socket.SetAddress("26.175.28.206", 27016); 
+				_socket.SetBind();
+				_socket.SetNonBlockingMode();
+				_socket.InitServer();
 				_socket.MSG_HANDLE_SERVER_CLIENT_JOIN = ServerClientConnected;
 				_socket.MSG_HANDLE_SERVER_MESSAGES = ServerMessages;
 				_socket.MSG_HANDLE_SERVER_CLIENT_LOST_CONNECTION = ServerClientLost;

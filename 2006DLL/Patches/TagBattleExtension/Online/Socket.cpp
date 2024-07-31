@@ -1,375 +1,499 @@
 #include "Socket.h"
-#include <iostream>
 
-const char* Socket::IP_ADDR = "127.0.0.1";
+const char* Socket::IP_ADDR;
+
+Socket::Socket() {
+	InitSockets();
+	this->MSG_HANDLE_CLIENT_JOIN_SERVER = &this->MSG_HANDLE_CLIENT_JOIN_SERVER_TEMP;
+	this->MSG_HANDLE_CLIENT_LOST_CONNECTION_SERVER = &this->MSG_HANDLE_CLIENT_LOST_CONNECTION_SERVER_TEMP;
+	this->MSG_HANDLE_CLIENT_MESSAGES = &this->MSG_HANDLE_CLIENT_MESSAGES_TEMP;
+	this->MSG_HANDLE_SERVER_CLIENT_JOIN = &this->MSG_HANDLE_SERVER_CLIENT_JOIN_TEMP;
+	this->MSG_HANDLE_SERVER_CLIENT_LOST_CONNECTION = &this->MSG_HANDLE_SERVER_CLIENT_LOST_CONNECTION_TEMP;
+	this->MSG_HANDLE_SERVER_MESSAGES = &this->MSG_HANDLE_SERVER_MESSAGES_TEMP;
+
+
+}
+
+Socket::~Socket() {
+	Cleanup();
+}
+
+void Socket::InitSockets() {
+	WSADATA wsaData;
+	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
+		std::cerr << "WSAStartup failed with error: " << WSAGetLastError() << std::endl;
+		return;
+	}
+
+	_tcpSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	if (_tcpSocket == INVALID_SOCKET) {
+		std::cerr << "TCP socket creation failed with error: " << WSAGetLastError() << std::endl;
+		return;
+	}
+
+	_udpSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+	if (_udpSocket == INVALID_SOCKET) {
+		std::cerr << "UDP socket creation failed with error: " << WSAGetLastError() << std::endl;
+		return;
+	}
 
 
 
-Socket::Socket()
+
+}
+
+void Socket::SetBind() {
+
+
+	if (bind(_tcpSocket, (struct sockaddr*)&_address_to, sizeof(_address_to)) == SOCKET_ERROR) {
+		std::cerr << "TCP bind failed with error: " << WSAGetLastError() << std::endl;
+		//   exit(1);
+	}
+
+	if (bind(_udpSocket, (struct sockaddr*)&_address_to, sizeof(_address_to)) == SOCKET_ERROR) {
+		std::cerr << "UDP bind failed with error: " << WSAGetLastError() << std::endl;
+		//  exit(1);
+	}
+
+
+
+
+}
+
+void Socket::SetAddress(const char* address, short port = 27016)
 {
-	this->MSG_HANDLE_SERVER_MESSAGES = Socket::SRecieveMessage;
-	this->MSG_HANDLE_SERVER_CLIENT_LOST_CONNECTION = Socket::SLostConnectionToClient;
-	this->MSG_HANDLE_SERVER_CLIENT_JOIN = Socket::SClientJoinedToServer;
+	sockaddr_in addr;
+	addr.sin_family = AF_INET;
+	addr.sin_port = htons(port);
+	addr.sin_addr.s_addr = inet_addr(address);
+	this->_address_to = *(struct sockaddr*)&addr;
+}
 
-	this->MSG_HANDLE_CLIENT_MESSAGES = Socket::CRecieveMessage;
-	this->MSG_HANDLE_CLIENT_JOIN_SERVER = Socket::ClientJoinedToServer;
-	this->MSG_HANDLE_CLIENT_LOST_CONNECTION_SERVER = Socket::CLostConnectionToServer;
+void Socket::SetNonBlockingMode()
+{
+	u_long mode = 1; // 1 to enable non-blocking mode, 0 to disable
+	if (ioctlsocket(_tcpSocket, FIONBIO, &mode) == SOCKET_ERROR) {
+		std::cerr << "TCP socket failed to set non blocking mode " << WSAGetLastError() << std::endl;
+		//   return;
+	}
+	if (ioctlsocket(_udpSocket, FIONBIO, &mode) == SOCKET_ERROR) {
+		std::cerr << "UDP socket failed to set non blocking mode" << WSAGetLastError() << std::endl;
+		// return;
+	}
+}
 
-	_server = false;
+void Socket::Cleanup() {
+	closesocket(_tcpSocket);
+	closesocket(_udpSocket);
+	_tcpSocket = INVALID_SOCKET;
+	_udpSocket = INVALID_SOCKET;
+	_clients.clear();
+	_udp_clients_map.clear();
+	WSACleanup();
 	_client = false;
-	_socket = INVALID_SOCKET; // Initialize socket to an invalid state
+	_server = false;
+	_connection_status = 0;
+
+
 }
 
-void Socket::RunThreaded()
+bool Socket::IsWorks()
 {
-	if (_server) {
-		// Uncomment and implement the threading logic for the server
-		// _main_thread = SocketThread(this, Socket::StartServer, 0);
-	}
-	else if (_client) {
-		// Uncomment and implement the threading logic for the client
-		// _main_thread = SocketThread(this, Socket::StartClient, 0);
-	}
+	return _tcpSocket != INVALID_SOCKET || _udpSocket != INVALID_SOCKET;
 }
 
-void Socket::SetSocketBind(const char* Address = "127.0.0.1", short port = 1000, short AF_MODE = AF_INET)
+bool Socket::IsClient()
 {
-	sockaddr_in sa;
-	sa.sin_family = AF_MODE;
-	sa.sin_addr.s_addr = inet_addr(Address); // No need for htonl here
-	sa.sin_port = htons(port);
-
-
-	_address = sa;
-	if (_socket != INVALID_SOCKET) { // Check if socket is valid
-		if (bind(_socket, (sockaddr*)&sa, sizeof(sa)) == SOCKET_ERROR) {
-			std::cerr << "Bind failed: " << WSAGetLastError() << std::endl;
-		}
-	}
+	return _client;
 }
 
-void Socket::SetSocketNonBlocking()
+bool Socket::IsServer()
 {
-	if (_socket != INVALID_SOCKET) {
-		ULONG bNonblocking = TRUE;
-		if (ioctlsocket(_socket, FIONBIO, &bNonblocking) == SOCKET_ERROR) {
-			std::cerr << "Failed to set non-blocking mode: " << WSAGetLastError() << std::endl;
-		}
-	}
+	return _server;
 }
 
-void Socket::SendMessageTo(SOCKET socket, SocketMessage* msg)
+int Socket::GetConnectStatus()
 {
-	if (send(socket, (char*)msg, sizeof(SocketMessage), 0) == SOCKET_ERROR) {
-		std::cerr << "Send error: " << WSAGetLastError() << std::endl;
-	}
+	return _connection_status;
 }
 
 sockaddr Socket::GetAddress()
 {
-      return *reinterpret_cast<sockaddr*>(&_address);
+	sockaddr addr;
+	int size = sizeof(addr);
+	getsockname(_tcpSocket, &addr, &size);
+	return addr;
 }
 
-sockaddr Socket::GetAddressF()
+sockaddr Socket::GetAddressTo()
 {
-	sockaddr local_address;
-	int address_length = sizeof(local_address);
-	getsockname(_socket, (struct sockaddr*)&local_address, &address_length);
-	return local_address;
-
+	return _address_to;
 }
 
-XUID Socket::GetXUID(int index = 0)
-{
-	XUID xuid;
-	XUserGetXUID(index,&xuid);
-	return xuid;
-}
-
-void Socket::StartServer()
+void Socket::InitServer()
 {
 	_server = true;
-	if (_socket != INVALID_SOCKET) {
-		if (listen(_socket, SOMAXCONN) == SOCKET_ERROR) {
-			std::cerr << "Listen failed: " << WSAGetLastError() << std::endl;
-
-		}
-	}
-
+	listen(_tcpSocket, 0);
 }
-
-void Socket::UpdateServer()
-{
-	SOCKET client_socket;
-	sockaddr_in client_addr;
-	int client_addr_len = sizeof(client_addr);
-
-	client_socket = accept(_socket, (sockaddr*)&client_addr, &client_addr_len);
-	if (client_socket != INVALID_SOCKET) {
-		_clients[client_socket] = 1; // Connection established
-		this->MSG_HANDLE_SERVER_CLIENT_JOIN(this,client_socket);
-		std::cout << "[Server] Client Joined #" << client_socket << std::endl;
-	}
-
-
-	SocketMessage message;
-	for (std::map<SOCKET,int>::iterator it = _clients.begin(); it != _clients.end();it++ ) {
-		int mas = sizeof(message.address);
-		// Check if there is data to read
-
-		SocketMessage message;
-		fd_set readfds;
-		struct timeval timeout;
-
-		// Set timeout for select
-		timeout.tv_sec = 0;
-		timeout.tv_usec = 0; // Non-blocking
-
-		FD_ZERO(&readfds);
-		FD_SET(it->first, &readfds);
-		
-		int cc = select(it->first + 1, &readfds, NULL, NULL, &timeout);
-		for (int i = 0;i<cc;i++){
-			int br = recvfrom(it->first, (char*)&message, sizeof(message), 0,&message.address,&mas);
-
-			if (br < 0) {
-				if (WSAGetLastError() == WSAEWOULDBLOCK) {
-					continue;
-				}
-				break;
-				std::cerr << "recv error: " << WSAGetLastError() << std::endl;
-				it->second = -1; // Mark as disconnected
-				this->MSG_HANDLE_SERVER_CLIENT_LOST_CONNECTION(this, it->first);
-				
-			}
-			else if (br == 0) {
-				break;
-				std::cout << "Connection closed by peer." << std::endl;
-				it->second = -1; // Mark as disconnected
-				this->MSG_HANDLE_SERVER_CLIENT_LOST_CONNECTION(this, it->first);
-			}
-			else {
-				std::cout << "Received " << br << " bytes." << std::endl;
-				this->MSG_HANDLE_SERVER_MESSAGES(this, it->first, &message);
-			}
-
-		}
-	
-
-		int br = recvfrom(it->first, (char*)&message, sizeof(message), 0,&message.address,&mas);
-		if (br < 0) {
-			if (WSAGetLastError() == WSAEWOULDBLOCK) {
-				continue;
-			}
-			std::cerr << "recv error: " << WSAGetLastError() << std::endl;
-			it->second = -1; // Mark as disconnected
-			this->MSG_HANDLE_SERVER_CLIENT_LOST_CONNECTION(this, it->first);
-		}
-		else if (br == 0) {
-			std::cout << "Connection closed by peer." << std::endl;
-			it->second = -1; // Mark as disconnected
-			this->MSG_HANDLE_SERVER_CLIENT_LOST_CONNECTION(this, it->first);
-		}
-		else {
-			std::cout << "Received " << br << " bytes." << std::endl;
-			this->MSG_HANDLE_SERVER_MESSAGES(this, it->first, &message);
-		}
-
-		// Remove disconnected clients
-		if (it->second == -1) {
-			closesocket(it->first);
-			_clients.erase(it);
-		}
-	
-	}
-}
-
-
-int Socket::IsServer()
-{
- return _server;
-}
-
-void Socket::SRecieveMessage(Socket*, SOCKET sock, SocketMessage* msg)
-{
-
-	printf("[Server][SOCKET:%d] Got Message : %d", sock, msg->ID);
-
-}
-
-void Socket::SLostConnectionToClient(Socket*, SOCKET sock)
-{
-	printf("[Server] Client Lost Connection  : #%d\n", sock);
-}
-
-void Socket::SClientJoinedToServer(Socket*, SOCKET sock)
-{
-    printf("[Server] Client Joined   : #%d\n", sock);
-}
-
-void Socket::SendMessageToClients(SocketMessage* msg)
-{
-	for (std::map<SOCKET,int>::iterator it = _clients.begin(); it != _clients.end(); ++it) {
-		if (it->second != -1) {
-			SendMessageTo(it->first, msg);
-		}
-	}
-}
-
-
-int Socket::StartClient()
-{// Attempt to connect
-	if (_connected) return _connected;
+int Socket::InitClient() {
 	_client = true;
+	// TCP ONLY, because UDP is not needed
+	sockaddr addr = GetAddressTo();
+	int size = sizeof(addr);
+	int error;
+	int optlen;
 
-	int result = connect(_socket, (const sockaddr*)&_address, sizeof(_address));
+	// Attempt to connect to the server
+	int result = connect(_tcpSocket, &addr, size);
 	if (result == SOCKET_ERROR) {
-		int error = WSAGetLastError();
-		if (error == WSAEWOULDBLOCK) {
-			std::cout << "Connection in progress..." << std::endl;
-			// You may want to implement a mechanism to check for connection completion
-		}
-		else if (error == WSAEISCONN) {
-			_connected = true;
-		}
-		else {
-			std::cerr << "Error connecting to server: " << error << std::endl;
-		}
-	}
-	else {
-		_connected = true;
-		std::cout << "Connected to server." << std::endl;
-		this->MSG_HANDLE_CLIENT_JOIN_SERVER(this, _socket);
-		return 0;
-	}
-	return _connected;
+		int wsa_error = WSAGetLastError();
 
+		switch (wsa_error) {
+		case WSAEINPROGRESS:
+		case WSAEWOULDBLOCK:
+			// Connection is in progress
+			_connection_status = 0;
+			std::cerr << "Connection is in progress, handle it accordingly." << std::endl;
+			return 0; // Indicate that the connection is being established
 
-}
+		case WSAEISCONN:
+			// Socket is already connected, but the connection may not be successful
+			_connection_status = -1;
+			std::cerr << "Socket is already connected, but the connection may not be successful." << std::endl;
 
-void Socket::UpdateClient()
-{
-	SocketMessage message;
-	fd_set readfds;
-	struct timeval timeout;
+			// Check the actual connection status
 
-	// Set timeout for select
-	timeout.tv_sec = 0;
-	timeout.tv_usec = 0; // Non-blocking
-	FD_ZERO(&readfds);
-	FD_SET(_socket, &readfds);
+			optlen = sizeof(error);
+			if (getsockopt(_tcpSocket, SOL_SOCKET, 0x1007, (char*)&error, &optlen) == SOCKET_ERROR) {
+				std::cerr << "getsockopt failed: " << WSAGetLastError() << std::endl;
+				return 0; // Indicate failure
+			}
 
-	int mas = sizeof(message.address);
-	int cc = select(_socket + 1, &readfds, NULL, NULL, &timeout);
-	for (int i = 0;i<cc;i++){
-		int br = recvfrom(_socket, (char*)&message, sizeof(message), 0,&message.address,&mas);
-
-		if (br < 0) {
-			if (WSAGetLastError() == WSAEWOULDBLOCK) {
-				std::cout << "No data available to read." << std::endl;
+			if (error == 0) {
+				// Connection is successful
+				_connection_status = 1;
+				std::cout << "Connection established successfully." << std::endl;
+				return 1; // Indicate success
 			}
 			else {
-				std::cerr << "recv error: " << WSAGetLastError() << std::endl;
-				_connected = false;
-				this->MSG_HANDLE_CLIENT_LOST_CONNECTION_SERVER(this, _socket);
+				// Connection failed
+				std::cerr << "Connection failed with error: " << error << std::endl;
+				return 0; // Indicate failure
+			}
+		default:
+			// Handle other connection errors
+			_connection_status = -1;
+			std::cerr << "[WSA][Error] : " << wsa_error << " - " << wsa_error << std::endl;
+			return 0; // Indicate failure
+		}
+	}
+
+	// Connection established successfully
+	_connection_status = 1;
+	std::cout << "Connection established successfully." << std::endl;
+	return 1; // Indicate success
+}
+void Socket::UpdateServer(float delta) {
+	fd_set readfds_tcp;
+	fd_set readfds_upd;
+	FD_ZERO(&readfds_tcp);
+	FD_ZERO(&readfds_upd);
+	FD_SET(_tcpSocket, &readfds_tcp);
+	FD_SET(_udpSocket, &readfds_upd);
+
+	//select ignore nonblock
+	struct timeval timeout;
+	timeout.tv_sec = 0;
+	timeout.tv_usec = 0; //
+
+	int activity_tcp = select(0, &readfds_tcp, NULL, NULL, &timeout);
+	int activity_udp = select(0, &readfds_upd, NULL, NULL, &timeout);
+	if (activity_tcp < 0 && activity_udp < 0) {
+		std::cerr << "Select error: " << WSAGetLastError() << std::endl;
+		return;
+	}
+
+
+
+	// TCP (JOIN HANDLE)
+	if (FD_ISSET(_tcpSocket, &readfds_tcp)) {
+		SocketMessage buffer;
+		sockaddr senderAddr;  // Use sockaddr_in for better type safety
+		int addrLen = sizeof(senderAddr);
+		SOCKET socket = accept(_tcpSocket, (struct sockaddr*)&senderAddr, &addrLen);
+		if (socket != INVALID_SOCKET) {
+			// Check if the client is already connected
+			if (_clients.find(senderAddr) == _clients.end()) {
+
+				sockaddr_in* _edit = (struct sockaddr_in*)&senderAddr;
+
+
+
+				_clients[senderAddr] = SocketData(socket);
+				this->MSG_HANDLE_SERVER_CLIENT_JOIN(this, socket);
+
 
 			}
 		}
-		else if (br == 0) {
-			std::cout << "Connection closed by peer." << std::endl;
-			this->MSG_HANDLE_CLIENT_LOST_CONNECTION_SERVER(this, _socket);
+	}
+
+	// Check each client socket
+	for (std::map<sockaddr, SocketData, SockaddrComparator>::iterator it = _clients.begin(); it != _clients.end();) {
+		fd_set client_socket;
+		FD_ZERO(&client_socket);
+		FD_SET(it->second.TCP_SOCKET, &client_socket);
+
+
+		SocketMessage buffer;
+		sockaddr_in senderAddr;
+		int addrLen = sizeof(senderAddr);
+		int bytesReceived = recvfrom(it->second.TCP_SOCKET, (char*)&buffer, sizeof(SocketMessage), 0, (struct sockaddr*)&senderAddr, &addrLen);
+
+		if (bytesReceived > 0) {
+			// Process received TCP data
+			this->MSG_HANDLE_SERVER_MESSAGES(this, it->second.TCP_SOCKET, &buffer);
+		}
+		else if (bytesReceived == 0) {
+			// Handle lost connection
+
+			this->MSG_HANDLE_SERVER_CLIENT_LOST_CONNECTION(this, it->second.TCP_SOCKET);
+			it = _clients.erase(it); // Remove client from the list
+			continue; // Skip to the next iteration
 		}
 		else {
-			std::cout << "Received " << br << " bytes." << std::endl;
-			this->MSG_HANDLE_CLIENT_MESSAGES(this, _socket, &message);
+			int error = WSAGetLastError();
+			if (error != WSAEWOULDBLOCK) {
+				perror("recv");
+				this->MSG_HANDLE_SERVER_CLIENT_LOST_CONNECTION(this, it->second.TCP_SOCKET);
+				it = _clients.erase(it); // Remove client on error
+				continue; // Skip to the next iteration
+			}
+		}
+		++it; // Move to the next client
+	}
+
+
+	// UDP
+	while (FD_ISSET(_udpSocket, &readfds_upd))
+	{
+
+		FD_ZERO(&readfds_upd);
+		FD_SET(_udpSocket, &readfds_upd);
+		int activity_udp_l = select(0, &readfds_upd, NULL, NULL, &timeout);
+		if (activity_udp_l < 0) break;
+
+		SocketMessage buffer;
+		sockaddr_in senderAddr;
+		int addrLen = sizeof(senderAddr);
+		int bytesReceived = recvfrom(_udpSocket, (char*)&buffer, sizeof(SocketMessage), 0, (struct sockaddr*)&senderAddr, &addrLen);
+
+		sockaddr_in* addr_test = (struct sockaddr_in*)&_clients.begin()->first;
+		if (memcmp(&addr_test, &senderAddr, sizeof(sockaddr_in)) == 0) {
+			printf("THEY SAME");
+		}
+
+		if (bytesReceived > 0) {
+
+			if (_udp_clients_map.find(*(struct sockaddr*)&senderAddr) == _udp_clients_map.end()) {
+				_udp_clients_map[*(struct sockaddr*)&senderAddr] = true;
+			}
+
+			// Process received UDP data
+			this->MSG_HANDLE_SERVER_MESSAGES(this, NULL, &buffer);
+		}
+	}
+}
+
+void Socket::UpdateClient(float delta)
+{
+	fd_set readfds_tcp;
+	fd_set readfds_upd;
+	FD_ZERO(&readfds_tcp);
+	FD_ZERO(&readfds_upd);
+	FD_SET(_tcpSocket, &readfds_tcp);
+	FD_SET(_udpSocket, &readfds_upd);
+
+	//select ignore nonblock
+	struct timeval timeout;
+	timeout.tv_sec = 0;
+	timeout.tv_usec = 0; //
+
+	int activity_tcp = select(0, &readfds_tcp, NULL, NULL, &timeout);
+	int activity_udp = select(0, &readfds_upd, NULL, NULL, &timeout);
+	if (activity_tcp < 0 && activity_udp < 0) {
+		std::cerr << "Select error: " << WSAGetLastError() << std::endl;
+		return;
+	}
+
+
+	// TCP (COMPLETE)
+	if (FD_ISSET(_tcpSocket, &readfds_tcp)) {
+		SocketMessage buffer;
+		int bytesReceived = recv(_tcpSocket, (char*)&buffer, sizeof(SocketMessage), 0);
+		if (bytesReceived > 0) {
+			// Process received TCP data
+			this->MSG_HANDLE_CLIENT_MESSAGES(this, _tcpSocket, &buffer);
+		}
+		else if (bytesReceived == 0) {
+			// Handle lost connection
+			_connection_status = 0;
+			this->MSG_HANDLE_CLIENT_LOST_CONNECTION_SERVER(this, _tcpSocket);
+			Cleanup();
+		}
+		else {
+			int error = WSAGetLastError();
+			if (error != WSAEWOULDBLOCK) {
+				perror("recv");
+				_connection_status = 0;
+				this->MSG_HANDLE_CLIENT_LOST_CONNECTION_SERVER(this, _tcpSocket);
+				Cleanup();
+			}
+		}
+	}
+
+	while (FD_ISSET(_udpSocket, &readfds_upd))
+	{
+		FD_ZERO(&readfds_upd);
+		FD_SET(_udpSocket, &readfds_upd);
+		int activity_udp_l = select(0, &readfds_upd, NULL, NULL, &timeout);
+		if (activity_udp_l < 0) break;
+
+		SocketMessage buffer;
+		int addrLen = sizeof(sockaddr);
+		int bytesReceived = recvfrom(_udpSocket, (char*)&buffer, sizeof(SocketMessage), 0, (struct sockaddr*)&buffer.address_from, &addrLen);
+		if (bytesReceived > 0) {
+			// Process received UDP data
+			this->MSG_HANDLE_CLIENT_MESSAGES(this, NULL, &buffer);
 		}
 
 	}
 
 
 
-	int br = recvfrom(_socket, (char*)&message, sizeof(message), 0,&message.address,&mas);
-	if (br < 0) {
-		if (WSAGetLastError() == WSAEWOULDBLOCK) {
-			std::cout << "No data available to read." << std::endl;
-		}
-		else {
-			std::cerr << "recv error: " << WSAGetLastError() << std::endl;
-			_connected = false;
-			this->MSG_HANDLE_CLIENT_LOST_CONNECTION_SERVER(this, _socket);
 
+
+}
+
+void Socket::SendTCPMessageTo(SOCKET to, SocketMessage* msg)
+{
+	if (msg->PROTOCOL == IPPROTO_TCP) {
+		send(to, (char*)msg, sizeof(*msg), 0);
+	}
+}
+
+void Socket::SendTCPMessageToServer(SocketMessage* msg)
+{
+	SendTCPMessageTo(_tcpSocket, msg);
+}
+
+void Socket::SendTCPMessageToClients(SocketMessage* msg)
+{
+	for (std::map<sockaddr, SocketData, SockaddrComparator>::iterator it = _clients.begin(); it != _clients.end(); it++) {
+		SendTCPMessageTo(it->second.TCP_SOCKET, msg);
+	}
+}
+
+void Socket::SendUDPMessageTo(sockaddr to, SocketMessage* msg)
+{
+	if (msg->PROTOCOL == IPPROTO_UDP) {
+		sendto(_udpSocket, (char*)msg, sizeof(*msg), 0, (struct sockaddr*)&to, sizeof(to));
+	}
+}
+
+void Socket::SendUDPMessageToServer(SocketMessage* msg)
+{
+	SendUDPMessageTo(GetAddressTo(), msg);
+}
+
+void Socket::SendUDPMessageToClients(SocketMessage* msg)
+{
+	for (std::map<sockaddr, SocketData, SockaddrComparator>::iterator it = _clients.begin(); it != _clients.end(); it++) {
+		SendUDPMessageTo(MatchClientTcpToUdpAddress(it->first), msg);
+	}
+}
+
+sockaddr Socket::MatchClientTcpToUdpAddress(sockaddr tcp_address)
+{
+	sockaddr_in in_address = *(struct sockaddr_in*)&tcp_address;
+	for (std::map<sockaddr, bool, SockaddrComparator>::iterator it = _udp_clients_map.begin(); it != _udp_clients_map.end(); it++) {
+		sockaddr_in in_udp_address = *(struct sockaddr_in*)&it->first;
+		if (in_address.sin_addr.S_un.S_addr == in_udp_address.sin_addr.S_un.S_addr) {
+			return *(struct sockaddr*)&in_udp_address;
 		}
 	}
-	else if (br == 0) {
-		std::cout << "Connection closed by peer." << std::endl;
-		this->MSG_HANDLE_CLIENT_LOST_CONNECTION_SERVER(this, _socket);
+	return tcp_address;
+}
+
+
+#ifdef _XBOX
+XUID Socket::GetXUID(int index)
+{
+	XUID xuid;
+	XUserGetXUID(index, &xuid);
+	return xuid;
+}
+#endif
+
+void Socket::MSG_HANDLE_SERVER_MESSAGES_TEMP(Socket*, SOCKET, SocketMessage* msg)
+{
+
+	if (msg->PROTOCOL == IPPROTO_UDP) {
+		printf("MSG_HANDLE_SERVER_MESSAGES_TEMP_UDP\n");
 	}
 	else {
-		std::cout << "Received " << br << " bytes." << std::endl;
-		this->MSG_HANDLE_CLIENT_MESSAGES(this, _socket, &message);
+		printf("MSG_HANDLE_SERVER_MESSAGES_TEMP\n");
 	}
 }
 
-int Socket::IsClient()
+void Socket::MSG_HANDLE_SERVER_CLIENT_LOST_CONNECTION_TEMP(Socket*, SOCKET)
 {
- return _client;
+	printf("MSG_HANDLE_SERVER_CLIENT_LOST_CONNECTION_TEMP\n");
+
 }
 
-void Socket::ClientJoinedToServer(Socket*, SOCKET sock)
+void Socket::MSG_HANDLE_SERVER_CLIENT_JOIN_TEMP(Socket*, SOCKET)
 {
-	printf("[Client] Join To Server : %d\n", sock);
+	printf("MSG_HANDLE_SERVER_CLIENT_JOIN_TEMP\n");
 }
 
-void Socket::CRecieveMessage(Socket*, SOCKET sock, SocketMessage* msg   )
+void Socket::MSG_HANDLE_CLIENT_MESSAGES_TEMP(Socket*, SOCKET, SocketMessage* msg)
 {
-	printf("[Client] Got Message : %d\n", sock, msg->ID);
-}
-
-void Socket::CLostConnectionToServer(Socket*, SOCKET sock)
-{
-	printf("[Client] Lost Connection To server : %d\n", sock);
-}
-
-void Socket::SendMessageToServer(SocketMessage* msg)
-{
-	SendMessageTo(_socket, msg);
-}
-
-void Socket::InitSocket()
-{
-	WSADATA wsaData;
-	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
-		std::cerr << "WSAStartup failed: " << WSAGetLastError() << std::endl;
-		return; // Exit if initialization fails
+	if (msg->PROTOCOL == IPPROTO_UDP) {
+		printf("MSG_HANDLE_CLIENT_MESSAGES_TEMP_UDP\n");
 	}
-
-	_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if (_socket == INVALID_SOCKET) {
-		std::cerr << "Socket creation failed: " << WSAGetLastError() << std::endl;
-		WSACleanup(); // Clean up Winsock
-		return; // Exit if socket creation fails
+	else {
+		printf("MSG_HANDLE_SERVER_MESSAGES_TEMP\n");
 	}
-
-
 }
 
-void Socket::CloseSocket()
+void Socket::MSG_HANDLE_CLIENT_JOIN_SERVER_TEMP(Socket*, SOCKET)
 {
-	closesocket(_socket);
-	_client = false;
-	_server = false;
-	_socket = INVALID_SOCKET;
-	_connected = false;
-	WSACleanup();
+	printf("MSG_HANDLE_CLIENT_JOIN_SERVER_TEMP\n");
 }
 
-SocketMessage::SocketMessage(int ID,void* buffer, size_t size)
+void Socket::MSG_HANDLE_CLIENT_LOST_CONNECTION_SERVER_TEMP(Socket*, SOCKET)
+{
+	printf("MSG_HANDLE_CLIENT_LOST_CONNECTION_SERVER_TEMP\n");
+}
+
+SocketData::SocketData(int TCP_SOCKET)
+{
+	this->TCP_SOCKET = TCP_SOCKET;
+}
+
+SocketData::SocketData()
+{
+}
+
+
+
+SocketMessage::SocketMessage(int ID, int PROTOCOL, void* from, int size)
 {
 	this->ID = ID;
-	memcpy((void*)&this->buffer, buffer, size);
+	this->PROTOCOL = PROTOCOL;
+	memcpy((void*)&this->_message_, from, size);
 }
 
 SocketMessage::SocketMessage()
 {
-	memset(&this->buffer, 0, SocketMessage_BUFFER); // Initialize buffer to zero
 }

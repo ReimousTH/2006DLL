@@ -1,67 +1,127 @@
-// Socket.h
 #pragma once
 
-#include <xtl.h>
+
 #include <iostream>
-#include <xmath.h>
+#include <map>
 
+#ifdef _XBOX
 #include <stdexcept>
-#include <boost/function.hpp>
-#include <boost/bind.hpp>
-
-#include <vector>
+#include <xtl.h>
+#include <xmath.h>
 #include "../../../Basics.h"
+#else
+#pragma comment(lib, "Ws2_32.lib")
+#include <winsock.h>
+#endif // _XBOX
 
 
-#define SocketMessage_BUFFER 0x256
-#define DEFINE_MSG_DATA_ID(ID) static int GetID() {return ID;} 
-#define DEFINE_MESSAGE_FROM_DATA_CONST(DATA) SocketMessage(DATA.GetID(),(void*)&DATA,sizeof(DATA))
-#define SOCKET_SEND_MESSAGE_DATA_TO_CLIENTS(SOCKET,DATA) { \
-SocketMessage _msg_ =  SocketMessage(DATA.GetID(),(void*)&DATA,sizeof(DATA)); \
-	SOCKET->SendMessageToClients(&_msg_); \
-} \
-
-struct SocketMessageDataZero {
-	bool flag;
-	DEFINE_MSG_DATA_ID(1);
-};
-struct SocketMessageData{
-
-};
 
 
-#pragma pack(push, 0x10)
-struct  SocketMessage {
+#define DEFINE_SOCKET_MESSAGE_DATA_ID_PROTOCOL(ID,PROTOCOL) \
+	static int GetID(){ \
+	return ID;\
+}\
+	static int GetProtocol(){\
+	return PROTOCOL; \
+}\
+
+#define DEFINE_SOCKET_MESSAGE_FROM_CONST_DATA(DATA) SocketMessage(DATA.GetID(),DATA.GetProtocol(),(void*)&DATA,sizeof(DATA))
+
+struct SocketMessage {
+
 	int ID;
-	char _padding[0xC];
-	sockaddr address;
-	char buffer[SocketMessage_BUFFER];
+	int PROTOCOL;
+	char _padding_[8];
+	sockaddr address_from;
+	char _message_[256];
 public:
-	SocketMessage(int ID,void* buffer,size_t size);
+	SocketMessage(int ID, int PROTOCOL, void* from, int size);
 	SocketMessage();
 };
-#pragma pack(pop)
 
-
-class Socket
-{	
+struct SocketData {
+	SOCKET TCP_SOCKET;
+	float UDP_TIMEOUT;
 public:
-	Socket();
+	SocketData(int TCP_SOCKET);
+	SocketData();
+};
+
+struct SMDataTest {
+	DEFINE_SOCKET_MESSAGE_DATA_ID_PROTOCOL(0x1, IPPROTO_TCP);
+};
+struct SMDataTest_UDP {
+	DEFINE_SOCKET_MESSAGE_DATA_ID_PROTOCOL(0x1, IPPROTO_UDP);
+};
+
+struct SockaddrComparator {
+	bool operator()(const sockaddr* lhs, const sockaddr* rhs) const {
+		return memcmp(lhs, rhs, sizeof(*lhs)) < 0;
+	}
+	bool operator()(const sockaddr& lhs, const sockaddr& rhs) const {
+		return memcmp(&lhs, &rhs, sizeof(lhs)) < 0;
+	}
+};
+
+
+
+
+
+
+
+class Socket {
+public:
 	static const char* IP_ADDR;
-protected:
 
-	SOCKET _socket;
-	sockaddr_in _address;
-	bool _server;
+	Socket();               // Constructor
+	~Socket();              // Destructor
+
+	void InitSockets();     // Initialize TCP and UDP sockets
+	void SetBind(); // Bind sockets to the specified IP
+	void SetAddress(const char* address, short port);
+	void SetNonBlockingMode(); // Bind sockets to the specified IP
+	void Cleanup();         // Clean up resources
+	bool IsWorks();
+	bool IsClient();
+	bool IsServer();
+	int GetConnectStatus();
+
+	sockaddr GetAddress();
+	sockaddr GetAddressTo();
+
+
+	void InitServer();
+	int InitClient();
+
+	void UpdateServer(float delta); // Handle incoming connections and data
+	void UpdateClient(float delta);
+
+	void SendTCPMessageTo(SOCKET to, SocketMessage* msg);
+	void SendTCPMessageToServer(SocketMessage* msg);
+	void SendTCPMessageToClients(SocketMessage* msg);
+
+
+	void SendUDPMessageTo(sockaddr to, SocketMessage* msg);
+	void SendUDPMessageToServer(SocketMessage* msg);
+	void SendUDPMessageToClients(SocketMessage* msg);
+
+	sockaddr MatchClientTcpToUdpAddress(sockaddr tcp_address);
+
+#ifdef _XBOX
+	XUID GetXUID(int);
+#endif
+
+private:
+	SOCKET _tcpSocket;      // TCP socket
+	SOCKET _udpSocket;      // UDP socket
+	std::map<sockaddr, SocketData, SockaddrComparator> _clients;
+
+	std::map<sockaddr, bool, SockaddrComparator> _udp_clients_map;
+
+	sockaddr _address_to;
+	int _connection_status;
 	bool _client;
-	bool _connected;
-	bool _stop;
-
-	//	SocketThread _main_thread;
-	//SocketThread _main_server_join_thread;
-	std::map<SOCKET, int> _clients;
-
-
+	bool _server;
 
 	typedef void (SocketMSGCommon)(Socket*, SOCKET, SocketMessage*);
 	typedef void (SocketCommonInfo)(Socket*, SOCKET);
@@ -76,58 +136,15 @@ public:
 	SocketCommonInfo* MSG_HANDLE_CLIENT_JOIN_SERVER;
 	SocketCommonInfo* MSG_HANDLE_CLIENT_LOST_CONNECTION_SERVER;
 
+	static void MSG_HANDLE_SERVER_MESSAGES_TEMP(Socket*, SOCKET, SocketMessage*);
+	static void MSG_HANDLE_SERVER_CLIENT_LOST_CONNECTION_TEMP(Socket*, SOCKET);
+	static void MSG_HANDLE_SERVER_CLIENT_JOIN_TEMP(Socket*, SOCKET);
+
+	static void MSG_HANDLE_CLIENT_MESSAGES_TEMP(Socket*, SOCKET, SocketMessage*);
+	static void MSG_HANDLE_CLIENT_JOIN_SERVER_TEMP(Socket*, SOCKET);
+	static void MSG_HANDLE_CLIENT_LOST_CONNECTION_SERVER_TEMP(Socket*, SOCKET);
 
 
-
-public:
-
-	void RunThreaded();
-	void SetSocketBind(const char* Address,short port,short AF_MODE);
-	void SetSocketNonBlocking(); 
-	void SendMessageTo(SOCKET socket, SocketMessage* msg);
-	sockaddr GetAddress();
-	sockaddr GetAddressF();
-	XUID GetXUID(int index);
-
-
-#pragma region Server_H
-	void StartServer();
-	void UpdateServer();
-	int IsServer();
-
-
-#pragma region ServerMessages_BASE_H
-	static void SRecieveMessage(Socket*, SOCKET, SocketMessage*);
-	static void SLostConnectionToClient(Socket*, SOCKET);
-	static void SClientJoinedToServer(Socket*, SOCKET);
-#pragma endregion
-	void SendMessageToClients(SocketMessage*);
-
-
-
-
-#pragma endregion
-
-
-#pragma region Client_H
-	int StartClient();
-	void UpdateClient();
-	int IsClient();	
-
-#pragma region ClientMessages_BASE_H
-	static void ClientJoinedToServer(Socket*, SOCKET);
-	static void CRecieveMessage(Socket*, SOCKET, SocketMessage*);
-	static void CLostConnectionToServer(Socket*, SOCKET);
-#pragma endregion
-
-	void SendMessageToServer(SocketMessage*);
-#pragma endregion
-
-
-
-
-	void InitSocket();
-	void CloseSocket();
 
 };
 
