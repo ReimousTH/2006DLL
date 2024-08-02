@@ -528,6 +528,82 @@ int RemoveCHR(int a1,int a2){
 	return BranchTo(0x82195298,int,a1,a2);
 
 }
+int __fastcall sub_8229A5D0(int a1, double a2){
+
+	int v4; // r30
+	double v6; // fp13
+	float *v7; // r11
+	int v12; // r3
+	__int64 *v20; // r3
+	__int64 *v29; // r30
+	__int64 *v30; // r3
+	int *v31; // r3
+	int v32; // r5
+	int result; // r3
+	_DWORD *v34; // r3
+	int v35; // r29
+	__int64 *v36; // r30
+	int *v37; // r3
+	__int64 *v38; // r3
+	int v39; // r30
+	_DWORD *v40; // r3
+	Sonicteam::SoX::RefCountObject* v41; // [sp+50h] [-230h] BYREF
+	float v42; // [sp+54h] [-22Ch] BYREF
+	int v43; // [sp+58h] [-228h] BYREF
+	int v44; // [sp+5Ch] [-224h] BYREF
+	int v45; // [sp+60h] [-220h] BYREF
+	float v46; // [sp+64h] [-21Ch] BYREF
+	float v47[4]; // [sp+70h] [-210h] BYREF
+	char v48[16]; // [sp+80h] [-200h] BYREF
+	char v49[4]; // [sp+90h] [-1F0h] BYREF
+	int v50; // [sp+94h] [-1ECh]
+	char v51[16]; // [sp+A0h] [-1E0h] BYREF
+	int v52[4]; // [sp+B0h] [-1D0h] BYREF
+	char v53; // [sp+C0h] [-1C0h] BYREF
+	char v54[16]; // [sp+D0h] [-1B0h] BYREF
+	char v55[16]; // [sp+E0h] [-1A0h] BYREF
+	char v56[16]; // [sp+F0h] [-190h] BYREF
+	char v57[16]; // [sp+100h] [-180h] BYREF
+	char v58[16]; // [sp+110h] [-170h] BYREF
+	char v59[16]; // [sp+120h] [-160h] BYREF
+	char v60[64]; // [sp+130h] [-150h] BYREF
+	char v61[64]; // [sp+170h] [-110h] BYREF
+	char v62[64]; // [sp+1B0h] [-D0h] BYREF
+	char v63[72]; // [sp+1F0h] [-90h] BYREF
+
+
+
+	if ( (*(_DWORD *)(a1 + 0x184) & 1) != 0  && _socket.IsWorks())     // Touch Ring
+	{
+		v34 = (_DWORD *)BranchTo(0x823D0E88,int,(int)v49, a1);
+		v35 = (*(int (__fastcall **)(_DWORD))(*(_DWORD *)*v34 + 0xC))(*v34);
+		if ( v50 )
+			sub_821601B8(v50);
+
+		BranchTo(0x825D2350,int,v57,0x82B39EE0)
+
+		v36 = (__int64 *)((int)v63, (int)v57);
+		v37 = BranchTo(0x82277768,int*,&v41, a1);
+		v38 = (__int64 *)BranchTo(0x82594160,int,(int)v60, (_DWORD *)*v37);
+		BranchTo(0x82168C48,int,(int)v62, v38, v36);
+		if ( v41 )
+			v41->LoseObject();
+		v39 = *(_DWORD *)(a1 + 0x180);
+		v40 = (_DWORD *)(*(int (__fastcall **)(int))(*(_DWORD *)v35 + 0x24))(v35);
+		sub_825FE5B0(&v43, v40, *(_DWORD *)(v39 + 0x3C), (int)v62);
+		if ( v43 )
+			sub_82631328(v43);
+		sub_822791E8(&v45, a1, *(_DWORD *)(*(_DWORD *)(a1 + 0x180) + 0x38));
+		if ( v45 )
+			RefCountObjectRemoveReference(v45);
+		sub_825813A0(a1);
+		result = sub_8227CB18(a1);
+	}
+	else{
+		BranchTo(0x8229A5D0 ,int,a1,a2);
+	}
+	
+}
 
 
 
@@ -561,6 +637,8 @@ void TagBattleMain::GlobalInstall_ONLINE()
 
 	WRITE_DWORD(0x82000950,EngineDocOnUpdateHE);
 
+
+	WRITE_DWORD(0x8229A5D0)
 	
 	
 

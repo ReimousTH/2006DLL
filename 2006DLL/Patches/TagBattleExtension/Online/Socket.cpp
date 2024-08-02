@@ -4,6 +4,9 @@ const char* Socket::IP_ADDR;
 
 Socket::Socket() {
 	InitSockets();
+	_clients = std::map<sockaddr, SocketData, SockaddrComparator>();
+	_udp_clients_map = std::map<sockaddr, bool, SockaddrComparator>();
+
 	this->MSG_HANDLE_CLIENT_JOIN_SERVER = &this->MSG_HANDLE_CLIENT_JOIN_SERVER_TEMP;
 	this->MSG_HANDLE_CLIENT_LOST_CONNECTION_SERVER = &this->MSG_HANDLE_CLIENT_LOST_CONNECTION_SERVER_TEMP;
 	this->MSG_HANDLE_CLIENT_MESSAGES = &this->MSG_HANDLE_CLIENT_MESSAGES_TEMP;
@@ -87,14 +90,10 @@ void Socket::Cleanup() {
 	closesocket(_udpSocket);
 	_tcpSocket = INVALID_SOCKET;
 	_udpSocket = INVALID_SOCKET;
+
 	_clients.clear();
 	_udp_clients_map.clear();
 	WSACleanup();
-	_client = false;
-	_server = false;
-	_connection_status = 0;
-
-
 }
 
 bool Socket::IsWorks()
@@ -226,9 +225,6 @@ void Socket::UpdateServer(float delta) {
 			if (_clients.find(senderAddr) == _clients.end()) {
 
 				sockaddr_in* _edit = (struct sockaddr_in*)&senderAddr;
-
-
-
 				_clients[senderAddr] = SocketData(socket);
 				this->MSG_HANDLE_SERVER_CLIENT_JOIN(this, socket);
 
@@ -237,6 +233,7 @@ void Socket::UpdateServer(float delta) {
 		}
 	}
 
+	std::vector< std::map<sockaddr, SocketData, SockaddrComparator>::iterator> delete_request_vector;
 	// Check each client socket
 	for (std::map<sockaddr, SocketData, SockaddrComparator>::iterator it = _clients.begin(); it != _clients.end();) {
 		fd_set client_socket;
@@ -257,7 +254,8 @@ void Socket::UpdateServer(float delta) {
 			// Handle lost connection
 
 			this->MSG_HANDLE_SERVER_CLIENT_LOST_CONNECTION(this, it->second.TCP_SOCKET);
-			it = _clients.erase(it); // Remove client from the list
+			delete_request_vector.push_back(it);
+			it++;
 			continue; // Skip to the next iteration
 		}
 		else {
@@ -265,12 +263,20 @@ void Socket::UpdateServer(float delta) {
 			if (error != WSAEWOULDBLOCK) {
 				perror("recv");
 				this->MSG_HANDLE_SERVER_CLIENT_LOST_CONNECTION(this, it->second.TCP_SOCKET);
-				it = _clients.erase(it); // Remove client on error
+				delete_request_vector.push_back(it);
+				it++;
 				continue; // Skip to the next iteration
 			}
 		}
 		++it; // Move to the next client
 	}
+
+	//safe erase
+	for (std::vector< std::map<sockaddr, SocketData, SockaddrComparator>::iterator>::iterator it = delete_request_vector.begin(); it != delete_request_vector.end(); ++it) {
+		_clients.erase(*it);
+	}
+
+
 
 
 	// UDP
@@ -287,10 +293,7 @@ void Socket::UpdateServer(float delta) {
 		int addrLen = sizeof(senderAddr);
 		int bytesReceived = recvfrom(_udpSocket, (char*)&buffer, sizeof(SocketMessage), 0, (struct sockaddr*)&senderAddr, &addrLen);
 
-		sockaddr_in* addr_test = (struct sockaddr_in*)&_clients.begin()->first;
-		if (memcmp(&addr_test, &senderAddr, sizeof(sockaddr_in)) == 0) {
-			printf("THEY SAME");
-		}
+
 
 		if (bytesReceived > 0) {
 
@@ -417,7 +420,7 @@ sockaddr Socket::MatchClientTcpToUdpAddress(sockaddr tcp_address)
 	sockaddr_in in_address = *(struct sockaddr_in*)&tcp_address;
 	for (std::map<sockaddr, bool, SockaddrComparator>::iterator it = _udp_clients_map.begin(); it != _udp_clients_map.end(); it++) {
 		sockaddr_in in_udp_address = *(struct sockaddr_in*)&it->first;
-		if (in_address.sin_addr.S_un.S_addr == in_udp_address.sin_addr.S_un.S_addr) {
+		if (memcmp(&in_address.sin_addr.S_un.S_un_b, &in_udp_address.sin_addr.S_un.S_un_b,4) == 0){
 			return *(struct sockaddr*)&in_udp_address;
 		}
 	}
