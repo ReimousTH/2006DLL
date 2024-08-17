@@ -44,6 +44,7 @@ public:
 struct SocketData {
 	SOCKET TCP_SOCKET;
 	XUID xuid;
+	char name[64];
 	float UDP_TIMEOUT;
 public:
 	SocketData(int TCP_SOCKET);
@@ -65,6 +66,7 @@ struct SMDataJoinXUID {
 	DEFINE_SOCKET_MESSAGE_DATA_ID_PROTOCOL(SOCKET_MESSAGE_ID_JOIN_XUID, IPPROTO_TCP);
 	sockaddr address;
 	XUID sender_xuid;
+	char sender_name[64];
 };
 
 struct SMDataLeftXUID {
@@ -129,6 +131,9 @@ public:
 
 
 	XUID GetXUID(int);
+	void GetName(char* buffer);
+	std::string XUIDToName(XUID xuid);
+	;
 
 private:
 	SOCKET _tcpSocket;      // TCP socket
@@ -148,7 +153,7 @@ private:
 
 	typedef void (SocketMSGCommon)(Socket*, SOCKET, SocketMessage*);
 	typedef void (SocketCommonInfo)(Socket*, SOCKET);
-	typedef void (SocketCommonInfoEx)(Socket*, SOCKET,XUID);
+	typedef void (SocketCommonInfoEx)(Socket*, SOCKET, XUID);
 
 public:
 	SocketMSGCommon* MSG_HANDLE_SERVER_MESSAGES;
