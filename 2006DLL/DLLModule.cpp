@@ -32,6 +32,8 @@
 //#include "Patches.cpp"
 
 
+
+
 #include <xtl.h>
 void* operator new(size_t size) {
 	return HeapAlloc(GetProcessHeap(), 0, size);
@@ -358,7 +360,10 @@ HOOK(void,__fastcall,sub_825B19C0,0x825B1870,int a1,double delta)
 extern "C" void OnDLLStart(){
 
 	
+
 		
+
+	
 
 //	Sonicteam::SoX::Thread* _thread =  new Sonicteam::SoX::Thread("T",0,0);
 //	ShowXenonMessage(L"MSG",_thread->m_ThreadName);

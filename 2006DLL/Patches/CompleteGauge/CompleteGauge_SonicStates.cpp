@@ -176,6 +176,7 @@ namespace CompleteGauge{
 		std::vector<boost::shared_ptr<Sonicteam::Player::IStepable>>* IStepableP1 = reinterpret_cast<std::vector<boost::shared_ptr<Sonicteam::Player::IStepable>>*>(ObjPlayer + 0x24C);  
 		std::vector<boost::shared_ptr<Sonicteam::Player::IStepable>>* IStepableP2 = reinterpret_cast<std::vector<boost::shared_ptr<Sonicteam::Player::IStepable>>*>(ObjPlayer + 0x25C);
 		std::vector<boost::shared_ptr<Sonicteam::Player::IStepable>>* IStepableP3 = reinterpret_cast<std::vector<boost::shared_ptr<Sonicteam::Player::IStepable>>*>(ObjPlayer + 0x26C);
+		std::vector<boost::shared_ptr<Sonicteam::Player::IStepable>>* IStepableP4 = reinterpret_cast<std::vector<boost::shared_ptr<Sonicteam::Player::IStepable>>*>(ObjPlayer + 0x27C);
 			
 		std::vector<boost::shared_ptr<Sonicteam::Player::IExportExternalFlag>>* IExportExternalFlagP = reinterpret_cast<std::vector<boost::shared_ptr<Sonicteam::Player::IExportExternalFlag>>*>(ObjPlayer + 0x28C);
 		//std::vector<boost::shared_ptr<Sonicteam::Player::IVariable>>* IVariblesP = reinterpret_cast<std::vector<boost::shared_ptr<Sonicteam::Player::IExportVehicleFlag>>*>(ObjPlayer + 0x29C);

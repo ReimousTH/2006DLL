@@ -71,10 +71,10 @@ namespace Sonicteam{
 				int UnknownFlags0xD4;
 				int UnknownUnUsedFlagD8;
 				int FreeUnknownFlagsDC;
-				char IsSonicDied;
-				char IsRingGhostMode; 
-				char IsBlinkingMode;
-				char IsForcedMovement;
+				char IsSonicDied; //0xDD 
+				char IsRingGhostMode; //0xDE
+				char IsBlinkingMode; //0xDF 
+				char IsForcedMovement; //0xE0 ( IsSonicDead)
 				char IsInvulnerable;
 				char IsInvulnerable2;
 				char IsUnkE6;

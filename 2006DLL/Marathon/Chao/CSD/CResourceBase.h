@@ -2,7 +2,7 @@
 
 #include "Project.h"
 #include "RCObject.h"
-#include <Sox/Memory/IDestructible.h>
+#include <Sox/Misc/List.h>
 
 
 
@@ -26,9 +26,9 @@ namespace Chao{
 			//https://github.com/blueskythlikesclouds/BlueBlur/blob/master/CSD/Manager/csdmResourceBase.h
 		protected:
 			//i guess IT <T> at least should be
-			Chao::CSD::RCObject<T> FCRBDATA; //  Chao::CSD::RCObject<unsigned char>
-			size_t m_DataSize; // 
-			unsigned int FCRB0xC;	// no idea
+			Chao::CSD::RCObject<unsigned char>* FCRBDATA; //  Chao::CSD::RCObject<unsigned char>
+			unsigned int FCRB0x8; //Scene Data
+	
 	};
 
 	template <typename T>

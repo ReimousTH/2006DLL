@@ -42,8 +42,17 @@ namespace DebugLogV2 {
 	extern "C" Memory__NEW(lua_State* L);
 
 
+	extern "C" int Memory__FMove(lua_State* L);
 	extern "C" Memory__Move(lua_State* L);
 	extern "C" Memory__eq(lua_State* L);
+	extern "C" Memory__neq(lua_State* L);
+
+	extern "C" int Memory__OR(lua_State* L);
+	extern "C" int Memory__AND(lua_State* L);
+	extern "C" int Memory__add(lua_State* L);
+	extern "C" int Memory__SBL(lua_State* L);
+	extern "C" int Memory__SBR(lua_State* L);
+
 
 
 	extern "C" Memory__SetDWORD(lua_State* L);

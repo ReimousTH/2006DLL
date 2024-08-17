@@ -2,11 +2,20 @@
 
 #include <xtl.h>
 #include <Sox/Memory/IDestructible.h>
+#include <Sox/Memory/DEFINITIONS.hpp>
 
 #include <string>
 #include "Project.h"
 #include "RCObject.h"
 #include "CResourceBase.h"
+
+#include <boost/multi_index_container.hpp>
+#include <boost/multi_index/hashed_index.hpp>
+#include <boost/multi_index/member.hpp>
+
+
+
+#include <xtree>
 
 
 
@@ -18,11 +27,21 @@ namespace Chao{
 		//BRUH 
 		//I GUESS LinkedNodeList :(
 		//maybe some kind of List , Scene poiners to ,1,2,3 if nothing then all == or no idea but pointers 
-		struct SceneInfo{
-			unsigned int SceneInfoFlag;
-			unsigned int Scenes;
-
+		// DO NOT EXIST IN GAME
+		struct SceneInfo:Sonicteam::SoX::LinkNode<SceneInfo>{
+			const char* NodeName;
+			const char* NodePTR;
 		};
+
+		struct SceneHead{
+			SceneInfo* Elements;
+			unsigned int ECount;
+			unsigned int EUnk0xC;
+		};
+
+
+
+
 		
 	//No INFO so empty
 		class CProject:Chao::CSD::CResourceBase<Chao::CSD::Project>
@@ -34,13 +53,23 @@ namespace Chao{
 			virtual void CResourceBase0x4(void*);
 
 			//Scenes
-		protected:
-			SceneInfo CPSceneInfo;
+			public:
+			unsigned int FCProject0xC;
 
 
-			unsigned int FCProject0x20;
-			unsigned int FCProject0x24;
+			SceneHead FCProject0x10; //HEAD 
+		//	unsigned int FCProject0x10;
+		//	unsigned int FCProject0x14;
+		//	unsigned int FCProject0x18;
+
+			SceneHead FCProject0x1C; //HEAD
+			//unsigned int FCProject0x1C;
+			//unsigned int FCProject0x20;
+			//unsigned int FCProject0x24;
+
+
 			unsigned int FCProject0x28;
+
 			// RCPtr<TexList>, later
 			RCObject<unsigned char> CPTexList;
 			//

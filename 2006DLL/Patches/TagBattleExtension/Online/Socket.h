@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <map>
-
+#include <vector>
 #ifdef _XBOX
 #include <stdexcept>
 #include <xtl.h>
@@ -12,6 +12,7 @@
 #else
 #pragma comment(lib, "Ws2_32.lib")
 #include <winsock.h>
+typedef unsigned long long XUID;
 #endif // _XBOX
 
 
@@ -26,6 +27,7 @@
 }\
 
 #define DEFINE_SOCKET_MESSAGE_FROM_CONST_DATA(DATA) SocketMessage(DATA.GetID(),DATA.GetProtocol(),(void*)&DATA,sizeof(DATA))
+#define EXTRACT_SOCKET_MESSAGE_FROM_MESSAGE_PTR(DATA,TYPE) (TYPE*)&DATA->_message_;
 
 struct SocketMessage {
 
@@ -41,6 +43,7 @@ public:
 
 struct SocketData {
 	SOCKET TCP_SOCKET;
+	XUID xuid;
 	float UDP_TIMEOUT;
 public:
 	SocketData(int TCP_SOCKET);
@@ -52,6 +55,22 @@ struct SMDataTest {
 };
 struct SMDataTest_UDP {
 	DEFINE_SOCKET_MESSAGE_DATA_ID_PROTOCOL(0x1, IPPROTO_UDP);
+};
+
+#define SOCKET_MESSAGE_NATIVE_MESSAGES_SHIFT 24
+#define SOCKET_MESSAGE_ID_JOIN_XUID 0x1 << SOCKET_MESSAGE_NATIVE_MESSAGES_SHIFT
+#define SOCKET_MESSAGE_ID_LEFT_XUID 0x2 << SOCKET_MESSAGE_NATIVE_MESSAGES_SHIFT
+
+struct SMDataJoinXUID {
+	DEFINE_SOCKET_MESSAGE_DATA_ID_PROTOCOL(SOCKET_MESSAGE_ID_JOIN_XUID, IPPROTO_TCP);
+	sockaddr address;
+	XUID sender_xuid;
+};
+
+struct SMDataLeftXUID {
+	DEFINE_SOCKET_MESSAGE_DATA_ID_PROTOCOL(SOCKET_MESSAGE_ID_LEFT_XUID, IPPROTO_TCP);
+	XUID sender_xuid;
+	sockaddr address;
 };
 
 struct SockaddrComparator {
@@ -106,25 +125,30 @@ public:
 	void SendUDPMessageToClients(SocketMessage* msg);
 
 	sockaddr MatchClientTcpToUdpAddress(sockaddr tcp_address);
+	XUID MatchClientXUIDByTCPSocket(SOCKET tcp_socket);
 
-#ifdef _XBOX
+
 	XUID GetXUID(int);
-#endif
 
 private:
 	SOCKET _tcpSocket;      // TCP socket
 	SOCKET _udpSocket;      // UDP socket
 	std::map<sockaddr, SocketData, SockaddrComparator> _clients;
-
 	std::map<sockaddr, bool, SockaddrComparator> _udp_clients_map;
 
 	sockaddr _address_to;
+	// -2 (Not Active)
+	// -1 (Active >> ERROR)
+	// 0 (Almost Done )
+	// 0  
+
 	int _connection_status;
 	bool _client;
 	bool _server;
 
 	typedef void (SocketMSGCommon)(Socket*, SOCKET, SocketMessage*);
 	typedef void (SocketCommonInfo)(Socket*, SOCKET);
+	typedef void (SocketCommonInfoEx)(Socket*, SOCKET,XUID);
 
 public:
 	SocketMSGCommon* MSG_HANDLE_SERVER_MESSAGES;
@@ -135,14 +159,40 @@ public:
 	SocketMSGCommon* MSG_HANDLE_CLIENT_MESSAGES;
 	SocketCommonInfo* MSG_HANDLE_CLIENT_JOIN_SERVER;
 	SocketCommonInfo* MSG_HANDLE_CLIENT_LOST_CONNECTION_SERVER;
+	SocketCommonInfoEx* MSG_HANDLE_SERVER_XUI_JOIN;
+	SocketCommonInfoEx* MSG_HANDLE_SERVER_XUI_LEFT;
+	SocketCommonInfoEx* MSG_HANDLE_CLIENT_XUI_JOIN;
+	SocketCommonInfoEx* MSG_HANDLE_CLIENT_XUI_LEFT;
 
+	void MSG_HANDLE_SERVER_MESSAGES_BEHAVIOUR(Socket*, SOCKET, SocketMessage*);
 	static void MSG_HANDLE_SERVER_MESSAGES_TEMP(Socket*, SOCKET, SocketMessage*);
+
+	void MSG_HANDLE_SERVER_CLIENT_LOST_CONNECTION_BEHAVIOUR(Socket*, SOCKET);
 	static void MSG_HANDLE_SERVER_CLIENT_LOST_CONNECTION_TEMP(Socket*, SOCKET);
+
+	void MSG_HANDLE_SERVER_CLIENT_JOIN_BEHAVIOUR(Socket*, SOCKET);
 	static void MSG_HANDLE_SERVER_CLIENT_JOIN_TEMP(Socket*, SOCKET);
 
+	void MSG_HANDLE_CLIENT_MESSAGES_BEHAVIOUR(Socket*, SOCKET, SocketMessage*);
 	static void MSG_HANDLE_CLIENT_MESSAGES_TEMP(Socket*, SOCKET, SocketMessage*);
+
+	void MSG_HANDLE_CLIENT_JOIN_SERVER_BEHAVIOUR(Socket*, SOCKET);
 	static void MSG_HANDLE_CLIENT_JOIN_SERVER_TEMP(Socket*, SOCKET);
 	static void MSG_HANDLE_CLIENT_LOST_CONNECTION_SERVER_TEMP(Socket*, SOCKET);
+
+	void MSG_HANDLE_SERVER_XUI_JOIN_BEHAVIOUR(Socket*, SOCKET, XUID);
+	static void MSG_HANDLE_SERVER_XUI_JOIN_TEMP(Socket*, SOCKET, XUID);
+
+	void MSG_HANDLE_SERVER_XUI_LEFT_BEHAVIOUR(Socket*, SOCKET, XUID);
+	static void MSG_HANDLE_SERVER_XUI_LEFT_TEMP(Socket*, SOCKET, XUID);
+
+	void MSG_HANDLE_CLIENT_XUI_JOIN_BEHAVIOUR(Socket*, SOCKET, XUID);
+	static void MSG_HANDLE_CLIENT_XUI_JOIN_TEMP(Socket*, SOCKET, XUID);
+
+	void MSG_HANDLE_CLIENT_XUI_LEFT_BEHAVIOUR(Socket*, SOCKET, XUID);
+	static void MSG_HANDLE_CLIENT_XUI_LEFT_TEMP(Socket*, SOCKET, XUID);
+
+
 
 
 

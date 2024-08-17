@@ -65,3 +65,8 @@ void Sonicteam::CsdObject::MarathonSetSceneNodeSpriteIndex(const char* Scene_Nam
 	Sonicteam::CsdObject* v = this->GetObject<Sonicteam::CsdObject>();
 	((void (__fastcall *)(...))0x824CDCE0)(&v,Scene_Name,Node_Name,index);
 }
+
+void Sonicteam::CsdObject::SetFlag0x20(int flag)
+{
+	this->FCsdObject0x20 = flag;
+}

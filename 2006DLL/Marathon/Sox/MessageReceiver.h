@@ -32,6 +32,7 @@ namespace Sonicteam{
 				this->MessageInfo5 =a5;
 			}
 		
+		
 
 		};
 		class MessageReceiver

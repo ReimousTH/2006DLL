@@ -3,6 +3,7 @@
 const char* Socket::IP_ADDR;
 
 Socket::Socket() {
+
 	InitSockets();
 	_clients = std::map<sockaddr, SocketData, SockaddrComparator>();
 	_udp_clients_map = std::map<sockaddr, bool, SockaddrComparator>();
@@ -13,7 +14,10 @@ Socket::Socket() {
 	this->MSG_HANDLE_SERVER_CLIENT_JOIN = &this->MSG_HANDLE_SERVER_CLIENT_JOIN_TEMP;
 	this->MSG_HANDLE_SERVER_CLIENT_LOST_CONNECTION = &this->MSG_HANDLE_SERVER_CLIENT_LOST_CONNECTION_TEMP;
 	this->MSG_HANDLE_SERVER_MESSAGES = &this->MSG_HANDLE_SERVER_MESSAGES_TEMP;
-
+	this->MSG_HANDLE_SERVER_XUI_JOIN = &this->MSG_HANDLE_SERVER_XUI_JOIN_TEMP;
+	this->MSG_HANDLE_SERVER_XUI_LEFT = &this->MSG_HANDLE_SERVER_XUI_LEFT_TEMP;
+	this->MSG_HANDLE_CLIENT_XUI_JOIN = &this->MSG_HANDLE_CLIENT_XUI_JOIN_TEMP;
+	this->MSG_HANDLE_CLIENT_XUI_LEFT = &this->MSG_HANDLE_CLIENT_XUI_LEFT_TEMP;
 
 }
 
@@ -22,6 +26,9 @@ Socket::~Socket() {
 }
 
 void Socket::InitSockets() {
+	_client = false;
+	_server = false;
+	_connection_status = -2;
 	WSADATA wsaData;
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
 		std::cerr << "WSAStartup failed with error: " << WSAGetLastError() << std::endl;
@@ -86,11 +93,11 @@ void Socket::SetNonBlockingMode()
 }
 
 void Socket::Cleanup() {
+	_connection_status = -2;
 	closesocket(_tcpSocket);
 	closesocket(_udpSocket);
 	_tcpSocket = INVALID_SOCKET;
 	_udpSocket = INVALID_SOCKET;
-
 	_clients.clear();
 	_udp_clients_map.clear();
 	WSACleanup();
@@ -151,45 +158,53 @@ int Socket::InitClient() {
 		case WSAEINPROGRESS:
 		case WSAEWOULDBLOCK:
 			// Connection is in progress
-			_connection_status = 0;
+			_connection_status = -1;
 			std::cerr << "Connection is in progress, handle it accordingly." << std::endl;
-			return 0; // Indicate that the connection is being established
+			return _connection_status; // Indicate that the connection is being established
 
 		case WSAEISCONN:
 			// Socket is already connected, but the connection may not be successful
-			_connection_status = -1;
+			_connection_status = 0;
 			std::cerr << "Socket is already connected, but the connection may not be successful." << std::endl;
 
 			// Check the actual connection status
 
 			optlen = sizeof(error);
 			if (getsockopt(_tcpSocket, SOL_SOCKET, 0x1007, (char*)&error, &optlen) == SOCKET_ERROR) {
+				_connection_status = -1;
 				std::cerr << "getsockopt failed: " << WSAGetLastError() << std::endl;
-				return 0; // Indicate failure
+				return _connection_status; // Indicate failure
 			}
 
 			if (error == 0) {
 				// Connection is successful
 				_connection_status = 1;
 				std::cout << "Connection established successfully." << std::endl;
-				return 1; // Indicate success
+				this->MSG_HANDLE_CLIENT_JOIN_SERVER_BEHAVIOUR(this, result);
+				return _connection_status; // Indicate success
 			}
 			else {
 				// Connection failed
+				_connection_status = -1;
 				std::cerr << "Connection failed with error: " << error << std::endl;
-				return 0; // Indicate failure
+				return _connection_status; // Indicate failure
 			}
 		default:
 			// Handle other connection errors
 			_connection_status = -1;
 			std::cerr << "[WSA][Error] : " << wsa_error << " - " << wsa_error << std::endl;
-			return 0; // Indicate failure
+			return _connection_status; // Indicate failure
 		}
 	}
 
 	// Connection established successfully
 	_connection_status = 1;
 	std::cout << "Connection established successfully." << std::endl;
+	this->MSG_HANDLE_CLIENT_JOIN_SERVER_BEHAVIOUR(this, result);
+
+
+
+
 	return 1; // Indicate success
 }
 void Socket::UpdateServer(float delta) {
@@ -222,13 +237,10 @@ void Socket::UpdateServer(float delta) {
 		SOCKET socket = accept(_tcpSocket, (struct sockaddr*)&senderAddr, &addrLen);
 		if (socket != INVALID_SOCKET) {
 			// Check if the client is already connected
-			if (_clients.find(senderAddr) == _clients.end()) {
-
+			if (_clients.find(senderAddr) == _clients.end()) {	
 				sockaddr_in* _edit = (struct sockaddr_in*)&senderAddr;
 				_clients[senderAddr] = SocketData(socket);
-				this->MSG_HANDLE_SERVER_CLIENT_JOIN(this, socket);
-
-
+				this->MSG_HANDLE_SERVER_CLIENT_JOIN_BEHAVIOUR(this, socket);
 			}
 		}
 	}
@@ -245,15 +257,16 @@ void Socket::UpdateServer(float delta) {
 		sockaddr_in senderAddr;
 		int addrLen = sizeof(senderAddr);
 		int bytesReceived = recvfrom(it->second.TCP_SOCKET, (char*)&buffer, sizeof(SocketMessage), 0, (struct sockaddr*)&senderAddr, &addrLen);
+		buffer.address_from = it->first;
 
 		if (bytesReceived > 0) {
 			// Process received TCP data
-			this->MSG_HANDLE_SERVER_MESSAGES(this, it->second.TCP_SOCKET, &buffer);
+			this->MSG_HANDLE_SERVER_MESSAGES_BEHAVIOUR(this, it->second.TCP_SOCKET, &buffer);
 		}
 		else if (bytesReceived == 0) {
 			// Handle lost connection
 
-			this->MSG_HANDLE_SERVER_CLIENT_LOST_CONNECTION(this, it->second.TCP_SOCKET);
+			this->MSG_HANDLE_SERVER_CLIENT_LOST_CONNECTION_BEHAVIOUR(this, it->second.TCP_SOCKET);
 			delete_request_vector.push_back(it);
 			it++;
 			continue; // Skip to the next iteration
@@ -262,7 +275,7 @@ void Socket::UpdateServer(float delta) {
 			int error = WSAGetLastError();
 			if (error != WSAEWOULDBLOCK) {
 				perror("recv");
-				this->MSG_HANDLE_SERVER_CLIENT_LOST_CONNECTION(this, it->second.TCP_SOCKET);
+				this->MSG_HANDLE_SERVER_CLIENT_LOST_CONNECTION_BEHAVIOUR(this, it->second.TCP_SOCKET);
 				delete_request_vector.push_back(it);
 				it++;
 				continue; // Skip to the next iteration
@@ -292,6 +305,7 @@ void Socket::UpdateServer(float delta) {
 		sockaddr_in senderAddr;
 		int addrLen = sizeof(senderAddr);
 		int bytesReceived = recvfrom(_udpSocket, (char*)&buffer, sizeof(SocketMessage), 0, (struct sockaddr*)&senderAddr, &addrLen);
+		*(struct sockaddr_in*)&buffer.address_from = senderAddr;
 
 
 
@@ -302,7 +316,7 @@ void Socket::UpdateServer(float delta) {
 			}
 
 			// Process received UDP data
-			this->MSG_HANDLE_SERVER_MESSAGES(this, NULL, &buffer);
+			this->MSG_HANDLE_SERVER_MESSAGES_BEHAVIOUR(this, NULL, &buffer);
 		}
 	}
 }
@@ -328,14 +342,18 @@ void Socket::UpdateClient(float delta)
 		return;
 	}
 
+	while (FD_ISSET(_tcpSocket, &readfds_tcp)){
+		FD_ZERO(&readfds_tcp);
+		FD_SET(_tcpSocket, &readfds_tcp);
+		int activity_udp_l = select(0, &readfds_tcp, NULL, NULL, &timeout);
+		if (activity_udp_l < 0) break;
 
-	// TCP (COMPLETE)
-	if (FD_ISSET(_tcpSocket, &readfds_tcp)) {
+
 		SocketMessage buffer;
 		int bytesReceived = recv(_tcpSocket, (char*)&buffer, sizeof(SocketMessage), 0);
 		if (bytesReceived > 0) {
 			// Process received TCP data
-			this->MSG_HANDLE_CLIENT_MESSAGES(this, _tcpSocket, &buffer);
+			this->MSG_HANDLE_CLIENT_MESSAGES_BEHAVIOUR(this, _tcpSocket, &buffer);
 		}
 		else if (bytesReceived == 0) {
 			// Handle lost connection
@@ -354,6 +372,8 @@ void Socket::UpdateClient(float delta)
 		}
 	}
 
+
+
 	while (FD_ISSET(_udpSocket, &readfds_upd))
 	{
 		FD_ZERO(&readfds_upd);
@@ -366,13 +386,10 @@ void Socket::UpdateClient(float delta)
 		int bytesReceived = recvfrom(_udpSocket, (char*)&buffer, sizeof(SocketMessage), 0, (struct sockaddr*)&buffer.address_from, &addrLen);
 		if (bytesReceived > 0) {
 			// Process received UDP data
-			this->MSG_HANDLE_CLIENT_MESSAGES(this, NULL, &buffer);
+			this->MSG_HANDLE_CLIENT_MESSAGES_BEHAVIOUR(this, NULL, &buffer);
 		}
 
 	}
-
-
-
 
 
 }
@@ -427,15 +444,63 @@ sockaddr Socket::MatchClientTcpToUdpAddress(sockaddr tcp_address)
 	return tcp_address;
 }
 
+XUID Socket::MatchClientXUIDByTCPSocket(SOCKET tcp_socket)
+{
 
-#ifdef _XBOX
+	for (std::map<sockaddr, SocketData, SockaddrComparator>::iterator it = _clients.begin(); it != _clients.end(); it++) {
+		if (it->second.TCP_SOCKET == tcp_socket) {
+			return it->second.xuid;
+		}
+
+	}
+	return -1;
+}
+
+
+
 XUID Socket::GetXUID(int index)
 {
 	XUID xuid;
+#ifdef _XBOX
 	XUserGetXUID(index, &xuid);
+#else
+	FILETIME lpCreationTime, lpExitTime, lpKernelTime, lpUserTim;
+	GetProcessTimes(GetCurrentProcess(), &lpCreationTime, &lpExitTime, &lpKernelTime, &lpUserTim);
+	return (XUID)lpCreationTime.dwLowDateTime | (XUID)lpCreationTime.dwHighDateTime << 32;
+#endif
 	return xuid;
 }
-#endif
+
+
+void Socket::MSG_HANDLE_SERVER_MESSAGES_BEHAVIOUR(Socket* _1, SOCKET sock, SocketMessage* msg)
+{
+	//TCP (client - send his xuid to server)
+	if (msg->ID == SMDataJoinXUID::GetID()) {
+		SMDataJoinXUID* _data_ = EXTRACT_SOCKET_MESSAGE_FROM_MESSAGE_PTR(msg, SMDataJoinXUID);
+
+		if (_clients.find(msg->address_from) != _clients.end() && _clients[msg->address_from].xuid == -1) {
+			//XUIADDED_SERVER
+			//AskOthersUpdateInfo
+			SMDataJoinXUID* f = EXTRACT_SOCKET_MESSAGE_FROM_MESSAGE_PTR(msg, SMDataJoinXUID);
+			_clients[msg->address_from].xuid = f->sender_xuid;
+
+			this->MSG_HANDLE_SERVER_XUI_JOIN_BEHAVIOUR(_1, sock, f->sender_xuid);
+
+
+
+
+
+		}
+	}
+	//Lost XUID for CLIENT_LEFT_FROM_SERVER;
+	//Replicate ALL EXISTRING XUIDS
+
+
+
+
+_NAH:
+	this->MSG_HANDLE_SERVER_MESSAGES(_1,sock,msg);
+}
 
 void Socket::MSG_HANDLE_SERVER_MESSAGES_TEMP(Socket*, SOCKET, SocketMessage* msg)
 {
@@ -448,15 +513,56 @@ void Socket::MSG_HANDLE_SERVER_MESSAGES_TEMP(Socket*, SOCKET, SocketMessage* msg
 	}
 }
 
+void Socket::MSG_HANDLE_SERVER_CLIENT_LOST_CONNECTION_BEHAVIOUR(Socket* _1, SOCKET sock)
+{
+	XUID left_client =  MatchClientXUIDByTCPSocket(sock);
+	this->MSG_HANDLE_SERVER_XUI_LEFT_BEHAVIOUR(_1, sock, left_client);
+	this->MSG_HANDLE_SERVER_CLIENT_LOST_CONNECTION(_1, sock);
+}
+
 void Socket::MSG_HANDLE_SERVER_CLIENT_LOST_CONNECTION_TEMP(Socket*, SOCKET)
 {
 	printf("MSG_HANDLE_SERVER_CLIENT_LOST_CONNECTION_TEMP\n");
 
 }
 
+void Socket::MSG_HANDLE_SERVER_CLIENT_JOIN_BEHAVIOUR(Socket* _1, SOCKET sock)
+{
+	this->MSG_HANDLE_SERVER_CLIENT_JOIN(_1, sock);
+}
+
 void Socket::MSG_HANDLE_SERVER_CLIENT_JOIN_TEMP(Socket*, SOCKET)
 {
 	printf("MSG_HANDLE_SERVER_CLIENT_JOIN_TEMP\n");
+}
+
+void Socket::MSG_HANDLE_CLIENT_MESSAGES_BEHAVIOUR(Socket* _1, SOCKET tsocket, SocketMessage* msg)
+{
+	//TCP
+	if (msg->ID == SMDataJoinXUID::GetID()) {
+		SMDataJoinXUID* _data_ = EXTRACT_SOCKET_MESSAGE_FROM_MESSAGE_PTR(msg,SMDataJoinXUID);
+		if (_data_->sender_xuid == this->GetXUID(0)) goto _NAH;
+		if (_clients.find(_data_->address) == _clients.end()) {
+			_clients[_data_->address].xuid = _data_->sender_xuid;
+			//OnXUIDJoin//
+			this->MSG_HANDLE_CLIENT_XUI_JOIN_BEHAVIOUR(_1, tsocket, _data_->sender_xuid);
+			//////////////
+		}
+	}
+
+	//TCP
+	if (msg->ID == SMDataLeftXUID::GetID()) {
+		SMDataLeftXUID* _data_ = EXTRACT_SOCKET_MESSAGE_FROM_MESSAGE_PTR(msg, SMDataLeftXUID);
+		if (_data_->sender_xuid == this->GetXUID(0)) goto _NAH;
+		if (_clients.find(_data_->address) != _clients.end()) {
+			_clients.erase(_clients.find(_data_->address));
+			//OnXUIDLeft//
+			this->MSG_HANDLE_CLIENT_XUI_LEFT_BEHAVIOUR(_1, tsocket, _data_->sender_xuid);
+			//////////////
+		}
+	}
+_NAH:
+	this->MSG_HANDLE_CLIENT_MESSAGES(_1, tsocket, msg);
 }
 
 void Socket::MSG_HANDLE_CLIENT_MESSAGES_TEMP(Socket*, SOCKET, SocketMessage* msg)
@@ -469,6 +575,22 @@ void Socket::MSG_HANDLE_CLIENT_MESSAGES_TEMP(Socket*, SOCKET, SocketMessage* msg
 	}
 }
 
+
+
+void Socket::MSG_HANDLE_CLIENT_JOIN_SERVER_BEHAVIOUR(Socket* _1, SOCKET sock)
+{
+
+	
+	//Send Client XUID to Host
+	{
+		SMDataJoinXUID _msg_data;
+		_msg_data.sender_xuid = this->GetXUID(0);
+		SocketMessage msg = DEFINE_SOCKET_MESSAGE_FROM_CONST_DATA(_msg_data);
+		this->SendTCPMessageToServer(&msg);
+	}
+	this->MSG_HANDLE_CLIENT_JOIN_SERVER(_1, sock);
+}
+
 void Socket::MSG_HANDLE_CLIENT_JOIN_SERVER_TEMP(Socket*, SOCKET)
 {
 	printf("MSG_HANDLE_CLIENT_JOIN_SERVER_TEMP\n");
@@ -479,13 +601,82 @@ void Socket::MSG_HANDLE_CLIENT_LOST_CONNECTION_SERVER_TEMP(Socket*, SOCKET)
 	printf("MSG_HANDLE_CLIENT_LOST_CONNECTION_SERVER_TEMP\n");
 }
 
+void Socket::MSG_HANDLE_SERVER_XUI_JOIN_BEHAVIOUR(Socket* _1, SOCKET sock, XUID xuid)
+{
+	//Send Host XUID
+	{
+		SMDataJoinXUID _msg_data;
+		_msg_data.address = this->GetAddress();
+		_msg_data.sender_xuid = this->GetXUID(0);
+		SocketMessage msg = DEFINE_SOCKET_MESSAGE_FROM_CONST_DATA(_msg_data);
+		this->SendTCPMessageToClients(&msg);
+	}
+
+	for (std::map<sockaddr, SocketData, SockaddrComparator>::iterator it = _clients.begin(); it != _clients.end(); it++) {
+		SMDataJoinXUID _msg_data;
+		_msg_data.address = it->first;
+		_msg_data.sender_xuid = it->second.xuid;
+		SocketMessage msg = DEFINE_SOCKET_MESSAGE_FROM_CONST_DATA(_msg_data);
+		this->SendTCPMessageToClients(&msg);
+	}
+
+
+	this->MSG_HANDLE_SERVER_XUI_JOIN(_1, sock, xuid);
+}
+
+void Socket::MSG_HANDLE_SERVER_XUI_JOIN_TEMP(Socket*, SOCKET, XUID xuid)
+{
+	printf("MSG_HANDLE_SERVER_XUI_JOIN_TEMP %x\n",xuid);
+}
+
+void Socket::MSG_HANDLE_SERVER_XUI_LEFT_BEHAVIOUR(Socket* _1, SOCKET sock, XUID xuid)
+{
+	//Ask Players To Remove XUID
+	{
+		SMDataLeftXUID _msg_data;
+		_msg_data.sender_xuid = xuid;
+		SocketMessage msg = DEFINE_SOCKET_MESSAGE_FROM_CONST_DATA(_msg_data);
+		this->SendTCPMessageToClients(&msg);
+	}
+
+
+	this->MSG_HANDLE_SERVER_XUI_LEFT(_1, sock, xuid);
+}
+
+void Socket::MSG_HANDLE_SERVER_XUI_LEFT_TEMP(Socket*, SOCKET, XUID xuid)
+{
+	printf("MSG_HANDLE_SERVER_XUI_LEFT_TEMP %x\n ",xuid);
+}
+
+void Socket::MSG_HANDLE_CLIENT_XUI_JOIN_BEHAVIOUR(Socket* _1, SOCKET sock, XUID xuid)
+{
+	this->MSG_HANDLE_CLIENT_XUI_JOIN(_1, sock, xuid);
+}
+
+void Socket::MSG_HANDLE_CLIENT_XUI_JOIN_TEMP(Socket*, SOCKET, XUID xuid)
+{
+	printf("MSG_HANDLE_CLIENT_XUI_JOIN_TEMP %x\n ", xuid);
+}
+
+void Socket::MSG_HANDLE_CLIENT_XUI_LEFT_BEHAVIOUR(Socket* _1, SOCKET sock, XUID xuid)
+{
+	this->MSG_HANDLE_CLIENT_XUI_LEFT(_1, sock, xuid);
+}
+
+void Socket::MSG_HANDLE_CLIENT_XUI_LEFT_TEMP(Socket*, SOCKET, XUID xuid)
+{
+	printf("MSG_HANDLE_CLIENT_XUI_LEFT_TEMP %x\n ", xuid);
+}
+
 SocketData::SocketData(int TCP_SOCKET)
 {
+	this->xuid = -1;
 	this->TCP_SOCKET = TCP_SOCKET;
 }
 
 SocketData::SocketData()
 {
+	this->xuid = -1;
 }
 
 
@@ -494,6 +685,7 @@ SocketMessage::SocketMessage(int ID, int PROTOCOL, void* from, int size)
 {
 	this->ID = ID;
 	this->PROTOCOL = PROTOCOL;
+	memset(&this->_message_,0,256);
 	memcpy((void*)&this->_message_, from, size);
 }
 

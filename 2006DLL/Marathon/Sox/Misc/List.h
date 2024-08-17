@@ -37,6 +37,7 @@ namespace Sonicteam{
 
 
 
+	
 		template <typename T>
 		struct LinkNode:LinkNodeBase<LinkNode<T>> {
 		public:
@@ -46,6 +47,7 @@ namespace Sonicteam{
 
 		};
 
+	
 
 
 

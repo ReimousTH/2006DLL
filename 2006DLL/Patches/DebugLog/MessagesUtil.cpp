@@ -146,7 +146,7 @@ DWORD WINAPI ThreadProc( LPVOID lpParameter )
 	DWORD dwThreadNumber = (DWORD) lpParameter;
 
 
-/*
+
 	while (true){
 
 		ATG::GAMEPAD* gc = ATG::Input::GetMergedInput(0);
@@ -174,7 +174,7 @@ DWORD WINAPI ThreadProc( LPVOID lpParameter )
 
 
 	}
-*/
+
 
 	return 0;
 }

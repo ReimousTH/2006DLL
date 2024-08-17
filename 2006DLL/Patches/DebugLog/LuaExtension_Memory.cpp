@@ -51,8 +51,19 @@ namespace DebugLogV2{
 
 
 		lua_pushstring06(L, "__eq"); lua_pushcfunction06(L, Memory__eq); 	lua_settable06(L, -3);
+		lua_pushstring06(L, "__neq"); lua_pushcfunction06(L, Memory__neq); 	lua_settable06(L, -3);
+		lua_pushstring06(L, "__add"); lua_pushcfunction06(L, Memory__add); 	lua_settable06(L, -3);
+
 		lua_pushstring06(L, "Move"); lua_pushcfunction06(L, Memory__Move); 	lua_settable06(L, -3);
-		lua_pushstring06(L, "GetDWORD"); lua_pushcfunction06(L, Memory__GetDWORD); 	lua_settable06(L, -3);
+		lua_pushstring06(L, "FMove"); lua_pushcfunction06(L, Memory__FMove); 	lua_settable06(L, -3);
+
+		//later
+		lua_pushstring06(L, "AND"); lua_pushcfunction06(L, Memory__AND); 	lua_settable06(L, -3);
+		lua_pushstring06(L, "OR"); lua_pushcfunction06(L, Memory__OR); 	lua_settable06(L, -3);
+		lua_pushstring06(L, "SBR"); lua_pushcfunction06(L, Memory__SBR); 	lua_settable06(L, -3);
+		lua_pushstring06(L, "SBL"); lua_pushcfunction06(L, Memory__SBL); 	lua_settable06(L, -3);
+
+
 		lua_pushstring06(L, "GetFLOAT"); lua_pushcfunction06(L, Memory__GetFLOAT); 	lua_settable06(L, -3);
 		lua_pushstring06(L, "GetBYTE"); lua_pushcfunction06(L, Memory__GetBYTE); 	lua_settable06(L, -3);
 		lua_pushstring06(L, "GetPointer"); lua_pushcfunction06(L, Memory__GetPointer); 	lua_settable06(L, -3);
@@ -152,6 +163,42 @@ namespace DebugLogV2{
 	}
 
 
+	extern "C" int Memory__FMove(lua_State* L)
+	{
+		lua_pushstring(L,"ptr");
+		lua_gettable(L,1);
+		int ptr =  (int)lua_touserdata(L,-1);
+
+		lua_pushstring(L,"move");
+		lua_gettable(L,1);
+		int move =  (int)lua_touserdata(L,-1);
+
+
+
+		if (lua_isuserdata(L,2)){
+			move += (int)lua_touserdata(L,2);
+		}
+		else if (lua_isnumber(L,2)){
+			move += lua_tonumber(L,2);
+		}
+		else if (lua_isstring(L,2)){
+
+			const char* s = lua_tostring(L,2);
+			const TCHAR* hexString = _T(s); // Hex string to convert
+			move += _tcstoul(hexString, NULL, 16); // Convert hex string to unsigned long integer
+		}
+		else{
+			move += lua_tonumber(L,2);
+		}
+
+
+		Memory__CreateMetatable(L,ptr+ move,0);
+
+
+
+		return 1;
+	}
+
 	extern "C" Memory__eq(lua_State* L){
 
 		lua_pushstring06(L,"ptr");lua_gettable(L,1);unsigned int V1 = (unsigned int)lua_touserdata(L,-1);
@@ -167,6 +214,142 @@ namespace DebugLogV2{
 	
 
 	}
+
+	extern "C" Memory__neq(lua_State* L)
+	{
+		lua_pushstring06(L,"ptr");lua_gettable(L,1);unsigned int V1 = (unsigned int)lua_touserdata(L,-1);
+		lua_pushstring06(L,"ptr");lua_gettable(L,2);unsigned int V2 = (unsigned int)lua_touserdata(L,-1);
+
+		bool result = false;
+		if (V1 != V2){
+			result = true;
+		}
+
+		lua_pushboolean(L,result);
+		return 1;
+	}
+
+	extern "C" int GetPointerOrHeximalArgument(lua_State* L,int arg){
+
+
+		int emove = 0;
+		if (lua_isuserdata(L,arg)){
+			emove = (int)lua_touserdata(L,arg);
+		}
+		else if (lua_isnumber(L,arg)){
+			emove = lua_tonumber(L,arg);
+		}
+		else if (lua_isstring(L,arg)){
+
+			const char* s = lua_tostring(L,arg);
+			const TCHAR* hexString = _T(s); // Hex string to convert
+			emove = _tcstoul(hexString, NULL, 16); // Convert hex string to unsigned long integer
+		}
+		else{
+			emove = lua_tonumber(L,2);
+		}
+
+		return emove;
+
+
+	}
+
+
+	extern "C" int Memory__OR(lua_State* L)
+	{
+		lua_pushstring(L,"ptr");
+		lua_gettable(L,1);
+		int ptr =  (int)lua_touserdata(L,-1);
+
+		lua_pushstring(L,"move");
+		lua_gettable(L,1);
+		int move =  (int)lua_touserdata(L,-1);
+		int emove =  (int)lua_touserdata(L,-1);
+
+
+
+		if (lua_isuserdata(L,2)){
+			emove = (int)lua_touserdata(L,2);
+		}
+		else if (lua_isnumber(L,2)){
+			emove = lua_tonumber(L,2);
+		}
+		else if (lua_isstring(L,2)){
+
+			const char* s = lua_tostring(L,2);
+			const TCHAR* hexString = _T(s); // Hex string to convert
+			emove = _tcstoul(hexString, NULL, 16); // Convert hex string to unsigned long integer
+		}
+		else{
+			emove = lua_tonumber(L,2);
+		}
+
+
+		Memory__CreateMetatable(L,ptr | emove,move);
+
+
+
+		return 1;
+	}
+
+	extern "C" int Memory__AND(lua_State* L)
+	{
+		lua_pushstring(L,"ptr");lua_gettable(L,1);
+		int ptr =  (int)lua_touserdata(L,-1);
+
+		lua_pushstring(L,"move");lua_gettable(L,1);
+		int move =  (int)lua_touserdata(L,-1);
+		int emove =  (int)GetPointerOrHeximalArgument(L,2);
+
+		Memory__CreateMetatable(L,ptr & emove,move);
+		return 1;
+	}
+
+	extern "C" int Memory__add(lua_State* L)
+	{
+
+		lua_pushstring(L,"ptr");lua_gettable(L,1);unsigned int ptr1 = (unsigned int)lua_touserdata(L,-1);
+		lua_pushstring(L,"move");lua_gettable(L,1);unsigned int move1 = (unsigned int)lua_touserdata(L,-1);
+
+		lua_pushstring(L,"ptr");lua_gettable(L,2);unsigned int ptr2 = (unsigned int)lua_touserdata(L,-1);
+		lua_pushstring(L,"move");lua_gettable(L,2);unsigned int move2 = (unsigned int)lua_touserdata(L,-1);
+
+		Memory__CreateMetatable(L,ptr1+ptr2,move1+move2);
+
+
+		return 1;
+	}
+
+	extern "C" int Memory__SBL(lua_State* L)
+	{
+		lua_pushstring(L,"ptr");lua_gettable(L,1);
+		int ptr =  (int)lua_touserdata(L,-1);
+
+		lua_pushstring(L,"move");lua_gettable(L,1);
+		int move =  (int)lua_touserdata(L,-1);
+		int emove =  (int)GetPointerOrHeximalArgument(L,2);
+
+		Memory__CreateMetatable(L,ptr << emove,move);
+
+
+
+		return 1;	
+	}
+
+	extern "C" int Memory__SBR(lua_State* L)
+	{
+		lua_pushstring(L,"ptr");lua_gettable(L,1);
+		int ptr =  (int)lua_touserdata(L,-1);
+
+		lua_pushstring(L,"move");lua_gettable(L,1);
+		int move =  (int)lua_touserdata(L,-1);
+		int emove =  (int)GetPointerOrHeximalArgument(L,2);
+
+		Memory__CreateMetatable(L,ptr >> emove,move);
+		return 1;
+	}
+
+	
 	extern "C" Memory__Move(lua_State* L){
 
 		lua_pushstring06(L,"ptr");

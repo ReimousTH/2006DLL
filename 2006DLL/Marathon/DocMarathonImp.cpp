@@ -41,7 +41,8 @@ return DocAudioPlayerImp;
 
 boost::shared_ptr<unsigned int> Sonicteam::DocMarathonImp::DocDoculistAction01(unsigned int)
 {
-return DocAudioPlayerImp;
+	boost::shared_ptr<unsigned int> ptr;
+	return ptr;
 }
 
 std::vector<unsigned int>* Sonicteam::DocMarathonImp::DocGetDoculist()

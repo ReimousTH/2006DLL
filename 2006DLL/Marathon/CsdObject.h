@@ -41,6 +41,8 @@ namespace Sonicteam{
 			void MarathonSetSceneNodeText(const char* Scene_Name,const char* Node_Name,const char* value);
 			void MarathonSetSceneNodeSpriteIndex(const char* Scene_Name,const char* Node_Name,int index);
 
+			void SetFlag0x20(int);
+
 
 
 
@@ -49,7 +51,7 @@ namespace Sonicteam{
 				
 
 
-		protected:
+			public:
 			unsigned int FCsdObject0x20;
 			Chao::CSD::CProject* FCProject;
 			unsigned int FCsdObject0x28;

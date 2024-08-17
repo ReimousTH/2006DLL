@@ -4,7 +4,12 @@
 #include <CMemoryAllocMarathon.h>
 
 
-
+//MB
+#define CSEITEM_TYPE_NONE		0
+#define CSEITEM_TYPE_FOLDER		1
+#define CSEITEM_TYPE_SCENE		2
+#define CSEITEM_TYPE_FACE		3
+#define CSEITEM_TYPE_CASTNODE	4
 
 
 namespace Chao{
@@ -29,7 +34,7 @@ namespace Chao{
 			size_t RefCount;
 			void* m_pDealloctor; //https://github.com/blueskythlikesclouds/BlueBlur/blob/master/CSD/Manager/csdmRCObject.h
 			size_t m_eDealloctor; 
-			unsigned int RCOFlag;	
+			unsigned int CSE_TYPE;	
 
 
 
