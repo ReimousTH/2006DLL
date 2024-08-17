@@ -317,10 +317,12 @@ void SpawnPlayerLabelByXUID(XUID xuid){
 	DebugLogV2::PrintNextFixed(test);
 
 	//Back when i map all font data >:)
-	//d->CSD->MarathonSetSceneNodeText("enemy_powergage","Cast",_socket.XUIDToName(xuid).c_str());
+    
+	std::stringstream ss;
+	ss << xuid;
+	d->CSD->MarathonSetSceneNodeText("enemy_powergage","Cast",ss.str().c_str());
 	
 }
-
 	
 
 }
