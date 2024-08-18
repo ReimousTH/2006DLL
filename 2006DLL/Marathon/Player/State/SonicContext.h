@@ -24,7 +24,7 @@ namespace Sonicteam{
 
 				DWORD CurrentGemImage;
 				boost::shared_ptr<Sonicteam::Player::SonicGauge> GaugePlugin;
-				char byte23C;
+				char IsHoming; //byte23C
 				char byte23D;
 				char byte23E;
 				char byte23F;

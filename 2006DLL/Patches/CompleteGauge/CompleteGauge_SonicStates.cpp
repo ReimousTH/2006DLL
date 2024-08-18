@@ -489,7 +489,7 @@ namespace CompleteGauge{
 		}
 
 		result->BOContext->IsGravityDisabled = 0;
-		result->BOContext->byte23C = 0;
+		result->BOContext->IsHoming = 0;
 		result->BOContext->IsInvulnerable = 0;
 		result->BOContext->IsJumped_PostureVelocityYHandle = 0;
 		result->BOContext->IsForceTypeA_DashpanelsJumpRunHoming = 0;

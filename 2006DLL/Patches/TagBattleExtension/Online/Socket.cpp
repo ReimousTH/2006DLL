@@ -420,6 +420,17 @@ void Socket::SendUDPMessageTo(sockaddr to, SocketMessage* msg)
 	}
 }
 
+void Socket::SendUDPMessageToSRCL(SocketMessage* msg)
+{
+	if (IsClient()){
+		this->SendUDPMessageToServer(msg);
+	}
+	else if (IsServer()){
+		this->SendUDPMessageToClients(msg);
+	}
+
+}
+
 void Socket::SendUDPMessageToServer(SocketMessage* msg)
 {
 	SendUDPMessageTo(GetAddressTo(), msg);

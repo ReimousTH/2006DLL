@@ -123,6 +123,7 @@ public:
 
 
 	void SendUDPMessageTo(sockaddr to, SocketMessage* msg);
+	void SendUDPMessageToSRCL(SocketMessage* msg);
 	void SendUDPMessageToServer(SocketMessage* msg);
 	void SendUDPMessageToClients(SocketMessage* msg);
 
