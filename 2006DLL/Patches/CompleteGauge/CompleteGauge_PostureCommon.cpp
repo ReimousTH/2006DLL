@@ -78,7 +78,7 @@ namespace CompleteGauge{
 
 	void GlobalInstall_CommonPosture()
 	{
-		WRITE_DWORD(0x82009050,PostureControlCmn);
+		//WRITE_DWORD(0x82009050,PostureControlCmn);
 		
 	}
 	

@@ -118,6 +118,7 @@ public:
 	void UpdateClient(float delta);
 
 	void SendTCPMessageTo(SOCKET to, SocketMessage* msg);
+	void SendTCPMessageToSRCL(SocketMessage* msg);
 	void SendTCPMessageToServer(SocketMessage* msg);
 	void SendTCPMessageToClients(SocketMessage* msg);
 

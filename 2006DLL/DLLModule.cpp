@@ -214,8 +214,6 @@ void LoadDLLArcFile(const char* file){
 		Sonicteam::SoX::IResource* resouce;
 		ArcHandle(&resouce,_file,2,2);
 		sub_82582C10(resouce);
-
-
 	}
 
 }
@@ -231,11 +229,17 @@ HOOK(DWORD*,__fastcall,DocMarathonState_GLOBAL,0x82160B98,DWORD* a1,int a2){
 	*a1 = 0x8200094C;
 
 
+
+	std::vector<std::string>* pkg = 	ExFileSystem::GetArcs();
+	for (std::vector<std::string>::iterator it = pkg->begin();it!= pkg->end();it++){
+		LoadDLLArcFile(it->c_str());
+	}
+
 	
 
-	LoadDLLArcFile("DLL/cache_3P.arc");
-	LoadDLLArcFile("DLL/sprites_4P.arc");
-	LoadDLLArcFile("DLL/scripts_4P.arc");
+//	LoadDLLArcFile("DLL/cache_3P.arc");
+//	LoadDLLArcFile("DLL/sprites_4P.arc");
+//	LoadDLLArcFile("DLL/scripts_4P.arc");
 
 
 
@@ -257,10 +261,14 @@ int __fastcall sub_8264E068(int a1, int a2, int a3) {
 
     int r = BranchTo(0x8264E068, int, a1, a2, a3);
 
-    if (resource->str1.find("archive.pkg") != std::string::npos) {
-        
-		LoadDLLArcFile("DLL/player_Super.arc");
 
+
+    if (resource->str1.find("archive.pkg") != std::string::npos) {
+
+		std::vector<std::string>* pkg = 	ExFileSystem::GetArcs_pkg();
+		for (std::vector<std::string>::iterator it = pkg->begin();it!= pkg->end();it++){
+			LoadDLLArcFile(it->c_str());
+		}
 
     }
 
@@ -374,12 +382,8 @@ extern "C" void OnDLLStart(){
 
 
 	std::string Loaded;
-
-
 	CheckEmulated::GlobalInstall();
-
-
-
+	ExFileSystem::getInstance();
 
 	//new SonicGaugeExtended()
 	BaseLua.DoFile(true);

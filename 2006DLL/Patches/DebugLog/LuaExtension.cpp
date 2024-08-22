@@ -520,13 +520,9 @@ namespace DebugLogV2{
 						STRX = boost::any_cast<std::string>(_sorted_params[i].second);
 						const char* s = (const char*)malloc06(STRX.length()+1);
 						memset((void*)s,0,STRX.length()+1);
-
 						memcpy((void*)s,STRX.c_str(),STRX.size());
-
 						*(const char**)(IPrm + 0x4) = s;
 					}
-
-					
 					//	ShowXenonMessage(L"MSG",boost::any_cast<std::string>(it->second)->
 					break;
 				case UInt32:

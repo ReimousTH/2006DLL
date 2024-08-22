@@ -72,12 +72,14 @@ struct SMDATA_PPL_CHANGE_CBEHAVIOUR_REPLICATE {
 struct SMDATA_PPL_CHANGE_RINGS {
 	DEFINE_SOCKET_MESSAGE_DATA_ID_PROTOCOL(7, IPPROTO_UDP);
 	int RingsCount;
+
 	XUID sender_xuid;
 };
 
 struct SMDATA_PPL_CHANGE_RINGS_REPLICATE {
 	DEFINE_SOCKET_MESSAGE_DATA_ID_PROTOCOL(8, IPPROTO_UDP);
 	int RingsCount;
+
 	XUID sender_xuid;
 };
 
@@ -162,6 +164,7 @@ struct PPL_DATA{
 	int Context_Animation_ID;
 	int Context_Animation_STATE;
 	unsigned int RingsCount;
+	unsigned int LivesCount;
 	unsigned int ContextFlags;
 	unsigned int ExportPostureRequestFlag;
 	unsigned int ExportWeaponRequestFlag;
@@ -194,19 +197,93 @@ std::map<std::string,const char*> players_chr_remap;
 // Define your structures
 
 
-
-
 static int GetLocalPlayer(){
 	Sonicteam::DocMarathonImp* impl = 	*(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
 	UINT32 gameimp = *(UINT32*)(impl->DocCurrentMode + 0x6C);
 
+	int LocalPlayer = 0;
 	if (gameimp == 0 || *(UINT32*)gameimp != 0x82001AEC) return 0;
 
-
-	UINT32 NameActorPlayers = *(UINT32*)(gameimp + 0x1428);
-	UINT32 ObjPlayer = *(UINT32*)(NameActorPlayers + 0x38);
-	return ObjPlayer;
+	UINT32 vft =  *(UINT32*)impl->DocCurrentMode;
+	if (vft == 0x82033534){ //GameMode
+		UINT32 gameimp = *(UINT32*)(impl->DocCurrentMode + 0x6C);
+		int ActorID =  *(int*)(gameimp + 0xE40);	
+		UINT32 ActorManager = *(UINT32*)(gameimp+0x11C4);
+		if (ActorManager) return BranchTo(0x821609D0,int,ActorManager,&ActorID);
+//		UINT32 ActorMangerActorsCount = *(UINT32*)(ActorManager+0x80000);
+		
+		
+	}
+	return LocalPlayer;
 }
+
+static int IsLocalPlayer(int ObjPlayer){
+	return GetLocalPlayer() == ObjPlayer;
+}
+
+static int IsNetworkPlayer(int ObjPlayer){
+	for (std::map<XUID,PPL_DATA>::iterator it = Players_DATA.begin();it != Players_DATA.end();it++){
+		if (it->second.object_player == 0 ) continue;
+		if (it->second.object_player == ObjPlayer ){
+			return  true;
+
+		}
+	}
+	return false;
+}
+
+
+static const char* ObjectPlayerToLuaChr(int ObjectPlayer){
+
+	Sonicteam::DocMarathonImp* impl = 	*(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
+	UINT32 gameimp = *(UINT32*)(impl->DocCurrentMode + 0x6C);
+
+	int LocalPlayer = 0;
+	if (gameimp == 0 || *(UINT32*)gameimp != 0x82001AEC) return 0;
+	int index = 0;
+
+	UINT32 vft =  *(UINT32*)impl->DocCurrentMode;
+	if (vft == 0x82033534){ //GameMode
+
+		UINT32 gameimp = *(UINT32*)(impl->DocCurrentMode + 0x6C);
+		UINT32 ActorManager = *(UINT32*)(gameimp+0x11C4);
+		UINT32 ActorMangerActorsCount = *(UINT32*)(ActorManager+0x80000);
+		UINT32 PIX = 0;
+		for (int i = 0;i<ActorMangerActorsCount;i++)
+		{
+			UINT32 Actor = *(UINT32*)(ActorManager+0x40000+(i*4));
+			UINT32 ActorVFT = *(UINT32*)Actor;
+			if (ActorVFT == 0x82003564){ //Object_Player
+
+
+				byte IsObjectPlayerHaveControll = *(byte*)(Actor + 0xC8);
+				byte AIFLAG = *(byte*)(Actor + 0xCA);
+
+				if (AIFLAG || IsNetworkPlayer(Actor) ){
+					continue;
+				}
+				else if (Actor == ObjectPlayer){
+					break;
+				}
+				index ++;
+				
+			}
+		}
+		
+		if (index < 16){
+			std::string* chr_lua =  (std::string*)((gameimp + 0x30) + (0xF0 * index));
+			ShowXenonMessage(L"MSG",chr_lua->c_str());
+			
+
+		}
+	}
+	return "";
+}
+
+
+
+
+
 
 
 static const char* GetLocalPKGPlayerName(){
@@ -235,6 +312,8 @@ static int SpawnDummyCharacter(const char* name = "sonic_new.lua"){
     UINT32 gameimp = *(UINT32*)(impl->DocCurrentMode + 0x6C);
     UINT32 NameActorPlayers = *(UINT32*)(gameimp + 0x1428);
     int Player = (int)BranchTo(0x8219FAE0, int, NameActorPlayers, &data);
+
+	*(short*)(Player + 0xC8) = 0x0001;;
 
     Sonicteam::Player::State::IMachine* machine = *(Sonicteam::Player::State::IMachine**)(Player + 0xE4);
     machine->ChangeMashineState(0x1E);
@@ -293,6 +372,30 @@ void SpawnObjectPlayerByXUID(XUID xuid){
 	}
 	
 }
+
+static void SWAPObjectPlayer(int Player,const char* name = "sonic_new.lua"){
+	BranchTo(0x82195D20,int,Player,name);
+	*(short*)(Player + 0xC8) = 0x0001;;
+	Sonicteam::Player::State::IMachine* machine = *(Sonicteam::Player::State::IMachine**)(Player + 0xE4);
+	machine->ChangeMashineState(0x1E);
+	Sonicteam::Player::State::ICommonContext* contxt = dynamic_cast<Sonicteam::Player::State::ICommonContext*>(machine->GetMashineContext().get());
+	contxt->AnimationState = 0x10;
+	contxt->AnimationState = -1;
+
+}
+
+void SWAPObjectPlayerByXUID(XUID xuid,const char* name = "sonic_new.lua"){
+
+	//	DebugLogV2::PrintNextFixed("SpawnObjectPlayerByXUID");
+	if (GameIMP_LOADED_SCENE == false) return;
+	Sonicteam::DocMarathonImp* impl = 	*(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
+	UINT32 gameimp = *(UINT32*)(impl->DocCurrentMode + 0x6C);
+	if (gameimp != 0 && *(UINT32*)gameimp != 0x82001AEC ) return;
+	SWAPObjectPlayer(Players_DATA[xuid].object_player,name);
+	
+
+}
+
 
 void DestroyLabelByXUID(XUID xuid){
 
@@ -353,6 +456,17 @@ void SpawnPlayerLabelByXUID(XUID xuid){
 	
 	(*(void (__fastcall **)(_DWORD, int *))(*GraphicBufferGuess + 0x14))((_DWORD)GraphicBufferGuess.get(), (int*)&d->CsdObjectDrawable);
 	Players_DATA[xuid].CSD->MarathonPlaySceneAnimation("enemy_powergage","DefaultAnim");
+
+	if (Players_DATA[xuid].object_player){
+
+		std::string* chr_name = (std::string*)(Players_DATA[xuid].object_player + 0x1D8);
+		int ID = BranchTo(0x824CFCB8,int,chr_name);
+
+
+		Players_DATA[xuid].CSD->MarathonSetSceneNodeSpriteIndex("enemy_powergage","LivesCast",ID);
+
+	}
+
 	int CsdObjectDrawable_INT = (int)d->CsdObjectDrawable;
 	int CsdObject_INT = (int)d->CSD;
 	*(_BYTE *)(CsdObjectDrawable_INT + 0x74) = 1;
@@ -378,108 +492,10 @@ void SpawnPlayerLabelByXUID(XUID xuid){
 
 
 
-// Function to handle client messages
-static void ClientMessages(Socket* socket, SOCKET client_socket, SocketMessage* message) {
+static void CommonMessages(Socket* socket, SOCKET client_socket, SocketMessage* message){
 	
-	if (message->ID == SMDATA_PPL_CHANGE_SCENE::GetID() || message->ID == SMDATA_PPL_CHANGE_SCENE_REPLICATE::GetID()){
-		SMDATA_PPL_CHANGE_SCENE* _data_ = EXTRACT_SOCKET_MESSAGE_FROM_MESSAGE_PTR(message, SMDATA_PPL_CHANGE_SCENE)
-		if (_data_->sender_xuid == socket->GetXUID(0)) return;
-		if (Players_DATA.find(_data_->sender_xuid) == Players_DATA.end()) return;
-
-
-		Players_DATA[_data_->sender_xuid].scene = _data_->scene_name;
-
-		
-		if (Players_DATA[_data_->sender_xuid].scene == ""){
-			DestroyObjectPlayerByXUID(_data_->sender_xuid);
-			DestroyLabelByXUID(_data_->sender_xuid);
-		}
-		else{
-			SpawnObjectPlayerByXUID(_data_->sender_xuid);
-			SpawnPlayerLabelByXUID(_data_->sender_xuid);
-		}
-		
-
-
-		std::stringstream stream; stream << "[Client] XUID :  " << std::hex << _data_->sender_xuid << " goto " << _data_->scene_name;
-		DebugLogV2::PrintNextFixed(stream.str());
-
-	}
-
-	if (message->ID == SMDATA_PPL_CHANGE_TRANSFORM::GetID() || message->ID == SMDATA_PPL_CHANGE_TRANSFORM_REPLICATE::GetID()){
-		SMDATA_PPL_CHANGE_TRANSFORM* _data_ = EXTRACT_SOCKET_MESSAGE_FROM_MESSAGE_PTR(message, SMDATA_PPL_CHANGE_TRANSFORM);
-		if (_data_->sender_xuid == socket->GetXUID(0)) return;
-
-
-	//	std::stringstream ss; ss << "SMDATA_PPL_CHANGE_TRANSFORM X : "  << _data_->Position.x << " Y:" << _data_->Position.y << " Z:" <<  _data_->Position.z; 
-	//	DebugLogV2::PrintNextFixed(ss.str());
-		Players_DATA[_data_->sender_xuid].RFTransformMatrix0x70_FRAME = _data_->Transform;
-		Players_DATA[_data_->sender_xuid].Position_FRAME = _data_->Position;
-		Players_DATA[_data_->sender_xuid].Rotation_Posture = _data_->Rotation;
-	}
-
-	if (message->ID == SMDATA_PPL_CHANGE_CBEHAVIOUR::GetID() || message->ID == SMDATA_PPL_CHANGE_CBEHAVIOUR_REPLICATE::GetID()){
-		SMDATA_PPL_CHANGE_CBEHAVIOUR* _data_ = EXTRACT_SOCKET_MESSAGE_FROM_MESSAGE_PTR(message, SMDATA_PPL_CHANGE_CBEHAVIOUR);
-		if (_data_->sender_xuid == socket->GetXUID(0)) return;
-
-
-//		std::stringstream hero; hero << _data_->AnimationID << "-" << _data_->AnimationState;
-//		DebugLogV2::PrintNextFixed(hero.str());
-
-		Players_DATA[_data_->sender_xuid].Context_Animation_ID = _data_->AnimationID;
-		Players_DATA[_data_->sender_xuid].Context_Animation_STATE = _data_->AnimationState;
-
-
-		Players_DATA[_data_->sender_xuid].ContextFlags = _data_->ContextFlags;
-		Players_DATA[_data_->sender_xuid].ExportPostureRequestFlag = _data_->ExportPostureRequestFlag;
-		Players_DATA[_data_->sender_xuid].ExportWeaponRequestFlag = _data_->ExportWeaponRequestFlag;
-		Players_DATA[_data_->sender_xuid].UnknownFlags01 = _data_->UnknownFlags01;
-		Players_DATA[_data_->sender_xuid].UnknownFlags0xC8 = _data_->UnknownFlags0xC8;
-		Players_DATA[_data_->sender_xuid].StickFixedRotationMb = _data_->StickFixedRotationMb;
-
-	}
-
-	if (message->ID == SMDATA_PPL_CHANGE_RINGS::GetID() || message->ID == SMDATA_PPL_CHANGE_RINGS_REPLICATE::GetID()){
-		SMDATA_PPL_CHANGE_RINGS* _data_ = EXTRACT_SOCKET_MESSAGE_FROM_MESSAGE_PTR(message, SMDATA_PPL_CHANGE_RINGS);
-		if (_data_->sender_xuid == socket->GetXUID(0)) return;
-
-
-		//	std::stringstream ss; ss << "SMDATA_PPL_CHANGE_TRANSFORM X : "  << _data_->Position.x << " Y:" << _data_->Position.y << " Z:" <<  _data_->Position.z; 
-		//	DebugLogV2::PrintNextFixed(ss.str());
-		Players_DATA[_data_->sender_xuid].RingsCount = _data_->RingsCount;
-		std::stringstream ss; ss << _data_->RingsCount;
-
-		if (Players_DATA[_data_->sender_xuid].CSD){
-			Players_DATA[_data_->sender_xuid].CSD->MarathonSetSceneNodeText("enemy_powergage","RingCastTex",ss.str().c_str());
-		}
-		
-	
-	}
-
-	if (message->ID == SMDATA_PPL_CHANGE_CHR::GetID() || message->ID == SMDATA_PPL_CHANGE_CHR_REPLICATE::GetID()){
-		SMDATA_PPL_CHANGE_CHR* _data_ = EXTRACT_SOCKET_MESSAGE_FROM_MESSAGE_PTR(message, SMDATA_PPL_CHANGE_CHR);
-		if (_data_->sender_xuid == socket->GetXUID(0)) return;
-		//	std::stringstream ss; ss << "SMDATA_PPL_CHANGE_TRANSFORM X : "  << _data_->Position.x << " Y:" << _data_->Position.y << " Z:" <<  _data_->Position.z; 
-		//	DebugLogV2::PrintNextFixed(ss.str());
-		Players_DATA[_data_->sender_xuid].player_pkg = _data_->sender_character;
-	}
-
-	
-
-
-
-
-
-
-
-
-}
-
-// Function to handle server messages
-static void ServerMessages(Socket* socket, SOCKET client_socket, SocketMessage* message) {
-
 	bool replicate = false;
-	if (message->ID == SMDATA_PPL_CHANGE_SCENE::GetID()){
+	if (message->ID == SMDATA_PPL_CHANGE_SCENE::GetID() || message->ID == SMDATA_PPL_CHANGE_SCENE_REPLICATE::GetID()){
 		SMDATA_PPL_CHANGE_SCENE* _data_ = EXTRACT_SOCKET_MESSAGE_FROM_MESSAGE_PTR(message, SMDATA_PPL_CHANGE_SCENE);
 		if (_data_->sender_xuid == socket->GetXUID(0)) return;
 		if (Players_DATA.find(_data_->sender_xuid) == Players_DATA.end()) return;
@@ -504,63 +520,30 @@ static void ServerMessages(Socket* socket, SOCKET client_socket, SocketMessage* 
 		replicate = true;
 	}
 
-	//Send Cross Over
-	if (replicate){
-
-		for (std::map<XUID,PPL_DATA>::iterator it = Players_DATA.begin();it != Players_DATA.end();it++){
-			
-			SMDATA_PPL_CHANGE_SCENE_REPLICATE _data_;
-			_data_.sender_xuid = it->first;
-			memcpy(&_data_.scene_name,it->second.scene.c_str(),it->second.scene.length()+1);
-			SocketMessage msg  =  DEFINE_SOCKET_MESSAGE_FROM_CONST_DATA(_data_);	
-			socket->SendTCPMessageToClients(&msg);
-
-		}
-	}
+	
 
 	bool replicate_transform = false;
-	if (message->ID == SMDATA_PPL_CHANGE_TRANSFORM::GetID()){
+	if (message->ID == SMDATA_PPL_CHANGE_TRANSFORM::GetID() || message->ID == SMDATA_PPL_CHANGE_TRANSFORM_REPLICATE::GetID()){
 		SMDATA_PPL_CHANGE_TRANSFORM* _data_ = EXTRACT_SOCKET_MESSAGE_FROM_MESSAGE_PTR(message, SMDATA_PPL_CHANGE_TRANSFORM);
 		if (_data_->sender_xuid == socket->GetXUID(0)) return;
 
 		replicate_transform = true;
-	//	std::stringstream ss; ss << "SMDATA_PPL_CHANGE_TRANSFORM X : "  << _data_->Position.x << " Y:" << _data_->Position.y << " Z:" <<  _data_->Position.z; 
-	//	DebugLogV2::PrintNextFixed(ss.str());
+		//	std::stringstream ss; ss << "SMDATA_PPL_CHANGE_TRANSFORM X : "  << _data_->Position.x << " Y:" << _data_->Position.y << " Z:" <<  _data_->Position.z; 
+		//	DebugLogV2::PrintNextFixed(ss.str());
 		Players_DATA[_data_->sender_xuid].RFTransformMatrix0x70_FRAME = _data_->Transform;
 		Players_DATA[_data_->sender_xuid].Position_FRAME = _data_->Position;
 		Players_DATA[_data_->sender_xuid].Rotation_Posture = _data_->Rotation;
 	}
 
-	if (replicate_transform){
-
-		for (std::map<XUID, PPL_DATA>::iterator it = Players_DATA.begin(); it != Players_DATA.end(); ++it) {
-			SMDATA_PPL_CHANGE_TRANSFORM_REPLICATE _data_;
-			_data_.sender_xuid = it->first; // Get the XUID
-			_data_.Position = it->second.Position_FRAME; // Get the position
-			_data_.Transform = it->second.RFTransformMatrix0x70_FRAME; // Get the transform matrix
-			_data_.Rotation = it->second.Rotation_Posture;
-
-
-			//	std::stringstream ss; ss << "SMDATA_PPL_CHANGE_TRANSFORM X : "  << _data_->Position.x << " Y:" << _data_->Position.y << " Z:" <<  _data_->Position.z; 
-			//	DebugLogV2::PrintNextFixed(ss.str());
-
-			SocketMessage msg = DEFINE_SOCKET_MESSAGE_FROM_CONST_DATA(_data_);
-
-			// Uncomment the line below to send the message
-			socket->SendUDPMessageToClients(&msg); // Ensure socket is defined and initialized
-
-		}
-
-	}
 	bool replicate_anim = false;
 
-	if (message->ID == SMDATA_PPL_CHANGE_CBEHAVIOUR::GetID()){
+	if (message->ID == SMDATA_PPL_CHANGE_CBEHAVIOUR::GetID() || message->ID == SMDATA_PPL_CHANGE_CBEHAVIOUR_REPLICATE::GetID()){
 		SMDATA_PPL_CHANGE_CBEHAVIOUR* _data_ = EXTRACT_SOCKET_MESSAGE_FROM_MESSAGE_PTR(message, SMDATA_PPL_CHANGE_CBEHAVIOUR);
 		if (_data_->sender_xuid == socket->GetXUID(0)) return;
 		replicate_anim = true;
-	
-	//	 std::stringstream hero; hero << _data_->AnimationID << "-" << _data_->AnimationState;
-	//	DebugLogV2::PrintNextFixed(hero.str());
+
+		//	 std::stringstream hero; hero << _data_->AnimationID << "-" << _data_->AnimationState;
+		//	DebugLogV2::PrintNextFixed(hero.str());
 
 		Players_DATA[_data_->sender_xuid].Context_Animation_ID = _data_->AnimationID;
 		Players_DATA[_data_->sender_xuid].Context_Animation_STATE = _data_->AnimationState;
@@ -575,86 +558,176 @@ static void ServerMessages(Socket* socket, SOCKET client_socket, SocketMessage* 
 
 
 	}
-	if (replicate_anim){
-
-		for (std::map<XUID,PPL_DATA>::iterator it = Players_DATA.begin();it != Players_DATA.end();it++){
-
-			SMDATA_PPL_CHANGE_CBEHAVIOUR_REPLICATE _data_;
-			_data_.sender_xuid = it->first;
-			_data_.AnimationID = it->second.Context_Animation_ID;
-			_data_.AnimationState = it->second.Context_Animation_STATE;
-
-			_data_.ContextFlags = it->second.ContextFlags;
-			_data_.ExportPostureRequestFlag = it->second.ExportPostureRequestFlag;
-			_data_.ExportWeaponRequestFlag = it->second.ExportWeaponRequestFlag;
-			_data_.UnknownFlags01 = it->second.UnknownFlags01;
-			_data_.UnknownFlags0xC8 = it->second.UnknownFlags0xC8;
-			_data_.StickFixedRotationMb = it->second.StickFixedRotationMb;
-
-
-
-			SocketMessage msg  =  DEFINE_SOCKET_MESSAGE_FROM_CONST_DATA(_data_);
-			socket->SendUDPMessageToClients(&msg);
-
-		}
-
-	}
+	
 
 
 	bool replicate_rings = false;
 
-	if (message->ID == SMDATA_PPL_CHANGE_RINGS::GetID()){
+	if (message->ID == SMDATA_PPL_CHANGE_RINGS::GetID() || message->ID == SMDATA_PPL_CHANGE_RINGS::GetID()){
 		SMDATA_PPL_CHANGE_RINGS* _data_ = EXTRACT_SOCKET_MESSAGE_FROM_MESSAGE_PTR(message, SMDATA_PPL_CHANGE_RINGS);
 		if (_data_->sender_xuid == socket->GetXUID(0)) return;
 		replicate_rings = true;
 		Players_DATA[_data_->sender_xuid].RingsCount = _data_->RingsCount;
-
+	
 		std::stringstream ss; ss << _data_->RingsCount;
 		if (Players_DATA[_data_->sender_xuid].CSD){
 			Players_DATA[_data_->sender_xuid].CSD->MarathonSetSceneNodeText("enemy_powergage","RingCastTex",ss.str().c_str());
+			Players_DATA[_data_->sender_xuid].CSD->MarathonSetSceneNodeText("enemy_powergage","LivesCastTex",ss.str().c_str());
 		}
 
 
 	}
-	if (replicate_rings){
-
-		for (std::map<XUID,PPL_DATA>::iterator it = Players_DATA.begin();it != Players_DATA.end();it++){
-
-			SMDATA_PPL_CHANGE_RINGS_REPLICATE _data_;
-			_data_.sender_xuid = it->first;
-			_data_.RingsCount = it->second.RingsCount;
-			SocketMessage msg  =  DEFINE_SOCKET_MESSAGE_FROM_CONST_DATA(_data_);
-			socket->SendUDPMessageToClients(&msg);
-
-		}
-
-	}
+	
 
 
 	bool replicate_skins = false;
 
-	if (message->ID == SMDATA_PPL_CHANGE_CHR::GetID() || message->ID == SMDATA_PPL_CHANGE_CHR_REPLICATE::GetID()){
+		if (message->ID == SMDATA_PPL_CHANGE_CHR::GetID() || message->ID == SMDATA_PPL_CHANGE_CHR_REPLICATE::GetID()){
 		SMDATA_PPL_CHANGE_CHR* _data_ = EXTRACT_SOCKET_MESSAGE_FROM_MESSAGE_PTR(message, SMDATA_PPL_CHANGE_CHR);
 		if (_data_->sender_xuid == socket->GetXUID(0)) return;
 		replicate_skins = true;
 		//	std::stringstream ss; ss << "SMDATA_PPL_CHANGE_TRANSFORM X : "  << _data_->Position.x << " Y:" << _data_->Position.y << " Z:" <<  _data_->Position.z; 
 		//	DebugLogV2::PrintNextFixed(ss.str());
-		Players_DATA[_data_->sender_xuid].player_pkg = _data_->sender_character;
-	}
+
 	
-	if (replicate_skins){
-
-		for (std::map<XUID,PPL_DATA>::iterator it = Players_DATA.begin();it != Players_DATA.end();it++){
-
-			SMDATA_PPL_CHANGE_CHR _data_;
-			_data_.sender_xuid = it->first;
-			memcpy(&_data_.sender_character,it->second.player_pkg.c_str(),it->second.player_pkg.size()+1);
-			SocketMessage msg  =  DEFINE_SOCKET_MESSAGE_FROM_CONST_DATA(_data_);
-			socket->SendUDPMessageToClients(&msg);
+		std::string after = _data_->sender_character;
+		if (int pos = after.find("player/") != std::string::npos){
+			after.erase(pos-1,7);
 
 		}
+		
+		if (Players_DATA[_data_->sender_xuid].object_player && Players_DATA[_data_->sender_xuid].player_pkg != after ){
+			DebugLogV2::PrintNextFixed(after);
+			SWAPObjectPlayerByXUID(_data_->sender_xuid,after.c_str());
+			std::string* chr_name = (std::string*)(Players_DATA[_data_->sender_xuid].object_player + 0x1D8);
+			int ID = BranchTo(0x824CFCB8,int,chr_name);
+			if (Players_DATA[_data_->sender_xuid].CSD){
+				Players_DATA[_data_->sender_xuid].CSD->MarathonSetSceneNodeSpriteIndex("enemy_powergage","LivesCast",ID);
+			}
+		}
+		Players_DATA[_data_->sender_xuid].player_pkg = after;
+		
+
 
 	}
+
+
+
+	if (_socket.IsServer()){
+
+
+
+			for (std::map<XUID,PPL_DATA>::iterator it = Players_DATA.begin();it != Players_DATA.end();it++){
+
+
+				//Send Cross Over
+				if (replicate){
+					SMDATA_PPL_CHANGE_SCENE_REPLICATE _data_;
+					_data_.sender_xuid = it->first;
+					memcpy(&_data_.scene_name,it->second.scene.c_str(),it->second.scene.length()+1);
+					SocketMessage msg  =  DEFINE_SOCKET_MESSAGE_FROM_CONST_DATA(_data_);	
+					socket->SendTCPMessageToClients(&msg);
+
+				}
+
+				if (replicate_skins){
+					SMDATA_PPL_CHANGE_CHR _data_;
+					_data_.sender_xuid = it->first;
+					memcpy(&_data_.sender_character,it->second.player_pkg.c_str(),it->second.player_pkg.size()+1);
+					SocketMessage msg  =  DEFINE_SOCKET_MESSAGE_FROM_CONST_DATA(_data_);
+					socket->SendUDPMessageToClients(&msg);
+				}
+				if (replicate_rings){
+
+
+
+					SMDATA_PPL_CHANGE_RINGS _data_;
+					_data_.sender_xuid = it->first;
+					_data_.RingsCount = it->second.RingsCount;
+				
+					SocketMessage msg  =  DEFINE_SOCKET_MESSAGE_FROM_CONST_DATA(_data_);
+					socket->SendUDPMessageToClients(&msg);
+
+
+
+				}
+				if (replicate_anim){
+
+
+
+					SMDATA_PPL_CHANGE_CBEHAVIOUR_REPLICATE _data_;
+					_data_.sender_xuid = it->first;
+					_data_.AnimationID = it->second.Context_Animation_ID;
+					_data_.AnimationState = it->second.Context_Animation_STATE;
+
+					_data_.ContextFlags = it->second.ContextFlags;
+					_data_.ExportPostureRequestFlag = it->second.ExportPostureRequestFlag;
+					_data_.ExportWeaponRequestFlag = it->second.ExportWeaponRequestFlag;
+					_data_.UnknownFlags01 = it->second.UnknownFlags01;
+					_data_.UnknownFlags0xC8 = it->second.UnknownFlags0xC8;
+					_data_.StickFixedRotationMb = it->second.StickFixedRotationMb;
+
+
+
+					SocketMessage msg  =  DEFINE_SOCKET_MESSAGE_FROM_CONST_DATA(_data_);
+					socket->SendUDPMessageToClients(&msg);
+
+
+
+				}
+				if (replicate_transform){
+
+
+					SMDATA_PPL_CHANGE_TRANSFORM_REPLICATE _data_;
+					_data_.sender_xuid = it->first; // Get the XUID
+					_data_.Position = it->second.Position_FRAME; // Get the position
+					_data_.Transform = it->second.RFTransformMatrix0x70_FRAME; // Get the transform matrix
+					_data_.Rotation = it->second.Rotation_Posture;
+
+
+					//	std::stringstream ss; ss << "SMDATA_PPL_CHANGE_TRANSFORM X : "  << _data_->Position.x << " Y:" << _data_->Position.y << " Z:" <<  _data_->Position.z; 
+					//	DebugLogV2::PrintNextFixed(ss.str());
+
+					SocketMessage msg = DEFINE_SOCKET_MESSAGE_FROM_CONST_DATA(_data_);
+
+					// Uncomment the line below to send the message
+					socket->SendUDPMessageToClients(&msg); // Ensure socket is defined and initialized
+				}
+			}
+	}
+
+
+
+
+
+
+
+
+
+
+
+}
+
+// Function to handle client messages
+static void ClientMessages(Socket* socket, SOCKET client_socket, SocketMessage* message) {
+	
+	
+	
+
+
+
+
+CommonMessages(socket,client_socket,message);
+
+
+
+}
+
+// Function to handle server messages
+static void ServerMessages(Socket* socket, SOCKET client_socket, SocketMessage* message) {
+
+
+	CommonMessages(socket,client_socket,message);
 
 
 
@@ -820,6 +893,7 @@ extern "C" int EngineDocOnUpdateHE(Sonicteam::DocMarathonImp* a1, double a2) {
 	
 				 
 			
+				SpawnDummyCharacter();
 
 				DebugLogV2::PrintNextFixed("SpawnLabel");
 
@@ -847,14 +921,7 @@ int RemoveCHR(int a1,int a2){
 	if (a2 == 1){
 		for (std::map<XUID,PPL_DATA>::iterator it = Players_DATA.begin();it != Players_DATA.end();it++){
 			if (it->second.object_player == a1){
-				
-				if (it->second.object_player == 0){
-					return 0;
-				}
-				else{
-					it->second.object_player = 0;
-				}
-	
+				it->second.object_player = 0;
 				break;
 			}
 		}
@@ -1028,6 +1095,12 @@ int __fastcall GameImpEngGlobalActionsRecieved(int a1,double a2){
 			GameIMP_LOADED_SCENE = false;
 			std::stringstream ss;
 			ss << "[GameIMP][StartCutScene-Rendered]" << case1 << "-" << case2 << "-";
+			DebugLogV2::PrintNextFixed(ss.str());
+		}
+		if (case2 == 4){
+			//GameIMP_LOADED_SCENE = false;
+			std::stringstream ss;
+			ss << "[GameIMP][End-Level]" << case1 << "-" << case2 << "-";
 			DebugLogV2::PrintNextFixed(ss.str());
 		}
 		if (case2 ==5 ){
@@ -1205,8 +1278,12 @@ int __fastcall GameImpEngGlobalActionsRecieved(int a1,double a2){
 					int v8 = (*(int (__fastcall **)(_DWORD))(**(_DWORD **)(a1 + 0xC) + 0x60))(*(_DWORD *)(a1 + 0xC));
 					if ( v8 )
 					{
-						GameIMP_LOADED_SCENE = true;
-						action_send_level_info = true;
+
+						if ( !*(_DWORD *)(a1 + 0x1774) ){
+							GameIMP_LOADED_SCENE = true;
+							action_send_level_info = true;
+						}
+					
 
 						std::stringstream ss;
 						ss << "[GameIMP][StartLoadBack]" << case1 << "-" << case2 << "-"; // 82185528   (AFTER END CUTSCENE HERE SECRETLY DOES)
@@ -1341,15 +1418,8 @@ int __fastcall GameIMP_DESTRUCTION(int a1, char a2){
 			memcpy(&_msg_data.scene_name,"",11);
 			SocketMessage msg = DEFINE_SOCKET_MESSAGE_FROM_CONST_DATA(_msg_data);
 
-			if (_socket.IsClient()){
-				_socket.SendTCPMessageToServer(&msg);
-			}
-			else{
-				Players_DATA[_socket.GetXUID(0)].scene = "";
-				_socket.SendTCPMessageToClients(&msg);
-			}
-
-
+			Players_DATA[_socket.GetXUID(0)].scene = "";
+			_socket.SendTCPMessageToSRCL(&msg);
 		}
 
 		for (std::map<XUID,PPL_DATA>::iterator it =		Players_DATA.begin();it !=Players_DATA.end();it++){
@@ -1374,7 +1444,7 @@ int __fastcall ObjectUpdate(int a1, double a2){
 	PPL_DATA* NetworkPlayer_DATA;
 
 
-	if (_socket.IsWorks()){
+	if (_socket.IsWorks()){	
 
 		for (std::map<XUID,PPL_DATA>::iterator it = Players_DATA.begin();it != Players_DATA.end();it++){
 			if (it->second.object_player == 0 ) continue;
@@ -1417,18 +1487,22 @@ int __fastcall ObjectUpdate(int a1, double a2){
 	 arg_buffer_3[0] = 0x82581EA8;
 
 
-	 //Simplified Way
+	 //Simplified Way (ai,zock, automatic_dead,lockon_dead)
 	 std::vector<boost::shared_ptr<Sonicteam::Player::IStepable>>* IStepableP1 = reinterpret_cast<std::vector<boost::shared_ptr<Sonicteam::Player::IStepable>>*>(a1 + 0x24C);  
 	 for ( std::vector<boost::shared_ptr<Sonicteam::Player::IStepable>>::iterator it = IStepableP1->begin();it != IStepableP1->end();it++){
 		Sonicteam::Player::IStepable*  boost_step = (*it).get();
 		boost_step->OnStepable(PlayerSpeed_Delta);
+
+		
+
 	 }
 
 	 BranchTo(0x82196C10,int,a1);
 	 BranchTo(0x82196B98,int,a1);
 	 BranchTo(0x821B7968,int,a1, a1 + 0x29C, 0);
 	 BranchTo(0x82196AB8,int,a1);
-	 BranchTo(0x82196F78,int,a1); //CheckAIFLAGS
+
+	 if (!IsNetworkPlayer) BranchTo(0x82196F78,int,a1); //CheckAIFLAGS
 	 BranchTo(0x82196850,int,a1); //UpgradeRunner(
 
 
@@ -1459,9 +1533,11 @@ int __fastcall ObjectUpdate(int a1, double a2){
 			 PlayerContext->UnknownFlags0xC8 = NetworkPlayer_DATA->UnknownFlags0xC8;
 			 PlayerContext->StickFixedRotationMb = NetworkPlayer_DATA->StickFixedRotationMb;
 
-			 std::stringstream test; test << "[NetworkPlayer] : ";
-			 test << PlayerContext->ContextFlags << " " << PlayerContext->ExportWeaponRequestFlag << " " << PlayerContext->UnknownFlags01 << " " << PlayerContext->UnknownFlags0xC8;
-			 DebugLogV2::PrintNextFixed(test.str());
+
+
+		//	 std::stringstream test; test << "[NetworkPlayer] : ";
+		//	 test << PlayerContext->ContextFlags << " " << PlayerContext->ExportWeaponRequestFlag << " " << PlayerContext->UnknownFlags01 << " " << PlayerContext->UnknownFlags0xC8;
+		//	 DebugLogV2::PrintNextFixed(test.str());
 		 }
 
 
@@ -1471,11 +1547,14 @@ int __fastcall ObjectUpdate(int a1, double a2){
 	 BranchTo(0x821966E0,int,a1);	
 	 BranchTo(0x82196CF8,int,a1);
 
+	 //gamemaster,lockon,homing,path_ld,lockon_lightdash,gauge,sonic_weapons,input vehicle,rodeo,amigo change,talk,waterslider,item,input,gravity,impulse,path,path_ld,path_col,score
 	 std::vector<boost::shared_ptr<Sonicteam::Player::IStepable>>* IStepableP2 = reinterpret_cast<std::vector<boost::shared_ptr<Sonicteam::Player::IStepable>>*>(a1 + 0x25C);
 
 	 for ( std::vector<boost::shared_ptr<Sonicteam::Player::IStepable>>::iterator it = IStepableP2->begin();it != IStepableP2->end();it++){
 		 Sonicteam::Player::IStepable*  boost_step = (*it).get();
 		 boost_step->OnStepable(PlayerSpeed_Delta);
+
+		
 	 }
 
 	 int PlayerPosture = *(_DWORD *)(a1 + 0xDC);
@@ -1530,16 +1609,21 @@ int __fastcall ObjectUpdate(int a1, double a2){
 
 
 	 BranchTo(0x82196768,int,a1);
+	 //model ,(one or more )
 	 std::vector<boost::shared_ptr<Sonicteam::Player::IStepable>>* IStepableP3 = reinterpret_cast<std::vector<boost::shared_ptr<Sonicteam::Player::IStepable>>*>(a1 + 0x26C);
 	 for ( std::vector<boost::shared_ptr<Sonicteam::Player::IStepable>>::iterator it = IStepableP3->begin();it != IStepableP3->end();it++){
 		 Sonicteam::Player::IStepable*  boost_step = (*it).get();
 		 boost_step->OnStepable(PlayerSpeed_Delta);
-	 }
 
+		 
+
+	 }
+//??
 	 std::vector<boost::shared_ptr<Sonicteam::Player::IStepable>>* IStepableP4 = reinterpret_cast<std::vector<boost::shared_ptr<Sonicteam::Player::IStepable>>*>(a1 + 0x27C);
 	 for ( std::vector<boost::shared_ptr<Sonicteam::Player::IStepable>>::iterator it = IStepableP4->begin();it != IStepableP4->end();it++){
 		 Sonicteam::Player::IStepable*  boost_step = (*it).get();
 		 boost_step->OnStepable(PlayerSpeed_Delta);
+		
 	 }
 
 
@@ -1639,7 +1723,23 @@ int __fastcall ObjectUpdate(int a1, double a2){
 
 }
 
+int __fastcall ObjectEvents(int a1, Sonicteam::SoX::Message* msg){
 
+	bool IsLocalPlayer = GetLocalPlayer() == a1 - 0x20;
+
+
+    int result = BranchTo(0x82197598,int,a1,msg);
+
+
+	if (_socket.IsWorks() && (msg->MessageInfo2 - 0x20) == GetLocalPlayer()){
+		if (msg->MessageInfo == 0x13010 && result){
+	
+			
+		}
+	}
+
+	return result;
+}
 
 
 static std::map<int, const char*> GameIMP_MESSAGES;
@@ -1653,16 +1753,22 @@ int __fastcall GameIMPMessageReciever(int a1, Sonicteam::SoX::Message* a2){
 		std::stringstream test; 
 		if (GameIMP_MESSAGES.find(a2->MessageInfo) == GameIMP_MESSAGES.end()){
 			test << "[GameImp][Message] " << std::hex << a2->MessageInfo;
+			DebugLogV2::log.push_back(test.str());
+			DebugLogV2::PrintNextFixed(test.str());
 		}
 		else{
-				//test << "[GameImp][Message] " << std::hex << GameIMP_MESSAGES[a2->MessageInfo];
+				test << "[GameImp][Message] " << std::hex << GameIMP_MESSAGES[a2->MessageInfo];
+
+	//			DebugLogV2::log.push_back(test.str());
+	//			DebugLogV2::PrintNextFixed(test.str());
 		}
 
 	
-		DebugLogV2::log.push_back(test.str());
-		DebugLogV2::PrintNextFixed(test.str());
+	
 
 	}
+
+
 	
 
 	
@@ -1675,6 +1781,7 @@ int __fastcall GameIMPMessageReciever(int a1, Sonicteam::SoX::Message* a2){
 					SMDATA_PPL_CHANGE_RINGS _data3;
 					_data3.sender_xuid = _socket.GetXUID(0);
 					_data3.RingsCount =   a2->MessageInfo3;
+				
 					SocketMessage msg3  =  DEFINE_SOCKET_MESSAGE_FROM_CONST_DATA(_data3);
 
 					_socket.SendUDPMessageToSRCL(&msg3);
@@ -1724,6 +1831,90 @@ int __fastcall GameIMPMessageReciever(int a1, Sonicteam::SoX::Message* a2){
 
 
 }
+
+int __fastcall Character_AmigoSwitch(int result){
+
+
+
+
+
+	int v1; // r31
+	int v2; // r11
+	_DWORD *v3; // r3
+	int v4[2]; // [sp+50h] [-30h] BYREF
+	int v5[4]; // [sp+58h] [-28h] BYREF
+
+	v1 = result;
+	if ( *(_DWORD *)(result + 0x1C) )             // On Switch Process
+	{
+		v4[1] = 0;
+		v4[0] = 0x1300E;
+		result = (*(int (__fastcall **)(int, int *))(*(_DWORD *)(*(_DWORD *)(result + 0x28) + 0x20) + 4))(
+			*(_DWORD *)(result + 0x28) + 0x20,
+			v4);                             // 0000000082197598
+		if ( (_BYTE)result )
+		{
+			if ( *(byte*)(&v4[1]) )
+			{
+				v2 = *(_DWORD *)(v1 + 0x28);
+				v5[0] = 0x13010;
+				if ( v2 )
+					v5[1] = v2 + 0x20;
+				else
+					v5[1] = 0;
+				*(byte*)&v5[2] = 1;
+				v3 = (_DWORD *)BranchTo(0x82205720,int,(_DWORD *)(v1 + 0xC), 0);// **ReturnMyPhantom
+				int HitObject = *(unsigned int*)(*v3 + 0x20) - 0x20;
+
+				if (!IsNetworkPlayer(v2) && !IsNetworkPlayer(HitObject) && (HitObject + 0x20) != 0 && *(byte*)(HitObject + 0xCA) == 0x0 ){
+					if (IsLocalPlayer(v2)){
+						
+						// OBJ AMIGO COLLISION ALSO O_O (82014ED8)
+						std::stringstream test; test << "*(byte*)(HitObject + 0xCA) " << std::hex << HitObject;
+						DebugLogV2::PrintNextFixed(test.str());
+						SMDATA_PPL_CHANGE_CHR _data_;
+						_data_.sender_xuid = _socket.GetXUID(0);
+						std::string* str = NULL;
+						if ( *(unsigned int*)HitObject ==0x82014ED8 ){
+
+							int v9[3];
+							v9[0] = 0x15014;
+							v9[1] =  *(int*)(HitObject + 0x184);
+							v9[2] = 0xFFFFFFFF;
+							int v4 = *(int*)(HitObject+0x4C);
+							(*(int (__fastcall **)(_DWORD, int *))(*(_DWORD *)v4 + 4))(v4, v9);
+							int TargetActorID = v9[2];
+							int HitObjectAmigo_ObjPlayer = BranchTo(0x82160658,int,HitObject,TargetActorID);
+					
+							if (HitObjectAmigo_ObjPlayer && *(byte*)(HitObjectAmigo_ObjPlayer + 0xCA) == 0x0 ){
+								str =  (std::string*)(HitObjectAmigo_ObjPlayer + 0x58);
+							}
+
+						}
+						else if ( *(unsigned int*)HitObject ==0x82003564 ){
+							str =  (std::string*)(HitObject + 0x58);
+						}
+			
+						if (str && !str->empty() && str->length() > 0 && str->c_str()) {
+							const char* chr_full_lua = str->c_str();
+							memcpy(&_data_.sender_character,chr_full_lua,strlen(chr_full_lua)+1);
+							Players_DATA[_data_.sender_xuid].player_pkg = chr_full_lua;
+							SocketMessage msg = DEFINE_SOCKET_MESSAGE_FROM_CONST_DATA(_data_);
+							_socket.SendUDPMessageToSRCL(&msg);
+						}
+
+					}
+
+					result = (*(int (__fastcall **)(_DWORD, int *))(*(_DWORD *)*v3 + 4))(*v3, v5);// 0000000082595B90
+				}	
+			}
+		}
+	}
+	return result;
+
+
+}
+
 void TagBattleMain::GlobalInstall_ONLINE()
 {
 	GameIMP_MESSAGES[0x1501c] = "Score";
@@ -1733,11 +1924,14 @@ void TagBattleMain::GlobalInstall_ONLINE()
 
 	WRITE_DWORD(0x82001AF0,GameIMPMessageReciever);
 	WRITE_DWORD(0x8200356C,ObjectUpdate);
+	WRITE_DWORD(0x8200355C,ObjectEvents);
 
 	WRITE_DWORD(0X82033568	,MainModeOnMessageRecieved);
 	//WRITE_DWORD(0x82001AF0	,GameImpOnMessageRecieved);
 	WRITE_DWORD(0x82001B3C,GameImpEngGlobalActionsRecieved);
 	WRITE_DWORD(0x82001AEC,GameIMP_DESTRUCTION);
+
+	WRITE_DWORD(0x8200D104,Character_AmigoSwitch);
 
 	
 /*

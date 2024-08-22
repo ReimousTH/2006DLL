@@ -7068,3 +7068,42 @@ namespace DevTitle{
 	}
 }
 
+void ExFileSystem::PushArc(std::string& arc)
+{
+	getInstance().ArcsFiles.push_back(arc);
+}
+
+void ExFileSystem::PushArc(std::string arc)
+{
+	getInstance().ArcsFiles.push_back(arc);
+}
+
+void ExFileSystem::PushArc_pkg(std::string& arc)
+{
+	getInstance().ArcsFiles_pkg.push_back(arc);
+}
+
+void ExFileSystem::PushArc_pkg(std::string arc)
+{
+	getInstance().ArcsFiles_pkg.push_back(arc);
+}
+
+std::vector<std::string>* ExFileSystem::GetArcs()
+{
+	return &getInstance().ArcsFiles;
+}
+
+std::vector<std::string>* ExFileSystem::GetArcs_pkg()
+{
+	return &getInstance().ArcsFiles_pkg;
+}
+
+ExFileSystem::ExFileSystem():ArcsFiles(),ArcsFiles_pkg()
+{
+
+}
+
+ExFileSystem::~ExFileSystem()
+{
+
+}

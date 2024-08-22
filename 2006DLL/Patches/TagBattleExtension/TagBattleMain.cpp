@@ -997,6 +997,10 @@ extern "C" int RenderNeParticlePost_GetNumCHR(lua_State* L){
 void TagBattleMain::GlobalInstall()
 {
 
+	ExFileSystem::PushArc("cache_3P.arc");
+	ExFileSystem::PushArc("scripts_4P.arc");
+	ExFileSystem::PushArc("sprites_4P.arc");
+
 
 	
 

@@ -14,7 +14,6 @@ namespace Sonicteam{
 	
 				~State(void);
 				virtual void DestroyObject(unsigned int flag);
-
 				virtual unsigned int* StateConstant() = 0; // idk what real name 
 				virtual void OnStateStart() = 0; //OnStateStart
 				virtual void OnStateUpdate(float) = 0; //OnStateUpdate

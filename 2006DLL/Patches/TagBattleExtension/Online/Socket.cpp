@@ -401,6 +401,16 @@ void Socket::SendTCPMessageTo(SOCKET to, SocketMessage* msg)
 	}
 }
 
+void Socket::SendTCPMessageToSRCL(SocketMessage* msg)
+{
+	if (IsClient()){
+		this->SendTCPMessageToServer(msg);
+	}
+	else if (IsServer()){
+		this->SendTCPMessageToClients(msg);
+	}
+}
+
 void Socket::SendTCPMessageToServer(SocketMessage* msg)
 {
 	SendTCPMessageTo(_tcpSocket, msg);

@@ -17,6 +17,33 @@
 static ZLua BaseLua =  ZLua((const char*)"game:\\common\\DLL.lua");
 static ZLua QuickBootLua =  ZLua((const char*)"game:\\common\\QuickBoot.lua");
 
+#ifndef __ExFileSystem__
+#define  __ExFileSystem__
+class ExFileSystem{
+public:
+	static ExFileSystem& getInstance() {
+		static ExFileSystem instance;
+		return instance;
+	}
+	static void PushArc(std::string&);
+	static void PushArc(std::string);
+	static void PushArc_pkg(std::string&);
+	static void PushArc_pkg(std::string);
+
+	static std::vector<std::string>* GetArcs();
+	static std::vector<std::string>* GetArcs_pkg();
+
+
+	std::vector<std::string> ArcsFiles;
+	std::vector<std::string> ArcsFiles_pkg;
+
+	ExFileSystem();
+	~ExFileSystem();
+
+
+};
+
+#endif
 
 
 
