@@ -7,7 +7,7 @@ namespace CompleteGauge{
 
 			
 
-		ExFileSystem::PushArc_pkg("player_Super.arc");
+		ExFileSystem::PushArc_pkg("DLL\\player_Super.arc");
 
 		CompleteGauge::GlobalInstall_CommonPosture();
 		CompleteGauge::GlobalInstall_SonicSound();

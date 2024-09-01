@@ -114,6 +114,7 @@ namespace Sonicteam{
 			_MARATHON_DEFINE_CONSTRUCTOR_(Thread,0x825867A8,const char* ThreadName,int Priority,int Flag);
 
 
+		
 
 //			_MARATHON_DEFINE_CONSTRUCTOR_(Thread,BASE1,const char*);
 

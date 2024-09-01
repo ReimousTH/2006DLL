@@ -1585,6 +1585,8 @@ namespace DebugLogV2{
 		return 1;
 	}
 
+
+
 	extern "C" int PrintNextFixed(std::string msg){
 		int length = msg.length() + 1;
 		wchar_t* wcharPtr = new wchar_t[length];

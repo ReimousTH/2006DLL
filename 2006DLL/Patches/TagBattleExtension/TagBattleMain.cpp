@@ -997,10 +997,10 @@ extern "C" int RenderNeParticlePost_GetNumCHR(lua_State* L){
 void TagBattleMain::GlobalInstall()
 {
 
-	ExFileSystem::PushArc("cache_3P.arc");
-	ExFileSystem::PushArc("scripts_4P.arc");
-	ExFileSystem::PushArc("sprites_4P.arc");
-
+	ExFileSystem::PushArc("DLL\\cache_3P.arc");
+	ExFileSystem::PushArc_pkg("DLL\\scripts_4P.arc");
+	ExFileSystem::PushArc("DLL\\sprites_4P.arc");
+	ExFileSystem::PushArc("DLL\\sprite_online.arc");
 
 	
 
@@ -1011,8 +1011,14 @@ void TagBattleMain::GlobalInstall()
 	WRITE_DWORD(0x82039C10,MainMenuTask_UI);
 
 
+	Sonicteam::GameImp* im = 0;
+	
 
 
+//	Sonicteam::GameImp* impl = 0;
+	
+//	impl->GamePropLibary->ObjCommonProp->str1 = "";
+//	impl->GamePropLibary->KingdomvalleyProp->str1 = "";
 
 	GlobalInstall_InBattle();
 	GlobalInstall_ONLINE();

@@ -34,7 +34,10 @@
 
 
 
+
+
 #include <xtl.h>
+/*
 void* operator new(size_t size) {
 	return HeapAlloc(GetProcessHeap(), 0, size);
 }
@@ -42,6 +45,7 @@ void* operator new(size_t size) {
 void operator delete(void* ptr) {
 	HeapFree(GetProcessHeap(), 0, ptr);
 }
+*/
 
 
 
@@ -51,8 +55,6 @@ void operator delete(void* ptr) {
 #include "Patches/DevTitle/DevTitle.h"
 #include "Patches/CompleteGauge/CompleteGauge.h"
 #include "Patches/TagBattleExtension/TagBattleMain.h"
-
-
 #include <Player/LuaInfoInit.h>
 
 
@@ -188,19 +190,20 @@ HOOK(int,__fastcall,LoadFromArcHOOK_GLOBAL,0x82582648,_DWORD *a1, int* HandleMan
 bool CheckDLLFile(std::string* str_file_name)
 {
 	std::stringstream ss;
-	ss << "game://" << "common/" << str_file_name->c_str();
+	ss << "game:\\" << "common\\" << str_file_name->c_str();
+				
 
-
-	HANDLE handle = CreateFile( ss.str().c_str(), GENERIC_READ, 0, NULL, 
-		OPEN_EXISTING, 0, NULL );
+	HANDLE handle = CreateFile( ss.str().c_str(), GENERIC_READ, 1, 0, 
+OPEN_EXISTING, 0, 0);
 
 	if (handle != INVALID_HANDLE_VALUE)
 	{
 		CloseHandle(handle);
 		return true;
 	}
-	else
+	else							
 	{
+		std::cerr << "failed to load file " << ss.str().c_str() << std::endl;
 		return false;
 	}
 }
@@ -214,6 +217,9 @@ void LoadDLLArcFile(const char* file){
 		Sonicteam::SoX::IResource* resouce;
 		ArcHandle(&resouce,_file,2,2);
 		sub_82582C10(resouce);
+	}
+	else{
+		
 	}
 
 }
@@ -267,6 +273,7 @@ int __fastcall sub_8264E068(int a1, int a2, int a3) {
 
 		std::vector<std::string>* pkg = 	ExFileSystem::GetArcs_pkg();
 		for (std::vector<std::string>::iterator it = pkg->begin();it!= pkg->end();it++){
+		
 			LoadDLLArcFile(it->c_str());
 		}
 
@@ -378,8 +385,6 @@ extern "C" void OnDLLStart(){
 
 
 
-	
-
 
 	std::string Loaded;
 	CheckEmulated::GlobalInstall();
@@ -387,7 +392,6 @@ extern "C" void OnDLLStart(){
 
 	//new SonicGaugeExtended()
 	BaseLua.DoFile(true);
-
 
 	if (BaseLua.executed){
 
@@ -422,9 +426,7 @@ extern "C" void OnDLLStart(){
 
 
 		if (BaseLua.GetGlobalBool("NoArcMode") == true){
-
 			disable = true;
-
 		}
 	}
 

@@ -178,4 +178,19 @@ namespace DebugLogV2 {
 
 
 	extern "C" int PrintNextFixed(std::string msg);
+
+	template <typename T>
+	int PrintNextFixed(T msg);
+
+
+
+
+
+	template <typename T>
+	int PrintNextFixed(T msg)
+	{
+		std::stringstream ss; ss << std::hex << msg;
+		return PrintNextFixed(ss.str());
+	}
+
 }

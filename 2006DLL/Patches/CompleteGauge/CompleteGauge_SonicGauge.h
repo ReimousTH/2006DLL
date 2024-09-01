@@ -8,6 +8,8 @@
 namespace CompleteGauge{
 	
 	
+
+
 	class SonicGaugeExtended:public Sonicteam::Player::SonicGauge{
 
 	public:

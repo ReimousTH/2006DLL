@@ -19,6 +19,8 @@ extern "C" {
 }
 #include "..\All06Functions.hpp"
 
+#include <GameImp.h>
+
 
 
 

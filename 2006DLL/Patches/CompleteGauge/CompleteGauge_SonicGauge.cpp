@@ -157,8 +157,6 @@ namespace CompleteGauge{
 		WRITE_DWORD(0x8200D4F0,SonicGaugeAddGaugeMaturity);
 
 		WRITE_DWORD(0X8200D4C8,GaugeModuleStep);
-
-
 		WRITE_DWORD(0x8200D4D0,SonicGaugeIVarible);
 
 

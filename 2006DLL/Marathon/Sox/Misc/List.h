@@ -35,6 +35,34 @@ namespace Sonicteam{
 			}
 		};
 
+		template <typename T>
+		struct LinkNodeBaseA {
+			T* ThisObject;
+			T* PThread;
+			T* NThread;
+
+		public:
+			LinkNodeBaseA() : PThread(NULL), NThread(NULL) {}
+
+			void RemoveLink(){
+				ThisObject = 0;
+				PThread->NThread = NThread;
+				NThread->PThread = PThread;
+				NThread = NULL;
+				PThread = NULL;
+
+			}
+
+			~LinkNodeBaseA() {
+				if (PThread)
+					PThread->NThread = NThread;
+				if (NThread)
+					NThread->PThread = PThread;
+
+			}
+		};
+
+
 
 
 	
@@ -44,6 +72,17 @@ namespace Sonicteam{
 			T* TThread;
 			LinkNode() : LinkNodeBase<LinkNode<T>>() {}
 			LinkNode(T* TThread) : LinkNodeBase<LinkNode<T>>(), TThread(TThread) {}
+
+		};
+
+
+		//LOOK MORE, 0x0 T*, 0x4,0x8 (*Without 0x0)
+		template <typename T>
+		struct LinkNodeA:LinkNodeBaseA<LinkNodeA<T>> {
+		public:
+			T* TThread;
+			LinkNodeA() : LinkNodeBaseA<LinkNodeA<T>>() {}
+			LinkNodeA(T* TThread) : LinkNodeBaseA<LinkNodeA<T>>(), TThread(TThread) {}
 
 		};
 
@@ -76,11 +115,8 @@ namespace Sonicteam{
 				}
 			}
 			inline void Reset(){this->Previous->Next = this->Next;this->Next->Previous = this->Previous;this->Next =0;this->Previous = 0;}
-
 			// Constructor
 			RNodeH() : Previous(0), Next(0) {}
-
-
 		};
 
 		template <typename T>
@@ -88,9 +124,7 @@ namespace Sonicteam{
 		public:
 			// Constructor
 			RNodeF() : RNodeH<T>(), FObject(0) {}
-
 			RNodeF(T* FO) : RNodeH<T>(), FObject(FO) {}
-
 			inline ~RNodeF(){FObject = 0;}
 			T* FObject;
 		};	
@@ -102,13 +136,6 @@ namespace Sonicteam{
 			RNodeFH() : RNodeF<T>(), HObject(0) {}
 			Y* HObject;
 		};	
-
-
-
-
-
-
-
 
 		//template <typename Z = RNodeF<T>>
 		template <typename Z>

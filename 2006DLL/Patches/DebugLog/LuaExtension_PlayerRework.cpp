@@ -1,4 +1,4 @@
-#include "LuaExtension_PlayerRework.h"
+	#include "LuaExtension_PlayerRework.h"
 
 #define PLIB_NAME_META "PlayerMeta"
 #define PLIB_NAME "Player"
@@ -56,47 +56,33 @@ namespace DebugLogV2{
 
 	void GetPlayerActorsR(UINT32* pstack,bool AI){
 
+
 		pstack[0] = 0;
 		pstack[1] = 0;
 		pstack[2] = 0;
 		pstack[3] = 0;
 
+
 		Sonicteam::DocMarathonImp* impl = 	*(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
+		UINT32 gameimp = *(UINT32*)(impl->DocCurrentMode + 0x6C);
+
+		int LocalPlayer = 0;
+		if (gameimp == 0 || *(UINT32*)gameimp != 0x82001AEC) return;
 		UINT32 vft =  *(UINT32*)impl->DocCurrentMode;
 
-		if (vft == 0x82033534){ //GameMode
 
-			UINT32 gameimp = *(UINT32*)(impl->DocCurrentMode + 0x6C);
-			UINT32 ActorManager = *(UINT32*)(gameimp+0x11C4);
-			UINT32 ActorMangerActorsCount = *(UINT32*)(ActorManager+0x80000);
-			UINT32 PIX = 0;
-			for (int i = 0;i<ActorMangerActorsCount;i++)
-			{
-				UINT32 Actor = *(UINT32*)(ActorManager+0x40000+(i*4));
-				UINT32 ActorVFT = *(UINT32*)Actor;
-				if (ActorVFT == 0x82003564){ //Object_Player
+		if (vft != 0x82033534)return;
+		if ( *(UINT32*)(gameimp+0x11C4) == 0) return;
+		INT32 ActorManager = *(UINT32*)(gameimp+0x11C4);
 
-
-					byte IsObjectPlayerHaveControll = *(byte*)(Actor + 0xC8);
-					byte AIFLAG = *(byte*)(Actor + 0xCA);
-					if (AI)
-					{
-						if (IsObjectPlayerHaveControll == 0 && AIFLAG){
-							pstack[PIX++] = Actor;
-						}
-
-
-					}
-					else{
-						if (IsObjectPlayerHaveControll){
-							pstack[PIX++] = Actor;
-						}
-					}
-
-
-				}
-			}
+		for (int i = 0;i<4;i++){
+				UINT32 gameimp = *(UINT32*)(impl->DocCurrentMode + 0x6C);
+				int ActorID =  *(int*)(gameimp + 0xE40) + (i * 0x4C);
+				if (ActorID == -1) continue;
+				pstack[i] = BranchTo(0x821609D0,int,ActorManager,&ActorID);
 		}
+
+	
 	}
 
 	void GetPlayerActorsPTR(UINT32* pstack,bool AI){

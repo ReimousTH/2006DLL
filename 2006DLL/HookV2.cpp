@@ -21,8 +21,6 @@ HookV2::~HookV2(void)
 
 bool HookV2::CheckIsNotEmulatedHardWare()
 {
-	//VirtualProtectEx does not work in XENIA at all
-
 
 	MEMORY_BASIC_INFORMATION data;
 

@@ -353,13 +353,13 @@
 				Name="VCX360LinkerTool"
 				UseLibraryDependencyInputs="false"
 				AdditionalOptions="/FORCE:MULTIPLE /ignore:4089 /dll /entry:&quot;_DllMainCRTStartup&quot; /include:&quot;XboxKrnlBuildNumber&quot;&#x0D;&#x0A;"
-				AdditionalDependencies="d3d9.lib d3dx9.lib xgraphics.lib xaudio.lib x3daudio.lib xboxkrnl.lib xbdm.lib xact.lib xuirunltcg.lib xuirenderltcg.lib LUA.lib hkaAnimation.lib hkaInternal.lib hkaRagdoll.lib hkBase.lib hkCompat.lib hkgBridge.lib hkgCommon.lib hkgDx9.lib hkgDx9s.lib hkgOgl.lib hkpCollide.lib hkpConstraintSolver.lib hkpDynamics.lib hkpInternal.lib hkpUtilities.lib hkpVehicle.lib hkSceneData.lib hkSerialize.lib hkVisualize.lib Xnet.lib"
+				AdditionalDependencies="d3d9.lib d3dx9.lib xgraphics.lib xaudio.lib x3daudio.lib xboxkrnl.lib xbdm.lib xact.lib xuirunltcg.lib xuirenderltcg.lib LUA.lib Xnet.lib"
 				OutputFile="$(OutDir)/$(ProjectName).dll"
 				AdditionalLibraryDirectories="D:\boost_1_69_0\boost_1_69_0\stage\lib;..\LUA\Release\;&quot;..\hkx550\Lib\win32_net_8-0\release_multithreaded&quot;"
 				ModuleDefinitionFile="DllModule.def"
 				GenerateDebugInformation="true"
 				GenerateMapFile="true"
-				OptimizeReferences="2"
+				OptimizeReferences="1"
 				EnableCOMDATFolding="1"
 				SetChecksum="true"
 			/>
@@ -836,6 +836,14 @@
 			Name="Marathon"
 			>
 			<File
+				RelativePath=".\Marathon\ActorManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Marathon\ActorManager.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Marathon\CMemoryAllocMarathon.cpp"
 				>
 			</File>
@@ -873,6 +881,14 @@
 			</File>
 			<File
 				RelativePath=".\Marathon\DocMarathonImp.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Marathon\GameImp.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Marathon\GameImp.h"
 				>
 			</File>
 			<File
@@ -1795,6 +1811,63 @@
 						>
 					</File>
 				</Filter>
+			</Filter>
+			<Filter
+				Name="Stage"
+				>
+				<File
+					RelativePath=".\Marathon\Stage\Object.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Xbox 360"
+						>
+			<Tool
+				Name="VCCLX360CompilerTool"
+				ObjectFile="$(IntDir)\$(InputName)1.obj"
+				XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+			/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Profile|Xbox 360"
+						>
+			<Tool
+				Name="VCCLX360CompilerTool"
+				ObjectFile="$(IntDir)\$(InputName)1.obj"
+				XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+			/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Profile_FastCap|Xbox 360"
+						>
+			<Tool
+				Name="VCCLX360CompilerTool"
+				ObjectFile="$(IntDir)\$(InputName)1.obj"
+				XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+			/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Xbox 360"
+						>
+			<Tool
+				Name="VCCLX360CompilerTool"
+				ObjectFile="$(IntDir)\$(InputName)1.obj"
+				XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+			/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release_LTCG|Xbox 360"
+						>
+			<Tool
+				Name="VCCLX360CompilerTool"
+				ObjectFile="$(IntDir)\$(InputName)1.obj"
+				XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+			/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\Marathon\Stage\Object.h"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter

@@ -28,9 +28,6 @@ namespace Sonicteam{
 			
 			unsigned int Flag; // IsDestructible
 
-
-	
-
 			virtual Sonicteam::SoX::Physics::Havok::SphereShapeHavok* CreateSphereShapeHavok(double radius); //0x0 + 0x0 (void = type (r3))
 			virtual Sonicteam::SoX::Physics::Havok::BoxShapeHavok* CreateBoxShapeHavok(double width,double height,double length); // width, height, length
 
@@ -65,11 +62,9 @@ namespace Sonicteam{
 			void DestroyObject(unsigned int flag); //0x0 + 0x10
 
 
-
 			static MyPhysicsSystemFactory* GetInstance();
 			static MyPhysicsSystemFactory& CreateInstance();
 			static MyPhysicsSystemFactory*& GetOriginInstance();
-
 
 
 			static MyPhysicsSystemFactory* Instance;

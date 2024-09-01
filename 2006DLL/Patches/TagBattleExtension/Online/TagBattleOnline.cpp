@@ -152,6 +152,7 @@ Sonicteam::CsdObject* Player_TAG;
 Sonicteam::SoX::RefCountObject* Player_TAG_DRAWABLE;
 Sonicteam::SoX::IResource* Player_TAG_SHADER;
 bool GameIMP_LOADED_SCENE = false;
+bool GameIMP_LOADED_CUTSCENE = false;
 
 struct PPL_DATA{
 	XMVECTOR Position_FRAME;
@@ -292,11 +293,12 @@ static const char* GetLocalPKGPlayerName(){
 }
 
 
-static int SpawnDummyCharacter(const char* name = "sonic_new.lua"){
+
+static int SpawnDummyCharacter(const char* name = "sonic_new.lua",XUID xuid = 0){
 	
     // Spawn dummy character
     OBJPlayerSpawnData data;
-	data.player_index = 1;
+	data.player_index = xuid;
 	if (data.player_name == ""){
 		    data.player_name = "sonic_new.lua";
 	}
@@ -304,9 +306,9 @@ static int SpawnDummyCharacter(const char* name = "sonic_new.lua"){
 		    data.player_name = name;
 	}
 
-    data.player_unk_flag1 = 0;
-    data.player_unk_flag2 = 0;
-    data.player_controller_id = 1;
+    data.player_unk_flag1 = 0xFFFFFFFF;
+    data.player_unk_flag2 = 0xFFFFFFFF;
+    data.player_controller_id = 0xFFFFFFFF;
 	
     Sonicteam::DocMarathonImp* impl = *(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
     UINT32 gameimp = *(UINT32*)(impl->DocCurrentMode + 0x6C);
@@ -359,16 +361,16 @@ void SpawnObjectPlayerByXUID(XUID xuid){
 
 //	DebugLogV2::PrintNextFixed("SpawnObjectPlayerByXUID");
 	if (GameIMP_LOADED_SCENE == false) return;
+	// && GameIMP_LOADED_CUTSCENE == false
+
+	
+
 	Sonicteam::DocMarathonImp* impl = 	*(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
 	UINT32 gameimp = *(UINT32*)(impl->DocCurrentMode + 0x6C);
 	if (gameimp != 0 && *(UINT32*)gameimp != 0x82001AEC ) return;
 
 	if ( Players_DATA[xuid].object_player == 0){
-		Players_DATA[xuid].object_player = SpawnDummyCharacter(Players_DATA[xuid].player_pkg.c_str());
-	}
-	else{
-		BranchTo(0x82195298,int,Players_DATA[xuid].object_player,1);
-		Players_DATA[xuid].object_player = SpawnDummyCharacter(Players_DATA[xuid].player_pkg.c_str());
+		Players_DATA[xuid].object_player = SpawnDummyCharacter(Players_DATA[xuid].player_pkg.c_str(),xuid);
 	}
 	
 }
@@ -410,22 +412,34 @@ void DestroyLabelByXUID(XUID xuid){
 		PPL_DATA* d = &it->second; // Pointer to the PPL_DATA object
 		
 
-		if (d->CsdObjectDrawable) {d->CsdObjectDrawable->DestroyObject(1); d->CsdObjectDrawable = 0;}
-		if (d->CSD) {d->CSD->DestroyObject(1); d->CSD = 0;}
-		if (d->TechniqueCSD3D){d->TechniqueCSD3D->DestroyObject(1);d->TechniqueCSD3D = 0;}
-		if (d->CSD_SHADER){d->CSD_SHADER->DestroyObject(1);d->CSD_SHADER = 0;}
+
+		if (d->CsdObjectDrawable) {
+			
+			d->CsdObjectDrawable->LoseObject();
+			d->CsdObjectDrawable = 0;
+			d->CSD = 0;
+			d->CSD_SHADER = 0;
+			d->TechniqueCSD3D = 0;
+		
+		
+		
+		
+		}
+//		if (d->CSD) {d->CSD->DestroyObject(1); d->CSD = 0;}
+//		if (d->TechniqueCSD3D){d->TechniqueCSD3D->DestroyObject(1);d->TechniqueCSD3D = 0;}
+//		if (d->CSD_SHADER){d->CSD_SHADER->DestroyObject(1);d->CSD_SHADER = 0;}
 
 	}
 
 }
 void SpawnPlayerLabelByXUID(XUID xuid){
 
-	
+
 	if (GameIMP_LOADED_SCENE == false) return;
 
 	Sonicteam::DocMarathonImp* impl = 	*(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
 	boost::shared_ptr<unsigned int> GraphicBufferGuess =  (impl->DocDoculistAction01(7));
-	if (GraphicBufferGuess.get()){
+	if (GraphicBufferGuess.get()){ //WorldImp
 
 
 	// Use find to get an iterator to the element
@@ -435,19 +449,17 @@ void SpawnPlayerLabelByXUID(XUID xuid){
 
    
 	BranchTo(0x82371620,int,&d->CSD_SHADER,&std::string("shader/primitive/csd3D.fx"));
+	
 
 	int v18 = (int)d->CSD_SHADER;
 	(int *)(*(int (__fastcall **)(int *, int, int))(*(_DWORD *)v18 + 0x18))((int*)&d->TechniqueCSD3D, (int)d->CSD_SHADER, (int)"TechniqueCSD3D");
-	Players_DATA[xuid].TechniqueCSD3D->GetObject<int>();
-
 
 
 	BranchTo(0x82617570,int,&d->CSD,&std::string("sprite/enemy_powergage/enemy_powergage"));
 
 	
-	d->CSD->GetObject<int>();
-	d->CsdObjectDrawable =  (Sonicteam::SoX::RefCountObject*)BranchTo(0x82616C68,int,malloc06(0xA0),impl->DocGetMyGraphicDevice(),&d->CSD);
 
+	d->CsdObjectDrawable =  (Sonicteam::SoX::RefCountObject*)BranchTo(0x82616C68,int,malloc06(0xA0),impl->DocGetMyGraphicDevice(),&d->CSD);
 	d->CsdObjectDrawable->GetObject<int>();
 	BranchTo(0x82616EB0,int,d->CsdObjectDrawable,&Players_DATA[xuid].TechniqueCSD3D);
 
@@ -461,8 +473,6 @@ void SpawnPlayerLabelByXUID(XUID xuid){
 
 		std::string* chr_name = (std::string*)(Players_DATA[xuid].object_player + 0x1D8);
 		int ID = BranchTo(0x824CFCB8,int,chr_name);
-
-
 		Players_DATA[xuid].CSD->MarathonSetSceneNodeSpriteIndex("enemy_powergage","LivesCast",ID);
 
 	}
@@ -752,8 +762,6 @@ extern "C" int EngineDocOnUpdateHE(Sonicteam::DocMarathonImp* a1, double a2) {
 	for (std::map<XUID,PPL_DATA>::iterator it = Players_DATA.begin();it != Players_DATA.end();it++){
 
 		if (it->first == _socket.GetXUID(0)) continue;
-
-	
 		PPL_DATA* data =  &it->second;
 		if (data->CSD){
 			data->CSD->CsdLink0x8(a2);
@@ -784,19 +792,9 @@ extern "C" int EngineDocOnUpdateHE(Sonicteam::DocMarathonImp* a1, double a2) {
 			
 	}
 	else if (_socket.IsServer()){
-	//		DebugLogV2::PrintNextFixed("SERVER");
 		_socket.UpdateServer(1.0);
 	}
 
-	if (LocalPlayer){
-		if (_socket.IsClient()){
-		
-		}
-		else if (_socket.IsServer()){
-		
-	
-		}
-	}
 
 
 
@@ -809,13 +807,8 @@ extern "C" int EngineDocOnUpdateHE(Sonicteam::DocMarathonImp* a1, double a2) {
 	
 		}
 	
-
 		if (trigger_menu > 1.0f){
 			trigger_menu = 0;
-
-
-
-
 
 			LPCWSTR g_pwstrButtonsX[4] = { L"Host Server",L"Join Server",L"Disable Socket",L"Test" };
 			MESSAGEBOX_RESULT result;
@@ -824,16 +817,16 @@ extern "C" int EngineDocOnUpdateHE(Sonicteam::DocMarathonImp* a1, double a2) {
 
 			while (!( XHasOverlappedIoCompleted( &m_Overlapped ) )){				}
 
-			if (result.dwButtonPressed == 1){
+			if (result.dwButtonPressed == 1 || gc->wLastButtons & XINPUT_GAMEPAD_DPAD_UP){
 
 				_socket = Socket();
 				
 	
 				_socket.InitSockets();
-				_socket.SetAddress("26.175.28.206", 27017);
+				_socket.SetAddress(Socket::IP_ADDR, htons(1001));
 				_socket.SetBind();
 				_socket.SetNonBlockingMode();
-				_socket.SetAddress("26.175.28.206", 27016);
+				_socket.SetAddress(Socket::IP_ADDR, htons(1000));
 				_socket.InitClient();
 			//	_socket.MSG_HANDLE_CLIENT_JOIN_SERVER = ServerClientConnected;
 				_socket.MSG_HANDLE_CLIENT_MESSAGES = ClientMessages;
@@ -845,6 +838,7 @@ extern "C" int EngineDocOnUpdateHE(Sonicteam::DocMarathonImp* a1, double a2) {
 				data.local = true;
 				Players_DATA[_socket.GetXUID(0)] =data; 
 			
+				DebugLogV2::PrintNextFixed("Connect");
 
 			
 		
@@ -854,13 +848,13 @@ extern "C" int EngineDocOnUpdateHE(Sonicteam::DocMarathonImp* a1, double a2) {
 
 
 			}
-			else if (result.dwButtonPressed == 0){
+			else if (result.dwButtonPressed == 0 ||  gc->wLastButtons & XINPUT_GAMEPAD_DPAD_DOWN){
 
 		
 				_socket = Socket();
 
 				_socket.InitSockets();
-				_socket.SetAddress("26.175.28.206", 27016); 
+				_socket.SetAddress(Socket::IP_ADDR, htons(1000)); 
 				_socket.SetBind();
 				_socket.SetNonBlockingMode();
 				_socket.InitServer();
@@ -872,6 +866,8 @@ extern "C" int EngineDocOnUpdateHE(Sonicteam::DocMarathonImp* a1, double a2) {
 				PPL_DATA data =   PPL_DATA();
 				data.local = true;
 				Players_DATA[_socket.GetXUID(0)] =data; 
+
+				DebugLogV2::PrintNextFixed("Host");
 
 			//	SpawnPlayerLabelByXUID(_socket.GetXUID(0));
 
@@ -891,10 +887,7 @@ extern "C" int EngineDocOnUpdateHE(Sonicteam::DocMarathonImp* a1, double a2) {
 			//	SpawnPlayerLabelByXUID(_socket.GetXUID(0));
 
 	
-				 
-			
-				SpawnDummyCharacter();
-
+		
 				DebugLogV2::PrintNextFixed("SpawnLabel");
 
 			}
@@ -1057,350 +1050,301 @@ int __fastcall GameImpOnMessageRecieved(Sonicteam::SoX::MessageReceiver* _this,S
 	return BranchTo(0x8217BB68 ,int,_this,msg);
 }
 
-int __fastcall GameImpEngGlobalActionsRecieved(int a1,double a2){
 
-	//0x1214 -stage/aqa/a
-	//0x15B8 -stage/aqa/a
-	//0x1564 - SCENE NAME GETTINGS ERASED MB?
+static void ClearPPLPlayers(){
+	for (std::map<XUID,PPL_DATA>::iterator it =		Players_DATA.begin();it !=Players_DATA.end();it++){
+		if (it->first == _socket.GetXUID(0)) continue;
+		if (it->second.local == true) continue;
+		if (it->second.object_player != 0) DestroyObjectPlayerByXUID(it->first);
+		if (it->second.CSD != 0) DestroyLabelByXUID(it->first);
+	}
+
+}
+static void SpawnPPLPlayers(){
+	for (std::map<XUID,PPL_DATA>::iterator it =		Players_DATA.begin();it !=Players_DATA.end();it++){
+		if (it->first == _socket.GetXUID(0)) continue;
+		if (it->second.scene == "") continue;
+		if (it->second.local == true) continue;
+		if (it->second.object_player == 0) SpawnObjectPlayerByXUID(it->first);
+		if (it->second.CSD == 0) SpawnPlayerLabelByXUID(it->first);
+	}
+
+}
+
+
+
+	#define  GAMEIMP_ON_LEVEL 1
+	#define  GAMEIMP_ON_CUTSCENE 2
+	#define  GAMEIMP_ON_CGI_CUTSCENE 3
+	#define  GAMEIMP_ON_RESULT 4
+	#define  GAMEIMP_ON_CUTSCENE_END 5
+	#define  GAMEIMP_DESTROY_ALL 9
+
+	#define GAMEIMP_MY_SWAP_TERRAIN 1
+	#define GAMEIMP_MY_RESPAWN 2
+	#define GAMEIMP_MY_CUTSCENE 4
+	#define GAMEIMP_MY_CUTSCENE_EN 8
+	#define GAMEIMP_MY_DESTROY 0x10
+
+#define  GAMEIMP_START_LEVEL 1
+#define  GAMEIMP_START_CUTSCENE 2
+#define  GAMEIMP_START_CGI_CUTSCENE 3
+#define  GAMEIMP_STOP_LEVEL 4
+#define  GAMEIMP_STOP_CUTSCENE 5
+#define  GAMEIMP_DESTROY_ALL 9
+
+
+HOOK(int,__fastcall,GameImpOnChangeActions,0x82184F28,int a1, int a2){
+	int v4; // r28
+	int a1l;
+
+
+
+	if (a2 == 2){
+ 		//BranchTo(0x821826A8,int,a1,a2);
+		//BranchTo(0x82177C88,int,a1);
+	}
+
+
+	v4 = *(_DWORD *)(a1 + 4);
+	*(_DWORD *)(a1 + 8) = a2;
+	*(_DWORD *)(a1 + 4) = a2;
+
 
 	int case1 = *(int*)(a1 + 0x4);
 	int case2 = *(int*)(a1 + 0x8);
 
-	bool first_load = false;
+
+	std::stringstream ss; ss << "Before : ";  ss << v4; ss << "-"; ss << a2;
+	DebugLogV2::PrintNextFixed(ss.str());
 
 
-	if (case1 != case2){
-		std::stringstream ss;
-		ss << "[GameIMP][X][GlobalActions]" << case1 << "-" << case2;
-		DebugLogV2::PrintNextFixed(ss.str());
-	}
 
+	if (case2 != 4) ClearPPLPlayers();
 	
-	if (case1 != case2){
-		if (case2 == 1){
-			GameIMP_LOADED_SCENE = false;
-			std::stringstream ss;
-			ss << "[GameIMP][FirstLevelLoad]" << case1 << "-" << case2 << "-";
-			DebugLogV2::PrintNextFixed(ss.str());
-		}
-		if (case2 == 2){
-
-			GameIMP_LOADED_SCENE = false;
-			std::stringstream ss;
-			ss << "[GameIMP][StartCutScene]" << case1 << "-" << case2 << "-"; // 82185528   (AFTER END CUTSCENE HERE SECRETLY DOES)
-			DebugLogV2::PrintNextFixed(ss.str());
-			
-		}
-		if (case2 == 3){
-			GameIMP_LOADED_SCENE = false;
-			std::stringstream ss;
-			ss << "[GameIMP][StartCutScene-Rendered]" << case1 << "-" << case2 << "-";
-			DebugLogV2::PrintNextFixed(ss.str());
-		}
-		if (case2 == 4){
-			//GameIMP_LOADED_SCENE = false;
-			std::stringstream ss;
-			ss << "[GameIMP][End-Level]" << case1 << "-" << case2 << "-";
-			DebugLogV2::PrintNextFixed(ss.str());
-		}
-		if (case2 ==5 ){
-			GameIMP_LOADED_SCENE = false;
-			std::stringstream ss;
-			ss << "[GameIMP][EndCutScene]" << case1 << "-" << case2 << "-";
-			DebugLogV2::PrintNextFixed(ss.str());
-		}
-		if (case2 == 9){
-
-
-			for (std::map<XUID,PPL_DATA>::iterator it =		Players_DATA.begin();it !=Players_DATA.end();it++){
-				if (it->first == _socket.GetXUID(0)) continue;
-				if (it->second.scene == "") continue;
-				if (it->second.local == true) continue;
-			//	DestroyObjectPlayerByXUID(it->first);
-			//	DestroyLabelByXUID(it->first);
-			}
-
-			GameIMP_LOADED_SCENE = false;
-			std::stringstream ss;
-			ss << "[GameIMP][Destory]" << case1 << "-" << case2 << "-";
-			DebugLogV2::PrintNextFixed(ss.str());
-		}
-
-
+	if (case2 == GAMEIMP_DESTROY_ALL){
+		const char* scene_nm = "";
+		SMDATA_PPL_CHANGE_SCENE _msg_data;
+		_msg_data.sender_xuid = _socket.GetXUID(0);
+		memcpy(&_msg_data.scene_name,scene_nm,strlen(scene_nm)+1);
+		SocketMessage msg = DEFINE_SOCKET_MESSAGE_FROM_CONST_DATA(_msg_data);
+		Players_DATA[_socket.GetXUID(0)].scene = scene_nm;
+		_socket.SendTCPMessageToSRCL(&msg);
 
 	}
 
-	
+	if (case2 != 4) GameIMP_LOADED_SCENE = false;
+
+
+
+	//0-1, Default
+
+	//Death 1-0, 0-1
+
+
+	switch ( v4 )
+	{
+	case 1:
+		switch ( a2 )
+		{
+		case 2:
+		case 3:
+		case 6:
+		case 7:
+			goto LABEL_3;
+		case 4:
+		case 8:
+			goto LABEL_15;
+		default:
+			goto LABEL_4;
+		}
+	case 2:
+		a1l = BranchTo(0x82180260,int,a1, a2);
+		break;
+	case 3:
+		a1l = BranchTo(0x821804A8,int,a1);
+		break;
+	case 4:
+		switch ( a2 )
+		{
+		case 2:
+		case 3:
+		case 6:
+		case 7:
+LABEL_3:
+			BranchTo(0x8216E088,int,a1);
+			a1l = BranchTo(0x8217F878,int,a1, 1);
+			break;
+		default:
+LABEL_4:
+			a1l = BranchTo(0x8216E088,int,a1);
+			break;
+		}
+		break;
+	case 5:
+		a1l = BranchTo(0x82581100,int,(_DWORD *)(a1 + 0x13E4), 0);
+		if ( (_BYTE)a1l )
+		{
+			a1l = BranchTo(0x82615D60,int,a1 + 0x13E4);
+			if ( a1l )
+				a1l = (*(int (__fastcall **)(int, int))(*(_DWORD *)a1l + 4))(a1l, 1);
+		}
+		break;
+	case 6:
+		a1l = BranchTo(0x821805F0,int,(_DWORD *)a1);
+		break;
+	case 7:
+		if ( *(_DWORD *)(a1 + 0x1808) )
+			*(_DWORD *)(a1 + 0x1808) = 0;
+		BranchTo(0x8260DF88,int,*(_DWORD *)(a1 + 0xC), a1 + 0x1548, 1);
+		break;
+	default:
+		break;
+	}
+LABEL_15:
+	switch ( a2 )
+	{
+	case 1:
+		switch ( v4 )
+		{
+		case 0:
+		case 2:
+		case 3:
+		case 5:
+		case 6:
+		case 7:
+			BranchTo(0x821826A8,int,a1);
+			break;
+		default:
+			break;
+		}
+		a1l = BranchTo(0x82177C88,int,a1, a2);
+		break;
+	case 2:
+		BranchTo(0x82181448,int,(int *)a1, a2);
+		break;
+	case 3:
+		BranchTo(0x82181A90,int,a1);
+		break;
+	case 4:
+		if ( v4 >= 2 && v4 <= 3 )
+			BranchTo(0x821820D0,int,a1, a2);                   // Restart-Load
+		BranchTo(0x82172188,int,(int *)a1);
+		break;
+	case 5:
+		a1l = (int)BranchTo(0x82172258,int,a1);
+		break;
+	case 6:
+		a1l = BranchTo(0x82181C30,int,(_DWORD *)a1);
+		break;
+	case 7:
+		BranchTo(0x821715E8,int,a1);
+		break;
+	case 8:
+		a1l = (int)BranchTo(0x82172308,int,a1);
+		break;
+	case 9:
+		BranchTo(0x8216E088,int,a1);
+		BranchTo(0x8217F878,int,a1, 1);
+		BranchTo(0x8216A548,int,a1);
+		break;
+	default:
+		break;
+	}
 
 
 
 
-	//Left (MISSION) or save 4-7
-	// 7 - 5 
-	// 5 - 9 //i guess destroyed
-
-	//Town(form lvl)
-	// 1 - 2  Start CutScene
-
-	// 1 - 8 After OK 
-	// 8 - 9 Destroy Me
-
-
-	//Town(from menu)
-	// 0 - 2 Start CutScene
-	// 2 - 5 End Cutscene
-	// 5 - 9 Destroy Me
-
-	//Town(from menu)
-	// 0 - 3 Start CutScene(Rendered)
-	// 3 - 5 End Cutscene
-	// 5 - 9 Destroy Me
+	switch (case2){
+			case GAMEIMP_START_LEVEL:
+				{
+					GameIMP_LOADED_SCENE = true;
+					std::string* t01 = (std::string *)(a1 + 0x1214);
+					const char* scene_nm = t01->c_str();
+					SMDATA_PPL_CHANGE_SCENE _msg_data;
+					_msg_data.sender_xuid = _socket.GetXUID(0);
+					memcpy(&_msg_data.scene_name,scene_nm,strlen(scene_nm)+1);
+					SocketMessage msg = DEFINE_SOCKET_MESSAGE_FROM_CONST_DATA(_msg_data);
+					Players_DATA[_socket.GetXUID(0)].scene = scene_nm;
+					_socket.SendTCPMessageToSRCL(&msg);
+					SpawnPPLPlayers();
+				}
+				
+				break;
+	}
 
 
 
-	//1 - 8 Leave Normal
+	std::stringstream ss1; ss1 << "After : ";  ss1 << v4; ss1 << "-"; ss1 << a2;
+	DebugLogV2::PrintNextFixed(ss1.str());
+
+	return a1;
+
+}
+
+
+int __fastcall GameImpEngGlobalActionsRecieved(int a1, double a2, int a3, int a4, int a5){
 
 
 
+	unsigned int v7; // r11
+	int v8; // r4
+	int v9; // r4
+	int v10; // r4
 
-
-	int v7 =  *(int*)(a1 + 0x10);
-	bool change_area = false;
+	v7 = *(_DWORD *)(a1 + 0x10);
 	if ( ((v7 >> 8) & 1) == 0 )
 	{
-		if ( ((v7 >> 0x15) & 1) != 0 ) //TownChange
+		if ( ((v7 >> 0x15) & 1) != 0 )
 		{
-			change_area = true;
-			std::stringstream ss;
-			ss << "[GameIMP][TownChange]" << case1 << "-" << case2;
-			DebugLogV2::PrintNextFixed(ss.str());
-
-		
+			*(_DWORD *)(a1 + 0x10) &= 0xFFDFFFFF;
+			BranchTo(0x82184F28,int,a1,0);
+			BranchTo(0x8217F878,int,a1,1);
+			BranchTo(0x82178758,int,a1);
+			BranchTo(0x82172AA8,int,a1,v8);
 		}
-		if ( ((v7 >> 0x12) & 1) != 0 ) // ChangeArea Flag passes here 
+		if ( ((*(_DWORD *)(a1 + 0x10) >> 0x12) & 1) != 0 )// ChangeArea Flag passes here
 		{
-			change_area = true;
-			std::stringstream ss;
-			ss << "[GameIMP][ChangeArea]" << case1 << "-" << case2;
-			DebugLogV2::PrintNextFixed(ss.str());
-		
+			*(_DWORD *)(a1 + 0x10) &= 0xFFFBFFFF;
+			BranchTo(0x82184F28,int,a1,0);
+			BranchTo(0x8217F878,int,a1,0);                  // ChangeLoadingScene Params
+			BranchTo(0x82172AA8,int,a1,v9);
 		}
 	}
-
-
-	if (change_area){
-		for (std::map<XUID,PPL_DATA>::iterator it =		Players_DATA.begin();it !=Players_DATA.end();it++){
-			if (it->first == _socket.GetXUID(0)) continue;
-			if (it->second.CSD != 0) DestroyLabelByXUID(it->first);
-		}
+	v10 = *(_DWORD *)(a1 + 8);
+	if ( *(_DWORD *)(a1 + 4) != v10 )
+		BranchTo(0x82184F28,int,a1,v10); //Remade (TO)
+//		GameImpOnChangeActions(a1,v10);
+	switch ( *(_DWORD *)(a1 + 4) )
+	{
+	case GAMEIMP_ON_LEVEL:
+		BranchTo(0x82185890,int,a1,a2);
+		break;
+	case GAMEIMP_ON_CUTSCENE:
+		BranchTo(0x82185890,int,a1,v10,a4);
+		break;
+	case GAMEIMP_ON_CGI_CUTSCENE:
+		BranchTo(0x82185200,int,a1,v10,a4,a5);
+		break;
+	case GAMEIMP_ON_RESULT:
+		BranchTo(0x82173D88,int,a1,a2);
+		break;
+	case GAMEIMP_ON_CUTSCENE_END:
+		BranchTo(0x82173BA0,int,a1);
+		break;
+	case 6:
+		BranchTo(0x82173FE8,int,a1);
+		break;
+	case 7:
+		BranchTo(0x821740E0,int,a1);
+		break;
+	case 8:
+		BranchTo(0x82179DF0,int,a1);
+		break;
+	default:
+		return 0;
 	}
-
-	bool action_respawn = false;
-
-	if (case1 == 1){
-		
-		
-		int v4 = (*(int (__fastcall **)(int))(*(_DWORD *)a1 + 0x5C))(a1);
-		if ( BranchTo(0x82185EE8,int,v4) )
-		{
-		
-			if ( ((*(_DWORD *)(a1 + 0x10) >> 4) & 1) != 0 )
-			{
-				int v9;
-				float v8 = (float)(*(float *)(a1 + 0x1134) - (float)a2);
-				*(float *)(a1 + 0x1134) = *(float *)(a1 + 0x1134) - (float)a2;
-				if ( v8 <= 0.0 )
-				{
-					*(_DWORD *)(a1 + 0x10) &= 0xFFFFFFEF;
-					if ( *(_DWORD *)(a1 + 0xE4C) || *(_BYTE *)(a1 + 0x1170) != 1 )
-					{
-						*(_DWORD *)(a1 + 0x10) |= 1u;
-					}
-					else
-					{
-						v9 = *(_DWORD *)(a1 + 0x10) & 0xFFDFFFFF;
-						*(_DWORD *)(a1 + 0x10) = v9;
-						v9 &= 0xFFFBFFFF;
-						*(_DWORD *)(a1 + 0x10) = v9;
-						v9 &= 0xFFFFFDFF;
-						*(_DWORD *)(a1 + 0x10) = v9;
-						v9 &= 0xFFFFFFFE;
-						*(_DWORD *)(a1 + 0x10) = v9;
-						v9 |= 0x100u;
-						*(_DWORD *)(a1 + 0x10) = v9;
-						*(_DWORD *)(a1 + 0x10) = v9 | 0x1000;
-						*(float *)(a1 + 0x117C) = 3.0;
-						*(_DWORD *)(a1 + 8) = 8;
-					}
-				}
-			}
-			if ( ((*(_DWORD *)(a1 + 0x10) >> 9) & 1) != 0 ){
-				action_respawn = true;
-				GameIMP_LOADED_SCENE = false;
-				std::stringstream ss;
-				ss << "[GameIMP][Respawn]" << case1 << "-" << case2;
-				DebugLogV2::PrintNextFixed(ss.str());
-			}
-		
-			if ( (*(_DWORD *)(a1 + 0x10) & 1) != 0 ){
-				action_respawn = true;
-				GameIMP_LOADED_SCENE = false;
-				std::stringstream ss;
-				ss << "[GameIMP][Respawn]" << case1 << "-" << case2;
-				DebugLogV2::PrintNextFixed(ss.str());
-			}
-		}
-	}
-
-
-
-
-
-
-	INT RESULT =  BranchTo(0x82185D30 ,int,a1,a2);
-	std::string* t01 = (std::string *)(a1 + 0x1214);
-
-
-	bool action_send_level_info = false;
-	bool action_not_respawn = false;
-
-	if (case1 == 2){
-
-		int v5 = (*(int (__fastcall **)(_DWORD, _DWORD))(**(_DWORD **)(a1 + 0xC) + 0x140))(*(_DWORD *)(a1 + 0xC), 0);
-		int v7 =  BranchTo(0x825D3888,int,*(int*)0x82D36800,v5);
-
-		if ( v7 )
-		{
-			if ( *(_DWORD *)(a1 + 0xC) )
-			{
-				if ( (*(_DWORD *)(v7 + 8) & 0x400) != 0 )
-				{
-					int v8 = (*(int (__fastcall **)(_DWORD))(**(_DWORD **)(a1 + 0xC) + 0x60))(*(_DWORD *)(a1 + 0xC));
-					if ( v8 )
-					{
-
-						if ( !*(_DWORD *)(a1 + 0x1774) ){
-							GameIMP_LOADED_SCENE = true;
-							action_send_level_info = true;
-						}
-					
-
-						std::stringstream ss;
-						ss << "[GameIMP][StartLoadBack]" << case1 << "-" << case2 << "-"; // 82185528   (AFTER END CUTSCENE HERE SECRETLY DOES)
-						DebugLogV2::PrintNextFixed(ss.str());
-					}
-				}
-			}
-		}
-	
-	}
-
-	if (action_respawn){
-
-			GameIMP_LOADED_SCENE = true;
-			action_send_level_info = true;
-			std::stringstream ss;
-			ss << "[GameIMP][Respawn][Finish]" << case1 << "-" << case2;
-			DebugLogV2::PrintNextFixed(ss.str());
-	
-	}
-
-
-
-
-
-
-
-
-	if (case1 != case2){
-		if (case2 == 1){
-			GameIMP_LOADED_SCENE = true;
-			std::stringstream ss;
-			ss << "[GameIMP][FirstLevelLoad][Finish]" << case1 << "-" << case2 << "-";
-			DebugLogV2::PrintNextFixed(ss.str());
-			action_send_level_info = true;
-		}
-		if (case2 == 2){
-			std::stringstream ss;
-			ss << "[GameIMP][StartCutScene][Finish]" << case1 << "-" << case2 << "-";
-			DebugLogV2::PrintNextFixed(ss.str());
-		}
-		if (case2 == 3){
-			std::stringstream ss;
-			ss << "[GameIMP][StartCutScene-Rendered][Finish]" << case1 << "-" << case2 << "-";
-			DebugLogV2::PrintNextFixed(ss.str());
-		}
-		if (case2 ==5 ){
-			std::stringstream ss;
-			ss << "[GameIMP][EndCutScene][Finish]" << case1 << "-" << case2 << "-";
-			DebugLogV2::PrintNextFixed(ss.str());
-		}
-		if (case2 == 9){
-			std::stringstream ss;
-			ss << "[GameIMP][Destory][Finish]" << case1 << "-" << case2 << "-";
-			DebugLogV2::PrintNextFixed(ss.str());
-			*t01 = "";
-			action_send_level_info = true;
-			action_not_respawn = true;
-
-
-
-		}
-
-
-
-	}
-
-	if (action_send_level_info || change_area){
-		GameIMP_LOADED_SCENE = true;
-		std::stringstream ss;
-	//	ss << "[GameIMP][Server-Client] Send : " << case1 << "-" << case2 << "-" << t01->c_str(); 
-	//	DebugLogV2::PrintNextFixed(ss.str());
-
-		const char* scene_nm = t01->c_str();
-
-		if (_socket.IsClient() || _socket.IsServer()){
-
-			//Send Client XUID to Host
-			{
-				SMDATA_PPL_CHANGE_SCENE _msg_data;
-				_msg_data.sender_xuid = _socket.GetXUID(0);
-				memcpy(&_msg_data.scene_name,scene_nm,strlen(scene_nm)+1);
-				SocketMessage msg = DEFINE_SOCKET_MESSAGE_FROM_CONST_DATA(_msg_data);
-
-				if (_socket.IsClient()){
-					_socket.SendTCPMessageToServer(&msg);
-				}
-				else{
-					Players_DATA[_socket.GetXUID(0)].scene = scene_nm;
-					_socket.SendTCPMessageToClients(&msg);
-				}
-
-			}
-			if (!action_not_respawn){
-				for (std::map<XUID,PPL_DATA>::iterator it =		Players_DATA.begin();it !=Players_DATA.end();it++){
-					if (it->first == _socket.GetXUID(0)) continue;
-					if (it->second.scene == "") continue;
-					if (it->second.local == true) continue;
-					if (it->second.object_player == 0) SpawnObjectPlayerByXUID(it->first);
-					if (it->second.CSD == 0) SpawnPlayerLabelByXUID(it->first);
-
-				}
-			}
-
-		
-
-		}
-
-
-	}
-
-
-
-
-
-	return RESULT;
-
+	return 0;
 }
 
 
@@ -1444,7 +1388,7 @@ int __fastcall ObjectUpdate(int a1, double a2){
 	PPL_DATA* NetworkPlayer_DATA;
 
 
-	if (_socket.IsWorks()){	
+	if (_socket.IsWorks() && IsLocalPlayer == false){	
 
 		for (std::map<XUID,PPL_DATA>::iterator it = Players_DATA.begin();it != Players_DATA.end();it++){
 			if (it->second.object_player == 0 ) continue;
@@ -1478,7 +1422,23 @@ int __fastcall ObjectUpdate(int a1, double a2){
 	 if ( NextSetupModuleIndex != LastSetupModuleIndex )
 		 BranchTo(0x82195858,int,a1,docmarathon,LastSetupModuleIndex);
 
+	 std::string chara_last = *(std::string*)(a1 + 0x1D8);
 	 BranchTo(0x82197028,int,a1); //SuperFUNC
+	 std::string chara_next = *(std::string*)(a1 + 0x1D8);
+
+	 if (chara_last != chara_next && _socket.IsWorks() && IsLocalPlayer){
+
+
+		 const char* plr_lua =  ((std::string*)(a1 + 0x58))->c_str();
+		 SMDATA_PPL_CHANGE_CHR _data3;
+		 _data3.sender_xuid = _socket.GetXUID(0);
+		 memcpy(&_data3.sender_character,plr_lua,strlen(plr_lua)+1);
+		 SocketMessage msg3  =  DEFINE_SOCKET_MESSAGE_FROM_CONST_DATA(_data3);
+		 _socket.SendUDPMessageToSRCL(&msg3);
+		 Players_DATA[_socket.GetXUID(0)].player_pkg =plr_lua;
+
+	 }
+
 
 	 float PlayerSpeed_Delta = (float)(*(float *)(a1 + 0x17C) * (float)a2);// 0x180 - CameraYPos
 	 int arg_buffer_3[3];
@@ -1492,8 +1452,6 @@ int __fastcall ObjectUpdate(int a1, double a2){
 	 for ( std::vector<boost::shared_ptr<Sonicteam::Player::IStepable>>::iterator it = IStepableP1->begin();it != IStepableP1->end();it++){
 		Sonicteam::Player::IStepable*  boost_step = (*it).get();
 		boost_step->OnStepable(PlayerSpeed_Delta);
-
-		
 
 	 }
 
@@ -1512,8 +1470,24 @@ int __fastcall ObjectUpdate(int a1, double a2){
 
 	 if (!IsNetworkPlayer){
 		 if (Sonicteam::Player::State::IMachine* PlayerMachine = *(Sonicteam::Player::State::IMachine**)(a1 + 0xE4)){
+
+			 if (Sonicteam::Player::State::ICommonContext* context = dynamic_cast<Sonicteam::Player::State::ICommonContext*>(PlayerMachine->GetMashineContext().get())){
+				 context->ICOnPostInputTick();
+
+				 std::stringstream ss; ss <<std::hex << context->Input;
+				 DebugLogV2::PrintNextFixed(ss.str());
+
+				 if ((context->Input & 0x80) != 0 && PlayerMachine->GetCurrentMashineStateID() != 0x26){
+					 PlayerMachine->ChangeMashineState(0xA);
+				 }
+			 }
+
 			 PlayerMachine->OnMashineTick(PlayerSpeed_Delta);
+
+
+
 		 }
+		
 	 }
 	
 	 if (IsNetworkPlayer){
@@ -1708,9 +1682,6 @@ int __fastcall ObjectUpdate(int a1, double a2){
 
 			 }
 
-
-
-
 			 _socket.SendUDPMessageToClients(&msg);
 			 _socket.SendUDPMessageToClients(&msg2);
 
@@ -1746,19 +1717,18 @@ static std::map<int, const char*> GameIMP_MESSAGES;
 int __fastcall GameIMPMessageReciever(int a1, Sonicteam::SoX::Message* a2){
 
 
-	
 
 	if (a2->MessageInfo != 122884 && a2->MessageInfo != 86089){
 
 		std::stringstream test; 
 		if (GameIMP_MESSAGES.find(a2->MessageInfo) == GameIMP_MESSAGES.end()){
 			test << "[GameImp][Message] " << std::hex << a2->MessageInfo;
-			DebugLogV2::log.push_back(test.str());
-			DebugLogV2::PrintNextFixed(test.str());
+		//	DebugLogV2::log.push_back(test.str());
+		//	DebugLogV2::PrintNextFixed(test.str());
 		}
 		else{
-				test << "[GameImp][Message] " << std::hex << GameIMP_MESSAGES[a2->MessageInfo];
-
+//				test << "[GameImp][Message] " << std::hex << GameIMP_MESSAGES[a2->MessageInfo];
+///
 	//			DebugLogV2::log.push_back(test.str());
 	//			DebugLogV2::PrintNextFixed(test.str());
 		}
@@ -1769,24 +1739,16 @@ int __fastcall GameIMPMessageReciever(int a1, Sonicteam::SoX::Message* a2){
 	}
 
 
-	
-
-	
-
-
 	if (_socket.IsWorks() && (_socket.IsClient() || _socket.IsServer())){
 
 		if (a2->MessageInfo == 0x15009){
 			if ( BranchTo(0x82167CA0,int,a1,a2->MessageInfo2) == 0){
 					SMDATA_PPL_CHANGE_RINGS _data3;
 					_data3.sender_xuid = _socket.GetXUID(0);
-					_data3.RingsCount =   a2->MessageInfo3;
-				
+					_data3.RingsCount =   a2->MessageInfo3;	
 					SocketMessage msg3  =  DEFINE_SOCKET_MESSAGE_FROM_CONST_DATA(_data3);
-
 					_socket.SendUDPMessageToSRCL(&msg3);
-					Players_DATA[_socket.GetXUID(0)].RingsCount = a2->MessageInfo3;
-					
+					Players_DATA[_socket.GetXUID(0)].RingsCount = a2->MessageInfo3;		
 				}
 		}
 
@@ -1798,8 +1760,8 @@ int __fastcall GameIMPMessageReciever(int a1, Sonicteam::SoX::Message* a2){
 		if (a2->MessageInfo == 0x1500A && *(int*)((int)a2 + 0x30) == 0){
 
 			const char* plr_lua =  *(const char**)((int)a2 + 0x34);
-		//	ShowXenonMessage(L"MSG",plr_lua);
-		//	ShowXenonMessage(L"MSG",*(int*)((int)a2 + 0x30),0);
+	//	ShowXenonMessage(L"MSG",plr_lua);
+	//	ShowXenonMessage(L"MSG",*(int*)((int)a2 + 0x30),0);
 	
 			SMDATA_PPL_CHANGE_CHR _data3;
 			_data3.sender_xuid = _socket.GetXUID(0);
@@ -1881,7 +1843,7 @@ int __fastcall Character_AmigoSwitch(int result){
 							v9[0] = 0x15014;
 							v9[1] =  *(int*)(HitObject + 0x184);
 							v9[2] = 0xFFFFFFFF;
-							int v4 = *(int*)(HitObject+0x4C);
+							int v4 = *(int*)(HitObject+0x4C);	
 							(*(int (__fastcall **)(_DWORD, int *))(*(_DWORD *)v4 + 4))(v4, v9);
 							int TargetActorID = v9[2];
 							int HitObjectAmigo_ObjPlayer = BranchTo(0x82160658,int,HitObject,TargetActorID);
@@ -1915,8 +1877,79 @@ int __fastcall Character_AmigoSwitch(int result){
 
 }
 
+void __fastcall Listener_Common_Input(int _this, Sonicteam::Player::Input::IListenerInputStruc01* PtrStructThatHasCameraObjAndKhronoController, double a3){
+
+	BranchTo(0x82222428 ,int,_this,PtrStructThatHasCameraObjAndKhronoController,a3);
+
+	if (PtrStructThatHasCameraObjAndKhronoController){
+
+		if ((PtrStructThatHasCameraObjAndKhronoController->wLastButtons & SO_GAMEPAD_RAW_BUTTON_DPAD_UP) != 0) {
+			 *(_DWORD *)(_this + 0x48) |= 0x400000u;// 
+		}
+		if ((PtrStructThatHasCameraObjAndKhronoController->wLastButtons & SO_GAMEPAD_RAW_BUTTON_DPAD_DOWN) != 0){
+			*(_DWORD *)(_this + 0x48) |= 0x800000u;// 
+		}
+		if ((PtrStructThatHasCameraObjAndKhronoController->wLastButtons & SO_GAMEPAD_RAW_BUTTON_B) != 0){
+			*(_DWORD *)(_this + 0x48) |= 0x80; // 
+		}
+
+	}
+
+
+}
+
+int __fastcall sub_821A0498(Sonicteam::Player::State::BasedObject<Sonicteam::Player::State::CommonContext> *_this,double a2){
+	int input = _this->CObjContext->Input;
+	if (input & 0x800000u){
+		_this->CObjContext->SetAnimation(0x4D);
+	}
+
+	if ((_this->CObjContext->AnimationState & 1) != 0){
+
+		if (_this->CObjContext->CurrentAnimation == 0x4D){
+			_this->CObjContext->SetAnimation(0x4E);
+		}
+
+	}
+
+
+	if (_this->CObjContext->CurrentStickBorder > 0){
+		_this->ObjectMashine->ChangeMashineState(0);
+	}
+	return 0;
+}
+
+
+int __fastcall SetPlayer(lua_State *L){
+
+	int v4 = lua_tonumber(L, 1);
+	int v5 = lua_tonumber(L, 2);
+	int v6 = lua_tonumber(L, 3);
+	int v7 = lua_tonumber(L, 4);
+	const char* v8 = lua_tostring(L, 5);
+	int index = lua_tonumber(L, 6);
+	bool v10 = lua_toboolean(L, 7);
+	
+	if (index == 0 && _socket.IsWorks()){
+		const char* plr_lua = v8;
+		SMDATA_PPL_CHANGE_CHR _data3;
+		_data3.sender_xuid = _socket.GetXUID(0);
+		memcpy(&_data3.sender_character,plr_lua,strlen(plr_lua)+1);
+		SocketMessage msg3  =  DEFINE_SOCKET_MESSAGE_FROM_CONST_DATA(_data3);
+		_socket.SendUDPMessageToSRCL(&msg3);
+		Players_DATA[_socket.GetXUID(0)].player_pkg =plr_lua;
+	}
+
+
+	return BranchTo(0x82462948,int,L);
+}
+
 void TagBattleMain::GlobalInstall_ONLINE()
 {
+	Players_DATA = std::map<XUID,PPL_DATA>();
+	_socket = Socket();
+
+	WRITE_DWORD(0X820268C4,SetPlayer);
 	GameIMP_MESSAGES[0x1501c] = "Score";
 	GameIMP_MESSAGES[0x15009] = "Rings";
 	GameIMP_MESSAGES[0x1500A] = "SetPlayerLua";
@@ -1926,11 +1959,13 @@ void TagBattleMain::GlobalInstall_ONLINE()
 	WRITE_DWORD(0x8200356C,ObjectUpdate);
 	WRITE_DWORD(0x8200355C,ObjectEvents);
 
-	WRITE_DWORD(0X82033568	,MainModeOnMessageRecieved);
+//	WRITE_DWORD(0X82033568	,MainModeOnMessageRecieved);
 	//WRITE_DWORD(0x82001AF0	,GameImpOnMessageRecieved);
-	WRITE_DWORD(0x82001B3C,GameImpEngGlobalActionsRecieved);
-	WRITE_DWORD(0x82001AEC,GameIMP_DESTRUCTION);
 
+
+	//WRITE_DWORD(0x82001B3C,GameImpEngGlobalActionsRecieved);
+	INSTALL_HOOK(GameImpOnChangeActions);
+	//WRITE_DWORD(0x82001AEC,GameIMP_DESTRUCTION);
 	WRITE_DWORD(0x8200D104,Character_AmigoSwitch);
 
 	
@@ -1958,11 +1993,15 @@ void TagBattleMain::GlobalInstall_ONLINE()
 
 
 	WRITE_DWORD(0x82003568,RemoveCHR);
-	WRITE_DWORD(0x82209E90 ,0x4E800020);
-	WRITE_DWORD(0x8220BEF8 ,0x4E800020);
+	WRITE_DWORD(0x821A0428 ,0x4E800020);
+	WRITE_DWORD(0x821A0498, 0x4E800020);
+	WRITE_DWORD(0x821A0468 ,0x4E800020);
 
+	WRITE_DWORD(0x8200378C,sub_821A0498);
 	WRITE_DWORD(0x82000950,EngineDocOnUpdateHE);
+	WRITE_DWORD(0x8200BD64,Listener_Common_Input);
 
+	
 
 	//WRITE_DWORD(0x8229A5D0)
 	

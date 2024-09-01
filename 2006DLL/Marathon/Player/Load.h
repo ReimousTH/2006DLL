@@ -51,7 +51,7 @@ namespace Sonicteam{
 			virtual void DestroyObject(unsigned int flag) override;
 
 			std::map<std::string,PLoadBodyPackage*> PackageBody;
-			std::map<std::string,PLoadHeadPackage*> PackageHead;
+			std::map<std::string,PLoadHeadPackage*> PackageHead; //not sure
 			unsigned int unk0x38;
 			unsigned int unk0x40;
 			unsigned int unk0x44;
