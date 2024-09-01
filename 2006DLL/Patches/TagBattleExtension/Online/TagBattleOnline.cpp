@@ -9,7 +9,16 @@
 
 #include <CsdObject.h>
 #include <Sox/StepableThread.h>
+
+
+#define CUTSCENE_MODE true
+
 using namespace TagBattleMain;
+
+
+
+
+
 
 struct SMDATA_PPL_CHANGE_SCENE {
 	DEFINE_SOCKET_MESSAGE_DATA_ID_PROTOCOL(1, IPPROTO_TCP);
@@ -349,7 +358,16 @@ void MSG_HANDLE_CLIENT_XUI_JOIN(Socket* _sock, SOCKET sock, XUID xuid){
 void DestroyObjectPlayerByXUID(XUID xuid){
 
 //	DebugLogV2::PrintNextFixed("DestroyObjectPlayerByXUID");
-	if (GameIMP_LOADED_SCENE == false) return;
+
+	if (CUTSCENE_MODE){
+		if (GameIMP_LOADED_CUTSCENE == false && GameIMP_LOADED_SCENE ==false  )
+			return;
+	}
+	else{
+		if (GameIMP_LOADED_SCENE == false) return;
+	}
+
+
 	Sonicteam::DocMarathonImp* impl = 	*(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
 	UINT32 gameimp = *(UINT32*)(impl->DocCurrentMode + 0x6C);
 	if (gameimp != 0 && *(UINT32*)gameimp == 0x82001AEC && Players_DATA[xuid].object_player != 0){
@@ -359,11 +377,19 @@ void DestroyObjectPlayerByXUID(XUID xuid){
 }
 void SpawnObjectPlayerByXUID(XUID xuid){
 
-//	DebugLogV2::PrintNextFixed("SpawnObjectPlayerByXUID");
-	if (GameIMP_LOADED_SCENE == false) return;
-	// && GameIMP_LOADED_CUTSCENE == false
-
+	DebugLogV2::PrintNextFixed("SpawnObjectPlayerByXUID");
 	
+	if (CUTSCENE_MODE){
+		if (GameIMP_LOADED_CUTSCENE == false && GameIMP_LOADED_SCENE ==false  )
+			return;
+	}
+	else{
+		if (GameIMP_LOADED_SCENE == false) return;
+	}
+
+
+	DebugLogV2::PrintNextFixed("SpawnObjectPlayerByXUIDX");
+
 
 	Sonicteam::DocMarathonImp* impl = 	*(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
 	UINT32 gameimp = *(UINT32*)(impl->DocCurrentMode + 0x6C);
@@ -389,7 +415,14 @@ static void SWAPObjectPlayer(int Player,const char* name = "sonic_new.lua"){
 void SWAPObjectPlayerByXUID(XUID xuid,const char* name = "sonic_new.lua"){
 
 	//	DebugLogV2::PrintNextFixed("SpawnObjectPlayerByXUID");
-	if (GameIMP_LOADED_SCENE == false) return;
+	if (CUTSCENE_MODE){
+		if (GameIMP_LOADED_CUTSCENE == false && GameIMP_LOADED_SCENE ==false  )
+			return;
+	}
+	else{
+		if (GameIMP_LOADED_SCENE == false) return;
+	}
+
 	Sonicteam::DocMarathonImp* impl = 	*(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
 	UINT32 gameimp = *(UINT32*)(impl->DocCurrentMode + 0x6C);
 	if (gameimp != 0 && *(UINT32*)gameimp != 0x82001AEC ) return;
@@ -402,7 +435,15 @@ void SWAPObjectPlayerByXUID(XUID xuid,const char* name = "sonic_new.lua"){
 void DestroyLabelByXUID(XUID xuid){
 
 	
-	if (GameIMP_LOADED_SCENE == false) return;
+	if (CUTSCENE_MODE){
+		if (GameIMP_LOADED_CUTSCENE == false && GameIMP_LOADED_SCENE ==false  )
+			return;
+	}
+	else{
+		if (GameIMP_LOADED_SCENE == false) return;
+	}
+
+
 	Sonicteam::DocMarathonImp* impl = 	*(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
 	boost::shared_ptr<unsigned int> GraphicBufferGuess =  (impl->DocDoculistAction01(7));
 	if (GraphicBufferGuess.get()){
@@ -435,7 +476,14 @@ void DestroyLabelByXUID(XUID xuid){
 void SpawnPlayerLabelByXUID(XUID xuid){
 
 
-	if (GameIMP_LOADED_SCENE == false) return;
+	if (CUTSCENE_MODE){
+		if (GameIMP_LOADED_CUTSCENE == false && GameIMP_LOADED_SCENE ==false  )
+			return;
+	}
+	else{
+		if (GameIMP_LOADED_SCENE == false) return;
+	}
+
 
 	Sonicteam::DocMarathonImp* impl = 	*(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
 	boost::shared_ptr<unsigned int> GraphicBufferGuess =  (impl->DocDoculistAction01(7));
@@ -1100,16 +1148,14 @@ HOOK(int,__fastcall,GameImpOnChangeActions,0x82184F28,int a1, int a2){
 
 
 
-	if (a2 == 2){
- 		//BranchTo(0x821826A8,int,a1,a2);
-		//BranchTo(0x82177C88,int,a1);
-	}
-
-
 	v4 = *(_DWORD *)(a1 + 4);
 	*(_DWORD *)(a1 + 8) = a2;
 	*(_DWORD *)(a1 + 4) = a2;
 
+	if (a2 == 2 && CUTSCENE_MODE == true ){
+		BranchTo(0x8216A6A8,int,a1); // Havok for cutscenes
+
+	}
 
 	int case1 = *(int*)(a1 + 0x4);
 	int case2 = *(int*)(a1 + 0x8);
@@ -1133,7 +1179,7 @@ HOOK(int,__fastcall,GameImpOnChangeActions,0x82184F28,int a1, int a2){
 
 	}
 
-	if (case2 != 4) GameIMP_LOADED_SCENE = false;
+	if (case2 != 4){ GameIMP_LOADED_SCENE = false; GameIMP_LOADED_CUTSCENE = false;}
 
 
 
@@ -1269,7 +1315,9 @@ LABEL_15:
 					_socket.SendTCPMessageToSRCL(&msg);
 					SpawnPPLPlayers();
 				}
-				
+			case GAMEIMP_START_CUTSCENE:
+				GameIMP_LOADED_CUTSCENE = true;
+				if (CUTSCENE_MODE) SpawnPPLPlayers();
 				break;
 	}
 
