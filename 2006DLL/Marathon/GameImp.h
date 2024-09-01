@@ -326,11 +326,12 @@ namespace Sonicteam{
 			std::string unk0x17EC; // 0x17EC 
 
 			boost::shared_ptr<unsigned int> unk0x1808[6]; //0x1808
+			unsigned int unk0x1838; // 0x1838
 			unsigned int unk0x183C; //0x183C
 			Sonicteam::SoX::LinkNodeA<unsigned int> unk0x1840; // 0x1840 -0x10
 
 			struct unk0x1850_struct{
-				std::string* unk0x0; //0x0;
+				std::string unk0x0; //0x0;
 				unsigned int unk0x1C; //0x1C
 				unsigned int unk0x20; //0x20
 				unsigned int unk0x24; //0x24
@@ -385,6 +386,7 @@ namespace Sonicteam{
 
 		
 
+			//PlayersRenderArea
 			Sonicteam::SoX::RefCountObject* GamePropActiveArea[4]; // 0x1994
 			Sonicteam::SoX::RefCountObject* GamePropGenerateArea[4]; // 0x19A4
 			boost::shared_ptr<unsigned int> GamePropActorCreators; //0x19B4

@@ -807,9 +807,10 @@ float trigger_menu = 0.0f;
 extern "C" int EngineDocOnUpdateHE(Sonicteam::DocMarathonImp* a1, double a2) {
 
 
+
 	for (std::map<XUID,PPL_DATA>::iterator it = Players_DATA.begin();it != Players_DATA.end();it++){
 
-		if (it->first == _socket.GetXUID(0)) continue;
+		if (it->first == _socket.GetXUID(0)){continue; };
 		PPL_DATA* data =  &it->second;
 		if (data->CSD){
 			data->CSD->CsdLink0x8(a2);
@@ -821,10 +822,9 @@ extern "C" int EngineDocOnUpdateHE(Sonicteam::DocMarathonImp* a1, double a2) {
 		//	DebugLogV2::PrintNextFixed(cantjust.str());
 			int CsdObjectDrawable_INT = (int)data->CsdObjectDrawable;
 			*(_BYTE *)(CsdObjectDrawable_INT + 0x74) = 1;
-			*(XMVECTOR *)(CsdObjectDrawable_INT + 0x80) = data->Position_FRAME + XMVectorSet(0,140,0,0);
-		
+			*(XMVECTOR *)(CsdObjectDrawable_INT + 0x80) = data->Position_FRAME + XMVectorSet(0,140,0,0);		
 		}
-		
+
 	}
 
 	
@@ -1335,62 +1335,46 @@ int __fastcall GameImpEngGlobalActionsRecieved(int a1, double a2, int a3, int a4
 
 
 
-	unsigned int v7; // r11
-	int v8; // r4
-	int v9; // r4
-	int v10; // r4
-
-	v7 = *(_DWORD *)(a1 + 0x10);
-	if ( ((v7 >> 8) & 1) == 0 )
-	{
-		if ( ((v7 >> 0x15) & 1) != 0 )
-		{
-			*(_DWORD *)(a1 + 0x10) &= 0xFFDFFFFF;
-			BranchTo(0x82184F28,int,a1,0);
-			BranchTo(0x8217F878,int,a1,1);
-			BranchTo(0x82178758,int,a1);
-			BranchTo(0x82172AA8,int,a1,v8);
-		}
-		if ( ((*(_DWORD *)(a1 + 0x10) >> 0x12) & 1) != 0 )// ChangeArea Flag passes here
-		{
-			*(_DWORD *)(a1 + 0x10) &= 0xFFFBFFFF;
-			BranchTo(0x82184F28,int,a1,0);
-			BranchTo(0x8217F878,int,a1,0);                  // ChangeLoadingScene Params
-			BranchTo(0x82172AA8,int,a1,v9);
-		}
-	}
-	v10 = *(_DWORD *)(a1 + 8);
-	if ( *(_DWORD *)(a1 + 4) != v10 )
-		BranchTo(0x82184F28,int,a1,v10); //Remade (TO)
-//		GameImpOnChangeActions(a1,v10);
+	BranchTo(0x82185D30,int,a1,a2);
+	
 	switch ( *(_DWORD *)(a1 + 4) )
 	{
 	case GAMEIMP_ON_LEVEL:
-		BranchTo(0x82185890,int,a1,a2);
+		{
+			int index =1 ;
+			for (std::map<XUID,PPL_DATA>::iterator it = Players_DATA.begin();it != Players_DATA.end();it++){
+				if (it->second.local) continue;
+				if (it->first == _socket.GetXUID(0)) continue;
+		
+				if (it->second.object_player){
+					Sonicteam::DocMarathonImp* impl = *(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
+					Sonicteam::GameImp* gameimp = *(Sonicteam::GameImp**)(impl->DocCurrentMode + 0x6C);
+					Sonicteam::SoX::MessageReceiver* PMessages = (Sonicteam::SoX::MessageReceiver *)(it->second.object_player + 0x20);
+					
+					int buffer[0x40] = {0};
+					buffer[0] = 0x10007;
+					PMessages->OnMessageRecieved((Sonicteam::SoX::Message*)buffer);
+
+
+					BranchTo(0x82457BE8,int,gameimp->GamePropActiveArea[index],	&buffer[4]);
+					BranchTo(0x82461510,int,gameimp->GamePropGenerateArea[index],	&buffer[4]);
+
+
+					
+				}
+				index++;
+
+			}
+			{
+
+				Sonicteam::GameImp* gameimp = (Sonicteam::GameImp*)(a1);
+				BranchTo(0x821EDDB0,int,gameimp->DocMarathon->DocGameRuleContext,Players_DATA.size());
+
+			}
+
+		}
 		break;
-	case GAMEIMP_ON_CUTSCENE:
-		BranchTo(0x82185890,int,a1,v10,a4);
-		break;
-	case GAMEIMP_ON_CGI_CUTSCENE:
-		BranchTo(0x82185200,int,a1,v10,a4,a5);
-		break;
-	case GAMEIMP_ON_RESULT:
-		BranchTo(0x82173D88,int,a1,a2);
-		break;
-	case GAMEIMP_ON_CUTSCENE_END:
-		BranchTo(0x82173BA0,int,a1);
-		break;
-	case 6:
-		BranchTo(0x82173FE8,int,a1);
-		break;
-	case 7:
-		BranchTo(0x821740E0,int,a1);
-		break;
-	case 8:
-		BranchTo(0x82179DF0,int,a1);
-		break;
-	default:
-		return 0;
+	
 	}
 	return 0;
 }
@@ -2011,7 +1995,7 @@ void TagBattleMain::GlobalInstall_ONLINE()
 	//WRITE_DWORD(0x82001AF0	,GameImpOnMessageRecieved);
 
 
-	//WRITE_DWORD(0x82001B3C,GameImpEngGlobalActionsRecieved);
+	WRITE_DWORD(0x82001B3C,GameImpEngGlobalActionsRecieved);
 	INSTALL_HOOK(GameImpOnChangeActions);
 	//WRITE_DWORD(0x82001AEC,GameIMP_DESTRUCTION);
 	WRITE_DWORD(0x8200D104,Character_AmigoSwitch);

@@ -4,7 +4,7 @@
 #include <string>
 
 #include <DocMarathonImp.h>
-
+#include <GameImp.h>
 #include <vector>
 
 extern "C" {
