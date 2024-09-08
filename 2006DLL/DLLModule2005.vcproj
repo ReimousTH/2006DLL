@@ -313,7 +313,7 @@
 			/>
 			<Tool
 				Name="VCCLX360CompilerTool"
-				Optimization="0"
+				Optimization="3"
 				InlineFunctionExpansion="1"
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="0"
@@ -817,6 +817,18 @@
 							>
 						</File>
 					</Filter>
+				</Filter>
+				<Filter
+					Name="Inverse"
+					>
+					<File
+						RelativePath=".\Patches\Inverse\Inverse.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\Inverse\Inverse.h"
+						>
+					</File>
 				</Filter>
 			</Filter>
 			<Filter
@@ -1794,6 +1806,10 @@
 						RelativePath=".\Marathon\Sox\Misc\List.h"
 						>
 					</File>
+					<File
+						RelativePath=".\Marathon\Sox\Misc\List.inl"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="Memory"
@@ -1868,6 +1884,22 @@
 					RelativePath=".\Marathon\Stage\Object.h"
 					>
 				</File>
+			</Filter>
+			<Filter
+				Name="System"
+				>
+				<Filter
+					Name="Peripheral"
+					>
+					<File
+						RelativePath=".\Marathon\System\Peripheral\ManagerImpXenon.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\System\Peripheral\ManagerImpXenon.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter

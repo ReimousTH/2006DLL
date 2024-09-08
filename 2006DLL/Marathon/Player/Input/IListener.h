@@ -20,6 +20,7 @@ namespace Sonicteam{
 
 
 		namespace Input{
+			//Root Scroll Node
 			struct IListenerInputStruc01{
 				unsigned int unk00; //0x0
 				Sonicteam::SoX::Object* PtrMyInputObj; //0xx4

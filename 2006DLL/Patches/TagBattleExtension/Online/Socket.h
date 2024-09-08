@@ -25,19 +25,39 @@ typedef unsigned long long XUID;
 	static int GetProtocol(){\
 	return PROTOCOL; \
 }\
+	static int GetReplicate(){\
+	return false;\
+}\
 
-#define DEFINE_SOCKET_MESSAGE_FROM_CONST_DATA(DATA) SocketMessage(DATA.GetID(),DATA.GetProtocol(),(void*)&DATA,sizeof(DATA))
+#define DEFINE_SOCKET_MESSAGE_DATA_ID_PROTOCOL_REPLICATE(ID,PROTOCOL,REPLICATE) \
+	static int GetID(){ \
+	return ID;\
+}\
+	static int GetProtocol(){\
+	return PROTOCOL; \
+}\
+	static int GetReplicate(){\
+	return true;\
+}\
+
+
+
+
+#define DEFINE_SOCKET_MESSAGE_FROM_CONST_DATA(DATA) SocketMessage(DATA.GetID(),DATA.GetProtocol(),DATA.GetReplicate(),(void*)&DATA,sizeof(DATA))
 #define EXTRACT_SOCKET_MESSAGE_FROM_MESSAGE_PTR(DATA,TYPE) (TYPE*)&DATA->_message_;
+#define SM_REPLICATE 1
 
 struct SocketMessage {
 
 	int ID;
 	int PROTOCOL;
-	char _padding_[8];
+	int replicate;
+	XUID sender_xuid; // sender_xuid
+	XUID replicated_xuid; // replicated xuid, save  client(XUID)-server-client(XUID)
 	sockaddr address_from;
-	char _message_[256];
+	char _message_[512];
 public:
-	SocketMessage(int ID, int PROTOCOL, void* from, int size);
+	SocketMessage(int ID, int PROTOCOL, int REPLICATE, void* from, int size);
 	SocketMessage();
 };
 
@@ -121,6 +141,7 @@ public:
 	void SendTCPMessageToSRCL(SocketMessage* msg);
 	void SendTCPMessageToServer(SocketMessage* msg);
 	void SendTCPMessageToClients(SocketMessage* msg);
+	void SendTCPMessageToXUID(XUID to,SocketMessage* msg);
 
 
 	void SendUDPMessageTo(sockaddr to, SocketMessage* msg);
@@ -130,6 +151,7 @@ public:
 
 	sockaddr MatchClientTcpToUdpAddress(sockaddr tcp_address);
 	XUID MatchClientXUIDByTCPSocket(SOCKET tcp_socket);
+	SOCKET MatchClientXUIDToTCPSocket(XUID xuid);
 
 
 	XUID GetXUID(int);

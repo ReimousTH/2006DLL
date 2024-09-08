@@ -283,7 +283,7 @@ namespace Sonicteam{
 				Sonicteam::SoX::Thread* HavokRunnerThread; //0x1528 // or comp do -4, or they do it O_O
 				//
 				std::string CameraParamLua; //placement/kdv/cameraparam_sonic_c.lua  //0x152C //0x0
-				std::string RenderScript; //scripts/render/stage/render_kdv_c.lua //  0x1548 - 0x1C
+				std::string RenderScript; //scripts/render/stage/render_kdv_c.lua //  0x1548 - 0x1C, 
 				std::string SceneParamsLua; //scripts/stage/kdv/scene_kdv_c.lua , get empty after load i guess :) //0x1564 - 0x38
 				std::string Light;  //  ,  //0x1580 - 0x54
 				std::string EnvMap;  //  ,  //0x159C - 0x70
@@ -293,7 +293,7 @@ namespace Sonicteam{
 				std::string unk0xE0;  //  ,  //0x160C - 0xE0 //Old Default Path
 				std::string Kynapse;  //  ,  //0x1628 - 0xFC
 				std::string TownsManInfo; // , 	 //0x1644 - 0x118
-				std::string Raarmap; // , 	 //0x1660 - 0x134
+				std::string Radarmap; // , 	 //0x1660 - 0x134
 				std::string BGM; // , stg_kdv_c 	 //0x167C - 0x150  (BGM)
 				std::string ObjectPhysics; // , 	 //0x1698 - 0x16C
 				std::string Explosion; // , 	 //0x16B4 - 0x188

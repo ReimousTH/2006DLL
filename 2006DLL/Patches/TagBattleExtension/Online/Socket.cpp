@@ -261,6 +261,7 @@ void Socket::UpdateServer(float delta) {
 
 		if (bytesReceived > 0) {
 			// Process received TCP data
+			buffer.replicated_xuid = buffer.sender_xuid; // save
 			this->MSG_HANDLE_SERVER_MESSAGES_BEHAVIOUR(this, it->second.TCP_SOCKET, &buffer);
 		}
 		else if (bytesReceived == 0) {
@@ -316,6 +317,7 @@ void Socket::UpdateServer(float delta) {
 			}
 
 			// Process received UDP data
+			buffer.replicated_xuid = buffer.sender_xuid; // save
 			this->MSG_HANDLE_SERVER_MESSAGES_BEHAVIOUR(this, NULL, &buffer);
 		}
 	}
@@ -396,6 +398,7 @@ void Socket::UpdateClient(float delta)
 
 void Socket::SendTCPMessageTo(SOCKET to, SocketMessage* msg)
 {
+	msg->sender_xuid = GetXUID(0);
 	if (msg->PROTOCOL == IPPROTO_TCP) {
 		send(to, (char*)msg, sizeof(*msg), 0);
 	}
@@ -403,10 +406,10 @@ void Socket::SendTCPMessageTo(SOCKET to, SocketMessage* msg)
 
 void Socket::SendTCPMessageToSRCL(SocketMessage* msg)
 {
-	if (IsClient()){
+	if (IsClient()) {
 		this->SendTCPMessageToServer(msg);
 	}
-	else if (IsServer()){
+	else if (IsServer()) {
 		this->SendTCPMessageToClients(msg);
 	}
 }
@@ -423,8 +426,14 @@ void Socket::SendTCPMessageToClients(SocketMessage* msg)
 	}
 }
 
+void Socket::SendTCPMessageToXUID(XUID to, SocketMessage* msg)
+{
+	SendTCPMessageTo(MatchClientXUIDToTCPSocket(to), msg);
+}
+
 void Socket::SendUDPMessageTo(sockaddr to, SocketMessage* msg)
 {
+	msg->sender_xuid = GetXUID(0);
 	if (msg->PROTOCOL == IPPROTO_UDP) {
 		sendto(_udpSocket, (char*)msg, sizeof(*msg), 0, (struct sockaddr*)&to, sizeof(to));
 	}
@@ -432,10 +441,10 @@ void Socket::SendUDPMessageTo(sockaddr to, SocketMessage* msg)
 
 void Socket::SendUDPMessageToSRCL(SocketMessage* msg)
 {
-	if (IsClient()){
+	if (IsClient()) {
 		this->SendUDPMessageToServer(msg);
 	}
-	else if (IsServer()){
+	else if (IsServer()) {
 		this->SendUDPMessageToClients(msg);
 	}
 
@@ -464,6 +473,19 @@ sockaddr Socket::MatchClientTcpToUdpAddress(sockaddr tcp_address)
 	}
 	return tcp_address;
 }
+
+SOCKET Socket::MatchClientXUIDToTCPSocket(XUID xuid)
+{
+
+	for (std::map<sockaddr, SocketData, SockaddrComparator>::iterator it = _clients.begin(); it != _clients.end(); it++) {
+		if (it->second.xuid == xuid) {
+			return it->second.TCP_SOCKET;
+		}
+
+	}
+	return -1;
+}
+
 
 XUID Socket::MatchClientXUIDByTCPSocket(SOCKET tcp_socket)
 {
@@ -528,12 +550,18 @@ void Socket::MSG_HANDLE_SERVER_MESSAGES_BEHAVIOUR(Socket* _1, SOCKET sock, Socke
 			_clients[msg->address_from].xuid = f->sender_xuid;
 			memcpy(&_clients[msg->address_from].name, &f->sender_name, 64);
 			this->MSG_HANDLE_SERVER_XUI_JOIN_BEHAVIOUR(_1, sock, f->sender_xuid);
-
-
-
-
-
 		}
+	}
+	//replicateable messages
+	if (msg->replicate == SM_REPLICATE) {
+		if (msg->PROTOCOL == IPPROTO_TCP) {
+			SendTCPMessageToClients(msg);
+		}
+		else
+		{
+			SendUDPMessageToClients(msg);
+		}
+
 	}
 	//Lost XUID for CLIENT_LEFT_FROM_SERVER;
 	//Replicate ALL EXISTRING XUIDS
@@ -581,6 +609,8 @@ void Socket::MSG_HANDLE_SERVER_CLIENT_JOIN_TEMP(Socket*, SOCKET)
 
 void Socket::MSG_HANDLE_CLIENT_MESSAGES_BEHAVIOUR(Socket* _1, SOCKET tsocket, SocketMessage* msg)
 {
+	if (msg->replicated_xuid == GetXUID(0)) return; // ignore my 
+
 	//TCP
 	if (msg->ID == SMDataJoinXUID::GetID()) {
 		SMDataJoinXUID* _data_ = EXTRACT_SOCKET_MESSAGE_FROM_MESSAGE_PTR(msg, SMDataJoinXUID);
@@ -628,7 +658,7 @@ void Socket::MSG_HANDLE_CLIENT_JOIN_SERVER_BEHAVIOUR(Socket* _1, SOCKET sock)
 	{
 		SMDataJoinXUID _msg_data;
 		_msg_data.sender_xuid = this->GetXUID(0);
-		this->GetName((char*) & _msg_data.sender_name);
+		this->GetName((char*)&_msg_data.sender_name);
 		SocketMessage msg = DEFINE_SOCKET_MESSAGE_FROM_CONST_DATA(_msg_data);
 		this->SendTCPMessageToServer(&msg);
 	}
@@ -731,14 +761,16 @@ SocketData::SocketData()
 
 
 
-SocketMessage::SocketMessage(int ID, int PROTOCOL, void* from, int size)
+SocketMessage::SocketMessage(int ID, int PROTOCOL,int REPLICATE,void* from, int size)
 {
 	this->ID = ID;
 	this->PROTOCOL = PROTOCOL;
+	this->replicate = REPLICATE;
 	memset(&this->_message_, 0, 256);
 	memcpy((void*)&this->_message_, from, size);
 }
 
 SocketMessage::SocketMessage()
 {
+
 }

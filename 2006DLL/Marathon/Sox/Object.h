@@ -2,11 +2,9 @@
 
 #include <string>
 #include <list>
-
 #include <boost/ptr_container/ptr_list.hpp>
 #include <boost/ptr_container/ptr_set.hpp>
 #include <deque>
-
 #include "Sox/Misc/List.h"
 #include <SoX/Memory/IDestructible.h>
 
@@ -19,6 +17,7 @@ namespace Sonicteam{
 
 
 
+		//[Removed]//
 		//Inteface Object Object
 		struct IOObject{	
 			Sonicteam::SoX::RNodeF<Sonicteam::SoX::Object> RNodeF; //0x4,0x8,0xC
@@ -33,18 +32,16 @@ namespace Sonicteam{
 		/************************************************************************/
 		/*         Inherit with IOObject or custom struct  */
 		/************************************************************************/
+		//class Component:public Object,public IOComponent//
 		class Object
 		{
 		public:
 			//size0x60
 			Object(void);
+			~Object(void);
 			virtual char* GetObjectType(); 
 			virtual void DestroyObject(unsigned int flag);
-			 ~Object(void);
-
-			 //0x14...
-
-
+			
 
 	
 		};

@@ -56,6 +56,8 @@ void operator delete(void* ptr) {
 #include "Patches/CompleteGauge/CompleteGauge.h"
 #include "Patches/TagBattleExtension/TagBattleMain.h"
 #include <Player/LuaInfoInit.h>
+#include <System/Peripheral/ManagerImpXenon.h>
+#include "Patches/Inverse/Inverse.h"
 
 
 struct DFastActions{
@@ -76,7 +78,8 @@ DFastActions _PreLoadPatches[] = {
 	{"TagStory",TagStory::GlobalInstall},
 	{"TailsGauge",TailsGauge::GlobalInstall},
 	{"AmyLOS",AmyLOS::GlobalInstall},
-	{"TagBattleExtension",TagBattleMain::GlobalInstall},
+	{"TagBattleExtension",TagBattleMain::GlobalInstall}
+	
 };
 
 bool _NoArcMode = false;
@@ -376,9 +379,8 @@ extern "C" void OnDLLStart(){
 
 	
 
-		
 
-	
+
 
 //	Sonicteam::SoX::Thread* _thread =  new Sonicteam::SoX::Thread("T",0,0);
 //	ShowXenonMessage(L"MSG",_thread->m_ThreadName);
@@ -440,6 +442,9 @@ extern "C" void OnDLLStart(){
 
 	ShowXenonMessage(L"LoadedDLLPatches",Loaded.c_str());
 	Loaded.clear();
+
+	PostureInverseStick::GlobalInstall();
+
 
 
 	//ImGUI::GlobalInstall();
@@ -544,6 +549,8 @@ BOOL APIENTRY DllMain( HANDLE hModule,
                        LPVOID lpReserved
                      )
 {
+
+
     switch (ul_reason_for_call)
     {
     case DLL_PROCESS_ATTACH:

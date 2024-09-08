@@ -12,26 +12,27 @@ namespace Sonicteam{
 
 		template <typename T>
 		struct LinkNodeBase {
-			T* PThread;
 			T* NThread;
+			T* PThread;
 
 		public:
-			LinkNodeBase() : PThread(NULL), NThread(NULL) {}
+			LinkNodeBase() : NThread(NULL), PThread(NULL) {}
 
-			void RemoveLink(){
-				PThread->NThread = NThread;
-				NThread->PThread = PThread;
-				NThread = NULL;
+			void ClearLink(){
+				NThread->NThread = PThread;
+				PThread->PThread = NThread;
 				PThread = NULL;
+				NThread = NULL;
 
+			}
+			void RemoveLink(){
+				if (NThread)
+					NThread->NThread = PThread;
+				if (PThread)
+					PThread->PThread = NThread;
 			}
 
 			~LinkNodeBase() {
-				if (PThread)
-					PThread->NThread = NThread;
-				if (NThread)
-					NThread->PThread = PThread;
-
 			}
 		};
 
@@ -71,8 +72,23 @@ namespace Sonicteam{
 		public:
 			T* TThread;
 			LinkNode() : LinkNodeBase<LinkNode<T>>() {}
+			~LinkNode();
 			LinkNode(T* TThread) : LinkNodeBase<LinkNode<T>>(), TThread(TThread) {}
 
+		};
+
+
+		template <typename T>
+		struct LinkNodeList:LinkNodeBase<LinkNodeList<T>> {
+		public:
+			T* TThread;
+			LinkNodeList();
+			LinkNodeList(T* TThread) : LinkNodeBase<LinkNodeList<T>>(), TThread(TThread) {}
+
+		
+
+			int Clear(int v); //should be static seems, and different in each others
+			void Empty();
 		};
 
 
@@ -208,6 +224,7 @@ namespace Sonicteam{
 };
 
 
+#include "List.inl"
 
 
 //NEW ONE
