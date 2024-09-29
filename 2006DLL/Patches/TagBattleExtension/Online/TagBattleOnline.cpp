@@ -182,7 +182,7 @@ OBJPlayerSpawnData::OBJPlayerSpawnData()
 Socket _socket;
 int LocalPlayer;
 Sonicteam::CsdObject* Player_TAG;
-Sonicteam::SoX::RefCountObject* Player_TAG_DRAWABLE;
+Sonicteam::SoX::RefCountObject_OLD* Player_TAG_DRAWABLE;
 Sonicteam::SoX::IResource* Player_TAG_SHADER;
 bool GameIMP_LOADED_SCENE = false;
 bool GameIMP_LOADED_CUTSCENE = false;
@@ -207,9 +207,9 @@ struct PPL_DATA{
 	bool local;
 
 	Sonicteam::CsdObject* CSD;
-	Sonicteam::SoX::RefCountObject* CSD_SHADER;
-	Sonicteam::SoX::RefCountObject* TechniqueCSD3D;
-	Sonicteam::SoX::RefCountObject* CsdObjectDrawable;
+	Sonicteam::SoX::RefCountObject_OLD* CSD_SHADER;
+	Sonicteam::SoX::RefCountObject_OLD* TechniqueCSD3D;
+	Sonicteam::SoX::RefCountObject_OLD* CsdObjectDrawable;
 
 	std::string scene;
 	int object_player;
@@ -557,7 +557,7 @@ void SpawnPlayerLabelByXUID(XUID xuid){
 
 	
 
-	d->CsdObjectDrawable =  (Sonicteam::SoX::RefCountObject*)BranchTo(0x82616C68,int,malloc06(0xA0),impl->DocGetMyGraphicDevice(),&d->CSD);
+	d->CsdObjectDrawable =  (Sonicteam::SoX::RefCountObject_OLD*)BranchTo(0x82616C68,int,malloc06(0xA0),impl->DocGetMyGraphicDevice(),&d->CSD);
 	d->CsdObjectDrawable->GetObject<int>();
 	BranchTo(0x82616EB0,int,d->CsdObjectDrawable,&Players_DATA[xuid].TechniqueCSD3D);
 
@@ -884,7 +884,7 @@ extern "C" int EngineDocOnUpdateHE(Sonicteam::DocMarathonImp* a1, double a2) {
 			data->CSD->CsdLink0x8(a2);
 
 		}
-		if (Sonicteam::SoX::RefCountObject* drawable =  data->CsdObjectDrawable){
+		if (Sonicteam::SoX::RefCountObject_OLD* drawable =  data->CsdObjectDrawable){
 
 		//	std::stringstream cantjust; cantjust <<  "XUID : " << it->first << std::hex << " X : " << data->Position_FRAME.x << " Y : " << data->Position_FRAME.y << " Z : " << data->Position_FRAME.z;
 		//	DebugLogV2::PrintNextFixed(cantjust.str());
@@ -1062,7 +1062,7 @@ int __fastcall sub_8229A5D0(int a1, double a2){
 	__int64 *v38; // r3
 	int v39; // r30
 	_DWORD *v40; // r3
-	Sonicteam::SoX::RefCountObject* v41; // [sp+50h] [-230h] BYREF
+	Sonicteam::SoX::RefCountObject_OLD* v41; // [sp+50h] [-230h] BYREF
 	float v42; // [sp+54h] [-22Ch] BYREF
 	int v43; // [sp+58h] [-228h] BYREF
 	int v44; // [sp+5Ch] [-224h] BYREF

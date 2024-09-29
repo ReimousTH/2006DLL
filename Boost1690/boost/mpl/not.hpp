@@ -2,29 +2,33 @@
 #ifndef BOOST_MPL_NOT_HPP_INCLUDED
 #define BOOST_MPL_NOT_HPP_INCLUDED
 
-// Copyright Aleksey Gurtovoy 2000-2004
+// + file: boost/mpl/not.hpp
+// + last modified: 25/feb/03
+
+// Copyright (c) 2000-03
+// Aleksey Gurtovoy
 //
-// Distributed under the Boost Software License, Version 1.0. 
-// (See accompanying file LICENSE_1_0.txt or copy at 
-// http://www.boost.org/LICENSE_1_0.txt)
+// Permission to use, copy, modify, distribute and sell this software
+// and its documentation for any purpose is hereby granted without fee, 
+// provided that the above copyright notice appears in all copies and 
+// that both the copyright notice and this permission notice appear in 
+// supporting documentation. No representations are made about the 
+// suitability of this software for any purpose. It is provided "as is" 
+// without express or implied warranty.
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Source: /cvsroot/boost/boost/boost/mpl/not.hpp,v $
-// $Date: 2004/09/02 15:40:41 $
-// $Revision: 1.3 $
+#include "boost/mpl/bool.hpp"
+#include "boost/mpl/aux_/nested_type_wknd.hpp"
+#include "boost/mpl/aux_/void_spec.hpp"
+#include "boost/mpl/aux_/lambda_support.hpp"
 
-#include <boost/mpl/bool.hpp>
-#include <boost/mpl/aux_/nttp_decl.hpp>
-#include <boost/mpl/aux_/nested_type_wknd.hpp>
-#include <boost/mpl/aux_/na_spec.hpp>
-#include <boost/mpl/aux_/lambda_support.hpp>
-
-namespace boost { namespace mpl {
+namespace boost {
+namespace mpl {
 
 namespace aux {
 
-template< BOOST_MPL_AUX_NTTP_DECL(long, C_) > // 'long' is intentional here
+template< long C_ > // 'long' is intentional here
 struct not_impl
     : bool_<!C_>
 {
@@ -34,7 +38,7 @@ struct not_impl
 
 
 template<
-      typename BOOST_MPL_AUX_NA_PARAM(T)
+      typename BOOST_MPL_AUX_VOID_SPEC_PARAM(T)
     >
 struct not_
     : aux::not_impl<
@@ -44,8 +48,9 @@ struct not_
     BOOST_MPL_AUX_LAMBDA_SUPPORT(1,not_,(T))
 };
 
-BOOST_MPL_AUX_NA_SPEC(1,not_)
+BOOST_MPL_AUX_VOID_SPEC(1,not_)
 
-}}
+} // namespace mpl
+} // namespace boost
 
 #endif // BOOST_MPL_NOT_HPP_INCLUDED

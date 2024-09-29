@@ -33,13 +33,25 @@ extern "C" long __cdecl _InterlockedIncrement( long volatile * );
 extern "C" long __cdecl _InterlockedDecrement( long volatile * );
 extern "C" long __cdecl _InterlockedCompareExchange( long volatile *, long, long );
 
+class BoostNew {
+public:
+	static long InterlockedCompareExchange(long volatile* destination, long exchange, long comparand) {
+		long oldValue = *destination;
+		if (oldValue == comparand) {
+			*destination = exchange;
+		}
+		return oldValue;
+	}
+};
+
+
 # pragma intrinsic( _InterlockedIncrement )
 # pragma intrinsic( _InterlockedDecrement )
 # pragma intrinsic( _InterlockedCompareExchange )
 
-# define BOOST_INTERLOCKED_INCREMENT _InterlockedIncrement
-# define BOOST_INTERLOCKED_DECREMENT _InterlockedDecrement
-# define BOOST_INTERLOCKED_COMPARE_EXCHANGE _InterlockedCompareExchange
+# define BOOST_INTERLOCKED_INCREMENT(a1) (*a1)++
+# define BOOST_INTERLOCKED_DECREMENT(a1) (*a1)--
+# define BOOST_INTERLOCKED_COMPARE_EXCHANGE BoostNew::InterlockedCompareExchange
 
 #elif defined( WIN32 ) || defined( _WIN32 ) || defined( __WIN32__ )
 
@@ -57,8 +69,8 @@ extern "C" __declspec(dllimport) long __stdcall InterlockedCompareExchange( long
 
 } // namespace boost
 
-# define BOOST_INTERLOCKED_INCREMENT InterlockedIncrement
-# define BOOST_INTERLOCKED_DECREMENT InterlockedDecrement
+# define BOOST_INTERLOCKED_INCREMENT BOOST_INTERLOCKED_INCREMENT_FUNC
+# define BOOST_INTERLOCKED_DECREMENT BOOST_INTERLOCKED_DECREMENT_FUNC
 # define BOOST_INTERLOCKED_COMPARE_EXCHANGE InterlockedCompareExchange
 
 #else

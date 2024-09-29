@@ -1,7 +1,7 @@
-//  (C) Copyright David Abrahams 2000.
-// Distributed under the Boost Software License, Version 1.0. (See
-// accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)
+//  (C) Copyright David Abrahams 2000. Permission to copy, use, modify, sell and
+//  distribute this software is granted provided this copyright notice appears
+//  in all copies. This software is provided "as is" without express or implied
+//  warranty, and with no claim as to its suitability for any purpose.
 //
 //  The author gratefully acknowleges the support of Dragon Systems, Inc., in
 //  producing this work.
@@ -20,23 +20,13 @@
 // 04 Mar 01  Rolled in some changes from the Dragon fork (Dave Abrahams)
 // 01 Mar 01  define PyObject_INIT() for Python 1.x (Dave Abrahams)
 
-#ifdef _DEBUG
-# ifndef BOOST_DEBUG_PYTHON
-#  undef _DEBUG // Don't let Python force the debug library just because we're debugging.
-#  define DEBUG_UNDEFINED_FROM_WRAP_PYTHON_H
-# endif
-#endif
-
-# include <pyconfig.h>
-# if defined(_SGI_COMPILER_VERSION) && _SGI_COMPILER_VERSION == 741
-#  undef _POSIX_C_SOURCE
-#  undef _XOPEN_SOURCE
-# endif
-
 //
 // Python's LongObject.h helpfully #defines ULONGLONG_MAX for us,
 // which confuses Boost's config
 //
+#if defined(__ALPHA) && defined(__osf__) && defined(__DECCXX_VER)
+# include <pyconfig.h>
+#endif
 #include <limits.h>
 #ifndef ULONG_MAX
 # define BOOST_PYTHON_ULONG_MAX_UNDEFINED
@@ -53,8 +43,11 @@
 //
 #include <patchlevel.h>
 
-#if PY_MAJOR_VERSION<2 || PY_MAJOR_VERSION==2 && PY_MINOR_VERSION<2
-#error Python 2.2 or higher is required for this version of Boost.Python.
+#ifdef _DEBUG
+# ifndef BOOST_DEBUG_PYTHON
+#  undef _DEBUG // Don't let Python force the debug library just because we're debugging.
+#  define DEBUG_UNDEFINED_FROM_WRAP_PYTHON_H
+# endif
 #endif
 
 //
@@ -106,9 +99,19 @@ typedef int pid_t;
 #   define _MSC_VER 900
 #  endif
 
+#  if PY_MAJOR_VERSION < 2 || PY_MAJOR_VERSION == 2 && PY_MINOR_VERSION < 2
+#   include <config.h>
+#  else
+#   include <pyconfig.h>
+#  endif
 #  undef hypot // undo the evil #define left by Python.
 
 # elif defined(__BORLANDC__)
+#  if PY_MAJOR_VERSION < 2 || PY_MAJOR_VERSION == 2 && PY_MINOR_VERSION < 2
+#   include <config.h>
+#  else
+#   include <pyconfig.h>
+#  endif
 #  undef HAVE_HYPOT
 #  define HAVE_HYPOT 1
 # endif
@@ -154,14 +157,4 @@ typedef int pid_t;
 # pragma warn_possunwant off
 #elif _MSC_VER
 # pragma warning(disable:4786)
-#endif
-
-#if defined(HAVE_LONG_LONG)
-# if defined(PY_LONG_LONG)
-#  define BOOST_PYTHON_LONG_LONG PY_LONG_LONG
-# elif defined(LONG_LONG)
-#  define BOOST_PYTHON_LONG_LONG LONG_LONG
-# else
-#  error "HAVE_LONG_LONG defined but not PY_LONG_LONG or LONG_LONG"
-# endif
 #endif

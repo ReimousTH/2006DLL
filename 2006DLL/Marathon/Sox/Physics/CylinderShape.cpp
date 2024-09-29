@@ -5,7 +5,7 @@ using namespace Sonicteam::SoX::Physics;
 
 Sonicteam::SoX::Physics::CylinderShape::CylinderShape(double radius,double height)
 {
-	this->UnkReference = 0;
+
 	this->Radius = radius;
 	this->Height = height * 0.5;
 	this->SFlag = 3;

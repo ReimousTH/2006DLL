@@ -14,6 +14,7 @@ namespace Sonicteam{
 		typedef class Component;
 
 		struct IOComponent{
+		public:
 			Component* LastComponent; //0x4
 			Sonicteam::SoX::LinkNode<Component> LinkedComponent; //0x8,0xC,0x10
 			Sonicteam::SoX::LinkNodeList<Component> LComponentList; //0x14,0x18,0x1C

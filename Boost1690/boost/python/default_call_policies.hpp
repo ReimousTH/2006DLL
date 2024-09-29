@@ -1,18 +1,14 @@
-// Copyright David Abrahams 2002.
-// Distributed under the Boost Software License, Version 1.0. (See
-// accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)
+// Copyright David Abrahams 2002. Permission to copy, use,
+// modify, sell and distribute this software is granted provided this
+// copyright notice appears in all copies. This software is provided
+// "as is" without express or implied warranty, and with no claim as
+// to its suitability for any purpose.
 #ifndef DEFAULT_CALL_POLICIES_DWA2002131_HPP
 # define DEFAULT_CALL_POLICIES_DWA2002131_HPP
-
-# include <boost/python/detail/prefix.hpp>
+# include <boost/python/detail/wrap_python.hpp>
 # include <boost/mpl/if.hpp>
 # include <boost/python/to_python_value.hpp>
-# include <boost/python/detail/value_arg.hpp>
 # include <boost/type_traits/transform_traits.hpp>
-# include <boost/type_traits/is_pointer.hpp>
-# include <boost/type_traits/is_reference.hpp>
-# include <boost/mpl/or.hpp>
 
 namespace boost { namespace python { 
 
@@ -32,23 +28,19 @@ struct default_result_converter;
 
 struct default_call_policies
 {
-    // Ownership of this argument tuple will ultimately be adopted by
-    // the caller.
-    template <class ArgumentPackage>
-    static bool precall(ArgumentPackage const&)
+    // Nothing to do
+    static bool precall(PyObject*)
     {
         return true;
     }
 
     // Pass the result through
-    template <class ArgumentPackage>
-    static PyObject* postcall(ArgumentPackage const&, PyObject* result)
+    static PyObject* postcall(PyObject*, PyObject* result)
     {
         return result;
     }
 
     typedef default_result_converter result_converter;
-    typedef PyObject* argument_package;
 };
 
 struct default_result_converter
@@ -56,12 +48,14 @@ struct default_result_converter
     template <class R>
     struct apply
     {
-        typedef typename mpl::if_<
-            mpl::or_<is_pointer<R>, is_reference<R> >
-          , detail::specify_a_return_value_policy_to_wrap_functions_returning<R>
-          , boost::python::to_python_value<
-                typename detail::value_arg<R>::type
-            >
+        BOOST_STATIC_CONSTANT(bool, is_illegal = is_reference<R>::value || is_pointer<R>::value);
+        
+        typedef typename mpl::if_c<
+            is_illegal
+            , detail::specify_a_return_value_policy_to_wrap_functions_returning<R>
+            , boost::python::to_python_value<
+                typename add_reference<typename add_const<R>::type>::type
+                >
         >::type type;
     };
 };

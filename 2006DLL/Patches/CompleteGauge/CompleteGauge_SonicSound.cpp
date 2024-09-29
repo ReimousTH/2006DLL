@@ -45,7 +45,7 @@ namespace CompleteGauge{
 
 	void StateSoundOnUnknownFlags01(int _this,int flags){
 
-		Sonicteam::SoX::RefCountObject* RefSound;
+		Sonicteam::SoX::RefCountObject_OLD* RefSound;
 		//LVL-Up
 			
 		if ((flags & 0x10000000) != 0){

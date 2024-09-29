@@ -1,15 +1,14 @@
-// Copyright (C) 2000 Stephen Cleary
+// Copyright (C) 2000 Stephen Cleary (shammah@voyager.net)
 //
-// Distributed under the Boost Software License, Version 1.0. (See
-// accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)
+// This file can be redistributed and/or modified under the terms found
+//  in "copyright.html"
+// This software and its documentation is provided "as is" without express or
+//  implied warranty, and with no claim as to its suitability for any purpose.
 //
 // See http://www.boost.org for updates, documentation, and revision history.
 
 #ifndef BOOST_POOL_MUTEX_HPP
 #define BOOST_POOL_MUTEX_HPP
-
-#include <boost/config.hpp>  // for workarounds
 
 // Extremely Light-Weight wrapper classes for OS thread synchronization
 
@@ -19,15 +18,11 @@
 #define BOOST_MUTEX_HELPER_WIN32        1
 #define BOOST_MUTEX_HELPER_PTHREAD      2
 
-#if !defined(BOOST_HAS_THREADS) && !defined(BOOST_NO_MT)
-# define BOOST_NO_MT
-#endif
-
 #ifdef BOOST_NO_MT
   // No multithreading -> make locks into no-ops
   #define BOOST_MUTEX_HELPER BOOST_MUTEX_HELPER_NONE
 #else
-  #ifdef BOOST_WINDOWS
+  #ifdef __WIN32__
     #define BOOST_MUTEX_HELPER BOOST_MUTEX_HELPER_WIN32
   #else
     #include <unistd.h>
@@ -41,13 +36,12 @@
   #error Unable to determine platform mutex type; define BOOST_NO_MT to assume single-threaded
 #endif
 
-#ifndef BOOST_NO_MT
-# ifdef BOOST_WINDOWS
-#  include <windows.h>
-# endif
-# ifdef _POSIX_THREADS
-#  include <pthread.h>
-# endif
+
+#ifdef __WIN32__
+  #include <windows.h>
+#endif
+#ifdef _POSIX_THREADS
+  #include <pthread.h>
 #endif
 
 namespace boost {
@@ -55,9 +49,7 @@ namespace boost {
 namespace details {
 namespace pool {
 
-#ifndef BOOST_NO_MT
-
-#ifdef BOOST_WINDOWS
+#ifdef __WIN32__
 
 class win32_mutex
 {
@@ -81,7 +73,7 @@ class win32_mutex
     { LeaveCriticalSection(&mtx); }
 };
 
-#endif // defined(BOOST_WINDOWS)
+#endif // defined(__WIN32__)
 
 #ifdef _POSIX_THREADS
 
@@ -108,8 +100,6 @@ class pthread_mutex
 };
 
 #endif // defined(_POSIX_THREADS)
-
-#endif // !defined(BOOST_NO_MT)
 
 class null_mutex
 {

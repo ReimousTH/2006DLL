@@ -1,25 +1,27 @@
-
-// NO INCLUDE GUARDS, THE HEADER IS INTENDED FOR MULTIPLE INCLUSION
-
-// Copyright Peter Dimov 2000-2002
-// Copyright Aleksey Gurtovoy 2000-2004
+//-----------------------------------------------------------------------------
+// boost mpl/list/aux_/numbered.hpp header file
+// See http://www.boost.org for updates, documentation, and revision history.
+//-----------------------------------------------------------------------------
 //
-// Distributed under the Boost Software License, Version 1.0. 
-// (See accompanying file LICENSE_1_0.txt or copy at 
-// http://www.boost.org/LICENSE_1_0.txt)
+// Copyright (c) 2000-02
+// Peter Dimov, Aleksey Gurtovoy
 //
-// See http://www.boost.org/libs/mpl for documentation.
+// Permission to use, copy, modify, distribute and sell this software
+// and its documentation for any purpose is hereby granted without fee, 
+// provided that the above copyright notice appears in all copies and 
+// that both the copyright notice and this permission notice appear in 
+// supporting documentation. No representations are made about the 
+// suitability of this software for any purpose. It is provided "as is" 
+// without express or implied warranty.
 
-// $Source: /cvsroot/boost/boost/boost/mpl/list/aux_/numbered.hpp,v $
-// $Date: 2004/09/02 15:40:58 $
-// $Revision: 1.4 $
+// no include guards, the header is intended for multiple inclusion!
 
 #if defined(BOOST_PP_IS_ITERATING)
 
-#include <boost/preprocessor/enum_params.hpp>
-#include <boost/preprocessor/enum_shifted_params.hpp>
-#include <boost/preprocessor/dec.hpp>
-#include <boost/preprocessor/cat.hpp>
+#include "boost/preprocessor/enum_params.hpp"
+#include "boost/preprocessor/enum_shifted_params.hpp"
+#include "boost/preprocessor/dec.hpp"
+#include "boost/preprocessor/cat.hpp"
 
 #define i BOOST_PP_FRAME_ITERATION(1)
 
@@ -29,10 +31,10 @@ template<
       BOOST_PP_ENUM_PARAMS(i, typename T)
     >
 struct list1
-    : l_item<
-          long_<1>
+    : list_node<
+          integral_c<long,1>
         , T0
-        , l_end
+        , null_node
         >
 {
     typedef list1 type;
@@ -50,8 +52,8 @@ template<
       BOOST_PP_ENUM_PARAMS(i, typename T)
     >
 struct BOOST_PP_CAT(list,i)
-    : l_item<
-          long_<i>
+    : list_node<
+          integral_c<long,i>
         , T0
         , MPL_AUX_LIST_TAIL(list,i,T)
         >

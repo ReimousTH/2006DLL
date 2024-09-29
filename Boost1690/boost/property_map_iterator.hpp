@@ -1,7 +1,8 @@
-// (C) Copyright Jeremy Siek, 2001.
-// Distributed under the Boost Software License, Version 1.0. (See
-// accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)
+// (C) Copyright Jeremy Siek, 2001. Permission to copy, use, modify,
+// sell and distribute this software is granted provided this
+// copyright notice appears in all copies. This software is provided
+// "as is" without express or implied warranty, and with no claim as
+// to its suitability for any purpose.
 
 //  See http://www.boost.org/libs/property_map for documentation.
 
@@ -9,9 +10,7 @@
 #define BOOST_PROPERTY_MAP_ITERATOR_HPP
 
 #include <boost/property_map.hpp>
-#include <boost/iterator/iterator_adaptor.hpp>
-#include <boost/mpl/if.hpp>
-#include <boost/type_traits/is_same.hpp>
+#include <boost/iterator_adaptors.hpp>
 
 namespace boost {
 
@@ -20,83 +19,70 @@ namespace boost {
 
   namespace detail {
 
-    template <class Iterator, class LvaluePropertyMap>
-    class lvalue_pmap_iter
-      : public iterator_adaptor< lvalue_pmap_iter< Iterator, LvaluePropertyMap >,
-                                 Iterator,
-                                 typename property_traits<LvaluePropertyMap>::value_type,
-                                 use_default,
-                                 typename property_traits<LvaluePropertyMap>::reference>
+    template <class LvaluePropertyMap>
+    struct lvalue_pmap_iter_policies : public default_iterator_policies
     {
-      friend class boost::iterator_core_access;
+      lvalue_pmap_iter_policies() { }
+      lvalue_pmap_iter_policies(LvaluePropertyMap m) : m_map(m) {}
 
-      typedef iterator_adaptor< lvalue_pmap_iter< Iterator, LvaluePropertyMap >,
-                                Iterator,
-                                typename property_traits<LvaluePropertyMap>::value_type,
-                                use_default,
-                                typename property_traits<LvaluePropertyMap>::reference> super_t;
-
-    public:
-      lvalue_pmap_iter() { }
-      lvalue_pmap_iter(Iterator const&     it,
-                       LvaluePropertyMap m)
-        : super_t(it),
-          m_map(m) {}
-
-    private:
-      typename super_t::reference
-      dereference() const
+      template <class Iter>
+      typename Iter::reference
+      dereference(const Iter& i) const 
       {
-        return m_map[*(this->base_reference())];
+        return m_map[*i.base()];
       }
-
+    private:
       LvaluePropertyMap m_map;
     };
 
-    template <class Iterator, class ReadablePropertyMap>
-    class readable_pmap_iter :
-      public iterator_adaptor< readable_pmap_iter< Iterator, ReadablePropertyMap >,
-                               Iterator,
-                               typename property_traits<ReadablePropertyMap>::value_type,
-                               use_default,
-                               typename property_traits<ReadablePropertyMap>::value_type>
-
-
+    template <class ReadablePropertyMap>
+    struct readable_pmap_iter_policies : public default_iterator_policies
     {
-      friend class iterator_core_access;
+      readable_pmap_iter_policies() { }
+      readable_pmap_iter_policies(ReadablePropertyMap m) : m_map(m) {}
 
-      typedef iterator_adaptor< readable_pmap_iter< Iterator, ReadablePropertyMap >,
-                                Iterator,
-                                typename property_traits<ReadablePropertyMap>::value_type,
-                                use_default,
-                                typename property_traits<ReadablePropertyMap>::value_type> super_t;
-
-    public:
-      readable_pmap_iter() { }
-      readable_pmap_iter(Iterator const&     it,
-                         ReadablePropertyMap m)
-        : super_t(it),
-          m_map(m) {}
-
-    private:
-      typename super_t::reference
-      dereference() const
+      template <class Iter>
+      typename Iter::reference
+      dereference(const Iter& i) const 
       {
-        return get(m_map, *(this->base_reference()));
+        return get(m_map, *i.base());
       }
-
+    private:
       ReadablePropertyMap m_map;
     };
 
+    template <class PMapCategory>
+    struct choose_pmap_iter {
+      template <class PMap, class Iter>
+      struct bind_ {     
+        typedef typename property_traits<PMap>::value_type value;
+        typedef iterator_adaptor<Iter,
+          readable_pmap_iter_policies<PMap>, value, value,
+          value*, std::input_iterator_tag> type;
+      };
+    };
 
+    template <>
+    struct choose_pmap_iter<lvalue_property_map_tag> {
+      template <class PMap, class Iter>
+      struct bind_ {
+        typedef typename property_traits<PMap>::value_type value;
+        typedef typename property_traits<PMap>::reference ref;
+        typedef iterator_adaptor<Iter,
+          lvalue_pmap_iter_policies<PMap>,
+          value, ref> type;
+      };
+    };
+    
   } // namespace detail
 
   template <class PropertyMap, class Iterator>
-  struct property_map_iterator_generator :
-    mpl::if_< is_same< typename property_traits<PropertyMap>::category, lvalue_property_map_tag>,
-              detail::lvalue_pmap_iter<Iterator, PropertyMap>,
-              detail::readable_pmap_iter<Iterator, PropertyMap> >
-  {};
+  class property_map_iterator_generator {
+  public:
+    typedef typename property_traits<PropertyMap>::category Cat; 
+    typedef typename detail::choose_pmap_iter<Cat>::
+      template bind_<PropertyMap, Iterator>::type type;
+  };
 
   template <class PropertyMap, class Iterator>
   typename property_map_iterator_generator<PropertyMap, Iterator>::type

@@ -3,28 +3,31 @@
 // Copyright 1997, 1998, 1999, 2000 University of Notre Dame.
 // Authors: Andrew Lumsdaine, Lie-Quan Lee, Jeremy G. Siek
 //
-// Distributed under the Boost Software License, Version 1.0. (See
-// accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)
+// This file is part of the Boost Graph Library
+//
+// You should have received a copy of the License Agreement for the
+// Boost Graph Library along with the software; see the file LICENSE.
+// If not, contact Office of Research, University of Notre Dame, Notre
+// Dame, IN 46556.
+//
+// Permission to modify the code and to distribute modified code is
+// granted, provided the text of this NOTICE is retained, a notice that
+// the code was modified is included with the above COPYRIGHT NOTICE and
+// with the COPYRIGHT NOTICE in the LICENSE file, and that the LICENSE
+// file is distributed with the modified code.
+//
+// LICENSOR MAKES NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED.
+// By way of example, but not limitation, Licensor MAKES NO
+// REPRESENTATIONS OR WARRANTIES OF MERCHANTABILITY OR FITNESS FOR ANY
+// PARTICULAR PURPOSE OR THAT THE USE OF THE LICENSED SOFTWARE COMPONENTS
+// OR DOCUMENTATION WILL NOT INFRINGE ANY PATENTS, COPYRIGHTS, TRADEMARKS
+// OR OTHER RIGHTS.
 //=======================================================================
 //
 #ifndef BOOST_GRAPH_DETAIL_ADJ_LIST_EDGE_ITERATOR_HPP
 #define BOOST_GRAPH_DETAIL_ADJ_LIST_EDGE_ITERATOR_HPP
 
 #include <iterator>
-#include <utility>
-#include <boost/detail/workaround.hpp>
-
-#if BOOST_WORKAROUND( __IBMCPP__, <= 600 )
-#  define BOOST_GRAPH_NO_OPTIONAL
-#endif
-
-#ifdef BOOST_GRAPH_NO_OPTIONAL
-#  define BOOST_GRAPH_MEMBER .
-#else 
-#  define BOOST_GRAPH_MEMBER ->
-#  include <boost/optional.hpp>
-#endif // ndef BOOST_GRAPH_NO_OPTIONAL
 
 namespace boost {
 
@@ -45,7 +48,7 @@ namespace boost {
 
       inline adj_list_edge_iterator(const self& x) 
       : vBegin(x.vBegin), vCurr(x.vCurr), vEnd(x.vEnd),
-        edges(x.edges), m_g(x.m_g) { }
+        eCurr(x.eCurr), eEnd(x.eEnd), m_g(x.m_g) { }
 
       template <class G>
       inline adj_list_edge_iterator(VertexIterator b, 
@@ -57,7 +60,7 @@ namespace boost {
           while ( vCurr != vEnd && out_degree(*vCurr, *m_g) == 0 )
             ++vCurr;
           if ( vCurr != vEnd )
-            edges = out_edges(*vCurr, *m_g);
+            tie(eCurr, eEnd) = out_edges(*vCurr, *m_g);
         }
       }
 
@@ -66,14 +69,13 @@ namespace boost {
         For undirected graphs, one edge go through twice.
       */
       inline self& operator++() {
-        ++edges BOOST_GRAPH_MEMBER first;
-        if (edges BOOST_GRAPH_MEMBER first == edges BOOST_GRAPH_MEMBER second) 
-        {
+        ++eCurr;
+        if ( eCurr == eEnd ) {
           ++vCurr;
           while ( vCurr != vEnd && out_degree(*vCurr, *m_g) == 0 )
             ++vCurr;
           if ( vCurr != vEnd )
-            edges = out_edges(*vCurr, *m_g);
+            tie(eCurr, eEnd) = out_edges(*vCurr, *m_g);
         }
         return *this;
       }
@@ -82,36 +84,24 @@ namespace boost {
         ++(*this);
         return tmp;
       }
-      inline value_type operator*() const 
-      { return *edges BOOST_GRAPH_MEMBER first; } 
+      inline value_type operator*() const { return *eCurr; } 
       inline bool operator==(const self& x) const {
-        return vCurr == x.vCurr 
-          && (vCurr == vEnd 
-              || edges BOOST_GRAPH_MEMBER first == x.edges BOOST_GRAPH_MEMBER first);
+        return vCurr == x.vCurr && (vCurr == vEnd || eCurr == x.eCurr);
       }
       inline bool operator!=(const self& x) const {
-        return vCurr != x.vCurr 
-          || (vCurr != vEnd 
-              && edges BOOST_GRAPH_MEMBER first != x.edges BOOST_GRAPH_MEMBER first);
+        return vCurr != x.vCurr || (vCurr != vEnd && eCurr != x.eCurr);
       }
     protected:
       VertexIterator vBegin;
       VertexIterator vCurr;
       VertexIterator vEnd;
-
-#ifdef BOOST_GRAPH_NO_OPTIONAL
-      std::pair<OutEdgeIterator, OutEdgeIterator> edges;
-#else
-      boost::optional<std::pair<OutEdgeIterator, OutEdgeIterator> >
-        edges;
-#endif // ndef BOOST_GRAPH_NO_OPTIONAL
+      OutEdgeIterator eCurr;
+      OutEdgeIterator eEnd;
       const Graph* m_g;
     };
 
   } // namespace detail
 
 }
-
-#undef BOOST_GRAPH_MEMBER
 
 #endif // BOOST_GRAPH_DETAIL_ADJ_LIST_EDGE_ITERATOR_HPP

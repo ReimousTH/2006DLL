@@ -1,8 +1,9 @@
 //
-// (C) Copyright Jeremy Siek 2000.
-// Distributed under the Boost Software License, Version 1.0. (See
-// accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)
+// (C) Copyright Jeremy Siek 2000. Permission to copy, use, modify,
+// sell and distribute this software is granted provided this
+// copyright notice appears in all copies. This software is provided
+// "as is" without express or implied warranty, and with no claim as
+// to its suitability for any purpose.
 //
 // Revision History:
 //   05 May   2001: Workarounds for HP aCC from Thomas Matelich. (Jeremy Siek)
@@ -21,7 +22,7 @@
 #include <utility>
 #include <boost/type_traits/conversion_traits.hpp>
 #include <boost/static_assert.hpp>
-#include <boost/mpl/identity.hpp>
+#include <boost/type.hpp>
 
 
 #if defined(BOOST_MSVC) && BOOST_MSVC <= 1300 || defined(__BORLANDC__)
@@ -42,7 +43,7 @@ template <class T> inline void ignore_unused_variable_warning(const T&) { }
 
 // the unused, defaulted parameter is a workaround for MSVC and Compaq C++
 template <class Concept>
-inline void function_requires(mpl::identity<Concept>* = 0)
+inline void function_requires(type<Concept>* = 0)
 {
 #if !defined(NDEBUG)
   void (Concept::*x)() = BOOST_FPTR Concept::constraints;
@@ -52,7 +53,7 @@ inline void function_requires(mpl::identity<Concept>* = 0)
 
 #define BOOST_CLASS_REQUIRE(type_var, ns, concept) \
   typedef void (ns::concept <type_var>::* func##type_var##concept)(); \
-  template <func##type_var##concept Tp1_> \
+  template <func##type_var##concept _Tp1> \
   struct concept_checking_##type_var##concept { }; \
   typedef concept_checking_##type_var##concept< \
     BOOST_FPTR ns::concept<type_var>::constraints> \
@@ -61,7 +62,7 @@ inline void function_requires(mpl::identity<Concept>* = 0)
 #define BOOST_CLASS_REQUIRE2(type_var1, type_var2, ns, concept) \
   typedef void (ns::concept <type_var1,type_var2>::* \
      func##type_var1##type_var2##concept)(); \
-  template <func##type_var1##type_var2##concept Tp1_> \
+  template <func##type_var1##type_var2##concept _Tp1> \
   struct concept_checking_##type_var1##type_var2##concept { }; \
   typedef concept_checking_##type_var1##type_var2##concept< \
     BOOST_FPTR ns::concept<type_var1,type_var2>::constraints> \
@@ -70,7 +71,7 @@ inline void function_requires(mpl::identity<Concept>* = 0)
 #define BOOST_CLASS_REQUIRE3(tv1, tv2, tv3, ns, concept) \
   typedef void (ns::concept <tv1,tv2,tv3>::* \
      func##tv1##tv2##tv3##concept)(); \
-  template <func##tv1##tv2##tv3##concept Tp1_> \
+  template <func##tv1##tv2##tv3##concept _Tp1> \
   struct concept_checking_##tv1##tv2##tv3##concept { }; \
   typedef concept_checking_##tv1##tv2##tv3##concept< \
     BOOST_FPTR ns::concept<tv1,tv2,tv3>::constraints> \
@@ -79,7 +80,7 @@ inline void function_requires(mpl::identity<Concept>* = 0)
 #define BOOST_CLASS_REQUIRE4(tv1, tv2, tv3, tv4, ns, concept) \
   typedef void (ns::concept <tv1,tv2,tv3,tv4>::* \
      func##tv1##tv2##tv3##tv4##concept)(); \
-  template <func##tv1##tv2##tv3##tv4##concept Tp1_> \
+  template <func##tv1##tv2##tv3##tv4##concept _Tp1> \
   struct concept_checking_##tv1##tv2##tv3##tv4##concept { }; \
   typedef concept_checking_##tv1##tv2##tv3##tv4##concept< \
     BOOST_FPTR ns::concept<tv1,tv2,tv3,tv4>::constraints> \
@@ -101,7 +102,7 @@ inline void function_requires(mpl::identity<Concept>* = 0)
 
 #define BOOST_CLASS_REQUIRES(type_var, concept) \
   typedef void (concept <type_var>::* func##type_var##concept)(); \
-  template <func##type_var##concept Tp1_> \
+  template <func##type_var##concept _Tp1> \
   struct concept_checking_##type_var##concept { }; \
   typedef concept_checking_##type_var##concept< \
     BOOST_FPTR concept <type_var>::constraints> \
@@ -109,7 +110,7 @@ inline void function_requires(mpl::identity<Concept>* = 0)
 
 #define BOOST_CLASS_REQUIRES2(type_var1, type_var2, concept) \
   typedef void (concept <type_var1,type_var2>::* func##type_var1##type_var2##concept)(); \
-  template <func##type_var1##type_var2##concept Tp1_> \
+  template <func##type_var1##type_var2##concept _Tp1> \
   struct concept_checking_##type_var1##type_var2##concept { }; \
   typedef concept_checking_##type_var1##type_var2##concept< \
     BOOST_FPTR concept <type_var1,type_var2>::constraints> \
@@ -117,7 +118,7 @@ inline void function_requires(mpl::identity<Concept>* = 0)
 
 #define BOOST_CLASS_REQUIRES3(type_var1, type_var2, type_var3, concept) \
   typedef void (concept <type_var1,type_var2,type_var3>::* func##type_var1##type_var2##type_var3##concept)(); \
-  template <func##type_var1##type_var2##type_var3##concept Tp1_> \
+  template <func##type_var1##type_var2##type_var3##concept _Tp1> \
   struct concept_checking_##type_var1##type_var2##type_var3##concept { }; \
   typedef concept_checking_##type_var1##type_var2##type_var3##concept< \
     BOOST_FPTR concept <type_var1,type_var2,type_var3>::constraints>  \
@@ -125,7 +126,7 @@ inline void function_requires(mpl::identity<Concept>* = 0)
 
 #define BOOST_CLASS_REQUIRES4(type_var1, type_var2, type_var3, type_var4, concept) \
   typedef void (concept <type_var1,type_var2,type_var3,type_var4>::* func##type_var1##type_var2##type_var3##type_var4##concept)(); \
-  template <func##type_var1##type_var2##type_var3##type_var4##concept Tp1_> \
+  template <func##type_var1##type_var2##type_var3##type_var4##concept _Tp1> \
   struct concept_checking_##type_var1##type_var2##type_var3##type_var4##concept { }; \
   typedef concept_checking_##type_var1##type_var2##type_var3##type_var4##concept< \
     BOOST_FPTR concept <type_var1,type_var2,type_var3,type_var4>::constraints>  \
@@ -179,7 +180,7 @@ struct require_same { typedef T type; };
   template <> struct SignedIntegerConcept<int> { void constraints() {} };
   template <> struct SignedIntegerConcept<long> { void constraints() {} };
 # if defined(BOOST_HAS_LONG_LONG)
-  template <> struct SignedIntegerConcept< ::boost::long_long_type> { void constraints() {} };
+  template <> struct SignedIntegerConcept<long long> { void constraints() {} };
 # endif
   // etc.
 #endif      
@@ -535,15 +536,34 @@ struct require_same { typedef T type; };
   // Iterator Concepts
 
   template <class TT>
-  struct InputIteratorConcept
+  struct TrivialIteratorConcept
   {
     void constraints() {
       function_requires< AssignableConcept<TT> >();
+      function_requires< DefaultConstructibleConcept<TT> >();
       function_requires< EqualityComparableConcept<TT> >();
-      TT j(i);
       (void)*i;           // require dereference operator
-#ifndef BOOST_NO_STD_ITERATOR_TRAITS
+    }
+    TT i;
+  };
+
+  template <class TT>
+  struct Mutable_TrivialIteratorConcept
+  {
+    void constraints() {
+      function_requires< TrivialIteratorConcept<TT> >();
+      *i = *j;            // require dereference and assignment
+    }
+    TT i, j;
+  };
+
+  template <class TT>
+  struct InputIteratorConcept
+  {
+    void constraints() {
+      function_requires< TrivialIteratorConcept<TT> >();
       // require iterator_traits typedef's
+#ifndef BOOST_NO_STD_ITERATOR_TRAITS
       typedef typename std::iterator_traits<TT>::difference_type D;
       // Hmm, the following is a bit fragile
       //function_requires< SignedIntegerConcept<D> >();
@@ -552,7 +572,7 @@ struct require_same { typedef T type; };
       typedef typename std::iterator_traits<TT>::iterator_category C;
       function_requires< ConvertibleConcept<C, std::input_iterator_tag> >();
 #endif
-      ++j;                // require preincrement operator
+      ++i;                // require preincrement operator
       i++;                // require postincrement operator
     }
     TT i;
@@ -688,12 +708,12 @@ struct require_same { typedef T type; };
       function_requires< AssignableConcept<Container> >();
       const_constraints(c);
     }
-    void const_constraints(const Container& cc) {
-      i = cc.begin();
-      i = cc.end();
-      n = cc.size();
-      n = cc.max_size();
-      b = cc.empty();
+    void const_constraints(const Container& c) {
+      i = c.begin();
+      i = c.end();
+      n = c.size();
+      n = c.max_size();
+      b = c.empty();
     }
     Container c;
     bool b;
@@ -757,9 +777,9 @@ struct require_same { typedef T type; };
         BidirectionalIteratorConcept<const_reverse_iterator> >();
       const_constraints(c);
     }
-    void const_constraints(const ReversibleContainer& cc) {
-      const_reverse_iterator i = cc.rbegin();
-      i = cc.rend();
+    void const_constraints(const ReversibleContainer& c) {
+      const_reverse_iterator i = c.rbegin();
+      i = c.rend();
     }
     ReversibleContainer c;
   };
@@ -801,8 +821,8 @@ struct require_same { typedef T type; };
 
       const_constraints(c);
     }
-    void const_constraints(const RandomAccessContainer& cc) {
-      const_reference r = cc[n];
+    void const_constraints(const RandomAccessContainer& c) {
+      const_reference r = c[n];
       ignore_unused_variable_warning(r);
     }
     RandomAccessContainer c;
@@ -905,8 +925,8 @@ struct require_same { typedef T type; };
       reference r = c.back();
       ignore_unused_variable_warning(r);
     }
-    void const_constraints(const BackInsertionSequence& cc) {
-      const_reference r = cc.back();
+    void const_constraints(const BackInsertionSequence& c) {
+      const_reference r = c.back();
       ignore_unused_variable_warning(r);
     };
     BackInsertionSequence c;
@@ -927,10 +947,10 @@ struct require_same { typedef T type; };
       c.erase(r.first, r.second);
       const_constraints(c);
     }
-    void const_constraints(const AssociativeContainer& cc) {
-      ci = cc.find(k);
-      n = cc.count(k);
-      cr = cc.equal_range(k);
+    void const_constraints(const AssociativeContainer& c) {
+      ci = c.find(k);
+      n = c.count(k);
+      cr = c.equal_range(k);
     }
     typedef typename AssociativeContainer::iterator iterator;
     typedef typename AssociativeContainer::const_iterator const_iterator;

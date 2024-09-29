@@ -1,10 +1,7 @@
-//  (C) Copyright John Maddock 2001 - 2003. 
-//  (C) Copyright Jens Maurer 2001 - 2003. 
-//  (C) Copyright David Abrahams 2002. 
-//  (C) Copyright Toon Knapen 2003. 
-//  Use, modification and distribution are subject to the 
-//  Boost Software License, Version 1.0. (See accompanying file 
-//  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+//  (C) Copyright Boost.org 2001. Permission to copy, use, modify, sell and
+//  distribute this software is granted provided this copyright notice appears
+//  in all copies. This software is provided "as is" without express or implied
+//  warranty, and with no claim as to its suitability for any purpose.
 
 //  See http://www.boost.org for most recent version.
 
@@ -21,20 +18,16 @@
 #define BOOST_NO_SWPRINTF 
 #define BOOST_NO_CWCTYPE
 
-#if defined(__GNUC__)
-#  if (__GNUC__ < 3) || ((__GNUC__ == 3) && (__GNUC_MINOR__ < 3))
-      // GNU C on HP-UX does not support threads (checked up to gcc 3.3)
-#     define BOOST_DISABLE_THREADS
-#  elif !defined(BOOST_DISABLE_THREADS)
-      // threads supported from gcc-3.3 onwards:
-#     define BOOST_HAS_THREADS
-#     define BOOST_HAS_PTHREADS
-#  endif
-#endif
-
 // boilerplate code:
 #define BOOST_HAS_UNISTD_H
 #include <boost/config/posix_features.hpp>
+
+// HPUX has an incomplete pthreads implementation, so it doesn't
+// define _POSIX_THREADS, but it might be enough to implement
+// Boost.Threads.
+#if !defined(BOOST_HAS_PTHREADS) && defined(_POSIX_THREAD_ATTR_STACKADDR)
+# define BOOST_HAS_PTHREADS 
+#endif
 
 // the following are always available:
 #ifndef BOOST_HAS_GETTIMEOFDAY
@@ -64,5 +57,4 @@
 #ifndef BOOST_HAS_SIGACTION
 #  define BOOST_HAS_SIGACTION
 #endif
-
 

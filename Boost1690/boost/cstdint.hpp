@@ -1,11 +1,10 @@
 //  boost cstdint.hpp header file  ------------------------------------------//
 
-//  (C) Copyright Beman Dawes 1999. 
-//  (C) Copyright Jens Mauer 2001  
-//  (C) Copyright John Maddock 2001 
-//  Distributed under the Boost
-//  Software License, Version 1.0. (See accompanying file
-//  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+//  (C) Copyright boost.org 1999. Permission to copy, use, modify, sell
+//  and distribute this software is granted provided this copyright
+//  notice appears in all copies. This software is provided "as is" without
+//  express or implied warranty, and with no claim as to its suitability for
+//  any purpose.
 
 //  See http://www.boost.org/libs/integer for documentation.
 
@@ -40,15 +39,6 @@
 #   include <inttypes.h>
 # else
 #   include <stdint.h>
-
-// There is a bug in Cygwin two _C macros
-#   if defined(__STDC_CONSTANT_MACROS) && defined(__CYGWIN__)
-#     undef INTMAX_C
-#     undef UINTMAX_C
-#     define INTMAX_C(c) c##LL
-#     define UINTMAX_C(c) c##ULL
-#   endif
-
 # endif
 
 namespace boost
@@ -91,8 +81,8 @@ namespace boost
 
 } // namespace boost
 
-#elif defined(__FreeBSD__) && (__FreeBSD__ <= 4) || defined(__osf__)
-// FreeBSD and Tru64 have an <inttypes.h> that contains much of what we need.
+#elif defined(__FreeBSD__) && (__FreeBSD__ <= 4)
+// FreeBSD has an <inttypes.h> that contains much of what we need
 # include <inttypes.h>
 
 namespace boost {
@@ -141,7 +131,7 @@ namespace boost {
 
 #else  // BOOST_HAS_STDINT_H
 
-# include <boost/limits.hpp> // implementation artifact; not part of interface
+# include <limits.h> // implementation artifact; not part of interface
 
 
 namespace boost
@@ -232,14 +222,14 @@ namespace boost
 #       error defaults not correct; you must hand modify boost/cstdint.hpp
 #    endif
 
-     typedef  ::boost::long_long_type            intmax_t;
-     typedef  ::boost::ulong_long_type   uintmax_t;
-     typedef  ::boost::long_long_type            int64_t;
-     typedef  ::boost::long_long_type            int_least64_t;
-     typedef  ::boost::long_long_type            int_fast64_t;
-     typedef  ::boost::ulong_long_type   uint64_t;
-     typedef  ::boost::ulong_long_type   uint_least64_t;
-     typedef  ::boost::ulong_long_type   uint_fast64_t;
+     typedef long long            intmax_t;
+     typedef unsigned long long   uintmax_t;
+     typedef long long            int64_t;
+     typedef long long            int_least64_t;
+     typedef long long            int_fast64_t;
+     typedef unsigned long long   uint64_t;
+     typedef unsigned long long   uint_least64_t;
+     typedef unsigned long long   uint_fast64_t;
 
 # elif ULONG_MAX != 0xffffffff
 
@@ -255,15 +245,6 @@ namespace boost
 #    else
 #       error defaults not correct; you must hand modify boost/cstdint.hpp
 #    endif
-# elif defined(__GNUC__) && defined(BOOST_HAS_LONG_LONG)
-     __extension__ typedef long long            intmax_t;
-     __extension__ typedef unsigned long long   uintmax_t;
-     __extension__ typedef long long            int64_t;
-     __extension__ typedef long long            int_least64_t;
-     __extension__ typedef long long            int_fast64_t;
-     __extension__ typedef unsigned long long   uint64_t;
-     __extension__ typedef unsigned long long   uint_least64_t;
-     __extension__ typedef unsigned long long   uint_fast64_t;
 # elif defined(BOOST_HAS_MS_INT64)
      //
      // we have Borland/Intel/Microsoft __int64:

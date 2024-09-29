@@ -1,21 +1,16 @@
-// Copyright David Abrahams 2002.
-// Distributed under the Boost Software License, Version 1.0. (See
-// accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)
+// Copyright David Abrahams 2002. Permission to copy, use,
+// modify, sell and distribute this software is granted provided this
+// copyright notice appears in all copies. This software is provided
+// "as is" without express or implied warranty, and with no claim as
+// to its suitability for any purpose.
 #ifndef ITERATOR_DWA2002512_HPP
 # define ITERATOR_DWA2002512_HPP
-
-# include <boost/python/detail/prefix.hpp>
 
 # include <boost/python/detail/target.hpp>
 # include <boost/python/object/iterator.hpp>
 # include <boost/python/object_core.hpp>
-
 # include <boost/type_traits/cv_traits.hpp>
 # include <boost/type_traits/transform_traits.hpp>
-
-# include <boost/bind.hpp>
-# include <boost/bind/protect.hpp>
 
 namespace boost { namespace python { 
 
@@ -24,19 +19,14 @@ namespace detail
   // Adds an additional layer of binding to
   // objects::make_iterator(...), which allows us to pass member
   // function and member data pointers.
-  template <class Target, class Accessor1, class Accessor2, class NextPolicies>
+  template <class NextPolicies, class Target, class Accessor1, class Accessor2>
   inline object make_iterator(
-      Accessor1 get_start
-    , Accessor2 get_finish
-    , NextPolicies next_policies
-    , Target&(*)()
-  )
+      Accessor1 get_start, Accessor2 get_finish, boost::type<Target>* target = 0, NextPolicies* = 0)
   {
-      return objects::make_iterator_function<Target>(
+      return objects::make_iterator_function<NextPolicies,Target>(
           boost::protect(boost::bind(get_start, _1))
-        , boost::protect(boost::bind(get_finish, _1))
-        , next_policies
-      );
+          , boost::protect(boost::bind(get_finish, _1))
+          );
   }
 
   // Guts of template class iterators<>, below.
@@ -81,11 +71,9 @@ struct iterators
 template <class Accessor1, class Accessor2>
 object range(Accessor1 start, Accessor2 finish)
 {
-    return detail::make_iterator(
-        start, finish
-      , objects::default_iterator_call_policies()
-      , detail::target(start)
-    );
+    return detail::make_iterator<objects::default_iterator_call_policies>(
+                start, finish
+                , detail::target(start));
 }
 
 // Create an iterator-building function which uses the given accessors
@@ -93,7 +81,7 @@ object range(Accessor1 start, Accessor2 finish)
 template <class NextPolicies, class Accessor1, class Accessor2>
 object range(Accessor1 start, Accessor2 finish, NextPolicies* = 0)
 {
-    return detail::make_iterator(start, finish, NextPolicies(), detail::target(start));
+    return detail::make_iterator<NextPolicies>(start, finish, detail::target(start));
 }
 
 // Create an iterator-building function which uses the given accessors
@@ -101,8 +89,8 @@ object range(Accessor1 start, Accessor2 finish, NextPolicies* = 0)
 template <class NextPolicies, class Target, class Accessor1, class Accessor2>
 object range(Accessor1 start, Accessor2 finish, NextPolicies* = 0, boost::type<Target>* = 0)
 {
-    // typedef typename add_reference<Target>::type target;
-    return detail::make_iterator(start, finish, NextPolicies(), (Target&(*)())0);
+    typedef typename add_reference<Target>::type target;
+    return detail::make_iterator<NextPolicies, target>(start, finish);
 }
 
 // A Python callable object which produces an iterator traversing

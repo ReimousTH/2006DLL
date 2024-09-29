@@ -5,7 +5,7 @@ using namespace Sonicteam::SoX::Physics;
 
 Sonicteam::SoX::Physics::SphereShape::SphereShape(double radius)
 {
-	this->UnkReference = 0;
+
 	this->Radius = radius;
 
 	this->SFlag = 0;

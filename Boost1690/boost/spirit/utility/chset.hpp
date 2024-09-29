@@ -1,24 +1,27 @@
 /*=============================================================================
+    Spirit v1.6.0
     Copyright (c) 2001-2003 Joel de Guzman
     Copyright (c) 2001-2003 Daniel Nuffer
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Permission to copy, use, modify, sell and distribute this software is
+    granted provided this copyright notice appears in all copies. This
+    software is provided "as is" without express or implied warranty, and
+    with no claim as to its suitability for any purpose.
 =============================================================================*/
 #ifndef BOOST_SPIRIT_CHSET_HPP
 #define BOOST_SPIRIT_CHSET_HPP
 
 ///////////////////////////////////////////////////////////////////////////////
-#include <boost/shared_ptr.hpp>
-#include <boost/spirit/core/primitives/primitives.hpp>
-#include <boost/spirit/utility/impl/chset/basic_chset.hpp>
+#include "boost/shared_ptr.hpp"
+
+#include "boost/spirit/core/primitives/primitives.hpp"
+#include "boost/spirit/utility/impl/chset/basic_chset.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace boost { namespace spirit {
 
-namespace utility { namespace impl {
+namespace impl {
 
     // This is here because some compilers choke on out-of-line member
     // template functions.  And we don't want to put the whole algorithm
@@ -26,8 +29,7 @@ namespace utility { namespace impl {
     template <typename CharT, typename CharT2>
     void construct_chset(boost::shared_ptr<basic_chset<CharT> >& ptr,
             CharT2 const* definition);
-
-}} // namespace utility::impl
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -39,20 +41,17 @@ class chset: public char_parser<chset<CharT> > {
 
 public:
                     chset();
-                    chset(chset const& arg_);
-    explicit        chset(CharT arg_);
-    explicit        chset(anychar_parser arg_);
-    explicit        chset(nothing_parser arg_);
-    explicit        chset(chlit<CharT> const& arg_);
-    explicit        chset(range<CharT> const& arg_);
-    explicit        chset(negated_char_parser<chlit<CharT> > const& arg_);
-    explicit        chset(negated_char_parser<range<CharT> > const& arg_);
-
+                    chset(chset const& arg);
+    explicit        chset(CharT arg);
+    explicit        chset(anychar_parser arg);
+    explicit        chset(nothing_parser arg);
+    explicit        chset(chlit<CharT> const& arg);
+    explicit        chset(range<CharT> const& arg);
                     template <typename CharT2>
     explicit        chset(CharT2 const* definition)
                     : ptr(new basic_chset<CharT>())
                     {
-                        utility::impl::construct_chset(ptr, definition);
+                        impl::construct_chset(ptr, definition);
                     }
                     ~chset();
 
@@ -62,15 +61,9 @@ public:
     chset&          operator=(nothing_parser rhs);
     chset&          operator=(chlit<CharT> const& rhs);
     chset&          operator=(range<CharT> const& rhs);
-    chset&          operator=(negated_char_parser<chlit<CharT> > const& rhs);
-    chset&          operator=(negated_char_parser<range<CharT> > const& rhs);
 
-    void            set(range<CharT> const& arg_);
-    void            set(negated_char_parser<chlit<CharT> > const& arg_);
-    void            set(negated_char_parser<range<CharT> > const& arg_);
-
-    void            clear(range<CharT> const& arg_);
-    void            clear(negated_char_parser<range<CharT> > const& arg_);
+    void            set(range<CharT> const& arg);
+    void            clear(range<CharT> const& arg);
     bool            test(CharT ch) const;
     chset&          inverse();
     void            swap(chset& x);
@@ -91,25 +84,15 @@ private:
 //
 ///////////////////////////////////////////////////////////////////////////////
 template <typename CharT>
-inline chset<CharT>
-chset_p(chlit<CharT> const& arg_)
-{ return chset<CharT>(arg_); }
+inline chset<wchar_t>
+chset_p(chlit<CharT> const& arg)
+{ return chset<CharT>(arg); }
 
 //////////////////////////////////
 template <typename CharT>
-inline chset<CharT>
-chset_p(range<CharT> const& arg_)
-{ return chset<CharT>(arg_); }
-
-template <typename CharT>
-inline chset<CharT>
-chset_p(negated_char_parser<chlit<CharT> > const& arg_)
-{ return chset<CharT>(arg_); }
-
-template <typename CharT>
-inline chset<CharT>
-chset_p(negated_char_parser<range<CharT> > const& arg_)
-{ return chset<CharT>(arg_); }
+inline chset<wchar_t>
+chset_p(range<CharT> const& arg)
+{ return chset<CharT>(arg); }
 
 //////////////////////////////////
 inline chset<char>
@@ -164,14 +147,14 @@ chset_p(unsigned long ch)
 
 #ifdef BOOST_HAS_LONG_LONG
 //////////////////////////////////
-inline chset< ::boost::long_long_type>
-chset_p( ::boost::long_long_type ch)
-{ return chset< ::boost::long_long_type>(ch); }
+inline chset<long long>
+chset_p(long long ch)
+{ return chset<long long>(ch); }
 
 //////////////////////////////////
-inline chset< ::boost::ulong_long_type>
-chset_p( ::boost::ulong_long_type ch)
-{ return chset< ::boost::ulong_long_type>(ch); }
+inline chset<unsigned long long>
+chset_p(unsigned long long ch)
+{ return chset<unsigned long long>(ch); }
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -179,5 +162,10 @@ chset_p( ::boost::ulong_long_type ch)
 
 #endif
 
-#include <boost/spirit/utility/impl/chset.ipp>
-#include <boost/spirit/utility/chset_operators.hpp>
+#if !defined(BOOST_SPIRIT_CHSET_IPP)
+#include "boost/spirit/utility/impl/chset.ipp"
+#endif
+
+#if !defined(BOOST_SPIRIT_CHSET_OPERATORS_HPP)
+#include "boost/spirit/utility/chset_operators.hpp"
+#endif

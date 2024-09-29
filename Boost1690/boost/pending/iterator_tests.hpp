@@ -1,7 +1,3 @@
-// Copyright David Abrahams and Jeremy Siek 2003.
-// Distributed under the Boost Software License, Version 1.0. (See
-// accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)
 #ifndef BOOST_ITERATOR_TESTS_HPP
 # define BOOST_ITERATOR_TESTS_HPP
 
@@ -24,8 +20,6 @@
 # include <boost/type_traits.hpp>
 # include <boost/static_assert.hpp>
 # include <boost/concept_archetype.hpp> // for detail::dummy_constructor
-# include <boost/implicit_cast.hpp>
-# include <boost/type_traits/broken_compiler_spec.hpp>
 
 namespace boost {
 
@@ -39,11 +33,6 @@ struct dummyT {
   int m_x;
 };
 
-}
-
-BOOST_TT_BROKEN_COMPILER_SPEC(boost::dummyT)
-    
-namespace boost {
 
 // Tests whether type Iterator satisfies the requirements for a
 // TrivialIterator. 
@@ -207,8 +196,6 @@ void bidirectional_iterator_test(Iterator i, T v1, T v2)
 
 // mutable_bidirectional_iterator_test
 
-template <class U> struct undefined;
-
 // Preconditions: [i,i+N) is a valid range
 template <class Iterator, class TrueVals>
 void random_access_iterator_test(Iterator i, int N, TrueVals vals)
@@ -217,12 +204,10 @@ void random_access_iterator_test(Iterator i, int N, TrueVals vals)
   const Iterator j = i;
   int c;
 
-  typedef typename boost::detail::iterator_traits<Iterator>::value_type value_type;
-  
   for (c = 0; c < N-1; ++c) {
     assert(i == j + c);
     assert(*i == vals[c]);
-    assert(*i == boost::implicit_cast<value_type>(j[c]));
+    assert(*i == j[c]);
     assert(*i == *(j + c));
     assert(*i == *(c + j));
     ++i;
@@ -236,7 +221,7 @@ void random_access_iterator_test(Iterator i, int N, TrueVals vals)
   for (c = 0; c < N-1; ++c) {
     assert(i == k - c);
     assert(*i == vals[N - 1 - c]);
-    assert(*i == boost::implicit_cast<value_type>(j[N - 1 - c]));
+    assert(*i == j[N - 1 - c]);
     Iterator q = k - c; 
     assert(*i == *q);
     assert(i > j);

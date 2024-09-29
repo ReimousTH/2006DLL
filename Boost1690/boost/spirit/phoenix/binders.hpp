@@ -1,18 +1,17 @@
 /*=============================================================================
-    Phoenix v1.2
+    Phoenix V1.0
     Copyright (c) 2001-2002 Joel de Guzman
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Permission to copy, use, modify, sell and distribute this software
+    is granted provided this copyright notice appears in all copies.
+    This software is provided "as is" without express or implied
+    warranty, and with no claim as to its suitability for any purpose.
 ==============================================================================*/
 #ifndef PHOENIX_BINDERS_HPP
 #define PHOENIX_BINDERS_HPP
 
 ///////////////////////////////////////////////////////////////////////////////
-#include <boost/spirit/phoenix/functions.hpp>
-#include <boost/type_traits/is_const.hpp>
-#include <boost/mpl/if.hpp>
+#include "boost/spirit/phoenix/functions.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace phoenix {
@@ -441,8 +440,9 @@ struct member_var_ptr_action {
 
     template <typename CT>
     struct result {
-        typedef typename boost::mpl::if_<boost::is_const<CT>, T const&, T&
-            >::type type;
+
+        typedef char is_const[boost::is_const<CT>::value ? 1 : 2];
+        typedef typename impl::if_t<is_const, T const&, T&>::type type;
     };
 
     typedef T ClassT::*mem_var_ptr_t;
@@ -1515,10 +1515,7 @@ struct member_function_ptr_action<RT, ClassT,
 > {
 
     typedef RT result_type;
-    typedef RT(ClassT::*mf)();
-    typedef RT(ClassT::*cmf)() const;
-    typedef typename boost::mpl::if_<boost::is_const<ClassT>, cmf, mf>::type
-        mem_func_ptr_t;
+    typedef RT(ClassT::*mem_func_ptr_t)();
 
     template <typename CT>
     struct result { typedef result_type type; };
@@ -1539,13 +1536,6 @@ inline member_function_ptr<RT, ClassT>
 bind(RT(ClassT::*fptr)())
 {
     return member_function_ptr<RT, ClassT>(fptr);
-}
-
-template <typename RT, typename ClassT>
-inline member_function_ptr<RT, ClassT const>
-bind(RT(ClassT::*fptr)() const)
-{
-    return member_function_ptr<RT, ClassT const>(fptr);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1572,10 +1562,7 @@ struct member_function_ptr_action<RT, ClassT,
 > {
 
     typedef RT result_type;
-    typedef RT(ClassT::*mf)(A);
-    typedef RT(ClassT::*cmf)(A) const;
-    typedef typename boost::mpl::if_<boost::is_const<ClassT>, cmf, mf>::type
-        mem_func_ptr_t;
+    typedef RT(ClassT::*mem_func_ptr_t)(A);
 
     template <typename CT, typename A_>
     struct result { typedef result_type type; };
@@ -1596,14 +1583,6 @@ inline member_function_ptr<RT, ClassT, A>
 bind(RT(ClassT::*fptr)(A))
 {
     return member_function_ptr<RT, ClassT, A>(fptr);
-}
-
-//////////////////////////////////
-template <typename RT, typename ClassT, typename A>
-inline member_function_ptr<RT, ClassT const, A>
-bind(RT(ClassT::*fptr)(A) const)
-{
-    return member_function_ptr<RT, ClassT const, A>(fptr);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1630,10 +1609,7 @@ struct member_function_ptr_action<RT, ClassT,
 > {
 
     typedef RT result_type;
-    typedef RT(ClassT::*mf)(A, B);
-    typedef RT(ClassT::*cmf)(A, B) const;
-    typedef typename boost::mpl::if_<boost::is_const<ClassT>, cmf, mf>::type
-        mem_func_ptr_t;
+    typedef RT(ClassT::*mem_func_ptr_t)(A, B);
 
     template <typename CT, typename A_, typename B_>
     struct result { typedef result_type type; };
@@ -1654,14 +1630,6 @@ inline member_function_ptr<RT, ClassT, A, B>
 bind(RT(ClassT::*fptr)(A, B))
 {
     return member_function_ptr<RT, ClassT, A, B>(fptr);
-}
-
-//////////////////////////////////
-template <typename RT, typename ClassT, typename A, typename B>
-inline member_function_ptr<RT, ClassT const, A, B>
-bind(RT(ClassT::*fptr)(A, B) const)
-{
-    return member_function_ptr<RT, ClassT const, A, B>(fptr);
 }
 
 #if PHOENIX_LIMIT > 3
@@ -1686,10 +1654,7 @@ struct member_function_ptr_action<RT, ClassT,
 > {
 
     typedef RT result_type;
-    typedef RT(ClassT::*mf)(A, B, C);
-    typedef RT(ClassT::*cmf)(A, B, C) const;
-    typedef typename boost::mpl::if_<boost::is_const<ClassT>, cmf, mf>::type
-        mem_func_ptr_t;
+    typedef RT(ClassT::*mem_func_ptr_t)(A, B, C);
 
     template <typename CT, typename A_, typename B_, typename C_>
     struct result { typedef result_type type; };
@@ -1710,14 +1675,6 @@ inline member_function_ptr<RT, ClassT, A, B, C>
 bind(RT(ClassT::*fptr)(A, B, C))
 {
     return member_function_ptr<RT, ClassT, A, B, C>(fptr);
-}
-
-//////////////////////////////////
-template <typename RT, typename ClassT, typename A, typename B, typename C>
-inline member_function_ptr<RT, ClassT const, A, B, C>
-bind(RT(ClassT::*fptr)(A, B, C) const)
-{
-    return member_function_ptr<RT, ClassT const, A, B, C>(fptr);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1743,10 +1700,7 @@ struct member_function_ptr_action<RT, ClassT,
 > {
 
     typedef RT result_type;
-    typedef RT(ClassT::*mf)(A, B, C, D);
-    typedef RT(ClassT::*cmf)(A, B, C, D) const;
-    typedef typename boost::mpl::if_<boost::is_const<ClassT>, cmf, mf>::type
-        mem_func_ptr_t;
+    typedef RT(ClassT::*mem_func_ptr_t)(A, B, C, D);
 
     template <typename CT,
         typename A_, typename B_, typename C_, typename D_
@@ -1776,17 +1730,6 @@ bind(RT(ClassT::*fptr)(A, B, C, D))
         RT, ClassT, A, B, C, D>(fptr);
 }
 
-//////////////////////////////////
-template <typename RT, typename ClassT,
-    typename A, typename B, typename C, typename D
->
-inline member_function_ptr<RT, ClassT const, A, B, C, D>
-bind(RT(ClassT::*fptr)(A, B, C, D) const)
-{
-    return member_function_ptr<
-        RT, ClassT const, A, B, C, D>(fptr);
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Member function pointer binder (specialization for 5 args)
@@ -1811,10 +1754,7 @@ struct member_function_ptr_action<RT, ClassT,
 > {
 
     typedef RT result_type;
-    typedef RT(ClassT::*mf)(A, B, C, D, E);
-    typedef RT(ClassT::*cmf)(A, B, C, D, E) const;
-    typedef typename boost::mpl::if_<boost::is_const<ClassT>, cmf, mf>::type
-        mem_func_ptr_t;
+    typedef RT(ClassT::*mem_func_ptr_t)(A, B, C, D, E);
 
     template <typename CT,
         typename A_, typename B_, typename C_, typename D_,
@@ -1846,18 +1786,6 @@ bind(RT(ClassT::*fptr)(A, B, C, D, E))
         RT, ClassT, A, B, C, D, E>(fptr);
 }
 
-//////////////////////////////////
-template <typename RT, typename ClassT,
-    typename A, typename B, typename C, typename D,
-    typename E
->
-inline member_function_ptr<RT, ClassT const, A, B, C, D, E>
-bind(RT(ClassT::*fptr)(A, B, C, D, E) const)
-{
-    return member_function_ptr<
-        RT, ClassT const, A, B, C, D, E>(fptr);
-}
-
 #if PHOENIX_LIMIT > 6
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -1880,10 +1808,7 @@ struct member_function_ptr_action<RT, ClassT,
 > {
 
     typedef RT result_type;
-    typedef RT(ClassT::*mf)(A, B, C, D, E, F);
-    typedef RT(ClassT::*cmf)(A, B, C, D, E, F) const;
-    typedef typename boost::mpl::if_<boost::is_const<ClassT>, cmf, mf>::type
-        mem_func_ptr_t;
+    typedef RT(ClassT::*mem_func_ptr_t)(A, B, C, D, E, F);
 
     template <typename CT,
         typename A_, typename B_, typename C_, typename D_,
@@ -1915,18 +1840,6 @@ bind(RT(ClassT::*fptr)(A, B, C, D, E, F))
         RT, ClassT, A, B, C, D, E, F>(fptr);
 }
 
-//////////////////////////////////
-template <typename RT, typename ClassT,
-    typename A, typename B, typename C, typename D,
-    typename E, typename F
->
-inline member_function_ptr<RT, ClassT const, A, B, C, D, E, F>
-bind(RT(ClassT::*fptr)(A, B, C, D, E, F) const)
-{
-    return member_function_ptr<
-        RT, ClassT const, A, B, C, D, E, F>(fptr);
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Member function pointer binder (specialization for 7 args)
@@ -1948,10 +1861,7 @@ struct member_function_ptr_action<RT, ClassT,
 > {
 
     typedef RT result_type;
-    typedef RT(ClassT::*mf)(A, B, C, D, E, F, G);
-    typedef RT(ClassT::*cmf)(A, B, C, D, E, F, G) const;
-    typedef typename boost::mpl::if_<boost::is_const<ClassT>, cmf, mf>::type
-        mem_func_ptr_t;
+    typedef RT(ClassT::*mem_func_ptr_t)(A, B, C, D, E, F, G);
 
     template <typename CT,
         typename A_, typename B_, typename C_, typename D_,
@@ -1983,18 +1893,6 @@ bind(RT(ClassT::*fptr)(A, B, C, D, E, F, G))
         RT, ClassT, A, B, C, D, E, F, G>(fptr);
 }
 
-//////////////////////////////////
-template <typename RT, typename ClassT,
-    typename A, typename B, typename C, typename D,
-    typename E, typename F, typename G
->
-inline member_function_ptr<RT, ClassT const, A, B, C, D, E, F, G>
-bind(RT(ClassT::*fptr)(A, B, C, D, E, F, G) const)
-{
-    return member_function_ptr<
-        RT, ClassT const, A, B, C, D, E, F, G>(fptr);
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Member function pointer binder (specialization for 8 args)
@@ -2016,10 +1914,7 @@ struct member_function_ptr_action<RT, ClassT,
 > {
 
     typedef RT result_type;
-    typedef RT(ClassT::*mf)(A, B, C, D, E, F, G, H);
-    typedef RT(ClassT::*cmf)(A, B, C, D, E, F, G, H) const;
-    typedef typename boost::mpl::if_<boost::is_const<ClassT>, cmf, mf>::type
-        mem_func_ptr_t;
+    typedef RT(ClassT::*mem_func_ptr_t)(A, B, C, D, E, F, G, H);
 
     template <typename CT,
         typename A_, typename B_, typename C_, typename D_,
@@ -2051,18 +1946,6 @@ bind(RT(ClassT::*fptr)(A, B, C, D, E, F, G, H))
         RT, ClassT, A, B, C, D, E, F, G, H>(fptr);
 }
 
-//////////////////////////////////
-template <typename RT, typename ClassT,
-    typename A, typename B, typename C, typename D,
-    typename E, typename F, typename G, typename H
->
-inline member_function_ptr<RT, ClassT const, A, B, C, D, E, F, G, H>
-bind(RT(ClassT::*fptr)(A, B, C, D, E, F, G, H) const)
-{
-    return member_function_ptr<
-        RT, ClassT const, A, B, C, D, E, F, G, H>(fptr);
-}
-
 #if PHOENIX_LIMIT > 9
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -2082,10 +1965,7 @@ struct member_function_ptr_action<RT, ClassT,
 > {
 
     typedef RT result_type;
-    typedef RT(ClassT::*mf)(A, B, C, D, E, F, G, H, I);
-    typedef RT(ClassT::*cmf)(A, B, C, D, E, F, G, H, I) const;
-    typedef typename boost::mpl::if_<boost::is_const<ClassT>, cmf, mf>::type
-        mem_func_ptr_t;
+    typedef RT(ClassT::*mem_func_ptr_t)(A, B, C, D, E, F, G, H, I);
 
     template <typename CT,
         typename A_, typename B_, typename C_, typename D_,
@@ -2117,18 +1997,6 @@ bind(RT(ClassT::*fptr)(A, B, C, D, E, F, G, H, I))
         RT, ClassT, A, B, C, D, E, F, G, H, I>(fptr);
 }
 
-//////////////////////////////////
-template <typename RT, typename ClassT,
-    typename A, typename B, typename C, typename D,
-    typename E, typename F, typename G, typename H, typename I
->
-inline member_function_ptr<RT, ClassT const, A, B, C, D, E, F, G, H, I>
-bind(RT(ClassT::*fptr)(A, B, C, D, E, F, G, H, I) const)
-{
-    return member_function_ptr<
-        RT, ClassT const, A, B, C, D, E, F, G, H, I>(fptr);
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Member function pointer binder (specialization for 10 args)
@@ -2148,10 +2016,7 @@ struct member_function_ptr_action<RT, ClassT,
 > {
 
     typedef RT result_type;
-    typedef RT(ClassT::*mf)(A, B, C, D, E, F, G, H, I, J);
-    typedef RT(ClassT::*cmf)(A, B, C, D, E, F, G, H, I, J) const;
-    typedef typename boost::mpl::if_<boost::is_const<ClassT>, cmf, mf>::type
-        mem_func_ptr_t;
+    typedef RT(ClassT::*mem_func_ptr_t)(A, B, C, D, E, F, G, H, I, J);
 
     template <typename CT,
         typename A_, typename B_, typename C_, typename D_,
@@ -2188,19 +2053,6 @@ bind(RT(ClassT::*fptr)(A, B, C, D, E, F, G, H, I, J))
         RT, ClassT, A, B, C, D, E, F, G, H, I, J>(fptr);
 }
 
-//////////////////////////////////
-template <typename RT, typename ClassT,
-    typename A, typename B, typename C, typename D,
-    typename E, typename F, typename G, typename H, typename I,
-    typename J
->
-inline member_function_ptr<RT, ClassT const, A, B, C, D, E, F, G, H, I, J>
-bind(RT(ClassT::*fptr)(A, B, C, D, E, F, G, H, I, J) const)
-{
-    return member_function_ptr<
-        RT, ClassT const, A, B, C, D, E, F, G, H, I, J>(fptr);
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Member function pointer binder (specialization for 11 args)
@@ -2220,10 +2072,7 @@ struct member_function_ptr_action<RT, ClassT,
 > {
 
     typedef RT result_type;
-    typedef RT(ClassT::*mf)(A, B, C, D, E, F, G, H, I, J, K);
-    typedef RT(ClassT::*cmf)(A, B, C, D, E, F, G, H, I, J, K) const;
-    typedef typename boost::mpl::if_<boost::is_const<ClassT>, cmf, mf>::type
-        mem_func_ptr_t;
+    typedef RT(ClassT::*mem_func_ptr_t)(A, B, C, D, E, F, G, H, I, J, K);
 
     template <typename CT,
         typename A_, typename B_, typename C_, typename D_,
@@ -2260,19 +2109,6 @@ bind(RT(ClassT::*fptr)(A, B, C, D, E, F, G, H, I, J, K))
         RT, ClassT, A, B, C, D, E, F, G, H, I, J, K>(fptr);
 }
 
-//////////////////////////////////
-template <typename RT, typename ClassT,
-    typename A, typename B, typename C, typename D,
-    typename E, typename F, typename G, typename H, typename I,
-    typename J, typename K
->
-inline member_function_ptr<RT, ClassT const, A, B, C, D, E, F, G, H, I, J, K>
-bind(RT(ClassT::*fptr)(A, B, C, D, E, F, G, H, I, J, K) const)
-{
-    return member_function_ptr<
-        RT, ClassT const, A, B, C, D, E, F, G, H, I, J, K>(fptr);
-}
-
 #if PHOENIX_LIMIT > 12
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -2288,10 +2124,7 @@ struct member_function_ptr_action<RT, ClassT,
     A, B, C, D, E, F, G, H, I, J, K, L, nil_t, nil_t, nil_t, nil_t> {
 
     typedef RT result_type;
-    typedef RT(ClassT::*mf)(A, B, C, D, E, F, G, H, I, J, K, L);
-    typedef RT(ClassT::*cmf)(A, B, C, D, E, F, G, H, I, J, K, L) const;
-    typedef typename boost::mpl::if_<boost::is_const<ClassT>, cmf, mf>::type
-        mem_func_ptr_t;
+    typedef RT(ClassT::*mem_func_ptr_t)(A, B, C, D, E, F, G, H, I, J, K, L);
 
     template <typename CT,
         typename A_, typename B_, typename C_, typename D_,
@@ -2328,19 +2161,6 @@ bind(RT(ClassT::*fptr)(A, B, C, D, E, F, G, H, I, J, K, L))
         RT, ClassT, A, B, C, D, E, F, G, H, I, J, K, L>(fptr);
 }
 
-//////////////////////////////////
-template <typename RT, typename ClassT,
-    typename A, typename B, typename C, typename D,
-    typename E, typename F, typename G, typename H, typename I,
-    typename J, typename K, typename L
->
-inline member_function_ptr<RT, ClassT const, A, B, C, D, E, F, G, H, I, J, K, L>
-bind(RT(ClassT::*fptr)(A, B, C, D, E, F, G, H, I, J, K, L) const)
-{
-    return member_function_ptr<
-        RT, ClassT const, A, B, C, D, E, F, G, H, I, J, K, L>(fptr);
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Member function pointer binder (specialization for 13 args)
@@ -2355,10 +2175,7 @@ struct member_function_ptr_action<RT, ClassT,
     A, B, C, D, E, F, G, H, I, J, K, L, M, nil_t, nil_t, nil_t> {
 
     typedef RT result_type;
-    typedef RT(ClassT::*mf)(A, B, C, D, E, F, G, H, I, J, K, L, M);
-    typedef RT(ClassT::*cmf)(A, B, C, D, E, F, G, H, I, J, K, L, M) const;
-    typedef typename boost::mpl::if_<boost::is_const<ClassT>, cmf, mf>::type
-        mem_func_ptr_t;
+    typedef RT(ClassT::*mem_func_ptr_t)(A, B, C, D, E, F, G, H, I, J, K, L, M);
 
     template <typename CT,
         typename A_, typename B_, typename C_, typename D_,
@@ -2395,19 +2212,6 @@ bind(RT(ClassT::*fptr)(A, B, C, D, E, F, G, H, I, J, K, L, M))
         RT, ClassT, A, B, C, D, E, F, G, H, I, J, K, L, M>(fptr);
 }
 
-//////////////////////////////////
-template <typename RT, typename ClassT,
-    typename A, typename B, typename C, typename D,
-    typename E, typename F, typename G, typename H, typename I,
-    typename J, typename K, typename L, typename M
->
-inline member_function_ptr<RT, ClassT const, A, B, C, D, E, F, G, H, I, J, K, L, M>
-bind(RT(ClassT::*fptr)(A, B, C, D, E, F, G, H, I, J, K, L, M) const)
-{
-    return member_function_ptr<
-        RT, ClassT const, A, B, C, D, E, F, G, H, I, J, K, L, M>(fptr);
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Member function pointer binder (specialization for 14 args)
@@ -2422,10 +2226,7 @@ struct member_function_ptr_action<RT, ClassT,
     A, B, C, D, E, F, G, H, I, J, K, L, M, N, nil_t, nil_t> {
 
     typedef RT result_type;
-    typedef RT(ClassT::*mf)(A, B, C, D, E, F, G, H, I, J, K, L, M, N);
-    typedef RT(ClassT::*cmf)(A, B, C, D, E, F, G, H, I, J, K, L, M, N) const;
-    typedef typename boost::mpl::if_<boost::is_const<ClassT>, cmf, mf>::type
-        mem_func_ptr_t;
+    typedef RT(ClassT::*mem_func_ptr_t)(A, B, C, D, E, F, G, H, I, J, K, L, M, N);
 
     template <typename CT,
         typename A_, typename B_, typename C_, typename D_,
@@ -2462,18 +2263,6 @@ bind(RT(ClassT::*fptr)(A, B, C, D, E, F, G, H, I, J, K, L, M, N))
         RT, ClassT, A, B, C, D, E, F, G, H, I, J, K, L, M, N>(fptr);
 }
 
-//////////////////////////////////
-template <typename RT, typename ClassT,
-    typename A, typename B, typename C, typename D,
-    typename E, typename F, typename G, typename H, typename I,
-    typename J, typename K, typename L, typename M, typename N
->
-inline member_function_ptr<RT, ClassT const, A, B, C, D, E, F, G, H, I, J, K, L, M, N>
-bind(RT(ClassT::*fptr)(A, B, C, D, E, F, G, H, I, J, K, L, M, N) const)
-{
-    return member_function_ptr<
-        RT, ClassT const, A, B, C, D, E, F, G, H, I, J, K, L, M, N>(fptr);
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -2490,10 +2279,7 @@ struct member_function_ptr_action<RT, ClassT,
     A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, nil_t> {
 
     typedef RT result_type;
-    typedef RT(ClassT::*mf)(A, B, C, D, E, F, G, H, I, J, K, L, M, N, O);
-    typedef RT(ClassT::*cmf)(A, B, C, D, E, F, G, H, I, J, K, L, M, N, O) const;
-    typedef typename boost::mpl::if_<boost::is_const<ClassT>, cmf, mf>::type
-        mem_func_ptr_t;
+    typedef RT(ClassT::*mem_func_ptr_t)(A, B, C, D, E, F, G, H, I, J, K, L, M, N, O);
 
     template <typename CT,
         typename A_, typename B_, typename C_, typename D_,
@@ -2530,20 +2316,6 @@ bind(RT(ClassT::*fptr)(A, B, C, D, E, F, G, H, I, J, K, L, M, N, O))
 {
     return member_function_ptr<
         RT, ClassT, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O>(fptr);
-}
-
-//////////////////////////////////
-template <typename RT, typename ClassT,
-    typename A, typename B, typename C, typename D,
-    typename E, typename F, typename G, typename H, typename I,
-    typename J, typename K, typename L, typename M, typename N,
-    typename O
->
-inline member_function_ptr<RT, ClassT const, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O>
-bind(RT(ClassT::*fptr)(A, B, C, D, E, F, G, H, I, J, K, L, M, N, O) const)
-{
-    return member_function_ptr<
-        RT, ClassT const, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O>(fptr);
 }
 
 #endif
@@ -2694,10 +2466,7 @@ struct bound_member_action<RT, ClassT,
 > {
 
     typedef RT result_type;
-    typedef RT(ClassT::*mf)();
-    typedef RT(ClassT::*cmf)() const;
-    typedef typename boost::mpl::if_<boost::is_const<ClassT>, cmf, mf>::type
-        mem_func_ptr_t;
+    typedef RT(ClassT::*mem_func_ptr_t)();
 
     template <typename CT>
     struct result { typedef result_type type; };
@@ -2733,24 +2502,6 @@ bind(ClassT * obj, RT(ClassT::*fptr)())
 #endif
 }
 
-template <typename RT, typename ClassT>
-inline bound_member<RT,ClassT const>
-bind(ClassT const& obj, RT(ClassT::*fptr)())
-{
-    return bound_member<RT,ClassT const>(obj, fptr);
-}
-
-template <typename RT, typename ClassT>
-inline bound_member<RT,ClassT const>
-bind(ClassT  const* obj, RT(ClassT::*fptr)() const)
-{
-#if defined(__MWERKS__) && (__MWERKS__ < 0x3003)
-    return bound_member<RT,ClassT const>(*obj, fptr);
-#else
-    return bound_member<RT,ClassT const>(obj, fptr);
-#endif
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Bound member function binder (specialization for 1 arg)
@@ -2775,10 +2526,7 @@ struct bound_member_action<RT, ClassT,
 > {
 
     typedef RT result_type;
-    typedef RT(ClassT::*mf)(A);
-    typedef RT(ClassT::*cmf)(A) const;
-    typedef typename boost::mpl::if_<boost::is_const<ClassT>, cmf, mf>::type
-        mem_func_ptr_t;
+    typedef RT(ClassT::*mem_func_ptr_t)(A);
 
     template <typename A_>
     struct result { typedef result_type type; };
@@ -2809,21 +2557,6 @@ bind(ClassT * obj, RT(ClassT::*fptr)(A))
     return bound_member<RT, ClassT, A>(obj,fptr);
 }
 
-//////////////////////////////////
-template <typename RT, typename ClassT, typename A>
-inline bound_member<RT, ClassT const, A>
-bind(ClassT const& obj, RT(ClassT::*fptr)(A) const)
-{
-    return bound_member<RT, ClassT const, A>(obj,fptr);
-}
-
-template <typename RT, typename ClassT, typename A>
-inline bound_member<RT, ClassT const, A>
-bind(ClassT const* obj, RT(ClassT::*fptr)(A) const)
-{
-    return bound_member<RT, ClassT const, A>(obj,fptr);
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Bound member function binder (specialization for 2 args)
@@ -2848,10 +2581,7 @@ struct bound_member_action<RT, ClassT,
 > {
 
     typedef RT result_type;
-    typedef RT(ClassT::*mf)(A, B);
-    typedef RT(ClassT::*cmf)(A, B) const;
-    typedef typename boost::mpl::if_<boost::is_const<ClassT>, cmf, mf>::type
-        mem_func_ptr_t;
+    typedef RT(ClassT::*mem_func_ptr_t)(A, B);
 
     template <typename A_, typename B_>
     struct result { typedef result_type type; };
@@ -2882,20 +2612,6 @@ bind(ClassT * obj,RT(ClassT::*fptr)(A, B))
     return bound_member<RT, ClassT, A, B>(obj,fptr);
 }
 
-template <typename RT, typename ClassT, typename A, typename B>
-inline bound_member<RT, ClassT const, A, B>
-bind(ClassT const& obj,RT(ClassT::*fptr)(A, B) const)
-{
-    return bound_member<RT, ClassT const, A, B>(obj,fptr);
-}
-
-template <typename RT, typename ClassT, typename A, typename B>
-inline bound_member<RT, ClassT const, A, B>
-bind(ClassT const* obj,RT(ClassT::*fptr)(A, B) const)
-{
-    return bound_member<RT, ClassT const, A, B>(obj,fptr);
-}
-
 #if PHOENIX_LIMIT > 3
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -2918,10 +2634,7 @@ struct bound_member_action<RT, ClassT,
 > {
 
     typedef RT result_type;
-    typedef RT(ClassT::*mf)(A, B, C);
-    typedef RT(ClassT::*cmf)(A, B, C) const;
-    typedef typename boost::mpl::if_<boost::is_const<ClassT>, cmf, mf>::type
-        mem_func_ptr_t;
+    typedef RT(ClassT::*mem_func_ptr_t)(A, B, C);
 
     template <typename A_, typename B_, typename C_>
     struct result { typedef result_type type; };
@@ -2952,20 +2665,6 @@ bind(ClassT * obj,RT(ClassT::*fptr)(A, B, C))
     return bound_member<RT, ClassT, A, B, C>(obj,fptr);
 }
 
-template <typename RT, typename ClassT, typename A, typename B, typename C>
-inline bound_member<RT, ClassT const, A, B, C>
-bind(ClassT const& obj,RT(ClassT::*fptr)(A, B, C) const)
-{
-    return bound_member<RT, ClassT const, A, B, C>(obj,fptr);
-}
-
-template <typename RT, typename ClassT, typename A, typename B, typename C>
-inline bound_member<RT, ClassT const, A, B, C>
-bind(ClassT const* obj,RT(ClassT::*fptr)(A, B, C) const)
-{
-    return bound_member<RT, ClassT const, A, B, C>(obj,fptr);
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Bound member function binder (specialization for 4 args)
@@ -2989,10 +2688,7 @@ struct bound_member_action<RT, ClassT,
 > {
 
     typedef RT result_type;
-    typedef RT(ClassT::*mf)(A, B, C, D);
-    typedef RT(ClassT::*cmf)(A, B, C, D) const;
-    typedef typename boost::mpl::if_<boost::is_const<ClassT>, cmf, mf>::type
-        mem_func_ptr_t;
+    typedef RT(ClassT::*mem_func_ptr_t)(A, B, C, D);
 
     template <typename A_, typename B_, typename C_, typename D_>
     struct result { typedef result_type type; };
@@ -3029,26 +2725,6 @@ bind(ClassT * obj,RT(ClassT::*fptr)(A, B, C, D))
         RT, ClassT, A, B, C, D>(obj,fptr);
 }
 
-template <typename RT, typename ClassT,
-    typename A, typename B, typename C, typename D
->
-inline bound_member<RT, ClassT const, A, B, C, D>
-bind(ClassT const& obj,RT(ClassT::*fptr)(A, B, C, D) const)
-{
-    return bound_member<
-        RT, ClassT const, A, B, C, D>(obj,fptr);
-}
-
-template <typename RT, typename ClassT,
-    typename A, typename B, typename C, typename D
->
-inline bound_member<RT, ClassT const, A, B, C, D>
-bind(ClassT const* obj,RT(ClassT::*fptr)(A, B, C, D) const)
-{
-    return bound_member<
-        RT, ClassT const, A, B, C, D>(obj,fptr);
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Bound member function binder (specialization for 5 args)
@@ -3073,10 +2749,7 @@ struct bound_member_action<RT, ClassT,
 > {
 
     typedef RT result_type;
-    typedef RT(ClassT::*mf)(A, B, C, D, E);
-    typedef RT(ClassT::*cmf)(A, B, C, D, E) const;
-    typedef typename boost::mpl::if_<boost::is_const<ClassT>, cmf, mf>::type
-        mem_func_ptr_t;
+    typedef RT(ClassT::*mem_func_ptr_t)(A, B, C, D, E);
 
     template <typename A_, typename B_, typename C_, typename D_,
         typename E_
@@ -3119,28 +2792,6 @@ bind(ClassT * obj,RT(ClassT::*fptr)(A, B, C, D, E))
         RT, ClassT, A, B, C, D, E>(obj,fptr);
 }
 
-template <typename RT, typename ClassT,
-    typename A, typename B, typename C, typename D,
-    typename E
->
-inline bound_member<RT, ClassT const, A, B, C, D, E>
-bind(ClassT const& obj,RT(ClassT::*fptr)(A, B, C, D, E) const)
-{
-    return bound_member<
-        RT, ClassT const, A, B, C, D, E>(obj,fptr);
-}
-
-template <typename RT, typename ClassT,
-    typename A, typename B, typename C, typename D,
-    typename E
->
-inline bound_member<RT, ClassT const, A, B, C, D, E>
-bind(ClassT const* obj,RT(ClassT::*fptr)(A, B, C, D, E) const)
-{
-    return bound_member<
-        RT, ClassT const, A, B, C, D, E>(obj,fptr);
-}
-
 #if PHOENIX_LIMIT > 6
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -3163,10 +2814,7 @@ struct bound_member_action<RT, ClassT,
 > {
 
     typedef RT result_type;
-    typedef RT(ClassT::*mf)(A, B, C, D, E, F);
-    typedef RT(ClassT::*cmf)(A, B, C, D, E, F) const;
-    typedef typename boost::mpl::if_<boost::is_const<ClassT>, cmf, mf>::type
-        mem_func_ptr_t;
+    typedef RT(ClassT::*mem_func_ptr_t)(A, B, C, D, E, F);
 
     template <
         typename A_, typename B_, typename C_, typename D_,
@@ -3210,28 +2858,6 @@ bind(ClassT * obj,RT(ClassT::*fptr)(A, B, C, D, E, F))
         RT, ClassT, A, B, C, D, E, F>(obj,fptr);
 }
 
-template <typename RT, typename ClassT,
-    typename A, typename B, typename C, typename D,
-    typename E, typename F
->
-inline bound_member<RT, ClassT const, A, B, C, D, E, F>
-bind(ClassT const& obj,RT(ClassT::*fptr)(A, B, C, D, E, F) const)
-{
-    return bound_member<
-        RT, ClassT const, A, B, C, D, E, F>(obj,fptr);
-}
-
-template <typename RT, typename ClassT,
-    typename A, typename B, typename C, typename D,
-    typename E, typename F
->
-inline bound_member<RT, ClassT const, A, B, C, D, E, F>
-bind(ClassT const* obj,RT(ClassT::*fptr)(A, B, C, D, E, F) const)
-{
-    return bound_member<
-        RT, ClassT const, A, B, C, D, E, F>(obj,fptr);
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Bound member function binder (specialization for 7 args)
@@ -3253,10 +2879,7 @@ struct bound_member_action<RT, ClassT,
 > {
 
     typedef RT result_type;
-    typedef RT(ClassT::*mf)(A, B, C, D, E, F, G);
-    typedef RT(ClassT::*cmf)(A, B, C, D, E, F, G) const;
-    typedef typename boost::mpl::if_<boost::is_const<ClassT>, cmf, mf>::type
-        mem_func_ptr_t;
+    typedef RT(ClassT::*mem_func_ptr_t)(A, B, C, D, E, F, G);
 
     template <
         typename A_, typename B_, typename C_, typename D_,
@@ -3300,28 +2923,6 @@ bind(ClassT * obj,RT(ClassT::*fptr)(A, B, C, D, E, F, G))
         RT, ClassT, A, B, C, D, E, F, G>(obj,fptr);
 }
 
-template <typename RT, typename ClassT,
-    typename A, typename B, typename C, typename D,
-    typename E, typename F, typename G
->
-inline bound_member<RT, ClassT const, A, B, C, D, E, F, G>
-bind(ClassT const& obj,RT(ClassT::*fptr)(A, B, C, D, E, F, G) const)
-{
-    return bound_member<
-        RT, ClassT const, A, B, C, D, E, F, G>(obj,fptr);
-}
-
-template <typename RT, typename ClassT,
-    typename A, typename B, typename C, typename D,
-    typename E, typename F, typename G
->
-inline bound_member<RT, ClassT const, A, B, C, D, E, F, G>
-bind(ClassT const* obj,RT(ClassT::*fptr)(A, B, C, D, E, F, G) const)
-{
-    return bound_member<
-        RT, ClassT const, A, B, C, D, E, F, G>(obj,fptr);
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Bound member function binder (specialization for 8 args)
@@ -3343,10 +2944,7 @@ struct bound_member_action<RT, ClassT,
 > {
 
     typedef RT result_type;
-    typedef RT(ClassT::*mf)(A, B, C, D, E, F, G, H);
-    typedef RT(ClassT::*cmf)(A, B, C, D, E, F, G, H) const;
-    typedef typename boost::mpl::if_<boost::is_const<ClassT>, cmf, mf>::type
-        mem_func_ptr_t;
+    typedef RT(ClassT::*mem_func_ptr_t)(A, B, C, D, E, F, G, H);
 
     template <
         typename A_, typename B_, typename C_, typename D_,
@@ -3390,28 +2988,6 @@ bind(ClassT * obj,RT(ClassT::*fptr)(A, B, C, D, E, F, G, H))
         RT, ClassT, A, B, C, D, E, F, G, H>(obj,fptr);
 }
 
-template <typename RT, typename ClassT,
-    typename A, typename B, typename C, typename D,
-    typename E, typename F, typename G, typename H
->
-inline bound_member<RT, ClassT const, A, B, C, D, E, F, G, H>
-bind(ClassT const& obj,RT(ClassT::*fptr)(A, B, C, D, E, F, G, H) const)
-{
-    return bound_member<
-        RT, ClassT const, A, B, C, D, E, F, G, H>(obj,fptr);
-}
-
-template <typename RT, typename ClassT,
-    typename A, typename B, typename C, typename D,
-    typename E, typename F, typename G, typename H
->
-inline bound_member<RT, ClassT const, A, B, C, D, E, F, G, H>
-bind(ClassT const* obj,RT(ClassT::*fptr)(A, B, C, D, E, F, G, H) const)
-{
-    return bound_member<
-        RT, ClassT const, A, B, C, D, E, F, G, H>(obj,fptr);
-}
-
 #if PHOENIX_LIMIT > 9
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -3431,10 +3007,7 @@ struct bound_member_action<RT, ClassT,
 > {
 
     typedef RT result_type;
-    typedef RT(ClassT::*mf)(A, B, C, D, E, F, G, H, I);
-    typedef RT(ClassT::*cmf)(A, B, C, D, E, F, G, H, I) const;
-    typedef typename boost::mpl::if_<boost::is_const<ClassT>, cmf, mf>::type
-        mem_func_ptr_t;
+    typedef RT(ClassT::*mem_func_ptr_t)(A, B, C, D, E, F, G, H, I);
 
     template <
         typename A_, typename B_, typename C_, typename D_,
@@ -3478,28 +3051,6 @@ bind(ClassT * obj,RT(ClassT::*fptr)(A, B, C, D, E, F, G, H, I))
         RT, ClassT, A, B, C, D, E, F, G, H, I>(obj,fptr);
 }
 
-template <typename RT, typename ClassT,
-    typename A, typename B, typename C, typename D,
-    typename E, typename F, typename G, typename H, typename I
->
-inline bound_member<RT, ClassT const, A, B, C, D, E, F, G, H, I>
-bind(ClassT const& obj,RT(ClassT::*fptr)(A, B, C, D, E, F, G, H, I) const)
-{
-    return bound_member<
-        RT, ClassT const, A, B, C, D, E, F, G, H, I>(obj,fptr);
-}
-
-template <typename RT, typename ClassT,
-    typename A, typename B, typename C, typename D,
-    typename E, typename F, typename G, typename H, typename I
->
-inline bound_member<RT, ClassT const, A, B, C, D, E, F, G, H, I>
-bind(ClassT const* obj,RT(ClassT::*fptr)(A, B, C, D, E, F, G, H, I) const)
-{
-    return bound_member<
-        RT, ClassT const, A, B, C, D, E, F, G, H, I>(obj,fptr);
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Bound member function binder (specialization for 10 args)
@@ -3519,10 +3070,7 @@ struct bound_member_action<RT, ClassT,
 > {
 
     typedef RT result_type;
-    typedef RT(ClassT::*mf)(A, B, C, D, E, F, G, H, I, J);
-    typedef RT(ClassT::*cmf)(A, B, C, D, E, F, G, H, I, J) const;
-    typedef typename boost::mpl::if_<boost::is_const<ClassT>, cmf, mf>::type
-        mem_func_ptr_t;
+    typedef RT(ClassT::*mem_func_ptr_t)(A, B, C, D, E, F, G, H, I, J);
 
     template <
         typename A_, typename B_, typename C_, typename D_,
@@ -3571,30 +3119,6 @@ bind(ClassT * obj,RT(ClassT::*fptr)(A, B, C, D, E, F, G, H, I, J))
         RT, ClassT, A, B, C, D, E, F, G, H, I, J>(obj,fptr);
 }
 
-template <typename RT, typename ClassT,
-    typename A, typename B, typename C, typename D,
-    typename E, typename F, typename G, typename H, typename I,
-    typename J
->
-inline bound_member<RT, ClassT const, A, B, C, D, E, F, G, H, I, J>
-bind(ClassT const& obj,RT(ClassT::*fptr)(A, B, C, D, E, F, G, H, I, J) const)
-{
-    return bound_member<
-        RT, ClassT const, A, B, C, D, E, F, G, H, I, J>(obj,fptr);
-}
-
-template <typename RT, typename ClassT,
-    typename A, typename B, typename C, typename D,
-    typename E, typename F, typename G, typename H, typename I,
-    typename J
->
-inline bound_member<RT, ClassT const, A, B, C, D, E, F, G, H, I, J>
-bind(ClassT const* obj,RT(ClassT::*fptr)(A, B, C, D, E, F, G, H, I, J) const)
-{
-    return bound_member<
-        RT, ClassT const, A, B, C, D, E, F, G, H, I, J>(obj,fptr);
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Bound member function binder (specialization for 11 args)
@@ -3614,10 +3138,7 @@ struct bound_member_action<RT, ClassT,
 > {
 
     typedef RT result_type;
-    typedef RT(ClassT::*mf)(A, B, C, D, E, F, G, H, I, J, K);
-    typedef RT(ClassT::*cmf)(A, B, C, D, E, F, G, H, I, J, K) const;
-    typedef typename boost::mpl::if_<boost::is_const<ClassT>, cmf, mf>::type
-        mem_func_ptr_t;
+    typedef RT(ClassT::*mem_func_ptr_t)(A, B, C, D, E, F, G, H, I, J, K);
 
     template <
         typename A_, typename B_, typename C_, typename D_,
@@ -3666,30 +3187,6 @@ bind(ClassT * obj,RT(ClassT::*fptr)(A, B, C, D, E, F, G, H, I, J, K))
         RT, ClassT, A, B, C, D, E, F, G, H, I, J, K>(obj,fptr);
 }
 
-template <typename RT, typename ClassT,
-    typename A, typename B, typename C, typename D,
-    typename E, typename F, typename G, typename H, typename I,
-    typename J, typename K
->
-inline bound_member<RT, ClassT const, A, B, C, D, E, F, G, H, I, J, K>
-bind(ClassT const& obj,RT(ClassT::*fptr)(A, B, C, D, E, F, G, H, I, J, K) const)
-{
-    return bound_member<
-        RT, ClassT const, A, B, C, D, E, F, G, H, I, J, K>(obj,fptr);
-}
-
-template <typename RT, typename ClassT,
-    typename A, typename B, typename C, typename D,
-    typename E, typename F, typename G, typename H, typename I,
-    typename J, typename K
->
-inline bound_member<RT, ClassT const, A, B, C, D, E, F, G, H, I, J, K>
-bind(ClassT const* obj,RT(ClassT::*fptr)(A, B, C, D, E, F, G, H, I, J, K) const)
-{
-    return bound_member<
-        RT, ClassT const, A, B, C, D, E, F, G, H, I, J, K>(obj,fptr);
-}
-
 #if PHOENIX_LIMIT > 12
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -3705,10 +3202,7 @@ struct bound_member_action<RT, ClassT,
     A, B, C, D, E, F, G, H, I, J, K, L, nil_t, nil_t, nil_t, nil_t> {
 
     typedef RT result_type;
-    typedef RT(ClassT::*mf)(A, B, C, D, E, F, G, H, I, J, K, L);
-    typedef RT(ClassT::*cmf)(A, B, C, D, E, F, G, H, I, J, K, L) const;
-    typedef typename boost::mpl::if_<boost::is_const<ClassT>, cmf, mf>::type
-        mem_func_ptr_t;
+    typedef RT(ClassT::*mem_func_ptr_t)(A, B, C, D, E, F, G, H, I, J, K, L);
 
     template <
         typename A_, typename B_, typename C_, typename D_,
@@ -3757,30 +3251,6 @@ bind(ClassT * obj,RT(ClassT::*fptr)(A, B, C, D, E, F, G, H, I, J, K, L))
         RT, ClassT, A, B, C, D, E, F, G, H, I, J, K, L>(obj,fptr);
 }
 
-template <typename RT, typename ClassT,
-    typename A, typename B, typename C, typename D,
-    typename E, typename F, typename G, typename H, typename I,
-    typename J, typename K, typename L
->
-inline bound_member<RT, ClassT const, A, B, C, D, E, F, G, H, I, J, K, L>
-bind(ClassT const& obj,RT(ClassT::*fptr)(A, B, C, D, E, F, G, H, I, J, K, L) const)
-{
-    return bound_member<
-        RT, ClassT const, A, B, C, D, E, F, G, H, I, J, K, L>(obj,fptr);
-}
-
-template <typename RT, typename ClassT,
-    typename A, typename B, typename C, typename D,
-    typename E, typename F, typename G, typename H, typename I,
-    typename J, typename K, typename L
->
-inline bound_member<RT, ClassT const, A, B, C, D, E, F, G, H, I, J, K, L>
-bind(ClassT const* obj,RT(ClassT::*fptr)(A, B, C, D, E, F, G, H, I, J, K, L) const)
-{
-    return bound_member<
-        RT, ClassT const, A, B, C, D, E, F, G, H, I, J, K, L>(obj,fptr);
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Bound member function binder (specialization for 13 args)
@@ -3795,10 +3265,7 @@ struct bound_member_action<RT, ClassT,
     A, B, C, D, E, F, G, H, I, J, K, L, M, nil_t, nil_t, nil_t> {
 
     typedef RT result_type;
-    typedef RT(ClassT::*mf)(A, B, C, D, E, F, G, H, I, J, K, L, M);
-    typedef RT(ClassT::*cmf)(A, B, C, D, E, F, G, H, I, J, K, L, M) const;
-    typedef typename boost::mpl::if_<boost::is_const<ClassT>, cmf, mf>::type
-        mem_func_ptr_t;
+    typedef RT(ClassT::*mem_func_ptr_t)(A, B, C, D, E, F, G, H, I, J, K, L, M);
 
     template <
         typename A_, typename B_, typename C_, typename D_,
@@ -3847,30 +3314,6 @@ bind(ClassT * obj,RT(ClassT::*fptr)(A, B, C, D, E, F, G, H, I, J, K, L, M))
         RT, ClassT, A, B, C, D, E, F, G, H, I, J, K, L, M>(obj,fptr);
 }
 
-template <typename RT, typename ClassT,
-    typename A, typename B, typename C, typename D,
-    typename E, typename F, typename G, typename H, typename I,
-    typename J, typename K, typename L, typename M
->
-inline bound_member<RT, ClassT const, A, B, C, D, E, F, G, H, I, J, K, L, M>
-bind(ClassT const& obj,RT(ClassT::*fptr)(A, B, C, D, E, F, G, H, I, J, K, L, M) const)
-{
-    return bound_member<
-        RT, ClassT const, A, B, C, D, E, F, G, H, I, J, K, L, M>(obj,fptr);
-}
-
-template <typename RT, typename ClassT,
-    typename A, typename B, typename C, typename D,
-    typename E, typename F, typename G, typename H, typename I,
-    typename J, typename K, typename L, typename M
->
-inline bound_member<RT, ClassT const, A, B, C, D, E, F, G, H, I, J, K, L, M>
-bind(ClassT const* obj,RT(ClassT::*fptr)(A, B, C, D, E, F, G, H, I, J, K, L, M) const)
-{
-    return bound_member<
-        RT, ClassT const, A, B, C, D, E, F, G, H, I, J, K, L, M>(obj,fptr);
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Bound member function binder (specialization for 14 args)
@@ -3885,10 +3328,7 @@ struct bound_member_action<RT, ClassT,
     A, B, C, D, E, F, G, H, I, J, K, L, M, N, nil_t, nil_t> {
 
     typedef RT result_type;
-    typedef RT(ClassT::*mf)(A, B, C, D, E, F, G, H, I, J, K, L, M, N);
-    typedef RT(ClassT::*cmf)(A, B, C, D, E, F, G, H, I, J, K, L, M, N) const;
-    typedef typename boost::mpl::if_<boost::is_const<ClassT>, cmf, mf>::type
-        mem_func_ptr_t;
+    typedef RT(ClassT::*mem_func_ptr_t)(A, B, C, D, E, F, G, H, I, J, K, L, M, N);
 
     template <
         typename A_, typename B_, typename C_, typename D_,
@@ -3937,30 +3377,6 @@ bind(ClassT * obj,RT(ClassT::*fptr)(A, B, C, D, E, F, G, H, I, J, K, L, M, N))
         RT, ClassT, A, B, C, D, E, F, G, H, I, J, K, L, M, N>(obj,fptr);
 }
 
-template <typename RT, typename ClassT,
-    typename A, typename B, typename C, typename D,
-    typename E, typename F, typename G, typename H, typename I,
-    typename J, typename K, typename L, typename M, typename N
->
-inline bound_member<RT, ClassT const, A, B, C, D, E, F, G, H, I, J, K, L, M, N>
-bind(ClassT const& obj,RT(ClassT::*fptr)(A, B, C, D, E, F, G, H, I, J, K, L, M, N) const)
-{
-    return bound_member<
-        RT, ClassT const, A, B, C, D, E, F, G, H, I, J, K, L, M, N>(obj,fptr);
-}
-
-template <typename RT, typename ClassT,
-    typename A, typename B, typename C, typename D,
-    typename E, typename F, typename G, typename H, typename I,
-    typename J, typename K, typename L, typename M, typename N
->
-inline bound_member<RT, ClassT const, A, B, C, D, E, F, G, H, I, J, K, L, M, N>
-bind(ClassT const* obj,RT(ClassT::*fptr)(A, B, C, D, E, F, G, H, I, J, K, L, M, N) const)
-{
-    return bound_member<
-        RT, ClassT const, A, B, C, D, E, F, G, H, I, J, K, L, M, N>(obj,fptr);
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Bound member function binder (specialization for 15 args)
@@ -3976,10 +3392,7 @@ struct bound_member_action<RT, ClassT,
     A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, nil_t> {
 
     typedef RT result_type;
-    typedef RT(ClassT::*mf)(A, B, C, D, E, F, G, H, I, J, K, L, M, N, O);
-    typedef RT(ClassT::*cmf)(A, B, C, D, E, F, G, H, I, J, K, L, M, N, O) const;
-    typedef typename boost::mpl::if_<boost::is_const<ClassT>, cmf, mf>::type
-        mem_func_ptr_t;
+    typedef RT(ClassT::*mem_func_ptr_t)(A, B, C, D, E, F, G, H, I, J, K, L, M, N, O);
 
     template <
         typename A_, typename B_, typename C_, typename D_,
@@ -4029,32 +3442,6 @@ bind(ClassT * obj,RT(ClassT::*fptr)(A, B, C, D, E, F, G, H, I, J, K, L, M, N, O)
 {
     return bound_member<
         RT, ClassT, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O>(obj,fptr);
-}
-
-template <typename RT, typename ClassT,
-    typename A, typename B, typename C, typename D,
-    typename E, typename F, typename G, typename H, typename I,
-    typename J, typename K, typename L, typename M, typename N,
-    typename O
->
-inline bound_member<RT, ClassT const, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O>
-bind(ClassT const& obj,RT(ClassT::*fptr)(A, B, C, D, E, F, G, H, I, J, K, L, M, N, O) const)
-{
-    return bound_member<
-        RT, ClassT const, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O>(obj,fptr);
-}
-
-template <typename RT, typename ClassT,
-    typename A, typename B, typename C, typename D,
-    typename E, typename F, typename G, typename H, typename I,
-    typename J, typename K, typename L, typename M, typename N,
-    typename O
->
-inline bound_member<RT, ClassT const, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O>
-bind(ClassT const* obj,RT(ClassT::*fptr)(A, B, C, D, E, F, G, H, I, J, K, L, M, N, O) const)
-{
-    return bound_member<
-        RT, ClassT const, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O>(obj,fptr);
 }
 
 #endif

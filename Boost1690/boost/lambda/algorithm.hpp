@@ -2,9 +2,14 @@
 // Copyright (C) 2002 Jaakko Järvi (jaakko.jarvi@cs.utu.fi)
 // Copyright (C) 2002 Gary Powell (gwpowell@hotmail.com)
 //
-// Distributed under the Boost Software License, Version 1.0. (See
-// accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)
+// Permission to copy, use, sell and distribute this software is granted
+// provided this copyright notice appears in all copies.
+// Permission to modify the code and to distribute modified code is granted
+// provided this copyright notice appears in all copies, and a notice
+// that the code was modified is included with the copyright notice.
+//
+// This software is provided "as is" without express or implied warranty,
+// and with no claim as to its suitability for any purpose.
 //
 // For more information, see http://www.boost.org
 
@@ -33,9 +38,9 @@ struct for_each {
      >::type type; 
   };
 
-  template <class A, class C>
+  template <class A, class B, class C>
   C
-  operator()(A a, A b, C c) const
+  operator()(A a, B b, C c) const
   { return ::std::for_each(a, b, c); }
 };
 
@@ -50,9 +55,9 @@ struct find {
      >::type type; 
   };
 
-  template <class A, class C>
+  template <class A, class B, class C>
   A
-  operator()(A a, A b, const C& c) const
+  operator()(A a, B b, const C& c) const
   { return ::std::find(a, b, c); }
 };
 
@@ -68,9 +73,9 @@ struct find_if {
      >::type type; 
   };
 
-  template <class A, class C>
+  template <class A, class B, class C>
   A
-  operator()(A a, A b, C c) const
+  operator()(A a, B b, C c) const
   { return ::std::find_if(a, b, c); }
 };
 
@@ -85,14 +90,14 @@ struct find_end {
      >::type type; 
   };
 
-  template <class A, class C>
+  template <class A, class B, class C, class D>
   A
-  operator()(A a, A b, C c, C d) const
+  operator()(A a, B b, C c, D d) const
   { return ::std::find_end(a, b, c, d); }
 
-  template <class A, class C, class E>
+  template <class A, class B, class C, class D, class E>
   A
-  operator()(A a, A b, C c, C d, E e) const
+  operator()(A a, B b, C c, D d, E e) const
   { return ::std::find_end(a, b, c, d, e); }
 
 };
@@ -108,14 +113,14 @@ struct find_first_of {
      >::type type; 
   };
 
-  template <class A, class C>
+  template <class A, class B, class C, class D>
   A
-  operator()(A a, A b, C c, C d) const
+  operator()(A a, B b, C c, D d) const
   { return ::std::find_first_of(a, b, c, d); }
 
-  template <class A, class C, class E>
+  template <class A, class B, class C, class D, class E>
   A
-  operator()(A a, A b, C c, C d, E e) const
+  operator()(A a, B b, C c, D d, E e) const
   { return ::std::find_first_of(a, b, c, d, e); }
 
 };
@@ -131,14 +136,14 @@ struct adjacent_find {
      >::type type; 
   };
 
-  template <class A>
+  template <class A, class B >
   A
-  operator()(A a, A b) const
+  operator()(A a, B b) const
   { return ::std::adjacent_find(a, b); }
 
-  template <class A, class C>
+  template <class A, class B, class C>
   A
-  operator()(A a, A b, C c) const
+  operator()(A a, B b, C c) const
   { return ::std::adjacent_find(a, b, c); }
 
 };
@@ -156,10 +161,10 @@ struct count {
     >::difference_type type;
   };
 
-  template <class A, class C >
+  template <class A, class B >
   typename ::std::iterator_traits<A>::difference_type
-  operator()(A a, A b, const C& c) const
-  { return ::std::count(a, b, c); }
+  operator()(A a, B b) const
+  { return ::std::count(a, b); }
 };
 
 // count_if  ---------------------------------
@@ -175,9 +180,9 @@ struct count_if {
     >::difference_type type;
   };
 
-  template <class A, class C >
+  template <class A, class B, class C >
   typename ::std::iterator_traits<A>::difference_type
-  operator()(A a, A b, C c) const
+  operator()(A a, B b, C c) const
   { return ::std::count_if(a, b, c); }
 };
 
@@ -190,24 +195,20 @@ struct mismatch {
   struct sig { 
     typedef typename boost::remove_const<
         typename boost::tuples::element<1, Args>::type
-     >::type element1_type; 
+     >::type element_type; 
 
-    typedef typename boost::remove_const<
-        typename boost::tuples::element<3, Args>::type
-     >::type element2_type; 
-
-    typedef ::std::pair< element1_type, element2_type > type;
+    typedef ::std::pair< element_type, element_type > type;
    };
 
-  template <class A, class C >
-  ::std::pair<A,C>
-  operator()(A a, A b, C c) const
-  { return ::std::mismatch(a, b, c); }
+  template <class A, class B >
+  ::std::pair<A,A>
+  operator()(A a, B b) const
+  { return ::std::mismatch(a, b); }
 
-  template <class A, class C, class D>
-  ::std::pair<A,C>
-  operator()(A a, A b, C c, D d) const
-  { return ::std::mismatch(a, b, c, d); }
+  template <class A, class B, class C>
+  ::std::pair<A,A>
+  operator()(A a, B b, C c) const
+  { return ::std::mismatch(a, b, c); }
 
 };
 
@@ -220,14 +221,14 @@ struct equal {
     typedef bool type;
   };
 
-  template <class A, class C >
+  template <class A, class B, class C >
   bool
-  operator()(A a, A b, C c) const
+  operator()(A a, B b, C c) const
   { return ::std::equal(a, b, c); }
 
-  template <class A, class C, class D>
+  template <class A, class B, class C, class D>
   bool
-  operator()(A a, A b, C c, D d) const
+  operator()(A a, B b, C c, D d) const
   { return ::std::equal(a, b, c, d); }
 
 };
@@ -243,14 +244,14 @@ struct search {
      >::type type; 
   };
 
-  template <class A, class C>
+  template <class A, class B, class C, class D>
   A
-  operator()(A a, A b, C c, C d) const
+  operator()(A a, B b, C c, D d) const
   { return std::search(a, b, c, d);}
 
-  template <class A, class C, class E>
+  template <class A, class B, class C, class D, class E>
   A
-  operator()(A a, A b, C c, C d, E e) const
+  operator()(A a,  B b,  C c,  D d,  E e)
   { return std::search(a, b, c, d, e);}
 
 };
@@ -266,9 +267,9 @@ struct copy {
      >::type type; 
   };
 
-  template <class A, class C>
+  template <class A, class B, class C>
   C
-  operator()(A a, A b, C c) const
+  operator()(A a, B b, C c) const
   { return ::std::copy(a, b, c); }
 
 };
@@ -284,9 +285,9 @@ struct copy_backward {
      >::type type; 
   };
 
-  template <class A, class C>
+  template <class A, class B, class C>
   C
-  operator()(A a, A b, C c) const
+  operator()(A a, B b, C c) const
   { return ::std::copy_backward(a, b, c); }
 
 };
@@ -300,9 +301,9 @@ struct swap {
     typedef void type; 
   };
 
-  template <class A>
+  template <class A, class B>
   void
-  operator()(A a, A b) const
+  operator()(A a, B b) const
   { ::std::swap(a, b); }
 
 };
@@ -318,9 +319,9 @@ struct swap_ranges {
      >::type type; 
   };
 
-  template <class A, class C>
+  template <class A, class B, class C>
   C
-  operator()(A a, A b, C c) const
+  operator()(A a, B b, C c) const
   { return ::std::swap_ranges(a, b, c); }
 
 };
@@ -334,9 +335,9 @@ struct iter_swap {
      typedef void type; 
   };
 
-  template <class A>
+  template <class A, class B>
   void 
-  operator()(A a, A b) const
+  operator()(A a, B b) const
   { ::std::iter_swap(a, b); }
 
 };
@@ -356,14 +357,14 @@ struct transform {
      >::type type; 
   };
 
-  template <class A, class C, class D>
+  template <class A, class B, class C, class D>
   C
-  operator()(A a, A b, C c, D d) const
+  operator()(A a, B b, C c, D d) const
   { return std::transform(a, b, c, d);}
 
-  template <class A, class C, class D, class E>
+  template <class A, class B, class C, class D, class E>
   D
-  operator()(A a, A b, C c, D d, E e) const
+  operator()(A a,  B b,  C c,  D d,  E e)
   { return std::transform(a, b, c, d, e);}
 
 };
@@ -377,9 +378,9 @@ struct replace {
     typedef void type;
   };
 
-  template <class A, class C>
+  template <class A, class B, class C, class D>
   void
-  operator()(A a, A b, const C& c, const C& d) const
+  operator()(A a, B b, C c, D d) const
   { ::std::replace(a, b, c, d); }
 
 };
@@ -393,9 +394,9 @@ struct replace_if {
     typedef void type;
   };
 
-  template <class A, class C, class D>
+  template <class A, class B, class C, class D>
   void
-  operator()(A a, A b, C c, const D& d) const
+  operator()(A a, B b, C c, D d) const
   { ::std::replace_if(a, b, c, d); }
 
 };
@@ -411,9 +412,9 @@ struct replace_copy {
      >::type type; 
   };
 
-  template <class A, class C, class D>
+  template <class A, class B, class C, class D, class E>
   C
-  operator()(A a, A b, C c, const D& d, const D& e) const
+  operator()(A a, B b, C c, D d, E e) const
   { return ::std::replace_copy(a, b, c, d, e); }
 
 };
@@ -429,9 +430,9 @@ struct replace_copy_if {
      >::type type; 
   };
 
-  template <class A, class C, class D, class E>
+  template <class A, class B, class C, class D, class E>
   C
-  operator()(A a, A b, C c, D d, const E& e) const
+  operator()(A a, B b, C c, D d, E e) const
   { return ::std::replace_copy_if(a, b, c, d, e); }
 
 };
@@ -445,9 +446,9 @@ struct fill {
      typedef void type; 
   };
 
-  template <class A, class C>
+  template <class A, class B, class C>
   void 
-  operator()(A a, A b, const C& c) const
+  operator()(A a, B b, C c) const
   { ::std::fill(a, b, c); }
 
 };
@@ -463,7 +464,7 @@ struct fill_n {
 
   template <class A, class B, class C>
   void 
-  operator()(A a, B b, const C& c) const
+  operator()(A a, B b, C c) const
   { ::std::fill_n(a, b, c); }
 
 };
@@ -477,9 +478,9 @@ struct generate {
      typedef void type; 
   };
 
-  template <class A, class C>
+  template <class A, class B, class C>
   void 
-  operator()(A a, A b, C c) const
+  operator()(A a, B b, C c) const
   { ::std::generate(a, b, c); }
 
 };
@@ -511,9 +512,9 @@ struct remove {
      >::type type; 
   };
 
-  template <class A, class C >
+  template <class A, class B, class C >
   A
-  operator()(A a, A b, const C& c) const
+  operator()(A a, B b, C c) const
   { return ::std::remove(a, b, c); }
 };
 
@@ -528,9 +529,9 @@ struct remove_if {
      >::type type; 
   };
 
-  template <class A, class C >
+  template <class A, class B, class C >
   A
-  operator()(A a, A b, C c) const
+  operator()(A a, B b, C c) const
   { return ::std::remove_if(a, b, c); }
 };
 
@@ -545,9 +546,9 @@ struct remove_copy {
      >::type type; 
   };
 
-  template <class A, class C, class D >
+  template <class A, class B, class C, class D >
   C
-  operator()(A a, A b, C c, const D& d) const
+  operator()(A a, B b, C c, D d) const
   { return ::std::remove_copy(a, b, c, d); }
 };
 
@@ -562,9 +563,9 @@ struct remove_copy_if {
      >::type type; 
   };
 
-  template <class A, class C, class D >
+  template <class A, class B, class C, class D >
   C
-  operator()(A a, A b, C c, D d) const
+  operator()(A a, B b, C c, D d) const
   { return ::std::remove_copy_if(a, b, c, d); }
 };
 
@@ -579,14 +580,14 @@ struct unique {
      >::type type; 
   };
 
-  template <class A>
+  template <class A, class B >
   A
-  operator()(A a, A b) const
+  operator()(A a, B b) const
   { return ::std::unique(a, b); }
 
-  template <class A, class C>
+  template <class A, class B, class C>
   A
-  operator()(A a, A b, C c) const
+  operator()(A a, B b, C c) const
   { return ::std::unique(a, b, c); }
 
 };
@@ -602,14 +603,14 @@ struct unique_copy {
      >::type type; 
   };
 
-  template <class A, class C >
+  template <class A, class B, class C >
   C
-  operator()(A a, A b, C c) const
+  operator()(A a, B b, C c) const
   { return ::std::unique_copy(a, b, c); }
 
-  template <class A, class C, class D>
+  template <class A, class B, class C, class D>
   C
-  operator()(A a, A b, C c, D d) const
+  operator()(A a, B b, C c, D d) const
   { return ::std::unique_copy(a, b, c, d); }
 
 };
@@ -623,9 +624,9 @@ struct reverse {
     typedef void type; 
   };
 
-  template <class A>
+  template <class A, class B>
   void
-  operator()(A a, A b) const
+  operator()(A a, B b) const
   { ::std::reverse(a, b); }
 
 };
@@ -641,9 +642,9 @@ struct reverse_copy {
      >::type type; 
   };
 
-  template <class A, class C >
+  template <class A, class B, class C >
   C
-  operator()(A a, A b, C c) const
+  operator()(A a, B b, C c) const
   { return ::std::reverse_copy(a, b, c); }
 
 };
@@ -657,9 +658,9 @@ struct rotate {
     typedef void type; 
   };
 
-  template <class A>
+  template <class A, class B, class C>
   void
-  operator()(A a, A b, A c) const
+  operator()(A a, B b, C c) const
   { ::std::rotate(a, b, c); }
 
 };
@@ -675,9 +676,9 @@ struct rotate_copy {
      >::type type; 
   };
 
-  template <class A, class D>
-  D
-  operator()(A a, A b, A c, D d) const
+  template <class A, class B, class C, class D>
+  C
+  operator()(A a, B b, C c, D d) const
   { return ::std::rotate_copy(a, b, c, d); }
 
 };
@@ -691,14 +692,14 @@ struct random_shuffle {
     typedef void type; 
   };
 
-  template <class A>
+  template <class A, class B>
   void
-  operator()(A a, A b) const
+  operator()(A a, B b) const
   { ::std::random_shuffle(a, b); }
 
-  template <class A, class C>
+  template <class A, class B, class C>
   void
-  operator()(A a, A b, const C& c) const
+  operator()(A a, B b, C c) const
   { ::std::random_shuffle(a, b, c); }
 
 };
@@ -715,9 +716,9 @@ struct partition {
      >::type type; 
   };
 
-  template <class A, class C>
+  template <class A, class B, class C>
   A
-  operator()(A a, A b, C c) const
+  operator()(A a, B b, C c) const
   { return ::std::partition(a, b, c); }
 
 };
@@ -733,9 +734,9 @@ struct stable_partition {
      >::type type; 
   };
 
-  template <class A, class C>
+  template <class A, class B, class C>
   A
-  operator()(A a, A b, C c) const
+  operator()(A a, B b, C c) const
   { return ::std::stable_partition(a, b, c); }
 
 };
@@ -749,14 +750,14 @@ struct sort {
      typedef void type; 
   };
 
-  template <class A>
+  template <class A, class B>
   void 
-  operator()(A a, A b) const
+  operator()(A a, B b) const
   { ::std::sort(a, b); }
 
-  template <class A, class C>
+  template <class A, class B, class C>
   void 
-  operator()(A a, A b, C c) const
+  operator()(A a, B b, C c) const
   { ::std::sort(a, b, c); }
 
 };
@@ -770,14 +771,14 @@ struct stable_sort {
      typedef void type; 
   };
 
-  template <class A>
+  template <class A, class B>
   void 
-  operator()(A a, A b) const
+  operator()(A a, B b) const
   { ::std::stable_sort(a, b); }
 
-  template <class A, class C>
+  template <class A, class B, class C>
   void 
-  operator()(A a, A b, C c) const
+  operator()(A a, B b, C c) const
   { ::std::stable_sort(a, b, c); }
 
 };
@@ -791,14 +792,14 @@ struct partial_sort {
      typedef void type; 
   };
 
-  template <class A>
+  template <class A, class B, class C>
   void 
-  operator()(A a, A b, A c) const
+  operator()(A a, B b, C c) const
   { ::std::partial_sort(a, b, c); }
 
-  template <class A, class D>
+  template <class A, class B, class C, class D>
   void 
-  operator()(A a, A b, A c, D d) const
+  operator()(A a, B b, C c, D d) const
   { ::std::partial_sort(a, b, c, d); }
 
 };
@@ -814,14 +815,14 @@ struct partial_sort_copy {
      >::type type; 
   };
 
-  template <class A, class C>
+  template <class A, class B, class C, class D >
   C
-  operator()(A a, A b, C c, C d) const
+  operator()(A a, B b, C c, D d) const
   { return ::std::partial_sort_copy(a, b, c, d); }
 
-  template <class A, class C, class E >
+  template <class A, class B, class C, class D, class E >
   C
-  operator()(A a, A b, C c, C d, E e) const
+  operator()(A a, B b, C c, D d, E e) const
   { return ::std::partial_sort_copy(a, b, c, d, e); }
 };
 
@@ -834,14 +835,14 @@ struct nth_element {
      typedef void type; 
   };
 
-  template <class A>
+  template <class A, class B, class C>
   void 
-  operator()(A a, A b, A c) const
+  operator()(A a, B b, C c) const
   { ::std::nth_element(a, b, c); }
 
-  template <class A, class D>
+  template <class A, class B, class C, class D>
   void 
-  operator()(A a, A b, A c, D d) const
+  operator()(A a, B b, C c, D d) const
   { ::std::nth_element(a, b, c, d); }
 
 };
@@ -857,14 +858,14 @@ struct lower_bound {
      >::type type; 
   };
 
-  template <class A, class C>
+  template <class A, class B, class C>
   A
-  operator()(A a, A b, const C& c) const
+  operator()(A a, B b, C c) const
   { return ::std::lower_bound(a, b, c); }
 
-  template <class A, class C, class D>
+  template <class A, class B, class C, class D>
   A
-  operator()(A a, A b, const C& c, D d) const
+  operator()(A a, B b, C c, D d) const
   { return ::std::lower_bound(a, b, c, d); }
 
 };
@@ -880,14 +881,14 @@ struct upper_bound {
      >::type type; 
   };
 
-  template <class A, class C>
+  template <class A, class B, class C>
   A
-  operator()(A a, A b, const C& c) const
+  operator()(A a, B b, C c) const
   { return ::std::upper_bound(a, b, c); }
 
-  template <class A, class C, class D>
+  template <class A, class B, class C, class D>
   A
-  operator()(A a, A b, const C& c, D d) const
+  operator()(A a, B b, C c, D d) const
   { return ::std::upper_bound(a, b, c, d); }
 
 };
@@ -905,14 +906,14 @@ struct equal_range {
     typedef ::std::pair< element_type, element_type > type;
    };
 
-  template <class A, class C>
+  template <class A, class B, class C>
   ::std::pair<A,A>
-  operator()(A a, A b, const C& c) const
+  operator()(A a, B b, C c) const
   { return ::std::equal_range(a, b, c); }
 
-  template <class A, class C, class D>
+  template <class A, class B, class C, class D>
   ::std::pair<A,A>
-  operator()(A a, A b, const C& c, D d) const
+  operator()(A a, B b, C c, D d) const
   { return ::std::equal_range(a, b, c, d); }
 
 };
@@ -926,14 +927,14 @@ struct binary_search {
     typedef bool type;
   };
 
-  template <class A, class C >
+  template <class A, class B, class C >
   bool
-  operator()(A a, A b, const C& c) const
+  operator()(A a, B b, C c) const
   { return ::std::binary_search(a, b, c); }
 
-  template <class A, class C, class D>
+  template <class A, class B, class C, class D>
   bool
-  operator()(A a, A b, const C& c, D d) const
+  operator()(A a, B b, C c, D d) const
   { return ::std::binary_search(a, b, c, d); }
 
 };
@@ -949,14 +950,14 @@ struct merge {
      >::type type; 
   };
 
-  template <class A, class C, class E>
+  template <class A, class B, class C, class D, class E>
   E
-  operator()(A a, A b, C c, C d, E e) const
+  operator()(A a, B b, C c, D d, E e) const
   { return std::merge(a, b, c, d, e);}
 
-  template <class A, class C, class E, class F>
+  template <class A, class B, class C, class D, class E, class F>
   E
-  operator()(A a, A b, C c, C d, E e, F f) const
+  operator()(A a,  B b,  C c,  D d,  E e, F f)
   { return std::merge(a, b, c, d, e, f);}
 
 };
@@ -970,14 +971,14 @@ struct inplace_merge {
     typedef void type;
   };
 
-  template <class A>
+  template <class A, class B, class C>
   void
-  operator()(A a, A b, A c) const
+  operator()(A a, B b, C c) const
   { ::std::inplace_merge(a, b, c); }
 
-  template <class A, class D>
+  template <class A, class B, class C, class D>
   void
-  operator()(A a, A b, A c, D d) const
+  operator()(A a, B b, C c, D d) const
   { ::std::inplace_merge(a, b, c, d); }
 
 };
@@ -991,14 +992,14 @@ struct includes {
     typedef bool type;
   };
 
-  template <class A, class C>
+  template <class A, class B, class C, class D>
   bool
-  operator()(A a, A b, C c, C d) const
+  operator()(A a, B b, C c, D d) const
   { return ::std::includes(a, b, c, d); }
 
-  template <class A, class C, class E>
+  template <class A, class B, class C, class D, class E>
   bool
-  operator()(A a, A b, C c, C d, E e) const
+  operator()(A a, B b, C c, D d, E e) const
   { return ::std::includes(a, b, c, d, e); }
 
 };
@@ -1014,14 +1015,14 @@ struct set_union {
      >::type type; 
   };
 
-  template <class A, class C, class E>
+  template <class A, class B, class C, class D, class E>
   E
-  operator()(A a, A b, C c, C d, E e) const
+  operator()(A a, B b, C c, D d, E e) const
   { return std::set_union(a, b, c, d, e);}
 
-  template <class A, class C, class E, class F>
+  template <class A, class B, class C, class D, class E, class F>
   E
-  operator()(A a, A b, C c, C d, E e, F f) const
+  operator()(A a,  B b,  C c,  D d, E e, F f)
   { return std::set_union(a, b, c, d, e, f);}
 
 };
@@ -1037,14 +1038,14 @@ struct set_intersection {
      >::type type; 
   };
 
-  template <class A, class C, class E>
+  template <class A, class B, class C, class D, class E>
   E
-  operator()(A a, A b, C c, C d, E e) const
+  operator()(A a, B b, C c, D d, E e) const
   { return std::set_intersection(a, b, c, d, e);}
 
-  template <class A, class C, class E, class F>
+  template <class A, class B, class C, class D, class E, class F>
   E
-  operator()(A a,  A b, C c, C d, E e, F f) const
+  operator()(A a,  B b,  C c,  D d, E e, F f)
   { return std::set_intersection(a, b, c, d, e, f);}
 
 };
@@ -1060,14 +1061,14 @@ struct set_difference {
      >::type type; 
   };
 
-  template <class A, class C, class E>
+  template <class A, class B, class C, class D, class E>
   E
-  operator()(A a, A b, C c, C d, E e) const
+  operator()(A a, B b, C c, D d, E e) const
   { return std::set_difference(a, b, c, d, e);}
 
-  template <class A, class C, class E, class F>
+  template <class A, class B, class C, class D, class E, class F>
   E
-  operator()(A a, A b, C c, C d, E e, F f) const
+  operator()(A a,  B b,  C c,  D d, E e, F f)
   { return std::set_difference(a, b, c, d, e, f);}
 
 };
@@ -1084,14 +1085,14 @@ struct set_symmetric_difference {
      >::type type; 
   };
 
-  template <class A, class C, class E>
+  template <class A, class B, class C, class D, class E>
   E
-  operator()(A a, A b, C c, C d, E e) const
+  operator()(A a, B b, C c, D d, E e) const
   { return std::set_symmetric_difference(a, b, c, d, e);}
 
-  template <class A, class C, class E, class F>
+  template <class A, class B, class C, class D, class E, class F>
   E
-  operator()(A a, A b, C c, C d, E e, F f) const
+  operator()(A a,  B b,  C c,  D d, E e, F f)
   { return std::set_symmetric_difference(a, b, c, d, e, f);}
 
 };
@@ -1105,14 +1106,14 @@ struct push_heap {
     typedef void type; 
   };
 
-  template <class A>
+  template <class A, class B>
   void
-  operator()(A a, A b) const
+  operator()(A a, B b) const
   { ::std::push_heap(a, b); }
 
-  template <class A, class C>
+  template <class A, class B, class C>
   void
-  operator()(A a, A b, C c) const
+  operator()(A a, B b, C c) const
   { ::std::push_heap(a, b, c); }
 
 };
@@ -1126,14 +1127,14 @@ struct pop_heap {
     typedef void type; 
   };
 
-  template <class A>
+  template <class A, class B>
   void
-  operator()(A a, A b) const
+  operator()(A a, B b) const
   { ::std::pop_heap(a, b); }
 
-  template <class A, class C>
+  template <class A, class B, class C>
   void
-  operator()(A a, A b, C c) const
+  operator()(A a, B b, C c) const
   { ::std::pop_heap(a, b, c); }
 
 };
@@ -1148,14 +1149,14 @@ struct make_heap {
     typedef void type; 
   };
 
-  template <class A>
+  template <class A, class B>
   void
-  operator()(A a, A b) const
+  operator()(A a, B b) const
   { ::std::make_heap(a, b); }
 
-  template <class A, class C>
+  template <class A, class B, class C>
   void
-  operator()(A a, A b, C c) const
+  operator()(A a, B b, C c) const
   { ::std::make_heap(a, b, c); }
 
 };
@@ -1169,14 +1170,14 @@ struct sort_heap {
     typedef void type; 
   };
 
-  template <class A>
+  template <class A, class B>
   void
-  operator()(A a, A b) const
+  operator()(A a, B b) const
   { ::std::sort_heap(a, b); }
 
-  template <class A, class C>
+  template <class A, class B, class C>
   void
-  operator()(A a, A b, C c) const
+  operator()(A a, B b, C c) const
   { ::std::sort_heap(a, b, c); }
 
 };
@@ -1192,15 +1193,15 @@ struct min {
      >::type type; 
   };
 
-  template <class A>
+  template <class A, class B >
   A
-  operator()(const A& a, const A& b) const
-  { return (::std::min)(a, b); }
+  operator()(A a, B b) const
+  { return ::std::min(a, b); }
 
-  template <class A, class C>
+  template <class A, class B, class C>
   A
-  operator()(const A& a, const A& b, C c) const
-  { return (::std::min)(a, b, c); }
+  operator()(A a, B b, C c) const
+  { return ::std::min(a, b, c); }
 
 };
 
@@ -1215,15 +1216,15 @@ struct max {
      >::type type; 
   };
 
-  template <class A>
+  template <class A, class B >
   A
-  operator()(const A& a, const A& b) const
-  { return (::std::max)(a, b); }
+  operator()(A a, B b) const
+  { return ::std::max(a, b); }
 
-  template <class A, class C>
+  template <class A, class B, class C>
   A
-  operator()(const A& a, const A& b, C c) const
-  { return (::std::max)(a, b, c); }
+  operator()(A a, B b, C c) const
+  { return ::std::max(a, b, c); }
 
 };
 
@@ -1236,14 +1237,14 @@ struct min_element {
      >::type type; 
   };
 
-  template <class A>
+  template <class A, class B >
   A
-  operator()(A a, A b) const
+  operator()(A a, B b) const
   { return ::std::min_element(a, b); }
 
-  template <class A, class C>
+  template <class A, class B, class C>
   A
-  operator()(A a, A b, C c) const
+  operator()(A a, B b, C c) const
   { return ::std::min_element(a, b, c); }
 
 };
@@ -1259,14 +1260,14 @@ struct max_element {
      >::type type; 
   };
 
-  template <class A>
+  template <class A, class B >
   A
-  operator()(A a, A b) const
+  operator()(A a, B b) const
   { return ::std::max_element(a, b); }
 
-  template <class A, class C>
+  template <class A, class B, class C>
   A
-  operator()(A a, A b, C c) const
+  operator()(A a, B b, C c) const
   { return ::std::max_element(a, b, c); }
 
 };
@@ -1281,14 +1282,14 @@ struct lexicographical_compare {
     typedef bool type;
   };
 
-  template <class A, class C>
+  template <class A, class B, class C, class D>
   bool
-  operator()(A a, A b, C c, C d) const
+  operator()(A a, B b, C c, D d) const
   { return ::std::lexicographical_compare(a, b, c, d); }
 
-  template <class A, class C, class E>
+  template <class A, class B, class C, class D, class E>
   bool
-  operator()(A a, A b, C c, C d, E e) const
+  operator()(A a, B b, C c, D d, E e) const
   { return ::std::lexicographical_compare(a, b, c, d, e); }
 
 };
@@ -1302,14 +1303,14 @@ struct next_permutation {
     typedef bool type;
   };
 
-  template <class A>
+  template <class A, class B >
   bool
-  operator()(A a, A b) const
+  operator()(A a, B b) const
   { return ::std::next_permutation(a, b); }
 
-  template <class A, class C >
+  template <class A, class B, class C >
   bool
-  operator()(A a, A b, C c) const
+  operator()(A a, B b, C c) const
   { return ::std::next_permutation(a, b, c); }
 
 };
@@ -1323,14 +1324,14 @@ struct prev_permutation {
     typedef bool type;
   };
 
-  template <class A>
+  template <class A, class B >
   bool
-  operator()(A a, A b) const
+  operator()(A a, B b) const
   { return ::std::prev_permutation(a, b); }
 
-  template <class A, class C >
+  template <class A, class B, class C >
   bool
-  operator()(A a, A b, C c) const
+  operator()(A a, B b, C c) const
   { return ::std::prev_permutation(a, b, c); }
 
 };

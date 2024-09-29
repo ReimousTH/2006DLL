@@ -1,17 +1,19 @@
 /*=============================================================================
+    Spirit v1.6.0
     Copyright (c) 2003 Martin Wille
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Permission to copy, use, modify, sell and distribute this software is
+    granted provided this copyright notice appears in all copies. This
+    software is provided "as is" without express or implied warranty, and
+    with no claim as to its suitability for any purpose.
  =============================================================================*/
 #ifndef BOOST_SPIRIT_UTILITY_SCOPED_LOCK_HPP
 #define BOOST_SPIRIT_UTILITY_SCOPED_LOCK_HPP
 
 ///////////////////////////////////////////////////////////////////////////////
 #if !defined(BOOST_SPIRIT_COMPOSITE_HPP)
-#include <boost/spirit/core/composite.hpp>
+#include "boost/spirit/core/composite.hpp"
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -51,7 +53,7 @@ namespace boost { namespace spirit {
         {
             typedef typename  mutex_t::scoped_lock scoped_lock_t;
             scoped_lock_t lock(mutex);
-            return this->subject().parse(scan);
+            return subject().parse(scan);
         }
 
         mutex_t &mutex;

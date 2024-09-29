@@ -313,14 +313,14 @@
 			/>
 			<Tool
 				Name="VCCLX360CompilerTool"
-				Optimization="3"
+				Optimization="2"
 				InlineFunctionExpansion="1"
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="0"
 				EnableFiberSafeOptimizations="false"
 				WholeProgramOptimization="false"
 				AdditionalIncludeDirectories="..\Boost1690;..\ATG;..\LUA\src;Marathon\;Hook\;$(NOINHERIT)"
-				PreprocessorDefinitions="NDEBUG;_XBOX;XBOX;XBOX_SAMPLE;_XBOX_CRT_DEPRECATE_INSECURE;_XENON;_WIN32;$(NOINHERIT)"
+				PreprocessorDefinitions="_RELEASE;_XBOX;XBOX;_XENON;_WIN32;BOOST_DISABLE_THREADS"
 				StringPooling="true"
 				MinimalRebuild="false"
 				ExceptionHandling="1"
@@ -847,6 +847,14 @@
 		<Filter
 			Name="Marathon"
 			>
+			<File
+				RelativePath=".\Marathon\Actor.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Marathon\Actor.h"
+				>
+			</File>
 			<File
 				RelativePath=".\Marathon\ActorManager.cpp"
 				>

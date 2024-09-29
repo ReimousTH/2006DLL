@@ -1,9 +1,7 @@
-//  (C) Copyright John Maddock 2001 - 2003. 
-//  (C) Copyright Darin Adler 2001. 
-//  (C) Copyright Douglas Gregor 2002. 
-//  Use, modification and distribution are subject to the 
-//  Boost Software License, Version 1.0. (See accompanying file 
-//  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+//  (C) Copyright Boost.org 2001. Permission to copy, use, modify, sell and
+//  distribute this software is granted provided this copyright notice appears
+//  in all copies. This software is provided "as is" without express or implied
+//  warranty, and with no claim as to its suitability for any purpose.
 
 //  See http://www.boost.org for most recent version.
 
@@ -41,15 +39,12 @@
 //
 // No wide character support in the BSD header files:
 //
-#if !(defined(__FreeBSD__) && (__FreeBSD__ >= 5))
-#  define BOOST_NO_CWCHAR
-#endif
+#define BOOST_NO_CWCHAR
+
 //
 // The BSD <ctype.h> has macros only, no functions:
 //
-#if !defined(__OpenBSD__)
-#  define BOOST_NO_CTYPE_FUNCTIONS
-#endif
+#define BOOST_NO_CTYPE_FUNCTIONS
 
 //
 // thread API's not auto detected:
@@ -63,7 +58,6 @@
 // boilerplate code:
 #define BOOST_HAS_UNISTD_H
 #include <boost/config/posix_features.hpp>
-
 
 
 

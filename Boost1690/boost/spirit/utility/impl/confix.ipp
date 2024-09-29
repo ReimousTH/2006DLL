@@ -1,17 +1,19 @@
 /*=============================================================================
+    Spirit v1.6.0
     Copyright (c) 2002-2003 Hartmut Kaiser
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Permission to copy, use, modify, sell and distribute this software is
+    granted provided this copyright notice appears in all copies. This
+    software is provided "as is" without express or implied warranty, and
+    with no claim as to its suitability for any purpose.
 =============================================================================*/
 #ifndef BOOST_SPIRIT_CONFIX_IPP
 #define BOOST_SPIRIT_CONFIX_IPP
 
 ///////////////////////////////////////////////////////////////////////////////
-#include <boost/spirit/meta/refactoring.hpp>
-#include <boost/spirit/core/composite/impl/directives.ipp>
+#include "boost/spirit/utility/refactoring.hpp"
+#include "boost/spirit/core/composite/impl/directives.ipp"
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace boost { namespace spirit {
@@ -92,7 +94,7 @@ namespace impl {
 
             return select_confix_parse_lexeme<LexemeT>::parse((
                             open
-                        >>  (this_ | refactor_body_d[expr - close])
+                        >>  this_ | refactor_body_d[expr - close]
                         >>  close
                     ),  scan);
         }
@@ -141,7 +143,7 @@ namespace impl {
         {
             return select_confix_parse_lexeme<LexemeT>::parse((
                             open
-                        >>  (this_ | (expr - close))
+                        >>  this_ | (expr - close)
                         >>  close
                     ),  scan);
         }

@@ -1,14 +1,14 @@
-// Copyright 2002 The Trustees of Indiana University.
-
-// Use, modification and distribution is subject to the Boost Software 
-// License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)
-
-//  Boost.MultiArray Library
-//  Authors: Ronald Garcia
-//           Jeremy Siek
-//           Andrew Lumsdaine
-//  See http://www.boost.org/libs/multi_array for documentation.
+// Copyright (C) 2002 Ronald Garcia
+//
+// Permission to copy, use, sell and distribute this software is granted
+// provided this copyright notice appears in all copies. 
+// Permission to modify the code and to distribute modified code is granted
+// provided this copyright notice appears in all copies, and a notice 
+// that the code was modified is included with the copyright notice.
+//
+// This software is provided "as is" without express or implied warranty, 
+// and with no claim as to its suitability for any purpose.
+//
 
 #ifndef BOOST_INDEX_RANGE_RG071801_HPP
 #define BOOST_INDEX_RANGE_RG071801_HPP
@@ -53,7 +53,7 @@ namespace multi_array {
 
     explicit index_range(index start, index finish, index stride=1)
       : start_(start), finish_(finish), stride_(stride),
-        degenerate_(false)
+        degenerate_(start_ == finish_)
     { }
 
 
@@ -150,10 +150,10 @@ namespace multi_array {
 
   private:
     static index from_start()
-      { return (std::numeric_limits<index>::min)(); }
+      { return std::numeric_limits<index>::min(); }
 
     static index to_end()
-      { return (std::numeric_limits<index>::max)(); }
+      { return std::numeric_limits<index>::max(); }
   public:
     index start_, finish_, stride_;
     bool degenerate_;

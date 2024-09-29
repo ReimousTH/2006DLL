@@ -1,19 +1,17 @@
-// Copyright David Abrahams 2002.
-// Distributed under the Boost Software License, Version 1.0. (See
-// accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)
+// Copyright David Abrahams 2002. Permission to copy, use,
+// modify, sell and distribute this software is granted provided this
+// copyright notice appears in all copies. This software is provided
+// "as is" without express or implied warranty, and with no claim as
+// to its suitability for any purpose.
 #ifndef OPERATORS_DWA2002530_HPP
 # define OPERATORS_DWA2002530_HPP
 
-# include <boost/python/detail/prefix.hpp>
-
-# include <boost/python/def_visitor.hpp>
+# include <boost/python/detail/wrap_python.hpp>
 # include <boost/python/converter/arg_to_python.hpp>
 # include <boost/python/detail/operator_id.hpp>
 # include <boost/python/detail/not_specified.hpp>
 # include <boost/python/back_reference.hpp>
 # include <boost/mpl/if.hpp>
-# include <boost/mpl/eval_if.hpp>
 # include <boost/python/self.hpp>
 # include <boost/python/other.hpp>
 # include <boost/lexical_cast.hpp>
@@ -122,74 +120,53 @@ namespace detail
   // self_t
   template <operator_id id, class L = not_specified, class R = not_specified>
   struct operator_
-    : def_visitor<operator_<id,L,R> >
-  {
-   private:
-      template <class ClassT>
-      void visit(ClassT& cl) const
-      {
-          typedef typename mpl::eval_if<
-              is_same<L,self_t>
-            , mpl::if_<
-                  is_same<R,self_t>
+      : mpl::if_<
+            is_same<L,self_t>
+            , typename mpl::if_<
+                 is_same<R,self_t>
                 , binary_op<id>
-                , binary_op_l<
-                      id
-                    , BOOST_DEDUCED_TYPENAME unwrap_other<R>::type
-                  >
-              >
-            , mpl::if_<
-                  is_same<L,not_specified>
+                , binary_op_l<id,typename unwrap_other<R>::type>
+              >::type
+            , typename mpl::if_<
+                is_same<L,not_specified>
                 , unary_op<id>
-                , binary_op_r<
-                      id
-                    , BOOST_DEDUCED_TYPENAME unwrap_other<L>::type
-                  >
-              >
-          >::type generator;
-      
-          cl.def(
-              generator::name()
-            , &generator::template apply<
-                 BOOST_DEDUCED_TYPENAME ClassT::wrapped_type
-              >::execute
-          );
-      }
-    
-      friend class python::def_visitor_access;
+                , binary_op_r<id,typename unwrap_other<L>::type>
+                 >::type
+          >::type
+  {
   };
 }
 
-# define BOOST_PYTHON_BINARY_OPERATION(id, rid, expr)       \
-namespace detail                                            \
-{                                                           \
-  template <>                                               \
-  struct operator_l<op_##id>                                \
-  {                                                         \
-      template <class L, class R>                           \
-      struct apply                                          \
-      {                                                     \
-          static inline PyObject* execute(L& l, R const& r) \
-          {                                                 \
-              return detail::convert_result(expr);          \
-          }                                                 \
-      };                                                    \
-      static char const* name() { return "__" #id "__"; }   \
-  };                                                        \
-                                                            \
-  template <>                                               \
-  struct operator_r<op_##id>                                \
-  {                                                         \
-      template <class L, class R>                           \
-      struct apply                                          \
-      {                                                     \
-          static inline PyObject* execute(R& r, L const& l) \
-          {                                                 \
-              return detail::convert_result(expr);          \
-          }                                                 \
-      };                                                    \
-      static char const* name() { return "__" #rid "__"; }  \
-  };                                                        \
+# define BOOST_PYTHON_BINARY_OPERATION(id, rid, expr)                   \
+namespace detail                                                        \
+{                                                                       \
+  template <>                                                           \
+  struct operator_l<op_##id>                                            \
+  {                                                                     \
+      template <class L, class R>                                       \
+      struct apply                                                      \
+      {                                                                 \
+          static inline PyObject* execute(L const& l, R const& r)       \
+          {                                                             \
+              return detail::convert_result(expr);                      \
+          }                                                             \
+      };                                                                \
+      static char const* name() { return "__" #id "__"; }               \
+  };                                                                    \
+                                                                        \
+  template <>                                                           \
+  struct operator_r<op_##id>                                            \
+  {                                                                     \
+      template <class L, class R>                                       \
+      struct apply                                                      \
+      {                                                                 \
+          static inline PyObject* execute(R const& r, L const& l)       \
+          {                                                             \
+              return detail::convert_result(expr);                      \
+          }                                                             \
+      };                                                                \
+      static char const* name() { return "__" #rid "__"; }              \
+  };                                                                    \
 } 
 
 # define BOOST_PYTHON_BINARY_OPERATOR(id, rid, op)      \
@@ -311,7 +288,7 @@ namespace detail                                                \
       template <class T>                                        \
       struct apply                                              \
       {                                                         \
-          static PyObject* execute(T& x)                        \
+          static PyObject* execute(T const& x)                  \
           {                                                     \
               return detail::convert_result(op(x));             \
           }                                                     \
@@ -333,7 +310,6 @@ BOOST_PYTHON_UNARY_OPERATOR(neg, -, operator-)
 BOOST_PYTHON_UNARY_OPERATOR(pos, +, operator+)
 BOOST_PYTHON_UNARY_OPERATOR(abs, abs, abs)
 BOOST_PYTHON_UNARY_OPERATOR(invert, ~, operator~)
-BOOST_PYTHON_UNARY_OPERATOR(nonzero, !!, operator!)
 BOOST_PYTHON_UNARY_OPERATOR(int, long, int_)
 BOOST_PYTHON_UNARY_OPERATOR(long, PyLong_FromLong, long_)
 BOOST_PYTHON_UNARY_OPERATOR(float, double, float_)

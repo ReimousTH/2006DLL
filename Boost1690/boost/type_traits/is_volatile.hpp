@@ -1,22 +1,12 @@
 
-//  (C) Copyright Dave Abrahams, Steve Cleary, Beman Dawes, 
-//      Howard Hinnant and John Maddock 2000. 
-//  (C) Copyright Mat Marcus, Jesse Jones and Adobe Systems Inc 2001
-
-//  Use, modification and distribution are subject to the Boost Software License,
-//  Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-//  http://www.boost.org/LICENSE_1_0.txt).
+// (C) Copyright Dave Abrahams, Steve Cleary, Beman Dawes, Howard
+// Hinnant & John Maddock 2000.  Permission to copy, use, modify,
+// sell and distribute this software is granted provided this
+// copyright notice appears in all copies. This software is provided
+// "as is" without express or implied warranty, and with no claim as
+// to its suitability for any purpose.
 //
-//  See http://www.boost.org/libs/type_traits for most recent version including documentation.
-
-//    Fixed is_pointer, is_reference, is_const, is_volatile, is_same, 
-//    is_member_pointer based on the Simulated Partial Specialization work 
-//    of Mat Marcus and Jesse Jones. See  http://opensource.adobe.com or 
-//    http://groups.yahoo.com/group/boost/message/5441 
-//    Some workarounds in here use ideas suggested from "Generic<Programming>: 
-//    Mappings between Types and Values" 
-//    by Andrei Alexandrescu (see http://www.cuj.com/experts/1810/alexandr.html).
-
+// See http://www.boost.org for most recent version including documentation.
 
 #ifndef BOOST_TT_IS_VOLATILE_HPP_INCLUDED
 #define BOOST_TT_IS_VOLATILE_HPP_INCLUDED
@@ -43,7 +33,7 @@ namespace boost {
 BOOST_TT_AUX_BOOL_TRAIT_DEF1(is_volatile,T,::boost::detail::cv_traits_imp<T*>::is_volatile)
 BOOST_TT_AUX_BOOL_TRAIT_PARTIAL_SPEC1_1(typename T,is_volatile,T&,false)
 
-#if defined(__BORLANDC__) && (__BORLANDC__ < 0x600)
+#if defined(__BORLANDC__)
 // these are illegal specialisations; cv-qualifies applied to
 // references have no effect according to [8.3.2p1],
 // C++ Builder requires them though as it treats cv-qualified
@@ -78,7 +68,7 @@ struct is_volatile_helper<false,false>
         BOOST_STATIC_CONSTANT(bool, value = (
             sizeof(detail::yes_type) == sizeof(detail::is_volatile_tester(t))
             ));
-    };
+    };      
 };
 
 template <>
@@ -90,7 +80,7 @@ struct is_volatile_helper<false,true>
         BOOST_STATIC_CONSTANT(bool, value = (
             sizeof(detail::yes_type) == sizeof(detail::is_volatile_tester(&t))
             ));
-    };
+    };      
 };
 
 template <typename T>
@@ -99,7 +89,7 @@ struct is_volatile_impl
           is_reference<T>::value
         , is_array<T>::value
         >::template result_<T>
-{
+{ 
 };
 
 BOOST_TT_AUX_BOOL_TRAIT_IMPL_SPEC1(is_volatile,void,false)

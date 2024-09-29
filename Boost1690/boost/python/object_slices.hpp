@@ -1,11 +1,10 @@
-// Copyright David Abrahams 2002.
-// Distributed under the Boost Software License, Version 1.0. (See
-// accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)
+// Copyright David Abrahams 2002. Permission to copy, use,
+// modify, sell and distribute this software is granted provided this
+// copyright notice appears in all copies. This software is provided
+// "as is" without express or implied warranty, and with no claim as
+// to its suitability for any purpose.
 #ifndef OBJECT_SLICES_DWA2002615_HPP
 # define OBJECT_SLICES_DWA2002615_HPP
-
-# include <boost/python/detail/prefix.hpp>
 
 # include <boost/python/proxy.hpp>
 # include <boost/python/object_core.hpp>
@@ -60,22 +59,6 @@ object_operators<U>::slice(slice_nil, object_cref finish) const
 {
     object_cref2 x = *static_cast<U const*>(this);
     return const_object_slice(x, std::make_pair(allow_null((PyObject*)0), borrowed(finish.ptr())));
-}
-
-template <class U>
-object_slice
-object_operators<U>::slice(slice_nil, slice_nil)
-{
-    object_cref2 x = *static_cast<U*>(this);
-    return object_slice(x, std::make_pair(allow_null((PyObject*)0), allow_null((PyObject*)0)));
-}
-
-template <class U>
-const_object_slice
-object_operators<U>::slice(slice_nil, slice_nil) const
-{
-    object_cref2 x = *static_cast<U const*>(this);
-    return const_object_slice(x, std::make_pair(allow_null((PyObject*)0), allow_null((PyObject*)0)));
 }
 
 template <class U>

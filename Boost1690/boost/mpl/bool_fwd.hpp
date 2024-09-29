@@ -2,21 +2,23 @@
 #ifndef BOOST_MPL_BOOL_FWD_HPP_INCLUDED
 #define BOOST_MPL_BOOL_FWD_HPP_INCLUDED
 
-// Copyright Aleksey Gurtovoy 2000-2004
+// + file: boost/mpl/bool_fwd.hpp
+// + last modified: 08/mar/03
+
+// Copyright (c) 2000-03
+// Aleksey Gurtovoy
 //
-// Distributed under the Boost Software License, Version 1.0. 
-// (See accompanying file LICENSE_1_0.txt or copy at 
-// http://www.boost.org/LICENSE_1_0.txt)
+// Permission to use, copy, modify, distribute and sell this software
+// and its documentation for any purpose is hereby granted without fee, 
+// provided that the above copyright notice appears in all copies and 
+// that both the copyright notice and this permission notice appear in 
+// supporting documentation. No representations are made about the 
+// suitability of this software for any purpose. It is provided "as is" 
+// without express or implied warranty.
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Source: /cvsroot/boost/boost/boost/mpl/bool_fwd.hpp,v $
-// $Date: 2004/09/02 15:40:41 $
-// $Revision: 1.3 $
-
-#include <boost/mpl/aux_/adl_barrier.hpp>
-
-BOOST_MPL_AUX_ADL_BARRIER_NAMESPACE_OPEN
+namespace boost { namespace mpl {
 
 template< bool C_ > struct bool_;
 
@@ -24,10 +26,6 @@ template< bool C_ > struct bool_;
 typedef bool_<true> true_;
 typedef bool_<false> false_;
 
-BOOST_MPL_AUX_ADL_BARRIER_NAMESPACE_CLOSE
-
-BOOST_MPL_AUX_ADL_BARRIER_DECL(bool_)
-BOOST_MPL_AUX_ADL_BARRIER_DECL(true_)
-BOOST_MPL_AUX_ADL_BARRIER_DECL(false_)
+}}
 
 #endif // BOOST_MPL_BOOL_FWD_HPP_INCLUDED

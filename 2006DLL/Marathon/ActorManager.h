@@ -1,7 +1,15 @@
 #pragma once
+
+#ifndef __MARATHON_ACTORMANAGER__
+#define __MARATHON_ACTORMANAGER__
+
+#ifndef __MARATHON_ACTOR__
+#include "Actor.h"
+#endif
+
+
 #include <vector>
 #include <xmath.h>
-
 #include <Sox/Memory/IDestructible.h>
 #include <Sox/Engine/Task.h>
 
@@ -25,7 +33,12 @@ namespace Sonicteam{
 		
 			virtual void DestroyObject(unsigned int flag);
 
+			//other
+			static const unsigned int MaxID = 0xFFFFFFFF;
+			void SearchActorByID(unsigned int& ID);
+
 		
 
 	};
 };
+#endif

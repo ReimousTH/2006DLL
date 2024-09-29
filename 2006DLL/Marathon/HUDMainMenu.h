@@ -40,7 +40,7 @@ namespace Sonicteam{
 		{
 		public:
 
-			HudMainMenu(void);
+			HudMainMenu(SoX::Engine::Doc*);
 			 ~HudMainMenu();
 			//virtual void DestroyObject(unsigned int flag);
 

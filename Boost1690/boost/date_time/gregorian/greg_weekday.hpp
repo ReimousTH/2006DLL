@@ -1,17 +1,12 @@
 #ifndef GREG_WEEKDAY_HPP___
 #define GREG_WEEKDAY_HPP___
-
-/* Copyright (c) 2002,2003 CrystalClear Software, Inc.
- * Use, modification and distribution is subject to the 
- * Boost Software License, Version 1.0. (See accompanying
- * file LICENSE-1.0 or http://www.boost.org/LICENSE-1.0)
- * Author: Jeff Garland, Bart Garst
- * $Date: 2004/07/18 18:36:18 $
+/* Copyright (c) 2000 CrystalClear Software, Inc.
+ * Disclaimer & Full Copyright at end of file
+ * Author: Jeff Garland
  */
 
 #include "boost/date_time/constrained_value.hpp"
 #include "boost/date_time/date_defs.hpp"
-#include "boost/date_time/compiler_config.hpp"
 #include <stdexcept>
 #include <string>
 
@@ -38,7 +33,7 @@ namespace gregorian {
 
 
   //! Represent a day within a week (range 0==Sun to 6==Sat)
-  class BOOST_DATE_TIME_DECL greg_weekday : public greg_weekday_rep {
+  class greg_weekday : public greg_weekday_rep {
   public:
     typedef boost::date_time::weekdays weekday_enum;
     greg_weekday(unsigned short day_of_week_num) :
@@ -48,10 +43,6 @@ namespace gregorian {
     unsigned short as_number() const {return value_;}
     const char* as_short_string() const;
     const char* as_long_string()  const;
-#ifndef BOOST_NO_STD_WSTRING
-    const wchar_t* as_short_wstring() const;
-    const wchar_t* as_long_wstring()  const;
-#endif // BOOST_NO_STD_WSTRING
     weekday_enum as_enum() const {return static_cast<weekday_enum>(value_);}
 
 
@@ -61,6 +52,17 @@ namespace gregorian {
 
 } } //namespace gregorian
 
+/* Copyright (c) 2000
+ * CrystalClear Software, Inc.
+ *
+ * Permission to use, copy, modify, distribute and sell this software
+ * and its documentation for any purpose is hereby granted without fee,
+ * provided that the above copyright notice appear in all copies and
+ * that both that copyright notice and this permission notice appear
+ * in supporting documentation.  CrystalClear Software makes no
+ * representations about the suitability of this software for any
+ * purpose.  It is provided "as is" without express or implied warranty.
+ */
 
 
 #endif

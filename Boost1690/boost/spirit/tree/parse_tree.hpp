@@ -1,16 +1,18 @@
 /*=============================================================================
+    Spirit v1.6.0
     Copyright (c) 2001-2003 Daniel Nuffer
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Permission to copy, use, modify, sell and distribute this software is
+    granted provided this copyright notice appears in all copies. This
+    software is provided "as is" without express or implied warranty, and
+    with no claim as to its suitability for any purpose.
 =============================================================================*/
 #ifndef BOOST_SPIRIT_TREE_PARSE_TREE_HPP
 #define BOOST_SPIRIT_TREE_PARSE_TREE_HPP
 
-#include <boost/spirit/tree/common.hpp>
-#include <boost/spirit/core/scanner/scanner.hpp>
+#include "boost/spirit/tree/common.hpp"
+#include "boost/spirit/core/scanner/scanner.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace boost { namespace spirit {
@@ -56,8 +58,8 @@ struct pt_tree_policy :
             std::back_insert_iterator<typename match_t::container_t>(a.trees));
     }
 
-    template <typename MatchT, typename Iterator1T, typename Iterator2T>
-    static void group_match(MatchT& m, parser_id const& id,
+    template <typename Iterator1T, typename Iterator2T>
+    static void group_match(match_t& m, parser_id const& id,
             Iterator1T const& first, Iterator2T const& last)
     {
         if (!m)
@@ -133,7 +135,7 @@ struct gen_pt_node_parser
             action_policy_t
         > policies_t;
 
-        return this->subject().parse(scan.change_policies(policies_t(scan)));
+        return this->subject().parse(scan.change_policies(policies_t()));
     }
 };
 
@@ -170,22 +172,17 @@ const gen_pt_node_parser_gen gen_pt_node_d = gen_pt_node_parser_gen();
 //  Parse functions for parse trees
 //
 ///////////////////////////////////////////////////////////////////////////////
-template <
-    typename NodeFactoryT, typename IteratorT, typename ParserT, 
-    typename SkipT
->
-inline tree_parse_info<IteratorT, NodeFactoryT>
+template <typename IteratorT, typename ParserT, typename SkipT>
+tree_parse_info<IteratorT>
 pt_parse(
     IteratorT const&        first_,
     IteratorT const&        last,
     parser<ParserT> const&  p,
-    SkipT const&            skip,
-    NodeFactoryT const&   /*dummy_*/ = NodeFactoryT())
+    SkipT const&            skip)
 {
     typedef skip_parser_iteration_policy<SkipT> iter_policy_t;
-    typedef pt_match_policy<IteratorT, NodeFactoryT> pt_match_policy_t;
     typedef
-        scanner_policies<iter_policy_t, pt_match_policy_t>
+        scanner_policies<iter_policy_t, pt_match_policy<IteratorT> >
         scanner_policies_t;
     typedef scanner<IteratorT, scanner_policies_t> scanner_t;
 
@@ -193,46 +190,32 @@ pt_parse(
     scanner_policies_t policies(iter_policy);
     IteratorT first = first_;
     scanner_t scan(first, last, policies);
-    tree_match<IteratorT, NodeFactoryT> hit = p.derived().parse(scan);
-    scan.skip(scan);
-    return tree_parse_info<IteratorT, NodeFactoryT>(
-        first, hit, hit && (first == last), hit.length(), hit.trees);
-}
-
-template <typename IteratorT, typename ParserT, typename SkipT>
-inline tree_parse_info<IteratorT>
-pt_parse(
-    IteratorT const&        first,
-    IteratorT const&        last,
-    parser<ParserT> const&  p,
-    SkipT const&            skip)
-{
-    typedef node_val_data_factory<nil_t> default_node_factory_t;
-    return pt_parse(first, last, p, skip, default_node_factory_t());
-}
-
-//////////////////////////////////
-template <typename IteratorT, typename ParserT>
-inline tree_parse_info<IteratorT>
-pt_parse(
-    IteratorT const&        first_,
-    IteratorT const&        last,
-    parser<ParserT> const&  parser)
-{
-    typedef pt_match_policy<IteratorT> pt_match_policy_t;
-    IteratorT first = first_;
-    scanner<
-        IteratorT,
-        scanner_policies<iteration_policy, pt_match_policy_t>
-    > scan(first, last);
-    tree_match<IteratorT> hit = parser.derived().parse(scan);
+    tree_match<IteratorT> hit = p.derived().parse(scan);
     return tree_parse_info<IteratorT>(
         first, hit, hit && (first == last), hit.length(), hit.trees);
 }
 
 //////////////////////////////////
+template <typename IteratorT, typename ParserT>
+tree_parse_info<IteratorT>
+pt_parse(
+    IteratorT const&        first_,
+    IteratorT const&        last,
+    parser<ParserT> const&  parser)
+{
+    IteratorT first = first_;
+    scanner<
+        IteratorT,
+        scanner_policies<iteration_policy, pt_match_policy<IteratorT> >
+    > scan(first, last);
+    tree_match<IteratorT> hit = parser.derived().parse(scan);
+    return tree_parse_info<IteratorT>(first, hit, hit && (first == last),
+        hit.length(), hit.trees);
+}
+
+//////////////////////////////////
 template <typename CharT, typename ParserT, typename SkipT>
-inline tree_parse_info<CharT const*>
+tree_parse_info<CharT const*>
 pt_parse(
     CharT const*            str,
     parser<ParserT> const&  p,
@@ -246,7 +229,7 @@ pt_parse(
 
 //////////////////////////////////
 template <typename CharT, typename ParserT>
-inline tree_parse_info<CharT const*>
+tree_parse_info<CharT const*>
 pt_parse(
     CharT const*            str,
     parser<ParserT> const&  parser)

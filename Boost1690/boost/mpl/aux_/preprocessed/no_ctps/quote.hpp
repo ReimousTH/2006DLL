@@ -1,15 +1,9 @@
+// preprocessed version of 'boost/mpl/quote.hpp' header
+// see the original for copyright information
 
-// Copyright Aleksey Gurtovoy 2000-2004
-//
-// Distributed under the Boost Software License, Version 1.0. 
-// (See accompanying file LICENSE_1_0.txt or copy at 
-// http://www.boost.org/LICENSE_1_0.txt)
-//
+namespace boost {
+namespace mpl {
 
-// Preprocessed version of "boost/mpl/quote.hpp" header
-// -- DO NOT modify by hand!
-
-namespace boost { namespace mpl {
 template< bool > struct quote_impl
 {
     template< typename T > struct result_
@@ -28,7 +22,6 @@ template<> struct quote_impl<false>
 
 template<
       template< typename P1 > class F
-    , typename Tag = void_
     >
 struct quote1
 {
@@ -43,14 +36,13 @@ struct quote1
 
 template<
       template< typename P1, typename P2 > class F
-    , typename Tag = void_
     >
 struct quote2
 {
     template< typename U1, typename U2 > struct apply
 
-        : quote_impl< aux::has_type< F< U1,U2 > >::value >
-            ::template result_< F< U1,U2 > >
+        : quote_impl< aux::has_type< F<U1,U2> >::value >
+            ::template result_< F<U1,U2> >
 
     {
     };
@@ -58,14 +50,13 @@ struct quote2
 
 template<
       template< typename P1, typename P2, typename P3 > class F
-    , typename Tag = void_
     >
 struct quote3
 {
     template< typename U1, typename U2, typename U3 > struct apply
 
-        : quote_impl< aux::has_type< F< U1,U2,U3 > >::value >
-            ::template result_< F< U1,U2,U3 > >
+        : quote_impl< aux::has_type< F<U1,U2,U3> >::value >
+            ::template result_< F<U1,U2,U3> >
 
     {
     };
@@ -73,7 +64,6 @@ struct quote3
 
 template<
       template< typename P1, typename P2, typename P3, typename P4 > class F
-    , typename Tag = void_
     >
 struct quote4
 {
@@ -82,8 +72,8 @@ struct quote4
         >
     struct apply
 
-        : quote_impl< aux::has_type< F< U1,U2,U3,U4 > >::value >
-            ::template result_< F< U1,U2,U3,U4 > >
+        : quote_impl< aux::has_type< F<U1,U2,U3,U4> >::value >
+            ::template result_< F<U1,U2,U3,U4> >
 
     {
     };
@@ -95,7 +85,6 @@ template<
         , typename P5
         >
       class F
-    , typename Tag = void_
     >
 struct quote5
 {
@@ -105,12 +94,13 @@ struct quote5
         >
     struct apply
 
-        : quote_impl< aux::has_type< F< U1,U2,U3,U4,U5 > >::value >
-            ::template result_< F< U1,U2,U3,U4,U5 > >
+        : quote_impl< aux::has_type< F<U1,U2,U3,U4,U5> >::value >
+            ::template result_< F<U1,U2,U3,U4,U5> >
 
     {
     };
 };
 
-}}
+} // namespace mpl
+} // namespace boost
 

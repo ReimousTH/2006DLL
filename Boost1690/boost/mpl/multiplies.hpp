@@ -2,52 +2,70 @@
 #ifndef BOOST_MPL_MULTIPLIES_HPP_INCLUDED
 #define BOOST_MPL_MULTIPLIES_HPP_INCLUDED
 
-// Copyright Aleksey Gurtovoy 2000-2004
+// + file: boost/mpl/multiplies.hpp
+// + last modified: 25/feb/03
+
+// Copyright (c) 2000-03
+// Aleksey Gurtovoy
 //
-// Distributed under the Boost Software License, Version 1.0. 
-// (See accompanying file LICENSE_1_0.txt or copy at 
-// http://www.boost.org/LICENSE_1_0.txt)
+// Permission to use, copy, modify, distribute and sell this software
+// and its documentation for any purpose is hereby granted without fee, 
+// provided that the above copyright notice appears in all copies and 
+// that both the copyright notice and this permission notice appear in 
+// supporting documentation. No representations are made about the 
+// suitability of this software for any purpose. It is provided "as is" 
+// without express or implied warranty.
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Source: /cvsroot/boost/boost/boost/mpl/multiplies.hpp,v $
-// $Date: 2004/09/02 15:40:41 $
-// $Revision: 1.3 $
+#include "boost/mpl/integral_c.hpp"
+#include "boost/mpl/aux_/typeof.hpp"
+#include "boost/mpl/aux_/value_wknd.hpp"
+#include "boost/mpl/aux_/void_spec.hpp"
+#include "boost/mpl/aux_/lambda_support.hpp"
+#include "boost/config.hpp"
 
-#include <boost/mpl/times.hpp>
-#include <boost/mpl/aux_/na_spec.hpp>
-#include <boost/mpl/aux_/lambda_support.hpp>
-#include <boost/mpl/aux_/preprocessor/default_params.hpp>
-#include <boost/mpl/aux_/preprocessor/params.hpp>
-#include <boost/mpl/aux_/config/ctps.hpp>
-
-// backward compatibility header, deprecated
-
-namespace boost { namespace mpl {
-
-#if !defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
-#   define AUX778076_OP_ARITY BOOST_MPL_LIMIT_METAFUNCTION_ARITY
-#else
-#   define AUX778076_OP_ARITY 2
-#endif
+namespace boost {
+namespace mpl {
 
 template<
-      BOOST_MPL_PP_DEFAULT_PARAMS(AUX778076_OP_ARITY, typename N, na)
+      typename T, T N1, T N2, T N3 = 1, T N4 = 1, T N5 = 1
     >
-struct multiplies
-    : times< BOOST_MPL_PP_PARAMS(AUX778076_OP_ARITY, N) >
+struct multiplies_c
 {
-    BOOST_MPL_AUX_LAMBDA_SUPPORT(
-          AUX778076_OP_ARITY
-        , multiplies
-        , ( BOOST_MPL_PP_PARAMS(AUX778076_OP_ARITY, N) )
-        )
+    BOOST_STATIC_CONSTANT(T, value = (N1 * N2 * N3 * N4 * N5));
+#if !defined(__BORLANDC__)
+    typedef integral_c<T,value> type;
+#else
+    typedef integral_c<T,(N1 * N2 * N3 * N4 * N5)> type;
+#endif
 };
 
-BOOST_MPL_AUX_NA_SPEC(AUX778076_OP_ARITY, multiplies)
+template<
+      typename BOOST_MPL_AUX_VOID_SPEC_PARAM(T1)
+    , typename BOOST_MPL_AUX_VOID_SPEC_PARAM(T2)
+    , typename T3 = integral_c<int,1>
+    , typename T4 = integral_c<int,1>
+    , typename T5 = integral_c<int,1>
+    >
+struct multiplies
+    : multiplies_c<
+          BOOST_MPL_AUX_TYPEOF(T1,
+             T1::value * T2::value * T3::value * T4::value * T5::value
+            )
+        , BOOST_MPL_AUX_MSVC_VALUE_WKND(T1)::value
+        , BOOST_MPL_AUX_MSVC_VALUE_WKND(T2)::value
+        , BOOST_MPL_AUX_MSVC_VALUE_WKND(T3)::value
+        , BOOST_MPL_AUX_MSVC_VALUE_WKND(T4)::value
+        , BOOST_MPL_AUX_MSVC_VALUE_WKND(T5)::value
+        >
+{
+    BOOST_MPL_AUX_LAMBDA_SUPPORT(5, multiplies, (T1,T2,T3,T4,T5))
+};
 
-#undef AUX778076_OP_ARITY
+BOOST_MPL_AUX_VOID_SPEC_EXT(2, 5, multiplies)
 
-}}
+} // namespace mpl
+} // namespace boost
 
 #endif // BOOST_MPL_MULTIPLIES_HPP_INCLUDED

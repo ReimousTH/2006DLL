@@ -1,12 +1,8 @@
 #ifndef DATE_TIME_DATE_HPP___
 #define DATE_TIME_DATE_HPP___
-
-/* Copyright (c) 2002,2003 CrystalClear Software, Inc.
- * Use, modification and distribution is subject to the 
- * Boost Software License, Version 1.0. (See accompanying
- * file LICENSE-1.0 or http://www.boost.org/LICENSE-1.0)
- * Author: Jeff Garland, Bart Garst
- * $Date: 2004/01/11 17:41:21 $
+/* Copyright (c) 2000 CrystalClear Software, Inc.
+ * Disclaimer & Full Copyright at end of file
+ * Author: Jeff Garland 
  */
 
 #include "boost/date_time/year_month_day.hpp"
@@ -67,8 +63,8 @@ namespace date_time {
     typedef typename calendar::date_rep_type date_rep_type;
     typedef typename calendar::date_int_type date_int_type;
     typedef typename calendar::day_of_week_type day_of_week_type;
-    date(year_type y, month_type m, day_type d) 
-      : days_(calendar::day_number(ymd_type(y, m, d)))
+    date(year_type year, month_type month, day_type day) 
+      : days_(calendar::day_number(ymd_type(year, month, day)))
     {}
     date(const ymd_type& ymd) 
       : days_(calendar::day_number(ymd))
@@ -106,11 +102,6 @@ namespace date_time {
     {
       return days_ == rhs.days_;
     }
-    //! check to see if date is a special value
-    bool is_special()const
-    {
-      return(is_not_a_date() || is_infinity());
-    }
     //! check to see if date is not a value
     bool is_not_a_date()  const
     {
@@ -124,12 +115,12 @@ namespace date_time {
     //! check to see if date is greater than all possible dates
     bool is_pos_infinity()  const
     {
-      return traits_type::is_pos_inf(days_);
+      return traits_type::is_pos_infinity(days_);
     }
     //! check to see if date is greater than all possible dates
     bool is_neg_infinity()  const
     {
-      return traits_type::is_neg_inf(days_);
+      return traits_type::is_neg_infinity(days_);
     }
     //! return as a special value or a not_special if a normal date
     special_values as_special()  const
@@ -144,34 +135,13 @@ namespace date_time {
     
     date_type operator-(const duration_type& dd) const
     {
-      if(dd.is_special())
-      {
-        return date_type(date_rep_type(days_) - dd.get_rep());
-      }
       return date_type(date_rep_type(days_) - dd.days());
     }
-    date_type operator-=(const duration_type& dd)
-    {
-      *this = *this - dd;
-      return date_type(days_);
-    }
-    date_rep_type day_count() const 
-    {
-      return days_;
-    };
+    date_rep_type day_count() const {return days_;};
     //allow internal access from operators
     date_type operator+(const duration_type& dd) const
     {
-      if(dd.is_special())
-      {
-        return date_type(date_rep_type(days_) + dd.get_rep());
-      }
       return date_type(date_rep_type(days_) + dd.days());
-    }
-    date_type operator+=(const duration_type& dd)
-    {
-      *this = *this + dd; 
-      return date_type(days_);
     }
 
     //see reference
@@ -180,8 +150,8 @@ namespace date_time {
       dates.  It is not exposed to users since that would require class 
       users to understand the inner workings of the date class.
     */
-    explicit date(date_int_type days) : days_(days) {};
-    explicit date(date_rep_type days) : days_(days.as_number()) {};
+    date(date_int_type days) : days_(days) {};
+    date(date_rep_type days) : days_(days.as_number()) {};
     date_int_type days_;
     
   };
@@ -191,6 +161,17 @@ namespace date_time {
   
 } } // namespace date_time
 
+/* Copyright (c) 2000
+ * CrystalClear Software, Inc.
+ *
+ * Permission to use, copy, modify, distribute and sell this software
+ * and its documentation for any purpose is hereby granted without fee,
+ * provided that the above copyright notice appear in all copies and
+ * that both that copyright notice and this permission notice appear
+ * in supporting documentation.  CrystalClear Software makes no
+ * representations about the suitability of this software for any
+ * purpose.  It is provided "as is" without express or implied warranty.
+ */
 
 
 

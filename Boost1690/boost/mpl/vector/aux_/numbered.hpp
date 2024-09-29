@@ -1,184 +1,162 @@
+//-----------------------------------------------------------------------------
+// boost mpl/vector/aux_/numbered.hpp header file
+// See http://www.boost.org for updates, documentation, and revision history.
+//-----------------------------------------------------------------------------
+//
+// Copyright (c) 2000-02
+// Aleksey Gurtovoy
+//
+// Permission to use, copy, modify, distribute and sell this software
+// and its documentation for any purpose is hereby granted without fee, 
+// provided that the above copyright notice appears in all copies and 
+// that both the copyright notice and this permission notice appear in 
+// supporting documentation. No representations are made about the 
+// suitability of this software for any purpose. It is provided "as is" 
+// without express or implied warranty.
 
-// NO INCLUDE GUARDS, THE HEADER IS INTENDED FOR MULTIPLE INCLUSION
+// no include guards, the header is intended for multiple inclusion!
 
 #if defined(BOOST_PP_IS_ITERATING)
 
-// Copyright Aleksey Gurtovoy 2000-2004
-//
-// Distributed under the Boost Software License, Version 1.0. 
-// (See accompanying file LICENSE_1_0.txt or copy at 
-// http://www.boost.org/LICENSE_1_0.txt)
-//
-// See http://www.boost.org/libs/mpl for documentation.
+#include "boost/preprocessor/enum_params.hpp"
+#include "boost/preprocessor/enum_shifted_params.hpp"
+#include "boost/preprocessor/comma_if.hpp"
+#include "boost/preprocessor/repeat.hpp"
+#include "boost/preprocessor/dec.hpp"
+#include "boost/preprocessor/cat.hpp"
 
-// $Source: /cvsroot/boost/boost/boost/mpl/vector/aux_/numbered.hpp,v $
-// $Date: 2004/09/02 15:41:19 $
-// $Revision: 1.8 $
+#define i BOOST_PP_FRAME_ITERATION(1)
 
-#include <boost/preprocessor/enum_params.hpp>
-#include <boost/preprocessor/enum_shifted_params.hpp>
-#include <boost/preprocessor/comma_if.hpp>
-#include <boost/preprocessor/repeat.hpp>
-#include <boost/preprocessor/dec.hpp>
-#include <boost/preprocessor/cat.hpp>
+#if defined(BOOST_MPL_TYPEOF_BASED_VECTOR_IMPL)
 
-#define i_ BOOST_PP_FRAME_ITERATION(1)
-
-#if defined(BOOST_MPL_CFG_TYPEOF_BASED_SEQUENCES)
-
-#   define AUX778076_VECTOR_TAIL(vector, i_, T) \
-    BOOST_PP_CAT(vector,i_)< \
-          BOOST_PP_ENUM_PARAMS(i_, T) \
-        > \
+#   define MPL_AUX_VECTOR_TAIL(vector, i, T) \
+    BOOST_PP_CAT(vector,BOOST_PP_DEC(i))< \
+      BOOST_PP_ENUM_SHIFTED_PARAMS(i, T) \
+    > \
     /**/
 
-#if i_ > 0
+#if i > 0
 template<
-      BOOST_PP_ENUM_PARAMS(i_, typename T)
+      BOOST_PP_ENUM_PARAMS(i, typename T)
     >
-struct BOOST_PP_CAT(vector,i_)
-    : v_item<
-          BOOST_PP_CAT(T,BOOST_PP_DEC(i_))
-        , AUX778076_VECTOR_TAIL(vector,BOOST_PP_DEC(i_),T)
+struct BOOST_PP_CAT(vector,i)
+    : vector_node<
+          i
+        , T0
+        , MPL_AUX_VECTOR_TAIL(vector,i,T)
         >
 {
-    typedef BOOST_PP_CAT(vector,i_) type;
 };
 #endif
 
-#   undef AUX778076_VECTOR_TAIL
+#   undef MPL_AUX_VECTOR_TAIL
 
 #else // "brute force" implementation
 
-#   if i_ > 0
+#   if i > 0
 
 template<
-      BOOST_PP_ENUM_PARAMS(i_, typename T)
+      BOOST_PP_ENUM_PARAMS(i, typename T)
     >
-struct BOOST_PP_CAT(vector,i_)
+struct BOOST_PP_CAT(vector,i)
 {
-    typedef aux::vector_tag<i_> tag;
-    typedef BOOST_PP_CAT(vector,i_) type;
+    typedef aux::vector_tag<i> tag;
+    typedef BOOST_PP_CAT(vector,i) type;
 
-#   define AUX778076_VECTOR_ITEM(unused, i_, unused2) \
-    typedef BOOST_PP_CAT(T,i_) BOOST_PP_CAT(item,i_); \
+#   define AUX_VECTOR_ITEM(unused, i, unused2) \
+    typedef BOOST_PP_CAT(T,i) BOOST_PP_CAT(item,i); \
     /**/
 
-    BOOST_PP_REPEAT(i_, AUX778076_VECTOR_ITEM, unused)
-#   undef AUX778076_VECTOR_ITEM
-    typedef void_ BOOST_PP_CAT(item,i_);
-    typedef BOOST_PP_CAT(T,BOOST_PP_DEC(i_)) back;
+    BOOST_PP_REPEAT_1(i, AUX_VECTOR_ITEM, unused)
+#   undef AUX_VECTOR_ITEM
+    typedef void_ BOOST_PP_CAT(item,i);
+    typedef BOOST_PP_CAT(T,BOOST_PP_DEC(i)) back;
 
-    // Borland forces us to use 'type' here (instead of the class name)
-    typedef v_iter<type,0> begin;
-    typedef v_iter<type,i_> end;
+    // Borland forces us to use |type| here (instead of the class name)
+    typedef vector_iterator< type,integral_c<long,0> > begin;
+    typedef vector_iterator< type,integral_c<long,i> > end;
 };
 
 template<>
-struct push_front_impl< aux::vector_tag<BOOST_PP_DEC(i_)> >
+struct push_front_traits< aux::vector_tag<BOOST_PP_DEC(i)> >
 {
-    template< typename Vector, typename T > struct apply
+    template< typename Vector, typename T > struct algorithm
     {
-        typedef BOOST_PP_CAT(vector,i_)<
+        typedef BOOST_PP_CAT(vector,i)<
               T
-              BOOST_PP_COMMA_IF(BOOST_PP_DEC(i_))
-              BOOST_PP_ENUM_PARAMS(BOOST_PP_DEC(i_), typename Vector::item)
+              BOOST_PP_COMMA_IF(BOOST_PP_DEC(i))
+              BOOST_PP_ENUM_PARAMS(BOOST_PP_DEC(i), typename Vector::item)
             > type;
     };
 };
 
 template<>
-struct pop_front_impl< aux::vector_tag<i_> >
+struct pop_front_traits< aux::vector_tag<i> >
 {
-    template< typename Vector > struct apply
+    template< typename Vector > struct algorithm
     {
-        typedef BOOST_PP_CAT(vector,BOOST_PP_DEC(i_))<
-              BOOST_PP_ENUM_SHIFTED_PARAMS(i_, typename Vector::item)
+        typedef BOOST_PP_CAT(vector,BOOST_PP_DEC(i))<
+              BOOST_PP_ENUM_SHIFTED_PARAMS(i, typename Vector::item)
             > type;
     };
 };
 
-
-template<>
-struct push_back_impl< aux::vector_tag<BOOST_PP_DEC(i_)> >
-{
-    template< typename Vector, typename T > struct apply
-    {
-        typedef BOOST_PP_CAT(vector,i_)<
-              BOOST_PP_ENUM_PARAMS(BOOST_PP_DEC(i_), typename Vector::item)
-              BOOST_PP_COMMA_IF(BOOST_PP_DEC(i_))
-              T
-            > type;
-    };
-};
-
-template<>
-struct pop_back_impl< aux::vector_tag<i_> >
-{
-    template< typename Vector > struct apply
-    {
-        typedef BOOST_PP_CAT(vector,BOOST_PP_DEC(i_))<
-              BOOST_PP_ENUM_PARAMS(BOOST_PP_DEC(i_), typename Vector::item)
-            > type;
-    };
-};
-
-#   endif // i_ > 0
+#   endif // i > 0
 
 #   if !defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION) \
-    && !defined(BOOST_MPL_CFG_NO_NONTYPE_TEMPLATE_PARTIAL_SPEC)
+    && !defined(BOOST_NO_NON_TYPE_TEMPLATE_PARTIAL_SPECIALIZATION)
 
 template< typename V >
-struct v_at<V,i_>
+struct vector_item<V,i>
 {
-    typedef typename V::BOOST_PP_CAT(item,i_) type;
+    typedef typename V::BOOST_PP_CAT(item,i) type;
 };
 
 #   else
 
 namespace aux {
-template<> struct v_at_impl<i_>
+template<> struct vector_item_impl<i>
 {
-    template< typename V_ > struct result_
+    template< typename V > struct result_
     {
-        typedef typename V_::BOOST_PP_CAT(item,i_) type;
+        typedef typename V::BOOST_PP_CAT(item,i) type;
     };
 };
 }
 
 template<>
-struct at_impl< aux::vector_tag<i_> >
+struct at_traits< aux::vector_tag<i> >
 {
-    template< typename V_, typename N > struct apply
+    template< typename V, typename N > struct algorithm
     {
-        typedef typename aux::v_at_impl<BOOST_MPL_AUX_VALUE_WKND(N)::value>
-            ::template result_<V_>::type type;
+        typedef typename aux::vector_item_impl<BOOST_MPL_AUX_VALUE_WKND(N)::value>
+            ::template result_<V>::type type;
     };
 };
 
-#if i_ > 0
+#if i > 0
 template<>
-struct front_impl< aux::vector_tag<i_> >
+struct front_traits< aux::vector_tag<i> >
 {
-    template< typename Vector > struct apply
+    template< typename Vector > struct algorithm
     {
         typedef typename Vector::item0 type;
     };
 };
 
 template<>
-struct back_impl< aux::vector_tag<i_> >
+struct back_traits< aux::vector_tag<i> >
 {
-    template< typename Vector > struct apply
+    template< typename Vector > struct algorithm
     {
         typedef typename Vector::back type;
     };
 };
 
 template<>
-struct empty_impl< aux::vector_tag<i_> >
+struct empty_traits< aux::vector_tag<i> >
 {
-    template< typename Vector > struct apply
+    template< typename Vector > struct algorithm
         : false_
     {
     };
@@ -186,24 +164,24 @@ struct empty_impl< aux::vector_tag<i_> >
 #endif
 
 template<>
-struct size_impl< aux::vector_tag<i_> >
+struct size_traits< aux::vector_tag<i> >
 {
-    template< typename Vector > struct apply
-        : long_<i_>
+    template< typename Vector > struct algorithm
+        : integral_c<int,i>
     {
     };
 };
 
 template<>
-struct O1_size_impl< aux::vector_tag<i_> >
-    : size_impl< aux::vector_tag<i_> >
+struct O1_size_traits< aux::vector_tag<i> >
+    : size_traits< aux::vector_tag<i> >
 {
 };
 
 template<>
-struct clear_impl< aux::vector_tag<i_> >
+struct clear_traits< aux::vector_tag<i> >
 {
-    template< typename Vector > struct apply
+    template< typename Vector > struct algorithm
     {
         typedef vector0<> type;
     };
@@ -211,8 +189,8 @@ struct clear_impl< aux::vector_tag<i_> >
 
 #   endif // BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 
-#endif // BOOST_MPL_CFG_TYPEOF_BASED_SEQUENCES
+#endif // BOOST_MPL_TYPEOF_BASED_VECTOR_IMPL
 
-#undef i_
+#undef i
 
 #endif // BOOST_PP_IS_ITERATING

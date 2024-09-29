@@ -1,9 +1,7 @@
-//  (C) Copyright John Maddock 2001 - 2003. 
-//  (C) Copyright Jens Maurer 2001. 
-//  (C) Copyright David Abrahams 2003. 
-//  Use, modification and distribution are subject to the 
-//  Boost Software License, Version 1.0. (See accompanying file 
-//  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+//  (C) Copyright Boost.org 2001. Permission to copy, use, modify, sell and
+//  distribute this software is granted provided this copyright notice appears
+//  in all copies. This software is provided "as is" without express or implied
+//  warranty, and with no claim as to its suitability for any purpose.
 
 //  See http://www.boost.org for most recent version.
 
@@ -41,9 +39,7 @@
 #  define BOOST_NO_LIMITS_COMPILE_TIME_CONSTANTS
 #endif
 
-// Sun CC 5.5 patch 113817-07 adds long long specialization, but does not change the
-// library version number (http://sunsolve6.sun.com/search/document.do?assetkey=1-21-113817):
-#if BOOST_RWSTD_VER <= 0x020101 && (!defined(__SUNPRO_CC) || (__SUNPRO_CC < 0x550))
+#if BOOST_RWSTD_VER <= 0x020101
 #  define BOOST_NO_LONG_LONG_NUMERIC_LIMITS
 # endif
 
@@ -119,9 +115,4 @@
 #  define BOOST_NO_STD_OUTPUT_ITERATOR_ASSIGN
 #endif
 
-//
-// Disable BOOST_HAS_LONG_LONG when the library has no support for it.
-//
-#if !defined(_RWSTD_LONG_LONG) && defined(BOOST_HAS_LONG_LONG)
-#  undef BOOST_HAS_LONG_LONG
-#endif
+

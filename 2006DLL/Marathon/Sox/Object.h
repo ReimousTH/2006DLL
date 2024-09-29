@@ -1,9 +1,14 @@
 #pragma once
 
+#ifndef __Sonicteam__SOX__OBJECT__
+#define  __Sonicteam__SOX__OBJECT__
+
+
+
+
 #include <string>
 #include <list>
-#include <boost/ptr_container/ptr_list.hpp>
-#include <boost/ptr_container/ptr_set.hpp>
+ 
 #include <deque>
 #include "Sox/Misc/List.h"
 #include <SoX/Memory/IDestructible.h>
@@ -62,3 +67,4 @@ namespace Sonicteam{
 		};
 	}
 }
+#endif

@@ -374,14 +374,21 @@ HOOK(void,__fastcall,sub_825B19C0,0x825B1870,int a1,double delta)
 }
 
 
+boost::shared_ptr<Sonicteam::ActorManager> T01( Sonicteam::GameImp* imp) {
+	return imp->GameActorManager;
+}
+
 
 extern "C" void OnDLLStart(){
 
 	
+	
 
 
 
+	//WRITE_DWORD(0x82001AFC,T01);
 
+	
 //	Sonicteam::SoX::Thread* _thread =  new Sonicteam::SoX::Thread("T",0,0);
 //	ShowXenonMessage(L"MSG",_thread->m_ThreadName);
 
@@ -443,7 +450,7 @@ extern "C" void OnDLLStart(){
 	ShowXenonMessage(L"LoadedDLLPatches",Loaded.c_str());
 	Loaded.clear();
 
-	PostureInverseStick::GlobalInstall();
+	//PostureInverseStick::GlobalInstall();
 
 
 

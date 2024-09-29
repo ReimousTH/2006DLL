@@ -2,9 +2,14 @@
 
 // Copyright (C) 1999, 2000 Jaakko Järvi (jaakko.jarvi@cs.utu.fi)
 //
-// Distributed under the Boost Software License, Version 1.0. (See
-// accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)
+// Permission to copy, use, sell and distribute this software is granted
+// provided this copyright notice appears in all copies. 
+// Permission to modify the code and to distribute modified code is granted
+// provided this copyright notice appears in all copies, and a notice 
+// that the code was modified is included with the copyright notice.
+//
+// This software is provided "as is" without express or implied warranty, 
+// and with no claim as to its suitability for any purpose.
 //
 // For more information, see www.boost.org
 
@@ -13,8 +18,6 @@
 
 #include "boost/lambda/detail/is_instance_of.hpp"
 #include "boost/type_traits/same_traits.hpp"
-
-#include "boost/indirect_reference.hpp"
 
 #include <cstddef> // needed for the ptrdiff_t
 #include <iosfwd>  // for istream and ostream
@@ -218,7 +221,7 @@ namespace detail {
 
   // A is a nonreference type
 template <class A> struct contentsof_type {
-  typedef typename boost::indirect_reference<A>::type type; 
+  typedef typename std::iterator_traits<A>::reference type; 
 };
 
   // this is since the nullary () in lambda_functor is always instantiated
@@ -489,6 +492,7 @@ struct promotion_of_unsigned_int
 {
         typedef
         detail::IF<sizeof(long) <= sizeof(unsigned int),        
+// I had the logic reversed but ">" messes up the parsing.
                 unsigned long,
                 long>::RET type; 
 };
@@ -858,34 +862,13 @@ struct return_type_2<other_action<subscript_action>, A, B> {
 } // namespace boost
 
 
-// Forward declarations are incompatible with the libstdc++ debug mode.
-#if BOOST_WORKAROUND(__GNUC__, >= 3) && _GLIBCXX_DEBUG
-#include <string>
-#include <vector>
-#include <map>
-#include <deque>
-#else
-
-// The GCC 2.95.x uses a non-conformant deque
-#if BOOST_WORKAROUND(__GNUC__, == 2) && __GNUC_MINOR__ <= 96
-#include <deque>
-#else
-
 namespace std {
-  template <class T, class Allocator> class deque;
-}
-
-#endif
-
-namespace std {
- template <class Char, class Traits, class Allocator> class basic_string;
- template <class T, class Allocator> class vector;
  template <class Key, class T, class Cmp, class Allocator> class map;
  template <class Key, class T, class Cmp, class Allocator> class multimap;
+ template <class T, class Allocator> class vector;
+ template <class T, class Allocator> class deque;
+ template <class Char, class Traits, class Allocator> class basic_string;
 }
-
-#endif
-
 
 
 namespace boost { 

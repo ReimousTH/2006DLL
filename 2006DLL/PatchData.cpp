@@ -3006,7 +3006,7 @@ LPCWSTR g_pwstrButtonsXx[1] = { L"------------OK----------------" };
 
 
 	bool _extra_is_loaded = false;
-	Sonicteam::SoX::RefCountObject* RefLoadedCSDObject;
+	Sonicteam::SoX::RefCountObject_OLD* RefLoadedCSDObject;
 	UINT32 TextEntityStatic = 0;
 
 
@@ -3105,10 +3105,10 @@ LPCWSTR g_pwstrButtonsXx[1] = { L"------------OK----------------" };
 		if (!_extra_is_loaded){
 			_extra_is_loaded = true;
 
-			Sonicteam::SoX::RefCountObject* RefSpriteObj;
-			Sonicteam::SoX::RefCountObject** RefSpriteObj2 = BranchTo(0x82617570,Sonicteam::SoX::RefCountObject**,&RefSpriteObj,&std::string("sprite/debug_UI"));
+			Sonicteam::SoX::RefCountObject_OLD* RefSpriteObj;
+			Sonicteam::SoX::RefCountObject_OLD** RefSpriteObj2 = BranchTo(0x82617570,Sonicteam::SoX::RefCountObject_OLD**,&RefSpriteObj,&std::string("sprite/debug_UI"));
 
-			RefLoadedCSDObject = RefSpriteObj->GetObject<Sonicteam::SoX::RefCountObject>();
+			RefLoadedCSDObject = RefSpriteObj->GetObject<Sonicteam::SoX::RefCountObject_OLD>();
 			RefLoadedCSDObject->LoseObject();
 			//RefSpriteObj->LoseObject();
 
@@ -3116,7 +3116,7 @@ LPCWSTR g_pwstrButtonsXx[1] = { L"------------OK----------------" };
 				*(int*)((int)(RefLoadedCSDObject)+0x20) &= 0xFFFFFFF7;
 				BranchTo(0x8262AF00,int,(int)(RefLoadedCSDObject)+8,20.0);
 
-				RefLoadedCSDObject = RefLoadedCSDObject->GetObject<Sonicteam::SoX::RefCountObject>();
+				RefLoadedCSDObject = RefLoadedCSDObject->GetObject<Sonicteam::SoX::RefCountObject_OLD>();
 				CellLoadSpriteWithAnim((int*)&RefLoadedCSDObject,"text_log",0);
 
 
@@ -6414,12 +6414,12 @@ namespace TagStory{
 	HOOK(int,__fastcall,sub_824ECD30,0x824ECD30,Sonicteam::HUDOption *a1, int a2, float *a3){
 
 	
-		sub_824ECD30H(a1,a2,a3);
-		a1->CSDSpriteOption->UnkReference++;
+//		sub_824ECD30H(a1,a2,a3);
+//		a1->CSDSpriteOption->UnkReference++;
 
-	    Sonicteam::SoX::RefCountObject* some =LabelSpawn((void*)malloc06(0x70),a1->GetCurrentDoc(),a1->TextCard_msg_audio,a1->CSDSpriteOption,"option","text3",21.0,0.0,0.0,0,0);
-		some->UnkReference++;
-		LabelExecute(&a1->HMMOuint0x1E4,some);
+///	    Sonicteam::SoX::RefCountObject_OLD* some =LabelSpawn((void*)malloc06(0x70),a1->GetCurrentDoc(),a1->TextCard_msg_audio,a1->CSDSpriteOption,"option","text3",21.0,0.0,0.0,0,0);
+//		some->UnkReference++;
+//		LabelExecute(&a1->HMMOuint0x1E4,some);
 
 			
 

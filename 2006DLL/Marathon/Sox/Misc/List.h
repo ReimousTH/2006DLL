@@ -6,9 +6,79 @@ namespace Sonicteam{
 	namespace SoX{
 
 
-		//UPDATED
+		//UPDATED	
 
 
+
+		template <typename T> // inheritance_only
+		struct SimpleLinkNode{
+			T* Next;
+			T* Prev;
+			T* Parent;
+			T* Active;
+			SimpleLinkNode():Next( NULL),Prev(NULL),Parent(NULL),Active(NULL){}
+			void ClearLink(){
+				if (Next)
+					Next->Prev = Prev;
+				if (Prev)
+					Prev->Next = Next;
+				Prev = NULL;
+				Next = NULL;
+				Parent = NULL;	
+			}
+			void Empty(T* root){
+				
+				if (Active){
+					T* current = root;
+					T* nextNode = 0;
+					do 
+					{
+						nextNode = current->Next;
+						current->Parent = 0;
+						current->Prev = 0;
+						current->Next = 0;
+						current = nextNode;
+					} while (nextNode);
+					
+				}
+
+			} 
+			void __forceinline  EmptyParent(T* root){
+				if (Parent == NULL) return;
+				T* ParentTask = Parent;
+				T* PrevTask;
+				T* NextTask;
+				T* v11;
+				if ( ParentTask )
+				{
+					PrevTask = Prev;
+					if ( PrevTask != root ) //a1
+					{
+						if (ParentTask->Active == root ) //a1
+						{
+							ParentTask->Active = root->Next;
+							root->Prev->Next = 0;
+							v11 = root->Next;
+							if ( !v11 )
+								goto LABEL_12;
+						}
+						else
+						{
+							PrevTask->Next = root->Next;
+							v11 = root->Next;
+							if ( !v11 )
+								v11 = root->Parent->Active;
+						}
+						v11->Prev = root->Prev;
+						goto LABEL_12;
+					}
+					ParentTask->Active = 0;
+				}
+LABEL_12:
+				v11= 0; //just
+			}
+		};
+	
 
 		template <typename T>
 		struct LinkNodeBase {
@@ -16,7 +86,12 @@ namespace Sonicteam{
 			T* PThread;
 
 		public:
-			LinkNodeBase() : NThread(NULL), PThread(NULL) {}
+			LinkNodeBase() : NThread(NULL), PThread(NULL) {  
+				
+				this->PThread = (T*)this;
+				this->NThread = (T*)this;
+			
+			}
 
 			void ClearLink(){
 				NThread->NThread = PThread;
@@ -25,11 +100,11 @@ namespace Sonicteam{
 				NThread = NULL;
 
 			}
-			void RemoveLink(){
-				if (NThread)
-					NThread->NThread = PThread;
-				if (PThread)
-					PThread->PThread = NThread;
+			 void RemoveLink(){
+				 if (PThread)
+					 PThread->NThread = NThread;
+				 if (NThread)
+					 NThread->PThread = PThread;
 			}
 
 			~LinkNodeBase() {
@@ -54,7 +129,7 @@ namespace Sonicteam{
 
 			}
 
-			~LinkNodeBaseA() {
+			__forceinline ~LinkNodeBaseA() {
 				if (PThread)
 					PThread->NThread = NThread;
 				if (NThread)
@@ -71,8 +146,8 @@ namespace Sonicteam{
 		struct LinkNode:LinkNodeBase<LinkNode<T>> {
 		public:
 			T* TThread;
-			LinkNode() : LinkNodeBase<LinkNode<T>>() {}
-			~LinkNode();
+			LinkNode() : LinkNodeBase<LinkNode<T>>() {this->PThread = this;this->NThread = this;}
+			__forceinline ~LinkNode();
 			LinkNode(T* TThread) : LinkNodeBase<LinkNode<T>>(), TThread(TThread) {}
 
 		};
@@ -85,11 +160,13 @@ namespace Sonicteam{
 			LinkNodeList();
 			LinkNodeList(T* TThread) : LinkNodeBase<LinkNodeList<T>>(), TThread(TThread) {}
 
-		
-
-			int Clear(int v); //should be static seems, and different in each others
+			//More like, little improve of original (sub_82581618)
+			int* ForEach(void (*clear_func)(T*));
+			int ForEach(int v); //should be static seems, and different in each others
 			void Empty();
+			void Add(T*);
 		};
+
 
 
 		//LOOK MORE, 0x0 T*, 0x4,0x8 (*Without 0x0)
@@ -102,6 +179,23 @@ namespace Sonicteam{
 
 		};
 
+
+
+		//LOOK MORE, 0x0 T*, 0x4,0x8 (*Without 0x0)
+		template <typename T>
+		struct LinkNodeListA:LinkNodeBaseA<LinkNodeListA<T>> {
+		public:
+			T* TThread;
+			LinkNodeListA() : LinkNodeBaseA<LinkNodeListA<T>>() {}
+			LinkNodeListA(T* TThread) : LinkNodeBaseA<LinkNodeListA<T>>(), TThread(TThread) {}
+
+
+			int ForEach(int v); //should be static seems, and different in each others
+			void Empty();
+
+		};
+
+	
 	
 
 

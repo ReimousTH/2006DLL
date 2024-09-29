@@ -6,14 +6,13 @@
 //
 //  Copyright (c) 2001, 2002 Peter Dimov
 //
-// Distributed under the Boost Software License, Version 1.0. (See
-// accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)
+//  Permission to copy, use, modify, sell and distribute this software
+//  is granted provided this copyright notice appears in all copies.
+//  This software is provided "as is" without express or implied
+//  warranty, and with no claim as to its suitability for any purpose.
 //
 //  See http://www.boost.org/libs/smart_ptr/intrusive_ptr.html for documentation.
 //
-
-#include <boost/config.hpp>
 
 #ifdef BOOST_MSVC  // moved here to work around VC++ compiler crash
 # pragma warning(push)
@@ -120,31 +119,12 @@ public:
         return p_;
     }
 
-#if defined(__SUNPRO_CC) && BOOST_WORKAROUND(__SUNPRO_CC, <= 0x530)
-
-    operator bool () const
-    {
-        return p_ != 0;
-    }
-
-#elif defined(__MWERKS__) && BOOST_WORKAROUND(__MWERKS__, BOOST_TESTED_AT(0x3003))
-    typedef T * (this_type::*unspecified_bool_type)() const;
-    
-    operator unspecified_bool_type() const // never throws
-    {
-        return p_ == 0? 0: &this_type::get;
-    }
-
-#else 
-
-    typedef T * this_type::*unspecified_bool_type;
+    typedef T * (intrusive_ptr::*unspecified_bool_type) () const;
 
     operator unspecified_bool_type () const
     {
-        return p_ == 0? 0: &this_type::p_;
+        return p_ == 0? 0: &intrusive_ptr::get;
     }
-
-#endif
 
     // operator! is a Borland-specific workaround
     bool operator! () const
@@ -227,11 +207,6 @@ template<class T, class U> intrusive_ptr<T> static_pointer_cast(intrusive_ptr<U>
     return static_cast<T *>(p.get());
 }
 
-template<class T, class U> intrusive_ptr<T> const_pointer_cast(intrusive_ptr<U> const & p)
-{
-    return const_cast<T *>(p.get());
-}
-
 template<class T, class U> intrusive_ptr<T> dynamic_pointer_cast(intrusive_ptr<U> const & p)
 {
     return dynamic_cast<T *>(p.get());
@@ -249,7 +224,7 @@ template<class Y> std::ostream & operator<< (std::ostream & os, intrusive_ptr<Y>
 
 #else
 
-# if defined(BOOST_MSVC) && BOOST_WORKAROUND(BOOST_MSVC, <= 1200 && __SGI_STL_PORT)
+# if BOOST_WORKAROUND(BOOST_MSVC, <= 1200 && __SGI_STL_PORT)
 // MSVC6 has problems finding std::basic_ostream through the using declaration in namespace _STL
 using std::basic_ostream;
 template<class E, class T, class Y> basic_ostream<E, T> & operator<< (basic_ostream<E, T> & os, intrusive_ptr<Y> const & p)

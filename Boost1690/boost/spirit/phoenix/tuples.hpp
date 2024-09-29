@@ -1,17 +1,14 @@
 /*=============================================================================
-    Phoenix V1.2.1
+    Phoenix V1.0
     Copyright (c) 2001-2002 Joel de Guzman
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Permission to copy, use, modify, sell and distribute this software
+    is granted provided this copyright notice appears in all copies.
+    This software is provided "as is" without express or implied
+    warranty, and with no claim as to its suitability for any purpose.
 ==============================================================================*/
 #ifndef PHOENIX_TUPLES_HPP
 #define PHOENIX_TUPLES_HPP
-
-#if defined(BOOST_MSVC) && (BOOST_MSVC <= 1300)
-#error "Sorry, Phoenix does not support VC6 and VC7. Please upgrade to at least VC7.1"
-#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -57,9 +54,9 @@ namespace phoenix { namespace borland_only
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
-#include <boost/static_assert.hpp>
-#include <boost/call_traits.hpp>
-#include <boost/type_traits/remove_reference.hpp>
+#include "boost/static_assert.hpp"
+#include "boost/call_traits.hpp"
+#include "boost/type_traits.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace phoenix {

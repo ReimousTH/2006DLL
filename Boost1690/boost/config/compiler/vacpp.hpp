@@ -1,11 +1,7 @@
-//  (C) Copyright John Maddock 2001 - 2003. 
-//  (C) Copyright Toon Knapen 2001 - 2003. 
-//  (C) Copyright Lie-Quan Lee 2001. 
-//  (C) Copyright Markus Schöpflin 2002 - 2003. 
-//  (C) Copyright Beman Dawes 2002 - 2003. 
-//  Use, modification and distribution are subject to the 
-//  Boost Software License, Version 1.0. (See accompanying file 
-//  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+//  (C) Copyright Boost.org 2001. Permission to copy, use, modify, sell and
+//  distribute this software is granted provided this copyright notice appears
+//  in all copies. This software is provided "as is" without express or implied
+//  warranty, and with no claim as to its suitability for any purpose.
 
 //  See http://www.boost.org for most recent version.
 
@@ -16,18 +12,16 @@
 #  define BOOST_NO_MEMBER_FUNCTION_SPECIALIZATIONS
 #endif
 
-#if (__IBMCPP__ <= 502) 
+#if (__IBMCPP__ <= 502)
+#  define BOOST_NO_MEMBER_TEMPLATE_KEYWORD
+#endif
+
+#if (__IBMCPP__ <= 502) || !defined(BOOST_STRICT_CONFIG)
 // Actually the compiler supports inclass member initialization but it
 // requires a definition for the class member and it doesn't recognize
 // it as an integral constant expression when used as a template argument.
 #  define BOOST_NO_INCLASS_MEMBER_INITIALIZATION
 #  define BOOST_NO_INTEGRAL_INT64_T
-#  define BOOST_NO_MEMBER_TEMPLATE_KEYWORD
-#endif
-
-#if (__IBMCPP__ <= 600) || !defined(BOOST_STRICT_CONFIG)
-#  define BOOST_NO_POINTER_TO_MEMBER_TEMPLATE_PARAMETERS
-#  define BOOST_MPL_CFG_ASSERT_USE_RELATION_NAMES 1
 #endif
 
 //
@@ -46,13 +40,12 @@
 #error "Compiler not supported or configured - please reconfigure"
 #endif
 //
-// last known and checked version is 600:
-#if (__IBMCPP__ > 600)
+// last known and checked version is 500:
+#if (__IBMCPP__ > 502)
 #  if defined(BOOST_ASSERT_CONFIG)
 #     error "Unknown compiler version - please run the configure tests and report the results"
 #  endif
 #endif
-
 
 
 

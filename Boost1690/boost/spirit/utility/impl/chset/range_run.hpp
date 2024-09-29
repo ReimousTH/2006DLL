@@ -1,10 +1,12 @@
 /*=============================================================================
+    Spirit v1.6.0
     Copyright (c) 2001-2003 Joel de Guzman
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Permission to copy, use, modify, sell and distribute this software is
+    granted provided this copyright notice appears in all copies. This
+    software is provided "as is" without express or implied warranty, and
+    with no claim as to its suitability for any purpose.
 =============================================================================*/
 #ifndef BOOST_SPIRIT_RANGE_RUN_HPP
 #define BOOST_SPIRIT_RANGE_RUN_HPP
@@ -13,7 +15,7 @@
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace boost { namespace spirit { namespace utility { namespace impl {
+namespace boost { namespace spirit { namespace impl {
 
     ///////////////////////////////////////////////////////////////////////////
     //
@@ -34,7 +36,7 @@ namespace boost { namespace spirit { namespace utility { namespace impl {
         bool            is_valid() const;
         bool            includes(CharT v) const;
         bool            includes(range const& r) const;
-        bool            overlaps(range const& r) const;
+        bool            is_adjacent(range const& r) const;
         void            merge(range const& r);
 
         CharT first;
@@ -47,16 +49,6 @@ namespace boost { namespace spirit { namespace utility { namespace impl {
 
         bool operator()(range<CharT> const& x, const CharT y) const
         { return x.first < y; }
-        
-        bool operator()(const CharT x, range<CharT> const& y) const
-        { return x < y.first; }
-        
-        // This additional operator is required for the checked STL shipped
-        // with VC8 testing the ordering of the iterators passed to the
-        // std::lower_bound algo this range_char_compare<> predicate is passed
-        // to.
-        bool operator()(range<CharT> const& x, range<CharT> const& y) const
-        { return x.first < y.first; }
     };
 
     //////////////////////////////////
@@ -111,8 +103,10 @@ namespace boost { namespace spirit { namespace utility { namespace impl {
         run_t run;
     };
 
-}}}} // namespace boost::spirit::utility::impl
+}}} // namespace boost::spirit::impl
 
 #endif
 
-#include <boost/spirit/utility/impl/chset/range_run.ipp>
+#if !defined(BOOST_SPIRIT_RANGE_RUN_IPP)
+#include "boost/spirit/utility/impl/chset/range_run.ipp"
+#endif

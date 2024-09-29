@@ -12,7 +12,7 @@ Sonicteam::SoX::Engine::Doc* Sonicteam::HUDOption::GetCurrentDoc()
 
 
 
-Sonicteam::HUDOption::HUDOption(void)
+Sonicteam::HUDOption::HUDOption(Sonicteam::SoX::Engine::Doc* doc):SoX::Engine::Task(doc)
 {
 
 }

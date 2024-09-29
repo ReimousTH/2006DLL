@@ -1,15 +1,10 @@
+
 #ifndef CONSTRAINED_VALUE_HPP___
 #define CONSTRAINED_VALUE_HPP___
-
-/* Copyright (c) 2002,2003 CrystalClear Software, Inc.
- * Use, modification and distribution is subject to the 
- * Boost Software License, Version 1.0. (See accompanying
- * file LICENSE-1.0 or http://www.boost.org/LICENSE-1.0)
+/* Copyright (c) 2000 CrystalClear Software, Inc.
+ * Disclaimer & Full Copyright at end of file
  * Author: Jeff Garland 
- * $Date: 2004/02/26 18:26:47 $
  */
-
-#include <boost/config.hpp>
 
 namespace boost {
 
@@ -48,9 +43,9 @@ namespace CV {
       return *this;
     }   
     //! Return the max allowed value (traits method)
-    static value_type max BOOST_PREVENT_MACRO_SUBSTITUTION () {return (value_policies::max)();};
+    static value_type max() {return value_policies::max();};
     //! Return the min allowed value (traits method)
-    static value_type min BOOST_PREVENT_MACRO_SUBSTITUTION () {return (value_policies::min)();};
+    static value_type min() {return value_policies::min();};
     //! Coerce into the representation type
     operator value_type() const {return value_;};
   protected:
@@ -60,11 +55,11 @@ namespace CV {
     {
       //adding 1 below gets rid of a compiler warning which occurs when the 
       //min_value is 0 and the type is unsigned....
-      if (value+1 < (min)()+1) {
+      if (value+1 < min()+1) {
         value_policies::on_error(value_, value, min_violation);
         return;
       }
-      if (value > (max)()) {
+      if (value > max()) {
         value_policies::on_error(value_, value, max_violation);
         return;
       }
@@ -80,8 +75,8 @@ namespace CV {
   {
   public:
     typedef rep_type value_type;
-    static rep_type min BOOST_PREVENT_MACRO_SUBSTITUTION () { return min_value; };
-    static rep_type max BOOST_PREVENT_MACRO_SUBSTITUTION () { return max_value;};
+    static rep_type min() { return min_value; };
+    static rep_type max() { return max_value;};
     static void on_error(rep_type, rep_type, violation_enum)
     {
       throw exception_type();
@@ -93,6 +88,16 @@ namespace CV {
 } } //namespace CV
 
 
+/* Copyright (c) 2000-2002
+ * CrystalClear Software, Inc.
+ * Permission to use, copy, modify, distribute and sell this software
+ * and its documentation for any purpose is hereby granted without fee,
+ * provided that the above copyright notice appear in all copies and
+ * that both that copyright notice and this permission notice appear
+ * in supporting documentation.  CrystalClear Software makes no
+ * representations about the suitability of this software for any
+ * purpose.  It is provided "as is" without express or implied warranty.
+ */
 
 
 #endif

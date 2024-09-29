@@ -1,19 +1,22 @@
 /*=============================================================================
+    Spirit v1.6.0
     Copyright (c) 2002-2003 Hartmut Kaiser
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Permission to copy, use, modify, sell and distribute this software is
+    granted provided this copyright notice appears in all copies. This
+    software is provided "as is" without express or implied warranty, and
+    with no claim as to its suitability for any purpose.
 =============================================================================*/
 #ifndef BOOST_SPIRIT_CONFIX_HPP
 #define BOOST_SPIRIT_CONFIX_HPP
 
 ///////////////////////////////////////////////////////////////////////////////
-#include <boost/config.hpp>
-#include <boost/spirit/meta/as_parser.hpp>
-#include <boost/spirit/core/composite/operators.hpp>
-#include <boost/spirit/utility/impl/confix.ipp>
+#include "boost/type_traits.hpp"
+
+#include "boost/spirit/core/meta/impl/parser_type.hpp"
+#include "boost/spirit/core/composite/operators.hpp"
+#include "boost/spirit/utility/impl/confix.ipp"
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace boost { namespace spirit {
@@ -22,13 +25,13 @@ namespace boost { namespace spirit {
 //
 //  confix_parser class
 //
-//      Parses a sequence of 3 sub-matches. This class may
+//      Parses a (possibly nested) sequence of 3 sub-matches. This class may
 //      be used to parse structures, where the opening part is possibly
 //      contained in the expression part and the whole sequence is only
 //      parsed after seeing the closing part matching the first opening
-//      subsequence. Example: C-comments:
+//      subsequence. Example: nested PASCAL-comments:
 //
-//      /* This is a C-comment */
+//      { This is a { nested } PASCAL-comment }
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -89,8 +92,8 @@ private:
 //          start >> (body[f] - close) >> close
 //
 //      what in most cases is not what the user expects.
-//      (If this _is_ what you've expected, then please use the confix_p
-//      generator function 'direct()', which will inhibit
+//      (If this _is_ what you've expected, then please use the confix_p or
+//      confix_nest_p generator function 'direct()', which will inhibit
 //      re-attaching the actor to the body parser).
 //
 //      To make the confix parser behave as expected:
@@ -204,12 +207,14 @@ struct confix_parser_gen
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Predefined non_nested confix parser generators
+//  Predefined non_nested and nested confix parser generators
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 const confix_parser_gen<non_nested, non_lexeme> confix_p =
     confix_parser_gen<non_nested, non_lexeme>();
+const confix_parser_gen<is_nested, non_lexeme> confix_nest_p =
+    confix_parser_gen<is_nested, non_lexeme>();
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -254,7 +259,7 @@ struct comment_parser_gen
     confix_parser<
         typename as_parser<StartT>::type,
         kleene_star<anychar_parser>,
-        alternative<eol_parser, end_parser>,
+        eol_parser,
         unary_parser_category,          // there is no action to re-attach
         NestedT,
         is_lexeme                       // insert implicit lexeme_d[]
@@ -263,19 +268,18 @@ struct comment_parser_gen
     {
         typedef typename as_parser<StartT>::type start_t;
         typedef kleene_star<anychar_parser> expr_t;
-        typedef alternative<eol_parser, end_parser> end_t;
         typedef unary_parser_category parser_category_t;
 
         typedef
             confix_parser<
-                start_t, expr_t, end_t, parser_category_t, NestedT, is_lexeme
+                start_t, expr_t, eol_parser, parser_category_t, NestedT, is_lexeme
             >
             return_t;
 
         return return_t(
             as_parser<StartT>::convert(start_),
             *anychar_p,
-            eol_p | end_p
+            eol_p
         );
     }
 
@@ -314,81 +318,14 @@ struct comment_parser_gen
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Predefined non_nested comment parser generator
+//  Predefined non_nested and nested comment parser generator
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 const comment_parser_gen<non_nested> comment_p =
     comment_parser_gen<non_nested>();
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  comment_nest_parser class
-//
-//      Parses a nested comments.
-//      Example: nested PASCAL-comments:
-//
-//      { This is a { nested } PASCAL-comment }
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<typename OpenT, typename CloseT>
-struct comment_nest_parser:
-    public parser<comment_nest_parser<OpenT, CloseT> >
-{
-    typedef comment_nest_parser<OpenT, CloseT> self_t;
-
-    comment_nest_parser(OpenT const &open_, CloseT const &close_):
-        open(open_), close(close_)
-    {}
-
-    template<typename ScannerT>
-    typename parser_result<self_t, ScannerT>::type
-        parse(ScannerT const &scan) const
-    {
-        return do_parse(
-            open >> *(*this | (anychar_p - close)) >> close,
-            scan);
-    }
-
-private:
-    template<typename ParserT, typename ScannerT>
-    typename parser_result<self_t, ScannerT>::type
-        do_parse(ParserT const &p, ScannerT const &scan) const
-    {
-        return
-            impl::contiguous_parser_parse<
-                BOOST_DEDUCED_TYPENAME parser_result<ParserT, ScannerT>::type
-            >(p, scan, scan);
-    }
-
-    typename as_parser<OpenT>::type::embed_t open;
-    typename as_parser<CloseT>::type::embed_t close;
-};
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Predefined nested comment parser generator
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<typename OpenT, typename CloseT>
-inline
-comment_nest_parser<
-    typename as_parser<OpenT>::type,
-    typename as_parser<CloseT>::type
->
-    comment_nest_p(OpenT const &open, CloseT const &close)
-{
-    return
-        comment_nest_parser<
-            BOOST_DEDUCED_TYPENAME as_parser<OpenT>::type,
-            BOOST_DEDUCED_TYPENAME as_parser<CloseT>::type
-        >(
-            as_parser<OpenT>::convert(open),
-            as_parser<CloseT>::convert(close)
-        );
-}
+const comment_parser_gen<is_nested> comment_nest_p =
+    comment_parser_gen<is_nested>();
 
 ///////////////////////////////////////////////////////////////////////////////
 }} // namespace boost::spirit

@@ -398,7 +398,7 @@ namespace CompleteGauge{
 
 
 
-		p->LoseObject();
+	//	p->LoseObject();
 
 
 	}

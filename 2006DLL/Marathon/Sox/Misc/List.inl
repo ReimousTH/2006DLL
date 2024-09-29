@@ -17,30 +17,57 @@ namespace Sonicteam{
 		Sonicteam::SoX::LinkNode<T>::~LinkNode()
 		{
 
-			RemoveLink();
+		
 		}
+
+
+
+		template <typename T>
+		int* Sonicteam::SoX::LinkNodeList<T>::ForEach(void (*clear_func)(T*))
+		{
+			Sonicteam::SoX::LinkNodeList<T>* PThread_1 = this->PThread;
+			Sonicteam::SoX::LinkNodeList<T>* RootComp = this; 
+			Sonicteam::SoX::LinkNodeList<T>* v10; 
+			T* v9;
+			if ( this->PThread != this )
+			{
+				do
+				{
+					v9 = PThread_1->TThread;
+					v10 = PThread_1->PThread;
+					if ( v9 )
+						clear_func(v9);
+					PThread_1 = v10;
+				}
+				while ( v10 != RootComp );
+			}
+
+			return 0;
+		}
+
 
 		//should be 
 		template <typename T>
-		int Sonicteam::SoX::LinkNodeList<T>::Clear(int v)
+		int Sonicteam::SoX::LinkNodeList<T>::ForEach(int v)
 		{
-		
-			Sonicteam::SoX::LinkNodeList<T>* NextNode = this->PThread;
-
-			if (this->NThread != this){
-				Sonicteam::SoX::LinkNodeList<T>* v10;
-				T* v9;
+	
+			Sonicteam::SoX::LinkNodeList<T>* PThread_1 = this->PThread;
+			Sonicteam::SoX::LinkNodeList<T>* RootComp = this; 
+			Sonicteam::SoX::LinkNodeList<T>* v10; 
+			T* v9;
+			if ( this->PThread != this )
+			{
 				do
 				{
-					v9 = NextNode->TThread;
-					v10 = NextNode->PThread;
+					v9 = PThread_1->TThread;
+					v10 = PThread_1->PThread;
 					if ( v9 )
 						v9->DestroyObject(1);
-					NextNode = v10;
+					PThread_1 = v10;
 				}
-				while ( v10 != this );
-
+				while ( v10 != RootComp );
 			}
+
 			return v;
 		
 		}
@@ -50,9 +77,9 @@ namespace Sonicteam{
 		void Sonicteam::SoX::LinkNodeList<T>::Empty()
 		{
 
-			Sonicteam::SoX::LinkNodeList<Sonicteam::SoX::Component> *v1; // r11
-			Sonicteam::SoX::LinkNodeList<Sonicteam::SoX::Component> *v2; // r10
-			Sonicteam::SoX::LinkNodeList<Sonicteam::SoX::Component> *v3; // r11
+			Sonicteam::SoX::LinkNodeList<T> *v1; // r11
+			Sonicteam::SoX::LinkNodeList<T> *v2; // r10
+			Sonicteam::SoX::LinkNodeList<T> *v3; // r11
 
 			v1 = this->PThread;
 			if ( v1 != this )
@@ -72,6 +99,13 @@ namespace Sonicteam{
 			if ( v3 )
 				v3->NThread = this->NThread;
 
+		}
+
+
+		template <typename T>
+		void Sonicteam::SoX::LinkNodeList<T>::Add(T* element)
+		{
+ 
 		}
 	};
 };

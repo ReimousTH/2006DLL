@@ -1,42 +1,39 @@
+//-----------------------------------------------------------------------------
+// boost mpl/void.hpp header file
+// See http://www.boost.org for updates, documentation, and revision history.
+//-----------------------------------------------------------------------------
+//
+// Copyright (c) 2001-02
+// Peter Dimov, Aleksey Gurtovoy
+//
+// Permission to use, copy, modify, distribute and sell this software
+// and its documentation for any purpose is hereby granted without fee,
+// provided that the above copyright notice appears in all copies and
+// that both the copyright notice and this permission notice appear in
+// supporting documentation. No representations are made about the
+// suitability of this software for any purpose. It is provided "as is"
+// without express or implied warranty.
 
 #ifndef BOOST_MPL_VOID_HPP_INCLUDED
 #define BOOST_MPL_VOID_HPP_INCLUDED
 
-// Copyright Aleksey Gurtovoy 2001-2004
-//
-// Distributed under the Boost Software License, Version 1.0. 
-// (See accompanying file LICENSE_1_0.txt or copy at 
-// http://www.boost.org/LICENSE_1_0.txt)
-//
-// See http://www.boost.org/libs/mpl for documentation.
+#include "boost/mpl/bool.hpp"
+#include "boost/config.hpp"
 
-// $Source: /cvsroot/boost/boost/boost/mpl/void.hpp,v $
-// $Date: 2004/09/02 15:40:42 $
-// $Revision: 1.9 $
-
-#include <boost/mpl/void_fwd.hpp>
-#include <boost/mpl/bool.hpp>
-#include <boost/mpl/aux_/na_spec.hpp>
-#include <boost/mpl/aux_/config/msvc.hpp>
-#include <boost/mpl/aux_/config/workaround.hpp>
-
-BOOST_MPL_AUX_ADL_BARRIER_NAMESPACE_OPEN
+namespace boost {
+namespace mpl {
 
 //  [JDG Feb-4-2003] made void_ a complete type to allow it to be
 //  instantiated so that it can be passed in as an object that can be
 //  used to select an overloaded function. Possible use includes signaling
 //  a zero arity functor evaluation call.
-struct void_ { typedef void_ type; };
-
-BOOST_MPL_AUX_ADL_BARRIER_NAMESPACE_CLOSE
-
-namespace boost { namespace mpl {
+struct void_ {};
 
 template< typename T >
 struct is_void_
     : false_
 {
-#if BOOST_WORKAROUND(BOOST_MSVC, < 1300)
+#if defined(BOOST_MSVC) && BOOST_MSVC < 1300
     using false_::value;
 #endif
 };
@@ -45,32 +42,12 @@ template<>
 struct is_void_<void_>
     : true_
 {
-#if BOOST_WORKAROUND(BOOST_MSVC, < 1300)
+#if defined(BOOST_MSVC) && BOOST_MSVC < 1300
     using true_::value;
 #endif
 };
 
-template< typename T >
-struct is_not_void_
-    : true_
-{
-#if BOOST_WORKAROUND(BOOST_MSVC, < 1300)
-    using true_::value;
-#endif
-};
-
-template<>
-struct is_not_void_<void_>
-    : false_
-{
-#if BOOST_WORKAROUND(BOOST_MSVC, < 1300)
-    using false_::value;
-#endif
-};
-
-BOOST_MPL_AUX_NA_SPEC(1, is_void_)
-BOOST_MPL_AUX_NA_SPEC(1, is_not_void_)
-
-}}
+} // namespace mpl
+} // namespace boost
 
 #endif // BOOST_MPL_VOID_HPP_INCLUDED

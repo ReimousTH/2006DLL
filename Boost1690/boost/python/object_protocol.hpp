@@ -1,12 +1,13 @@
-// Copyright David Abrahams 2002.
-// Distributed under the Boost Software License, Version 1.0. (See
-// accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)
+// Copyright David Abrahams 2002. Permission to copy, use,
+// modify, sell and distribute this software is granted provided this
+// copyright notice appears in all copies. This software is provided
+// "as is" without express or implied warranty, and with no claim as
+// to its suitability for any purpose.
 #ifndef OBJECT_PROTOCOL_DWA2002615_HPP
 # define OBJECT_PROTOCOL_DWA2002615_HPP
 
-# include <boost/python/detail/prefix.hpp>
-
+# include <boost/python/detail/config.hpp>
+# include <boost/python/detail/wrap_python.hpp>
 # include <boost/python/object_protocol_core.hpp>
 # include <boost/python/object_core.hpp>
 
@@ -47,7 +48,7 @@ object getitem(Target const& target, Key const& key)
 template <class Key, class Value>
 void setitem(object const& target, Key const& key, Value const& value)
 {
-    setitem(target, object(key), object(value));
+    return setitem(target, object(key), object(value));
 }
 
 template <class Key>

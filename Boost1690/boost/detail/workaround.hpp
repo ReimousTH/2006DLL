@@ -1,7 +1,8 @@
-// Copyright David Abrahams 2002.
-// Distributed under the Boost Software License, Version 1.0. (See
-// accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)
+// Copyright David Abrahams 2002. Permission to copy, use,
+// modify, sell and distribute this software is granted provided this
+// copyright notice appears in all copies. This software is provided
+// "as is" without express or implied warranty, and with no claim as
+// to its suitability for any purpose.
 #ifndef WORKAROUND_DWA2002126_HPP
 # define WORKAROUND_DWA2002126_HPP
 
@@ -19,21 +20,16 @@
 //
 //     (BOOST_MSVC) != 0 && (BOOST_MSVC) <= 1200
 //
-// When used for workarounds that apply to the latest known version 
-// and all earlier versions of a compiler, the following convention 
-// should be observed:
+// When used for workarounds on the latest known version of a
+// compiler, the following convention should be observed:
 //
 //     #if BOOST_WORKAROUND(BOOST_MSVC, BOOST_TESTED_AT(1301))
 //
 // The version number in this case corresponds to the last version in
-// which the workaround was known to have been required. When
-// BOOST_DETECT_OUTDATED_WORKAROUNDS is not the defined, the macro
-// BOOST_TESTED_AT(x) expands to "!= 0", which effectively activates
-// the workaround for any version of the compiler. When
-// BOOST_DETECT_OUTDATED_WORKAROUNDS is defined, a compiler warning or
-// error will be issued if the compiler version exceeds the argument
-// to BOOST_TESTED_AT().  This can be used to locate workarounds which
-// may be obsoleted by newer versions.
+// which the workaround was known to have been required.  It only has
+// value as a comment unless BOOST_DETECT_OUTDATED_WORKAROUNDS is
+// defined, in which case a compiler warning or error will be issued
+// when the compiler version exceeds the argument to BOOST_TESTED_AT
 
 # ifndef BOOST_STRICT_CONFIG
 
@@ -45,23 +41,23 @@
 // broken preprocessor in MWCW 8.3 and earlier.
 //
 // The basic mechanism works as follows:
-//      (symbol test) + 1        =>   if (symbol test) then 2 else 1
-//      1 % ((symbol test) + 1)  =>   if (symbol test) then 1 else 0
+//      (symbol test) + 1        =>   2 if the test passes, 1 otherwise
+//      1 % ((symbol test) + 1)  =>   1 if the test passes, 0 otherwise
 //
 // The complication with % is for cooperation with BOOST_TESTED_AT().
 // When "test" is BOOST_TESTED_AT(x) and
 // BOOST_DETECT_OUTDATED_WORKAROUNDS is #defined,
 //
-//      symbol test              =>   if (symbol <= x) then 1 else -1
-//      (symbol test) + 1        =>   if (symbol <= x) then 2 else 0
-//      1 % ((symbol test) + 1)  =>   if (symbol <= x) then 1 else divide-by-zero
+//      symbol test              =>   1 if symbol <= x, -1 otherwise
+//      (symbol test) + 1        =>   2 if symbol <= x, 0 otherwise
+//      1 % ((symbol test) + 1)  =>   1 if symbol <= x, zero divide otherwise
 //
 
 #  ifdef BOOST_DETECT_OUTDATED_WORKAROUNDS
 #   define BOOST_OPEN_PAREN (
 #   define BOOST_TESTED_AT(value)  > value) ?(-1): BOOST_OPEN_PAREN 1
 #  else
-#   define BOOST_TESTED_AT(value) != ((value)-(value))
+#   define BOOST_TESTED_AT(value) != 0
 #  endif
 
 # else

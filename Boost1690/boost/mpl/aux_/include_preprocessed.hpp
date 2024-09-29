@@ -1,34 +1,30 @@
-
-// NO INCLUDE GUARDS, THE HEADER IS INTENDED FOR MULTIPLE INCLUSION
-
-// Copyright Aleksey Gurtovoy 2000-2004
+//-----------------------------------------------------------------------------
+// boost mpl/aux_/include_preprocessed.hpp header file
+// See http://www.boost.org for updates, documentation, and revision history.
+//-----------------------------------------------------------------------------
 //
-// Distributed under the Boost Software License, Version 1.0. 
-// (See accompanying file LICENSE_1_0.txt or copy at 
-// http://www.boost.org/LICENSE_1_0.txt)
+// Copyright (c) 2001-02
+// Aleksey Gurtovoy
 //
-// See http://www.boost.org/libs/mpl for documentation.
+// Permission to use, copy, modify, distribute and sell this software
+// and its documentation for any purpose is hereby granted without fee, 
+// provided that the above copyright notice appears in all copies and 
+// that both the copyright notice and this permission notice appear in 
+// supporting documentation. No representations are made about the 
+// suitability of this software for any purpose. It is provided "as is" 
+// without express or implied warranty.
 
-// $Source: /cvsroot/boost/boost/boost/mpl/aux_/include_preprocessed.hpp,v $
-// $Date: 2004/09/02 15:40:43 $
-// $Revision: 1.5 $
+// no include guards, the header is intended for multiple inclusion!
 
-#include <boost/mpl/aux_/config/compiler.hpp>
-#include <boost/mpl/aux_/config/preprocessor.hpp>
-#include <boost/preprocessor/cat.hpp>
-#include <boost/preprocessor/stringize.hpp>
+#include "boost/mpl/aux_/config/compiler.hpp"
+#include "boost/preprocessor/cat.hpp"
+#include "boost/preprocessor/stringize.hpp"
 
-#if !defined(BOOST_NEEDS_TOKEN_PASTING_OP_FOR_TOKENS_JUXTAPOSING)
 #   define AUX_PREPROCESSED_HEADER \
-    BOOST_MPL_CFG_COMPILER_DIR/BOOST_MPL_PREPROCESSED_HEADER \
+    aux_/preprocessed/BOOST_MPL_COMPILER_DIR/BOOST_MPL_PREPROCESSED_HEADER \
 /**/
-#else
-#   define AUX_PREPROCESSED_HEADER \
-    BOOST_PP_CAT(BOOST_MPL_CFG_COMPILER_DIR,/)##BOOST_MPL_PREPROCESSED_HEADER \
-/**/
-#endif
 
-#   include BOOST_PP_STRINGIZE(boost/mpl/aux_/preprocessed/AUX_PREPROCESSED_HEADER)
+#   include BOOST_PP_STRINGIZE(boost/mpl/AUX_PREPROCESSED_HEADER)
 #   undef AUX_PREPROCESSED_HEADER
 
 #undef BOOST_MPL_PREPROCESSED_HEADER

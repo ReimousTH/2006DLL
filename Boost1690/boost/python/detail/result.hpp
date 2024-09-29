@@ -1,9 +1,10 @@
 #if !defined(BOOST_PP_IS_ITERATING)
 
-// Copyright David Abrahams 2002.
-// Distributed under the Boost Software License, Version 1.0. (See
-// accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)
+// Copyright David Abrahams 2002. Permission to copy, use,
+// modify, sell and distribute this software is granted provided this
+// copyright notice appears in all copies. This software is provided
+// "as is" without express or implied warranty, and with no claim as
+// to its suitability for any purpose.
 
 # ifndef RESULT_DWA2002521_HPP
 #  define RESULT_DWA2002521_HPP
@@ -87,10 +88,7 @@ result(X const&, short = 0) { return 0; }
 
 /* --------------- function pointers --------------- */
 #elif BOOST_PP_ITERATION_DEPTH() == 1 && BOOST_PP_ITERATION_FLAGS() == BOOST_PYTHON_FUNCTION_POINTER
-# if !(BOOST_WORKAROUND(__MWERKS__, > 0x3100)                      \
-        && BOOST_WORKAROUND(__MWERKS__, BOOST_TESTED_AT(0x3201)))
-#  line BOOST_PP_LINE(__LINE__, result.hpp(function pointers))
-# endif
+# line BOOST_PP_LINE(__LINE__, result.hpp(function pointers))
 
 # define N BOOST_PP_ITERATION()
 
@@ -110,10 +108,7 @@ boost::type<R>* result(R (*pf)(BOOST_PP_ENUM_PARAMS_Z(1, N, A)), int = 0)
 # include BOOST_PP_ITERATE()
 
 #elif BOOST_PP_ITERATION_DEPTH() == 2
-# if !(BOOST_WORKAROUND(__MWERKS__, > 0x3100)                      \
-        && BOOST_WORKAROUND(__MWERKS__, BOOST_TESTED_AT(0x3201)))
-#  line BOOST_PP_LINE(__LINE__, result.hpp(pointers-to-members))
-# endif 
+# line BOOST_PP_LINE(__LINE__, result.hpp(pointers-to-members))
 // Inner over arities
 
 # define N BOOST_PP_ITERATION()

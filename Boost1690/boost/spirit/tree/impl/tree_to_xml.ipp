@@ -1,11 +1,13 @@
 /*=============================================================================
+    Spirit v1.6.0
     Copyright (c) 2001-2003 Hartmut Kaiser
     Copyright (c) 2001-2003 Daniel Nuffer
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Permission to copy, use, modify, sell and distribute this software is
+    granted provided this copyright notice appears in all copies. This
+    software is provided "as is" without express or implied warranty, and
+    with no claim as to its suitability for any purpose.
 =============================================================================*/
 
 #if !defined(TREE_TO_XML_IPP)
@@ -16,7 +18,7 @@
 
 #include <map>
 #include <iostream>
-#include <boost/config.hpp>
+#include "boost/config.hpp"
 #ifdef BOOST_NO_STRINGSTREAM
 #include <strstream>
 #define BOOST_SPIRIT_OSSTREAM std::ostrstream
@@ -234,14 +236,13 @@ namespace impl {
     // look up the rule name from the given parser_id
     template <typename AssocContainerT>
     inline typename AssocContainerT::value_type::second_type
-    get_rulename (AssocContainerT const &id_to_name_map,
+    get_rulename (AssocContainerT const &id_to_name_map, 
         boost::spirit::parser_id const &id)
     {
         typename AssocContainerT::const_iterator it = id_to_name_map.find(id);
         if (it != id_to_name_map.end())
             return (*it).second;
-        typedef typename AssocContainerT::value_type::second_type second_t;
-        return second_t();
+        return typename AssocContainerT::value_type::second_type();
     }
 
     // dump a parse tree as xml
@@ -285,7 +286,7 @@ namespace impl {
                 (*it).value.id() != 0 && id.has_value() ? id : nil);
 
             // first dump the value
-            std::size_t cnt = std::distance((*it).value.begin(), (*it).value.end());
+            size_t cnt = std::distance ((*it).value.begin(), (*it).value.end());
 
             if (1 == cnt)
             {

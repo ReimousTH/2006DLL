@@ -12,11 +12,15 @@
 #ifndef BOOST_THREAD_WEK070601_HPP
 #define BOOST_THREAD_WEK070601_HPP
 
-#include <boost/thread/detail/config.hpp>
+#include <boost/config.hpp>
+#ifndef BOOST_HAS_THREADS
+#   error   Thread support is unavailable!
+#endif
 
 #include <boost/utility.hpp>
 #include <boost/function.hpp>
 #include <boost/thread/mutex.hpp>
+#include <boost/thread/detail/config.hpp>
 #include <list>
 #include <memory>
 
@@ -70,7 +74,6 @@ public:
     void add_thread(thread* thrd);
     void remove_thread(thread* thrd);
     void join_all();
-        int size();
 
 private:
     std::list<thread*> m_threads;

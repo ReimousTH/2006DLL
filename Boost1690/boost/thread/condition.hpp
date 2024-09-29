@@ -12,11 +12,15 @@
 #ifndef BOOST_CONDITION_WEK070601_HPP
 #define BOOST_CONDITION_WEK070601_HPP
 
-#include <boost/thread/detail/config.hpp>
+#include <boost/config.hpp>
+#ifndef BOOST_HAS_THREADS
+#   error   Thread support is unavailable!
+#endif
 
 #include <boost/thread/exceptions.hpp>
 #include <boost/utility.hpp>
 #include <boost/thread/detail/lock.hpp>
+#include <boost/thread/detail/config.hpp>
 
 #if defined(BOOST_HAS_PTHREADS)
 #   include <pthread.h>

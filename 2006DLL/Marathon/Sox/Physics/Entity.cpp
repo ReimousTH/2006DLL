@@ -18,3 +18,8 @@ Sonicteam::SoX::Physics::Entity::Entity(unsigned int Flag1,unsigned int Flag2)
 {
 
 }
+
+Sonicteam::SoX::Physics::Entity::~Entity(void)
+{
+
+}

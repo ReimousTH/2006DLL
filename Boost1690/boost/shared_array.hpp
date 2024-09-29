@@ -7,9 +7,10 @@
 //  (C) Copyright Greg Colvin and Beman Dawes 1998, 1999.
 //  Copyright (c) 2001, 2002 Peter Dimov
 //
-//  Distributed under the Boost Software License, Version 1.0. (See
-//  accompanying file LICENSE_1_0.txt or copy at
-//  http://www.boost.org/LICENSE_1_0.txt)
+//  Permission to copy, use, modify, sell and distribute this software
+//  is granted provided this copyright notice appears in all copies.
+//  This software is provided "as is" without express or implied
+//  warranty, and with no claim as to its suitability for any purpose.
 //
 //  See http://www.boost.org/libs/smart_ptr/shared_array.htm for documentation.
 //
@@ -24,7 +25,6 @@
 #include <boost/checked_delete.hpp>
 
 #include <boost/detail/shared_count.hpp>
-#include <boost/detail/workaround.hpp>
 
 #include <cstddef>            // for std::ptrdiff_t
 #include <algorithm>          // for std::swap
@@ -94,31 +94,12 @@ public:
 
     // implicit conversion to "bool"
 
-#if defined(__SUNPRO_CC) && BOOST_WORKAROUND(__SUNPRO_CC, <= 0x530)
-
-    operator bool () const
-    {
-        return px != 0;
-    }
-
-#elif defined(__MWERKS__) && BOOST_WORKAROUND(__MWERKS__, BOOST_TESTED_AT(0x3003))
     typedef T * (this_type::*unspecified_bool_type)() const;
-    
+
     operator unspecified_bool_type() const // never throws
     {
         return px == 0? 0: &this_type::get;
     }
-
-#else 
-
-    typedef T * this_type::*unspecified_bool_type;
-
-    operator unspecified_bool_type() const // never throws
-    {
-        return px == 0? 0: &this_type::px;
-    }
-
-#endif
 
     bool operator! () const // never throws
     {

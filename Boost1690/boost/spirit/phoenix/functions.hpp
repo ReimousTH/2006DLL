@@ -1,17 +1,18 @@
 /*=============================================================================
-    Phoenix V1.2.1
+    Phoenix V1.0
     Copyright (c) 2001-2002 Joel de Guzman
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Permission to copy, use, modify, sell and distribute this software
+    is granted provided this copyright notice appears in all copies.
+    This software is provided "as is" without express or implied
+    warranty, and with no claim as to its suitability for any purpose.
 ==============================================================================*/
 #ifndef PHOENIX_FUNCTIONS_HPP
 #define PHOENIX_FUNCTIONS_HPP
 
 ///////////////////////////////////////////////////////////////////////////////
-#include <boost/spirit/phoenix/actor.hpp>
-#include <boost/spirit/phoenix/composite.hpp>
+#include "boost/spirit/phoenix/actor.hpp"
+#include "boost/spirit/phoenix/composite.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace phoenix {
@@ -304,8 +305,7 @@ template <typename A>
 inline typename impl::make_composite<OperationT, A>::type
 function<OperationT>::operator()(A const& a) const
 {
-    typedef typename impl::make_composite<OperationT, A>::composite_type ret_t;
-    return ret_t
+    return impl::make_composite<OperationT, A>::composite_type
     (
         op,
         as_actor<A>::convert(a)
@@ -318,11 +318,8 @@ template <typename A, typename B>
 inline typename impl::make_composite<OperationT, A, B>::type
 function<OperationT>::operator()(A const& a, B const& b) const
 {
-    typedef 
-        typename impl::make_composite<OperationT, A, B>::composite_type 
-        ret_t;
-        
-    return ret_t(
+    return impl::make_composite<OperationT, A, B>::composite_type
+    (
         op,
         as_actor<A>::convert(a),
         as_actor<B>::convert(b)
@@ -335,11 +332,8 @@ template <typename A, typename B, typename C>
 inline typename impl::make_composite<OperationT, A, B, C>::type
 function<OperationT>::operator()(A const& a, B const& b, C const& c) const
 {
-    typedef 
-        typename impl::make_composite<OperationT, A, B, C>::composite_type
-        ret_t;
-        
-    return ret_t(
+    return impl::make_composite<OperationT, A, B, C>::composite_type
+    (
         op,
         as_actor<A>::convert(a),
         as_actor<B>::convert(b),
@@ -360,11 +354,10 @@ function<OperationT>::operator()(
     A const& a, B const& b, C const& c, D const& d
 ) const
 {
-    typedef typename impl::make_composite<
-            OperationT, A, B, C, D
-        >::composite_type ret_t;
-        
-    return ret_t(
+    return impl::make_composite<
+        OperationT, A, B, C, D
+    >::composite_type
+    (
         op,
         as_actor<A>::convert(a),
         as_actor<B>::convert(b),
@@ -385,11 +378,10 @@ function<OperationT>::operator()(
     A const& a, B const& b, C const& c, D const& d, E const& e
 ) const
 {
-    typedef typename impl::make_composite<
-            OperationT, A, B, C, D, E
-        >::composite_type ret_t;
-
-    return ret_t(
+    return impl::make_composite<
+        OperationT, A, B, C, D, E
+    >::composite_type
+    (
         op,
         as_actor<A>::convert(a),
         as_actor<B>::convert(b),
@@ -413,11 +405,10 @@ function<OperationT>::operator()(
     F const& f
 ) const
 {
-    typedef typename impl::make_composite<
-            OperationT, A, B, C, D, E, F
-        >::composite_type ret_t;
-
-    return ret_t(
+    return impl::make_composite<
+        OperationT, A, B, C, D, E, F
+    >::composite_type
+    (
         op,
         as_actor<A>::convert(a),
         as_actor<B>::convert(b),
@@ -444,11 +435,10 @@ function<OperationT>::operator()(
     F const& f, G const& g
 ) const
 {
-    typedef typename impl::make_composite<
-            OperationT, A, B, C, D, E, F, G
-        >::composite_type ret_t;
-
-    return ret_t(
+    return impl::make_composite<
+        OperationT, A, B, C, D, E, F, G
+    >::composite_type
+    (
         op,
         as_actor<A>::convert(a),
         as_actor<B>::convert(b),
@@ -474,11 +464,10 @@ function<OperationT>::operator()(
     F const& f, G const& g, H const& h
 ) const
 {
-    typedef typename impl::make_composite<
-            OperationT, A, B, C, D, E, F, G, H
-        >::composite_type ret_t;
-        
-    return ret_t(
+    return impl::make_composite<
+        OperationT, A, B, C, D, E, F, G, H
+    >::composite_type
+    (
         op,
         as_actor<A>::convert(a),
         as_actor<B>::convert(b),
@@ -505,11 +494,10 @@ function<OperationT>::operator()(
     F const& f, G const& g, H const& h, I const& i
 ) const
 {
-    typedef typename impl::make_composite<
-            OperationT, A, B, C, D, E, F, G, H, I
-        >::composite_type ret_t;
-        
-    return ret_t(
+    return impl::make_composite<
+        OperationT, A, B, C, D, E, F, G, H, I
+    >::composite_type
+    (
         op,
         as_actor<A>::convert(a),
         as_actor<B>::convert(b),
@@ -539,11 +527,10 @@ function<OperationT>::operator()(
     F const& f, G const& g, H const& h, I const& i, J const& j
 ) const
 {
-    typedef typename impl::make_composite<
-            OperationT, A, B, C, D, E, F, G, H, I, J
-        >::composite_type ret_t;
-        
-    return ret_t(
+    return impl::make_composite<
+        OperationT, A, B, C, D, E, F, G, H, I, J
+    >::composite_type
+    (
         op,
         as_actor<A>::convert(a),
         as_actor<B>::convert(b),
@@ -574,11 +561,10 @@ function<OperationT>::operator()(
     K const& k
 ) const
 {
-    typedef typename impl::make_composite<
-            OperationT, A, B, C, D, E, F, G, H, I, J, K
-        >::composite_type ret_t;
-        
-    return ret_t(
+    return impl::make_composite<
+        OperationT, A, B, C, D, E, F, G, H, I, J, K
+    >::composite_type
+    (
         op,
         as_actor<A>::convert(a),
         as_actor<B>::convert(b),
@@ -610,11 +596,10 @@ function<OperationT>::operator()(
     K const& k, L const& l
 ) const
 {
-    typedef typename impl::make_composite<
-            OperationT, A, B, C, D, E, F, G, H, I, J, K, L
-        >::composite_type ret_t;
-        
-    return ret_t(
+    return impl::make_composite<
+        OperationT, A, B, C, D, E, F, G, H, I, J, K, L
+    >::composite_type
+    (
         op,
         as_actor<A>::convert(a),
         as_actor<B>::convert(b),
@@ -649,11 +634,10 @@ function<OperationT>::operator()(
     K const& k, L const& l, M const& m
 ) const
 {
-    typedef typename impl::make_composite<
-            OperationT, A, B, C, D, E, F, G, H, I, J, K, L, M
-        >::composite_type ret_t;
-        
-    return ret_t(
+    return impl::make_composite<
+        OperationT, A, B, C, D, E, F, G, H, I, J, K, L, M
+    >::composite_type
+    (
         op,
         as_actor<A>::convert(a),
         as_actor<B>::convert(b),
@@ -687,11 +671,10 @@ function<OperationT>::operator()(
     K const& k, L const& l, M const& m, N const& n
 ) const
 {
-    typedef typename impl::make_composite<
-            OperationT, A, B, C, D, E, F, G, H, I, J, K, L, M, N
-        >::composite_type ret_t;
-
-    return ret_t(
+    return impl::make_composite<
+        OperationT, A, B, C, D, E, F, G, H, I, J, K, L, M, N
+    >::composite_type
+    (
         op,
         as_actor<A>::convert(a),
         as_actor<B>::convert(b),
@@ -726,11 +709,10 @@ function<OperationT>::operator()(
     K const& k, L const& l, M const& m, N const& n, O const& o
 ) const
 {
-    typedef typename impl::make_composite<
-            OperationT, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O
-        >::composite_type ret_t;
-        
-    return ret_t(
+    return impl::make_composite<
+        OperationT, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O
+    >::composite_type
+    (
         op,
         as_actor<A>::convert(a),
         as_actor<B>::convert(b),

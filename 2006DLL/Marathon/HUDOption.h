@@ -26,7 +26,7 @@ namespace Sonicteam{
 		{
 		public:
 
-			HUDOption(void);
+			HUDOption(Sonicteam::SoX::Engine::Doc*);
 			~HUDOption();
 			//virtual ObjectDestroy(unsigned int flag);
 

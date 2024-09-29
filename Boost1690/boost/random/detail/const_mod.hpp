@@ -1,13 +1,18 @@
 /* boost random/detail/const_mod.hpp header file
  *
  * Copyright Jens Maurer 2000-2001
- * Distributed under the Boost Software License, Version 1.0. (See
- * accompanying file LICENSE_1_0.txt or copy at
- * http://www.boost.org/LICENSE_1_0.txt)
+ * Permission to use, copy, modify, sell, and distribute this software
+ * is hereby granted without fee provided that the above copyright notice
+ * appears in all copies and that both that copyright notice and this
+ * permission notice appear in supporting documentation,
+ *
+ * Jens Maurer makes no representations about the suitability of this
+ * software for any purpose. It is provided "as is" without express or
+ * implied warranty.
  *
  * See http://www.boost.org for most recent version including documentation.
  *
- * $Id: const_mod.hpp,v 1.8 2004/07/27 03:43:32 dgregor Exp $
+ * $Id: const_mod.hpp,v 1.5 2002/05/05 10:57:07 johnmaddock Exp $
  *
  * Revision history
  *  2001-02-18  moved to individual header files
@@ -20,7 +25,6 @@
 #include <boost/static_assert.hpp>
 #include <boost/cstdint.hpp>
 #include <boost/integer_traits.hpp>
-#include <boost/detail/workaround.hpp>
 
 namespace boost {
 namespace random {
@@ -131,13 +135,8 @@ private:
     assert(r < q);        // check that overflow cannot happen
 
     value = a*(value%q) - r*(value/q);
-    // An optimizer bug in the SGI MIPSpro 7.3.1.x compiler requires this
-    // convoluted formulation of the loop (Synge Todo)
-    for(;;) {
-      if (value > 0)
-        break;
+    while(value <= 0)
       value += m;
-    }
     return value;
   }
 
@@ -146,9 +145,7 @@ private:
   {
     // we are interested in the gcd factor for c, because this is our inverse
     BOOST_STATIC_ASSERT(m > 0);
-#if BOOST_WORKAROUND(__MWERKS__, BOOST_TESTED_AT(0x3003))
-    assert(boost::integer_traits<IntType>::is_signed);
-#elif !defined(BOOST_NO_LIMITS_COMPILE_TIME_CONSTANTS)
+#ifndef BOOST_NO_LIMITS_COMPILE_TIME_CONSTANTS
     BOOST_STATIC_ASSERT(boost::integer_traits<IntType>::is_signed);
 #endif
     assert(c > 0);

@@ -1,18 +1,23 @@
 /*=============================================================================
+    Spirit v1.6.0
     Copyright (c) 2001-2003 Joel de Guzman
     Copyright (c) 2001-2003 Daniel Nuffer
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Permission to copy, use, modify, sell and distribute this software is
+    granted provided this copyright notice appears in all copies. This
+    software is provided "as is" without express or implied warranty, and
+    with no claim as to its suitability for any purpose.
 =============================================================================*/
 #ifndef BOOST_SPIRIT_BASIC_CHSET_IPP
 #define BOOST_SPIRIT_BASIC_CHSET_IPP
 
 ///////////////////////////////////////////////////////////////////////////////
 #include <bitset>
-#include <boost/spirit/utility/impl/chset/basic_chset.hpp>
+
+#if !defined(BOOST_SPIRIT_BASIC_CHSET_HPP)
+#include "boost/spirit/utility/impl/chset/basic_chset.hpp"
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace boost { namespace spirit {
@@ -27,8 +32,8 @@ inline basic_chset<CharT>::basic_chset() {}
 
 //////////////////////////////////
 template <typename CharT>
-inline basic_chset<CharT>::basic_chset(basic_chset const& arg_)
-: rr(arg_.rr) {}
+inline basic_chset<CharT>::basic_chset(basic_chset const& arg)
+: rr(arg.rr) {}
 
 //////////////////////////////////
 template <typename CharT>
@@ -40,19 +45,19 @@ basic_chset<CharT>::test(CharT v) const
 template <typename CharT>
 inline void
 basic_chset<CharT>::set(CharT from, CharT to)
-{ rr.set(utility::impl::range<CharT>(from, to)); }
+{ rr.set(impl::range<CharT>(from, to)); }
 
 //////////////////////////////////
 template <typename CharT>
 inline void
 basic_chset<CharT>::set(CharT c)
-{ rr.set(utility::impl::range<CharT>(c, c)); }
+{ rr.set(impl::range<CharT>(c, c)); }
 
 //////////////////////////////////
 template <typename CharT>
 inline void
 basic_chset<CharT>::clear(CharT from, CharT to)
-{ rr.clear(utility::impl::range<CharT>(from, to)); }
+{ rr.clear(impl::range<CharT>(from, to)); }
 
 //////////////////////////////////
 template <typename CharT>
@@ -67,8 +72,8 @@ basic_chset<CharT>::inverse()
 {
     basic_chset inv;
     inv.set(
-        (std::numeric_limits<CharT>::min)(),
-        (std::numeric_limits<CharT>::max)()
+        std::numeric_limits<CharT>::min(),
+        std::numeric_limits<CharT>::max()
     );
     inv -= *this;
     swap(inv);
@@ -85,7 +90,7 @@ template <typename CharT>
 inline basic_chset<CharT>&
 basic_chset<CharT>::operator|=(basic_chset<CharT> const& x)
 {
-    typedef typename utility::impl::range_run<CharT>::const_iterator const_iterator;
+    typedef typename impl::range_run<CharT>::const_iterator const_iterator;
     for (const_iterator iter = x.rr.begin(); iter != x.rr.end(); ++iter)
         rr.set(*iter);
     return *this;
@@ -98,8 +103,8 @@ basic_chset<CharT>::operator&=(basic_chset<CharT> const& x)
 {
     basic_chset inv;
     inv.set(
-        (std::numeric_limits<CharT>::min)(),
-        (std::numeric_limits<CharT>::max)()
+        std::numeric_limits<CharT>::min(),
+        std::numeric_limits<CharT>::max()
     );
     inv -= x;
     *this -= inv;
@@ -111,7 +116,7 @@ template <typename CharT>
 inline basic_chset<CharT>&
 basic_chset<CharT>::operator-=(basic_chset<CharT> const& x)
 {
-    typedef typename utility::impl::range_run<CharT>::const_iterator const_iterator;
+    typedef typename impl::range_run<CharT>::const_iterator const_iterator;
     for (const_iterator iter = x.rr.begin(); iter != x.rr.end(); ++iter)
         rr.clear(*iter);
     return *this;
@@ -141,8 +146,8 @@ inline basic_chset_8bit<CharT>::basic_chset_8bit() {}
 
 /////////////////////////////////
 template <typename CharT>
-inline basic_chset_8bit<CharT>::basic_chset_8bit(basic_chset_8bit const& arg_)
-: bset(arg_.bset) {}
+inline basic_chset_8bit<CharT>::basic_chset_8bit(basic_chset_8bit const& arg)
+: bset(arg.bset) {}
 
 /////////////////////////////////
 template <typename CharT>

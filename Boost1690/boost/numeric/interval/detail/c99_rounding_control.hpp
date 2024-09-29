@@ -1,11 +1,17 @@
 /* Boost interval/detail/c99_rounding_control.hpp file
  *
- * Copyright 2000 Jens Maurer
- * Copyright 2002 Hervé Brönnimann, Guillaume Melquiond, Sylvain Pion
+ * Copyright Jens Maurer 2000
+ * Copyright Hervé Brönnimann, Guillaume Melquiond, Sylvain Pion 2002
+ * Permission to use, copy, modify, sell, and distribute this software
+ * is hereby granted without fee provided that the above copyright notice
+ * appears in all copies and that both that copyright notice and this
+ * permission notice appear in supporting documentation,
  *
- * Distributed under the Boost Software License, Version 1.0.
- * (See accompanying file LICENSE_1_0.txt or
- * copy at http://www.boost.org/LICENSE_1_0.txt)
+ * None of the above authors nor Polytechnic University make any
+ * representation about the suitability of this software for any
+ * purpose. It is provided "as is" without express or implied warranty.
+ *
+ * $Id: c99_rounding_control.hpp,v 1.2 2003/02/05 17:34:32 gmelquio Exp $
  */
 
 #ifndef BOOST_NUMERIC_INTERVAL_DETAIL_C99_ROUNDING_CONTROL_HPP
@@ -14,11 +20,11 @@
 #include <boost/numeric/interval/detail/c99sub_rounding_control.hpp>
 
 namespace boost {
-namespace numeric {
+namespace nuemric {
 namespace interval_lib {
 namespace detail {
 
-struct c99_rounding_control: c99_rounding
+struct c99_rounding_control
 {
   template<class T>
   static T force_rounding(const T& r) { volatile T r_ = r; return r_; }
@@ -41,7 +47,5 @@ struct rounding_control<long double>:
 } // namespace interval_lib
 } // namespace numeric
 } // namespace boost
-
-#undef BOOST_NUMERIC_INTERVAL_NO_HARDWARE
 
 #endif // BOOST_NUMERIC_INTERVAL_DETAIL_C99_ROUNDING_CONTROL_HPP

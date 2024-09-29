@@ -2,20 +2,21 @@
 
 // © Copyright Jeremy Siek and John R. Bandela 2001. 
 
-// Distributed under the Boost Software License, Version 1.0. (See
-// accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)
+// Permission to copy, use, modify, sell and distribute this software
+// is granted provided this copyright notice appears in all
+// copies. This software is provided "as is" without express or
+// implied warranty, and with no claim as to its suitability for any
+// purpose.
 
 // See http://www.boost.org/libs/tokenizer for documenation
 
 // Revision History:
-// 03 Jul 2003   John Bandela
-//      Converted to new iterator adapter
+
 // 02 Feb 2002   Jeremy Siek
 //      Removed tabs and a little cleanup.
 
-#ifndef BOOST_TOKENIZER_JRB070303_HPP_
-#define BOOST_TOKENIZER_JRB070303_HPP_
+#ifndef BOOST_TOKENIZER_JRB051801_HPP_
+#define BOOST_TOKENIZER_JRB051801_HPP_
 
 #include <boost/token_iterator.hpp>
 #include <cassert>
@@ -31,6 +32,8 @@ namespace boost {
   >
   class tokenizer {
   private:
+    typedef detail::tokenizer_policy<Type, TokenizerFunc> Pol;
+    typedef detail::token_iterator_base<Iterator> TBase;
     typedef token_iterator_generator<TokenizerFunc,Iterator,Type> TGen;
         
     // It seems that MSVC does not like the unqualified use of iterator,
@@ -83,8 +86,8 @@ namespace boost {
       assign(c.begin(),c.end(),f);
     }
     
-    iter begin() const { return iter(f_,first_,last_); }
-    iter end() const { return iter(f_,last_,last_); }
+    iter begin() const { return iter(TBase(first_,last_),Pol(f_)); }
+    iter end() const { return iter(TBase(last_,last_),Pol(f_)); }
         
   private:
     Iterator first_;

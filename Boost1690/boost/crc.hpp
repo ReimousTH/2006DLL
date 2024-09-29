@@ -1,10 +1,11 @@
 //  Boost CRC library crc.hpp header file  -----------------------------------//
 
-//  Copyright 2001, 2004 Daryle Walker.  Use, modification, and distribution are
-//  subject to the Boost Software License, Version 1.0.  (See accompanying file
-//  LICENSE_1_0.txt or a copy at <http://www.boost.org/LICENSE_1_0.txt>.)
+//  (C) Copyright Daryle Walker 2001.  Permission to copy, use, modify, sell and
+//  distribute this software is granted provided this copyright notice appears 
+//  in all copies.  This software is provided "as is" without express or
+//  implied warranty, and with no claim as to its suitability for any purpose. 
 
-//  See <http://www.boost.org/libs/crc/> for the library's home page.
+//  See http://www.boost.org/libs/crc for documentation. 
 
 #ifndef BOOST_CRC_HPP
 #define BOOST_CRC_HPP
@@ -37,7 +38,7 @@
 // arguments explicitly specified.  At least one compiler that needs this
 // workaround also needs the default value for the dummy argument to be
 // specified in the definition.
-#if defined(__GNUC__) || !defined(BOOST_NO_EXPLICIT_FUNCTION_TEMPLATE_ARGUMENTS)
+#ifndef BOOST_NO_EXPLICIT_FUNCTION_TEMPLATE_ARGUMENTS
 #define BOOST_CRC_DUMMY_PARM_TYPE
 #define BOOST_CRC_DUMMY_INIT
 #define BOOST_ACRC_DUMMY_PARM_TYPE
@@ -279,15 +280,10 @@ namespace detail
         typedef typename base_type::least  least;
         typedef typename base_type::fast   fast;
 
-#if defined(__EDG_VERSION__) && __EDG_VERSION__ <= 243
-        static const least high_bit = 1ul << ( Bits - 1u );
-        static const fast high_bit_fast = 1ul << ( Bits - 1u );
-#else
         BOOST_STATIC_CONSTANT( least, high_bit = (least( 1u ) << ( Bits
          - 1u )) );
         BOOST_STATIC_CONSTANT( fast, high_bit_fast = (fast( 1u ) << ( Bits
          - 1u )) );
-#endif
 
     };  // boost::detail::high_uint_t
 
@@ -344,11 +340,7 @@ namespace detail
         BOOST_STATIC_CONSTANT( fast, high_bit_fast = base_type::high_bit_fast );
         #endif
 
-#if defined(__EDG_VERSION__) && __EDG_VERSION__ <= 243
-        static const least sig_bits = (~( ~( 0ul ) << Bits )) ;
-#else
         BOOST_STATIC_CONSTANT( least, sig_bits = (~( ~(least( 0u )) << Bits )) );
-#endif
         BOOST_STATIC_CONSTANT( fast, sig_bits_fast = fast(sig_bits) );
 
     };  // boost::detail::mask_uint_t
@@ -527,30 +519,6 @@ namespace detail
         did_init = true;
     }
 
-    #ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
-    // Align the msb of the remainder to a byte
-    template < std::size_t Bits, bool RightShift >
-    class remainder
-    {
-    public:
-        typedef typename uint_t<Bits>::fast  value_type;
-
-        static unsigned char align_msb( value_type rem )
-            { return rem >> (Bits - CHAR_BIT); }
-    };
-
-    // Specialization for the case that the remainder has less
-    // bits than a byte: align the remainder msb to the byte msb
-    template < std::size_t Bits >
-    class remainder< Bits, false >
-    {
-    public:
-        typedef typename uint_t<Bits>::fast  value_type;
-
-        static unsigned char align_msb( value_type rem )
-            { return rem << (CHAR_BIT - Bits); }
-    };
-    #endif
 
     // CRC helper routines
     template < std::size_t Bits, bool DoReflect >
@@ -579,9 +547,7 @@ namespace detail
 
         // Compare a byte to the remainder's highest byte
         static  unsigned char  index( value_type rem, unsigned char x )
-            { return x ^ ( DoReflect ? rem :
-                                ((Bits>CHAR_BIT)?( rem >> (Bits - CHAR_BIT) ) :
-                                    ( rem << (CHAR_BIT - Bits) ))); }
+            { return x ^ ( rem >> (DoReflect ? 0u : Bits - CHAR_BIT) ); }
 
         // Shift out the remainder's highest byte
         static  value_type  shift( value_type rem )
@@ -604,7 +570,7 @@ namespace detail
 
         // Compare a byte to the remainder's highest byte
         static  unsigned char  index( value_type rem, unsigned char x )
-            { return x ^ remainder<Bits,(Bits>CHAR_BIT)>::align_msb( rem ); }
+            { return x ^ ( rem >> (Bits - CHAR_BIT) ); }
 
         // Shift out the remainder's highest byte
         static  value_type  shift( value_type rem )

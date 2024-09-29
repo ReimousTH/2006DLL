@@ -1,11 +1,13 @@
-// Copyright David Abrahams 2002.
-// Distributed under the Boost Software License, Version 1.0. (See
-// accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)
+// Copyright David Abrahams 2002. Permission to copy, use,
+// modify, sell and distribute this software is granted provided this
+// copyright notice appears in all copies. This software is provided
+// "as is" without express or implied warranty, and with no claim as
+// to its suitability for any purpose.
 #ifndef MODULE_INIT_DWA20020722_HPP
 # define MODULE_INIT_DWA20020722_HPP
 
-# include <boost/python/detail/prefix.hpp>
+# include <boost/python/detail/wrap_python.hpp>
+# include <boost/python/detail/config.hpp>
 
 # ifndef BOOST_PYTHON_MODULE_INIT
 
@@ -39,16 +41,6 @@ extern "C"                                                              \
         boost::python::detail::aix_init_module(                         \
             _PyImport_LoadDynamicModule, #name, &init_module_##name);   \
     }                                                                   \
-}                                                                       \
-void init_module_##name()
-
-# elif (defined(__GNUC__) && __GNUC__ >= 3 && __GNUC_MINOR__ >=5)
-
-#   define BOOST_PYTHON_MODULE_INIT(name)                               \
-void init_module_##name();                                              \
-extern "C" __attribute__ ((visibility("default"))) void init##name()    \
-{                                                                       \
-    boost::python::detail::init_module(#name, &init_module_##name);     \
 }                                                                       \
 void init_module_##name()
 

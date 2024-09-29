@@ -1168,7 +1168,7 @@ namespace DebugLogV2{
 		//Sonicteam::LuaSystem::LoadInitResource(p,std::string("player/shadow.lua"));
 
 		BranchTo(0x82239740,int,ModelPlayer + 0x20,&p);
-		p->LoseObject();
+		p->Release();
 
 		
 
@@ -1210,7 +1210,7 @@ namespace DebugLogV2{
 
 
 	
-		p->LoseObject();
+		p->Release();
 
 
 
@@ -1315,7 +1315,7 @@ namespace DebugLogV2{
 			
 			}
 		}
-		if (p) p->LoseObject();
+		if (p) p->Release();
 
 	}
 
@@ -1342,7 +1342,7 @@ namespace DebugLogV2{
 					Sonicteam::SoX::RefCountObject* v9 = *(	Sonicteam::SoX::RefCountObject*  *)(ObjPlayer + 0xD0);
 					*(_DWORD *)(ObjPlayer + 0xD0) = v8;
 					if ( v9 )
-						v9->LoseObject();
+						v9->Release();
 				
 				}
 			}
@@ -1545,43 +1545,29 @@ namespace DebugLogV2{
 
 		UINT32 PlayerIndex = (UINT32)lua_tonumber(L,1);
 		Sonicteam::DocMarathonImp* impl = 	*(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
-		PlayerIndex = impl->GetRealControllerID(PlayerIndex);
-		Sonicteam::Player::Input::IListenerInputStruc01* Inp = (Sonicteam::Player::Input::IListenerInputStruc01*)impl->GetPlayerInput(PlayerIndex);
-		
-		if (!Inp || Inp->PtrKhronoControlInputListener == 0){
-			lua_pushnumber(L, 0); return 1;
-		}
+		Sonicteam::GameImp* gameimp = *(Sonicteam::GameImp**)(impl->DocCurrentMode + 0x6C);		
+		UINT32 ActorID = gameimp->PlayerGameplayerData[PlayerIndex].ActorID;
+		if (ActorID == 0xFFFFFFFF) {lua_pushnumber(L,0);return 1;}
+		UINT32 ObjPlayer =  BranchTo(0x821609D0,int,gameimp->GameActorManager.get(),&ActorID);
 
 
-		Sonicteam::SoX::RNodeF<Sonicteam::SoX::Object>* h = (Sonicteam::SoX::RNodeF<Sonicteam::SoX::Object>*) &Inp->PtrMyInputObj;
-		Sonicteam::SoX::RNodeF<Sonicteam::SoX::Object>* temp = (Sonicteam::SoX::RNodeF<Sonicteam::SoX::Object>*)h->Next;
+
+		if (!ObjPlayer) {lua_pushnumber(L,0);return 1;}
+						
 
 
-		if (h->Next != h->Previous){
-			while (h != temp){
-
-				if (temp->Next == temp->Previous) {temp =0;}
-
-				if (temp->FObject && dynamic_cast<Sonicteam::Player::Input::IListener*>(temp->FObject) != 0){
-					break;
-				}
-				temp = (Sonicteam::SoX::RNodeF<Sonicteam::SoX::Object>*)temp->Next;
+		std::vector<boost::shared_ptr<Sonicteam::Player::IPlugIn>>* IPluginP = reinterpret_cast<std::vector<boost::shared_ptr<Sonicteam::Player::IPlugIn>>*>(ObjPlayer + 0x114);
+		for (std::vector<boost::shared_ptr<Sonicteam::Player::IPlugIn>>::iterator it  = IPluginP->begin();it!=IPluginP->end();it++){
+			Sonicteam::Player::IPlugIn* plug = it->get();
+			if (Sonicteam::Player::Input::IListener* listener = dynamic_cast<Sonicteam::Player::Input::IListener*>(plug)){
+				lua_pushnumber(L,listener->ListenerGetResult());
+				return 1;
 			}
 		}
-		else{
-			temp = 0;
-		}
 
-		if (temp && temp->FObject) {
-			Sonicteam::Player::Input::IListener* il =   dynamic_cast<Sonicteam::Player::Input::IListener*>(temp->FObject);
-			if (il){
-				lua_pushnumber(L, il->ListenerGetResult()); 
-			}
-		}
-		else{
-			lua_pushnumber(L, 0); 
-		}
-		
+
+
+		lua_pushnumber(L,0);
 		return 1;
 	}
 

@@ -3,7 +3,7 @@
 
 using namespace Sonicteam;
 
-Sonicteam::HudMainMenu::HudMainMenu(void)
+Sonicteam::HudMainMenu::HudMainMenu(SoX::Engine::Doc* doc):SoX::Engine::Task(doc)
 {
 
 }

@@ -1,13 +1,18 @@
 /* boost random/discard_block.hpp header file
  *
  * Copyright Jens Maurer 2002
- * Distributed under the Boost Software License, Version 1.0. (See
- * accompanying file LICENSE_1_0.txt or copy at
- * http://www.boost.org/LICENSE_1_0.txt)
+ * Permission to use, copy, modify, sell, and distribute this software
+ * is hereby granted without fee provided that the above copyright notice
+ * appears in all copies and that both that copyright notice and this
+ * permission notice appear in supporting documentation,
+ *
+ * Jens Maurer makes no representations about the suitability of this
+ * software for any purpose. It is provided "as is" without express or
+ * implied warranty.
  *
  * See http://www.boost.org for most recent version including documentation.
  *
- * $Id: discard_block.hpp,v 1.12 2005/05/21 15:57:00 dgregor Exp $
+ * $Id: discard_block.hpp,v 1.7 2002/12/22 22:03:10 jmaurer Exp $
  *
  * Revision history
  *  2001-03-02  created
@@ -44,7 +49,6 @@ public:
   explicit discard_block(const base_type & rng) : _rng(rng), _n(0) { }
   template<class It> discard_block(It& first, It last)
     : _rng(first, last), _n(0) { }
-  void seed() { _rng.seed(); _n = 0; }
   template<class T> void seed(T s) { _rng.seed(s); _n = 0; }
   template<class It> void seed(It& first, It last)
   { _n = 0; _rng.seed(first, last); }
@@ -63,8 +67,8 @@ public:
     return _rng();
   }
 
-  result_type min BOOST_PREVENT_MACRO_SUBSTITUTION () const { return (_rng.min)(); }
-  result_type max BOOST_PREVENT_MACRO_SUBSTITUTION () const { return (_rng.max)(); }
+  result_type min() const { return _rng.min(); }
+  result_type max() const { return _rng.max(); }
   static bool validation(result_type x) { return true; }  // dummy
 
 #ifndef BOOST_NO_OPERATORS_IN_NAMESPACE

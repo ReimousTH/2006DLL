@@ -1,8 +1,7 @@
-//  (C) Copyright John Maddock 2001. 
-//  (C) Copyright Darin Adler 2001. 
-//  Use, modification and distribution are subject to the 
-//  Boost Software License, Version 1.0. (See accompanying file 
-//  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+//  (C) Copyright Boost.org 2001. Permission to copy, use, modify, sell and
+//  distribute this software is granted provided this copyright notice appears
+//  in all copies. This software is provided "as is" without express or implied
+//  warranty, and with no claim as to its suitability for any purpose.
 
 //  See http://www.boost.org for most recent version.
 
@@ -30,25 +29,17 @@
 
 #if defined(__MSL__) && (__MSL__ >= 0x5000)
 #  define BOOST_HAS_STDINT_H
-#  if !defined(__PALMOS_TRAPS__)
-#    define BOOST_HAS_UNISTD_H
-#  endif
+#  define BOOST_HAS_UNISTD_H
    // boilerplate code:
 #  include <boost/config/posix_features.hpp>
 #endif
 
-#if defined(_MWMT) || _MSL_THREADSAFE
+#if _MWMT
 #  define BOOST_HAS_THREADS
-#endif
-
-#ifdef _MSL_NO_EXPLICIT_FUNC_TEMPLATE_ARG
-#  define BOOST_NO_STD_USE_FACET
-#  define BOOST_HAS_TWO_ARG_USE_FACET
 #endif
 
 
 #define BOOST_STDLIB "Metrowerks Standard Library version " BOOST_STRINGIZE(__MSL_CPP__)
-
 
 
 

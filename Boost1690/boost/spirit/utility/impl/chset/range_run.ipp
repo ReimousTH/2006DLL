@@ -1,25 +1,33 @@
 /*=============================================================================
+    Spirit v1.6.0
     Copyright (c) 2001-2003 Joel de Guzman
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Permission to copy, use, modify, sell and distribute this software is
+    granted provided this copyright notice appears in all copies. This
+    software is provided "as is" without express or implied warranty, and
+    with no claim as to its suitability for any purpose.
 =============================================================================*/
 #ifndef BOOST_SPIRIT_RANGE_RUN_IPP
 #define BOOST_SPIRIT_RANGE_RUN_IPP
 
 ///////////////////////////////////////////////////////////////////////////////
-#include <algorithm> // for std::lower_bound
-#include <boost/spirit/core/assert.hpp> // for BOOST_SPIRIT_ASSERT
-#include <boost/spirit/utility/impl/chset/range_run.hpp>
-#include <boost/spirit/debug.hpp>
-#include <boost/limits.hpp>
+#if !defined(BOOST_SPIRIT_RANGE_RUN_HPP)
+#include "boost/spirit/utility/impl/chset/range_run.hpp"
+#endif
+
+#if !defined(BOOST_SPIRIT_MAIN_DEBUG_HPP)
+#include "boost/spirit/debug.hpp"
+#endif
+
+#if !defined(BOOST_LIMITS_HPP)
+#include "boost/limits.hpp"
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace boost { namespace spirit {
 
-    namespace utility { namespace impl {
+    namespace impl {
 
         ///////////////////////////////////////////////////////////////////////
         //
@@ -51,14 +59,15 @@ namespace boost { namespace spirit {
         //////////////////////////////////
         template <typename CharT>
         inline bool
-        range<CharT>::overlaps(range const& r) const
+        range<CharT>::is_adjacent(range const& r) const
         {
             CharT decr_first =
-                first == (std::numeric_limits<CharT>::min)() ? first : first-1;
+                first == std::numeric_limits<CharT>::min() ? first : first-1;
             CharT incr_last =
-                last == (std::numeric_limits<CharT>::max)() ? last : last+1;
+                last == std::numeric_limits<CharT>::max() ? last : last+1;
 
-            return (decr_first <= r.last) && (incr_last >= r.first);
+            return ((decr_first <= r.first) && (incr_last >= r.first))
+                || ((decr_first <= r.last) && (incr_last >= r.last));
         }
 
         //////////////////////////////////
@@ -66,8 +75,8 @@ namespace boost { namespace spirit {
         inline void
         range<CharT>::merge(range const& r)
         {
-            first = (std::min)(first, r.first);
-            last = (std::max)(last, r.last);
+            first = std::min(first, r.first);
+            last = std::max(last, r.last);
         }
 
         ///////////////////////////////////////////////////////////////////////
@@ -109,7 +118,7 @@ namespace boost { namespace spirit {
             iter->merge(r);
             iterator i = iter + 1;
 
-            while (i != run.end() && iter->overlaps(*i))
+            while (i != run.end() && iter->is_adjacent(*i))
                 iter->merge(*i++);
 
             run.erase(iter+1, i);
@@ -133,10 +142,10 @@ namespace boost { namespace spirit {
                     ((iter != run.begin()) && (iter - 1)->includes(r)))
                     return;
 
-                if (iter != run.begin() && (iter - 1)->overlaps(r))
+                if (iter != run.begin() && (iter - 1)->is_adjacent(r))
                     merge(--iter, r);
 
-                else if (iter != run.end() && iter->overlaps(r))
+                else if (iter != run.end() && iter->is_adjacent(r))
                     merge(iter, r);
 
                 else
@@ -205,7 +214,7 @@ namespace boost { namespace spirit {
         range_run<CharT>::end() const
         { return run.end(); }
 
-    }} // namespace utility::impl
+    } // namespace impl
 
 }} // namespace boost::spirit
 

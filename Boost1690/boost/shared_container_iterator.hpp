@@ -15,41 +15,38 @@
 namespace boost {
 
 template <typename Container>
-class shared_container_iterator : public iterator_adaptor<
-                                    shared_container_iterator<Container>,
-                                    typename Container::iterator> {
-
-  typedef iterator_adaptor<
-    shared_container_iterator<Container>,
-    typename Container::iterator> super_t;
-
-  typedef typename Container::iterator iterator_t;
+struct shared_container_iterator_policies :
+  public boost::default_iterator_policies {
   typedef boost::shared_ptr<Container> container_ref_t;
-
   container_ref_t container_ref;
+  shared_container_iterator_policies(container_ref_t const& c) :
+    container_ref(c) { }
+  shared_container_iterator_policies() { }
+};
+
+
+template <typename Container>
+class shared_container_iterator_generator {
+  typedef typename Container::iterator iterator;
+  typedef shared_container_iterator_policies<Container> policy;
 public:
-  shared_container_iterator() { }
-
-  shared_container_iterator(iterator_t const& x,container_ref_t const& c) :
-    super_t(x), container_ref(c) { }
-
-
+  typedef boost::iterator_adaptor<iterator,policy> type;
 };
 
 template <typename Container>
-shared_container_iterator<Container>
+typename shared_container_iterator_generator<Container>::type
 make_shared_container_iterator(typename Container::iterator iter,
-                               boost::shared_ptr<Container> const& container) {
-  typedef shared_container_iterator<Container> iterator;
-  return iterator(iter,container);
+			       boost::shared_ptr<Container> const& container) {
+  typedef typename shared_container_iterator_generator<Container>::type
+    iterator;
+  typedef shared_container_iterator_policies<Container> policy;
+  return iterator(iter,policy(container));
 }
-
-
 
 template <typename Container>
 std::pair<
-  shared_container_iterator<Container>,
-  shared_container_iterator<Container> >
+  typename shared_container_iterator_generator<Container>::type,
+  typename shared_container_iterator_generator<Container>::type>
 make_shared_container_range(boost::shared_ptr<Container> const& container) {
   return
     std::make_pair(

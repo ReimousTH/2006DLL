@@ -1,16 +1,9 @@
-//  (C) Copyright Jeremy Siek 2004 
-//  Distributed under the Boost Software License, Version 1.0. (See
-//  accompanying file LICENSE_1_0.txt or copy at
-//  http://www.boost.org/LICENSE_1_0.txt)
-
 #ifndef BOOST_GRAPH_DETAIL_CONTAINER_TRAITS_H
 #define BOOST_GRAPH_DETAIL_CONTAINER_TRAITS_H
 
 // Sure would be nice to be able to forward declare these
 // instead of pulling in all the headers. Too bad that
 // is not legal. There ought to be a standard <stlfwd> header. -JGS 
-
-#include <boost/next_prior.hpp>
 
 #include <algorithm>   // for std::remove
 #include <vector>
@@ -25,11 +18,7 @@
 #  include <hash_set>
 #endif
 
-// The content of this file is in 'graph_detail' because otherwise
-// there will be name clashes with 
-// sandbox/boost/sequence_algo/container_traits.hpp
-// The 'detail' subnamespace will still cause problems.
-namespace boost { namespace graph_detail {
+namespace boost {
 
   //======================================================================
   // Container Category Tags
@@ -394,6 +383,6 @@ namespace boost { namespace graph_detail {
     return push_dispatch(c, v, container_category(c));
   }
 
-}} // namespace boost::graph_detail
+} // namespace boost
 
 #endif // BOOST_GRAPH_DETAIL_CONTAINER_TRAITS_H

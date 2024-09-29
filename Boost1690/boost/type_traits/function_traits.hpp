@@ -1,10 +1,14 @@
 
-//  Copyright 2000 John Maddock (john@johnmaddock.co.uk)
-//  Use, modification and distribution are subject to the Boost Software License,
-//  Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-//  http://www.boost.org/LICENSE_1_0.txt).
+// Copyright (C) 2000 John Maddock (john_maddock@compuserve.com)
 //
-//  See http://www.boost.org/libs/type_traits for most recent version including documentation.
+// Permission to copy and use this software is granted, 
+// provided this copyright notice appears in all copies. 
+// Permission to modify the code and to distribute modified code is granted, 
+// provided this copyright notice appears in all copies, and a notice 
+// that the code was modified is included with the copyright notice.
+//
+// This software is provided "as is" without express or implied warranty, 
+// and with no claim as to its suitability for any purpose.
 
 #ifndef BOOST_TT_FUNCTION_TRAITS_HPP_INCLUDED
 #define BOOST_TT_FUNCTION_TRAITS_HPP_INCLUDED
@@ -33,7 +37,6 @@ struct function_traits_helper<R (*)(T1)>
   BOOST_STATIC_CONSTANT(int, arity = 1);
   typedef R result_type;
   typedef T1 arg1_type;
-  typedef T1 argument_type;
 };
 
 template<typename R, typename T1, typename T2>
@@ -43,8 +46,6 @@ struct function_traits_helper<R (*)(T1, T2)>
   typedef R result_type;
   typedef T1 arg1_type;
   typedef T2 arg2_type;
-  typedef T1 first_argument_type;
-  typedef T2 second_argument_type;
 };
 
 template<typename R, typename T1, typename T2, typename T3>

@@ -33,7 +33,7 @@ extern "C" {
 #include "LuaExtension_StateMachine2.h"
 
 #include "LuaSystem.h"
-
+#include <GameImp.h>
 
 #include <boost/any.hpp>
 

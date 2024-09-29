@@ -3,8 +3,7 @@
 #include <string>
 #include <list>
 
-#include <boost/ptr_container/ptr_list.hpp>
-#include <boost/ptr_container/ptr_set.hpp>
+
 #include <deque>
 #include <vector>
 

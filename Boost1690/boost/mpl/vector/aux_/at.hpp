@@ -1,52 +1,39 @@
+//-----------------------------------------------------------------------------
+// boost mpl/vector/aux_/at.hpp header file
+// See http://www.boost.org for updates, documentation, and revision history.
+//-----------------------------------------------------------------------------
+//
+// Copyright (c) 2000-02
+// Aleksey Gurtovoy
+//
+// Permission to use, copy, modify, distribute and sell this software
+// and its documentation for any purpose is hereby granted without fee, 
+// provided that the above copyright notice appears in all copies and 
+// that both the copyright notice and this permission notice appear in 
+// supporting documentation. No representations are made about the 
+// suitability of this software for any purpose. It is provided "as is" 
+// without express or implied warranty.
 
 #ifndef BOOST_MPL_VECTOR_AUX_AT_HPP_INCLUDED
 #define BOOST_MPL_VECTOR_AUX_AT_HPP_INCLUDED
 
-// Copyright Aleksey Gurtovoy 2000-2004
-//
-// Distributed under the Boost Software License, Version 1.0. 
-// (See accompanying file LICENSE_1_0.txt or copy at 
-// http://www.boost.org/LICENSE_1_0.txt)
-//
-// See http://www.boost.org/libs/mpl for documentation.
+#include "boost/mpl/at_fwd.hpp"
+#include "boost/mpl/aux_/value_wknd.hpp"
+#include "boost/mpl/vector/aux_/item.hpp"
+#include "boost/mpl/vector/aux_/tag.hpp"
+#include "boost/mpl/aux_/config/vector.hpp"
+#include "boost/mpl/aux_/config/ctps.hpp"
 
-// $Source: /cvsroot/boost/boost/boost/mpl/vector/aux_/at.hpp,v $
-// $Date: 2004/12/20 19:35:33 $
-// $Revision: 1.6 $
+namespace boost {
+namespace mpl {
 
-#include <boost/mpl/at_fwd.hpp>
-#include <boost/mpl/vector/aux_/tag.hpp>
-#include <boost/mpl/long.hpp>
-#include <boost/mpl/void.hpp>
-#include <boost/mpl/aux_/nttp_decl.hpp>
-#include <boost/mpl/aux_/type_wrapper.hpp>
-#include <boost/mpl/aux_/value_wknd.hpp>
-#include <boost/mpl/aux_/config/typeof.hpp>
-#include <boost/mpl/aux_/config/ctps.hpp>
-
-namespace boost { namespace mpl {
-
-#if defined(BOOST_MPL_CFG_TYPEOF_BASED_SEQUENCES)
-
-template< typename Vector, long n_ >
-struct v_at_impl
-{
-    typedef long_< (Vector::lower_bound_::value + n_) > index_;
-    typedef __typeof__( Vector::item_(index_()) ) type;
-};
-
-
-template< typename Vector, long n_ >
-struct v_at
-    : aux::wrapped_type< typename v_at_impl<Vector,n_>::type >
-{
-};
+#if defined(BOOST_MPL_TYPEOF_BASED_VECTOR_IMPL)
 
 template<>
-struct at_impl< aux::vector_tag >
+struct at_traits< aux::vector_tag >
 {
-    template< typename Vector, typename N > struct apply
-        : v_at<
+    template< typename Vector, typename N > struct algorithm
+        : vector_item<
               Vector
             , BOOST_MPL_AUX_VALUE_WKND(N)::value
             >
@@ -56,24 +43,22 @@ struct at_impl< aux::vector_tag >
 
 #else
 
-#   if !defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION) \
-    && !defined(BOOST_MPL_CFG_NO_NONTYPE_TEMPLATE_PARTIAL_SPEC)
+#if !defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION) \
+ && !defined(BOOST_NO_NON_TYPE_TEMPLATE_PARTIAL_SPECIALIZATION)
 
-template< typename Vector, BOOST_MPL_AUX_NTTP_DECL(long, n_) > struct v_at;
-
-template< BOOST_MPL_AUX_NTTP_DECL(long, n_) >
-struct at_impl< aux::vector_tag<n_> >
+template< long S >
+struct at_traits< aux::vector_tag<S> >
 {
-    template< typename Vector, typename N > struct apply
+    template< typename Vector, typename N > struct algorithm
 #if !defined(__BORLANDC__)
-        : v_at<
+        : vector_item<
               Vector
             , BOOST_MPL_AUX_VALUE_WKND(N)::value
             >
     {
 #else
     {
-        typedef typename v_at<
+        typedef typename vector_item<
               Vector
             , BOOST_MPL_AUX_VALUE_WKND(N)::value
             >::type type;
@@ -81,36 +66,11 @@ struct at_impl< aux::vector_tag<n_> >
     };
 };
 
-#   else
+#endif // BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 
-namespace aux {
+#endif // BOOST_MPL_TYPEOF_BASED_VECTOR_IMPL
 
-template< BOOST_MPL_AUX_NTTP_DECL(long, n_) > struct v_at_impl
-{
-    template< typename V > struct result_;
-};
-
-// to work around ETI, etc.
-template<> struct v_at_impl<-1>
-{
-    template< typename V > struct result_
-    {
-        typedef void_ type;
-    };
-};
-
-} // namespace aux
-
-template< typename T, BOOST_MPL_AUX_NTTP_DECL(long, n_) >
-struct v_at
-    : aux::v_at_impl<n_>::template result_<T>
-{
-};
-
-#   endif // BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
-
-#endif // BOOST_MPL_CFG_TYPEOF_BASED_SEQUENCES
-
-}}
+} // namespace mpl
+} // namespace boost
 
 #endif // BOOST_MPL_VECTOR_AUX_AT_HPP_INCLUDED

@@ -1,18 +1,21 @@
 /*=============================================================================
+    Spirit v1.6.0
     Copyright (c) 2001-2003 Joel de Guzman
     Copyright (c) 2001-2003 Daniel Nuffer
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Permission to copy, use, modify, sell and distribute this software is
+    granted provided this copyright notice appears in all copies. This
+    software is provided "as is" without express or implied warranty, and
+    with no claim as to its suitability for any purpose.
 =============================================================================*/
 #ifndef BOOST_SPIRIT_BASIC_CHSET_HPP
 #define BOOST_SPIRIT_BASIC_CHSET_HPP
 
 ///////////////////////////////////////////////////////////////////////////////
 #include <bitset>
-#include <boost/spirit/utility/impl/chset/range_run.hpp>
+
+#include "boost/spirit/utility/impl/chset/range_run.hpp"
 
 namespace boost { namespace spirit {
 
@@ -26,7 +29,7 @@ namespace boost { namespace spirit {
     {
     public:
                             basic_chset();
-                            basic_chset(basic_chset const& arg_);
+                            basic_chset(basic_chset const& arg);
 
         bool                test(CharT v) const;
         void                set(CharT from, CharT to);
@@ -43,7 +46,7 @@ namespace boost { namespace spirit {
         basic_chset&        operator-=(basic_chset const& x);
         basic_chset&        operator^=(basic_chset const& x);
 
-        private: utility::impl::range_run<CharT> rr;
+        private: impl::range_run<CharT> rr;
     };
 
     #if (CHAR_BIT == 8)
@@ -58,7 +61,7 @@ namespace boost { namespace spirit {
 
     public:
                             basic_chset_8bit();
-                            basic_chset_8bit(basic_chset_8bit const& arg_);
+                            basic_chset_8bit(basic_chset_8bit const& arg);
 
         bool                test(CharT v) const;
         void                set(CharT from, CharT to);
@@ -99,4 +102,6 @@ namespace boost { namespace spirit {
 
 #endif
 
-#include <boost/spirit/utility/impl/chset/basic_chset.ipp>
+#if !defined(BOOST_SPIRIT_BASIC_CHSET_IPP)
+#include "boost/spirit/utility/impl/chset/basic_chset.ipp"
+#endif

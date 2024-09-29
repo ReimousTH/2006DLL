@@ -35,7 +35,7 @@ namespace DevTitleV2{
 		
 		BranchTo(0x82161AB8,int,_this,a2);
 
-	//	BranchTo(0x825E9E28,int,_this,a2);
+		//BranchTo(0x825E9E28,int,_this,a2);
 	
 		if ( !*(int*)0x82D35E78 )
 			*(int*)0x82D35E78 = BranchTo(0x82161860,int);
@@ -43,9 +43,7 @@ namespace DevTitleV2{
 
 		Label1 =  DebugLogV2::SpawnMessage(L"",400,600);
 		Label2 =  DebugLogV2::SpawnMessage(L">>$<<","picture(button_a)",640,100);
-
 		Label3 =  DebugLogV2::SpawnMessage(L">>[Selected]:[]<<",10,600);
-
 		Label4 =  DebugLogV2::SpawnMessage(L"",500,200);
 
 		return _this->DocSetCurrentMode(*(int*)0x82D35E78);
@@ -216,10 +214,49 @@ namespace DevTitleV2{
 
 		return BranchTo(0x825E8D78,int,result,a2);
 	}
+
+	static void ClearTaskFunc(Sonicteam::SoX::Engine::Task* task){
+		*(int*)task = 0;
+	};
+
+
+	HOOK(Sonicteam::SoX::Engine::Task*,__stdcall,sub_0x825F0298,0x825F0298,Sonicteam::SoX::Engine::Task* a1,int a2){
+
+		//ShowXenonMessage(L"MSG","DestroyObject");
+		
+		a1->Empty(a1);
+		a1->EmptyParent(a1);
+		a1->TaskList.ForEach(ClearTaskFunc);
+		a1->TaskList.Empty();
+	
+
+		a1->LComponentList.ForEach(0);
+		a1->LComponentList.Empty();
+
+		a1->LinkedComponent.RemoveLink();
+
+
+		Sonicteam::SoX::Memory::IUDestructible::DestroyObject(a1,(int)a2);
+		return 0;
+
+
+	}
+
+	HOOK_EXTERN_C(Sonicteam::SoX::Engine::Task*, __fastcall,sub_82581470,0x82581470 ,void* a1,Sonicteam::SoX::Engine::Doc* doc){
+
+		return new(a1)Sonicteam::SoX::Engine::Task(doc);
+	}
+
+
+	
 	void GlobalInstall()
 	{
 
 	
+	
+		//INSTALL_HOOK(sub_82581470);
+
+
 
 		
 	//	WRITE_DWORD(0x82000950,EngineDocOnUpdate);

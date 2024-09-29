@@ -1,7 +1,8 @@
-//  (C) Copyright Jeremy Siek 1999-2001.
-// Distributed under the Boost Software License, Version 1.0. (See
-// accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)
+//  (C) Copyright Jeremy Siek 1999-2001. Permission to copy, use, modify,
+//  sell and distribute this software is granted provided this
+//  copyright notice appears in all copies. This software is provided
+//  "as is" without express or implied warranty, and with no claim as
+//  to its suitability for any purpose.
 
 //  See http://www.boost.org/libs/property_map for documentation.
 
@@ -170,9 +171,7 @@ namespace boost {
   };
   template <typename K, typename V>
   const typename readable_property_map_archetype<K,V>::reference&
-  get(const readable_property_map_archetype<K,V>&, 
-      const typename readable_property_map_archetype<K,V>::key_type&)
-  {
+  get(const readable_property_map_archetype<K,V>&, const K&) {
     typedef typename readable_property_map_archetype<K,V>::reference R;
     return static_object<R>::get();
   }
@@ -200,9 +199,7 @@ namespace boost {
     typedef writable_property_map_tag category;
   };
   template <typename K, typename V>
-  void put(const writable_property_map_archetype<K,V>&, 
-           const typename writable_property_map_archetype<K,V>::key_type&, 
-           const typename writable_property_map_archetype<K,V>::value_type&) { }
+  void put(const writable_property_map_archetype<K,V>&, const K&, const V&) { }
 
 
   template <class PMap, class Key>
@@ -396,11 +393,10 @@ namespace boost {
     typedef boost::lvalue_property_map_tag category;
 
     inline safe_iterator_property_map(
-      RandomAccessIterator first, 
-      std::size_t n_ = 0, 
+      RandomAccessIterator first = RandomAccessIterator(), 
+      std::size_t n = 0, 
       const IndexMap& _id = IndexMap() ) 
-      : iter(first), n(n_), index(_id) { }
-    inline safe_iterator_property_map() { }
+      : iter(first), n(n), index(_id) { }
     inline R operator[](key_type v) const {
       assert(get(index, v) < n);
       return *(iter + get(index, v)) ;

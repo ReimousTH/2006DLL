@@ -1,10 +1,16 @@
 /* Boost interval/rounded_arith.hpp template implementation file
  *
- * Copyright 2002-2003 Hervé Brönnimann, Guillaume Melquiond, Sylvain Pion
+ * Copyright Hervé Brönnimann, Guillaume Melquiond, Sylvain Pion 2002-2003
+ * Permission to use, copy, modify, sell, and distribute this software
+ * is hereby granted without fee provided that the above copyright notice
+ * appears in all copies and that both that copyright notice and this
+ * permission notice appear in supporting documentation,
  *
- * Distributed under the Boost Software License, Version 1.0.
- * (See accompanying file LICENSE_1_0.txt or
- * copy at http://www.boost.org/LICENSE_1_0.txt)
+ * None of the above authors nor Polytechnic University make any
+ * representation about the suitability of this software for any
+ * purpose. It is provided "as is" without express or implied warranty.
+ *
+ * $Id: rounded_arith.hpp,v 1.3 2003/02/05 17:34:30 gmelquio Exp $
  */
 
 #ifndef BOOST_NUMERIC_INTERVAL_ROUNDED_ARITH_HPP
@@ -26,8 +32,6 @@ namespace interval_lib {
 template<class T, class Rounding>
 struct rounded_arith_exact: Rounding {
   void init() { }
-  template<class U> T conv_down(U const &v) { return v; }
-  template<class U> T conv_up  (U const &v) { return v; }
   T add_down (const T& x, const T& y) { return x + y; }
   T add_up   (const T& x, const T& y) { return x + y; }
   T sub_down (const T& x, const T& y) { return x - y; }
@@ -53,8 +57,6 @@ struct rounded_arith_std: Rounding {
 # define BOOST_NR(EXPR) this->to_nearest(); return this->force_rounding(EXPR)
 # define BOOST_UP(EXPR) this->upward();     return this->force_rounding(EXPR)
   void init() { }
-  template<class U> T conv_down(U const &v) { BOOST_DN(v); }
-  template<class U> T conv_up  (U const &v) { BOOST_UP(v); }
   T add_down(const T& x, const T& y) { BOOST_DN(x + y); }
   T sub_down(const T& x, const T& y) { BOOST_DN(x - y); }
   T mul_down(const T& x, const T& y) { BOOST_DN(x * y); }
@@ -90,8 +92,6 @@ struct rounded_arith_opp: Rounding {
     return r
 # define BOOST_UP(EXPR) return this->force_rounding(EXPR)
 # define BOOST_UP_NEG(EXPR) return -this->force_rounding(EXPR)
-  template<class U> T conv_down(U const &v) { BOOST_UP_NEG(-v); }
-  template<class U> T conv_up  (U const &v) { BOOST_UP(v); }
   T add_down(const T& x, const T& y) { BOOST_UP_NEG((-x) - y); }
   T sub_down(const T& x, const T& y) { BOOST_UP_NEG(y - x); }
   T mul_down(const T& x, const T& y) { BOOST_UP_NEG(x * (-y)); }

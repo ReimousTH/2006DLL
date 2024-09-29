@@ -1,10 +1,13 @@
-//  Copyright David Abrahams 2001.
-// Distributed under the Boost Software License, Version 1.0. (See
-// accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)
+//  Copyright David Abrahams 2001. Permission to copy, use,
+//  modify, sell and distribute this software is granted provided this
+//  copyright notice appears in all copies. This software is provided
+//  "as is" without express or implied warranty, and with no claim as
+//  to its suitability for any purpose.
 #ifndef REGISTRY_DWA20011127_HPP
 # define REGISTRY_DWA20011127_HPP
 # include <boost/python/type_id.hpp>
+# include <boost/python/detail/config.hpp>
+# include <boost/python/detail/wrap_python.hpp>
 # include <boost/python/converter/to_python_function_type.hpp>
 # include <boost/python/converter/rvalue_from_python_data.hpp>
 # include <boost/python/converter/constructor_function.hpp>
@@ -17,12 +20,8 @@ struct registration;
 // This namespace acts as a sort of singleton
 namespace registry
 {
-  // Get the registration corresponding to the type, creating it if necessary
+  // Get the registration corresponding to the type, creating it if neccessary
   BOOST_PYTHON_DECL registration const& lookup(type_info);
-
-  // Get the registration corresponding to the type, creating it if
-  // necessary.  Use this first when the type is a shared_ptr.
-  BOOST_PYTHON_DECL registration const& lookup_shared_ptr(type_info);
 
   // Return a pointer to the corresponding registration, if one exists
   BOOST_PYTHON_DECL registration const* query(type_info);

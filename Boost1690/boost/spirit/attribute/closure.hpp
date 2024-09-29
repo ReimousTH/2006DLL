@@ -1,26 +1,28 @@
 /*=============================================================================
+    Spirit v1.6.0
     Copyright (c) 2001-2003 Joel de Guzman
     Copyright (c) 2002-2003 Hartmut Kaiser
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Permission to copy, use, modify, sell and distribute this software is
+    granted provided this copyright notice appears in all copies. This
+    software is provided "as is" without express or implied warranty, and
+    with no claim as to its suitability for any purpose.
 =============================================================================*/
 #ifndef BOOST_SPIRIT_CLOSURE_HPP
 #define BOOST_SPIRIT_CLOSURE_HPP
 
 ///////////////////////////////////////////////////////////////////////////////
-#include <boost/spirit/core/parser.hpp>
-#include <boost/spirit/core/composite/composite.hpp>
-#include <boost/spirit/attribute/parametric.hpp>
-#include <boost/spirit/attribute/closure_context.hpp>
+#include "boost/spirit/core/parser.hpp"
+#include "boost/spirit/core/composite/composite.hpp"
+#include "boost/spirit/attribute/parametric.hpp"
+#include "boost/spirit/attribute/closure_context.hpp"
 
-#include <boost/spirit/phoenix/closures.hpp>
-#include <boost/spirit/phoenix/primitives.hpp>
-#include <boost/spirit/phoenix/casts.hpp>
-#include <boost/spirit/phoenix/operators.hpp>
-#include <boost/spirit/phoenix/tuple_helpers.hpp>
+#include "boost/spirit/phoenix/closures.hpp"
+#include "boost/spirit/phoenix/primitives.hpp"
+#include "boost/spirit/phoenix/casts.hpp"
+#include "boost/spirit/phoenix/operators.hpp"
+#include "boost/spirit/phoenix/tuple_helpers.hpp"
 
 #include <boost/static_assert.hpp>
 
@@ -57,7 +59,7 @@ namespace boost { namespace spirit {
     //
     ///////////////////////////////////////////////////////////////////////////
     template <typename ClosureT>
-    class closure_context : public parser_context_base
+    class closure_context
     {
     public:
 
@@ -77,7 +79,7 @@ namespace boost { namespace spirit {
 
         template <typename ResultT, typename ParserT, typename ScannerT>
         ResultT& post_parse(ResultT& hit, ParserT const&, ScannerT const&)
-        { hit.value(frame[phoenix::tuple_index<0>()]); return hit; }
+        { hit.value() = frame[phoenix::tuple_index<0>()]; return hit; }
 
     private:
 
@@ -100,7 +102,7 @@ namespace boost { namespace spirit {
     ///////////////////////////////////////////////////////////////////////////
 
     template <typename ClosureT>
-    class init_closure_context : public parser_context_base
+    class init_closure_context
     {
         typedef typename ClosureT::tuple_t      tuple_t;
         typedef typename ClosureT::closure_t    closure_t;
@@ -113,11 +115,11 @@ namespace boost { namespace spirit {
         ~init_closure_context() {}
 
         template <typename ParserT, typename ScannerT>
-        void pre_parse(ParserT const& /*p*/, ScannerT const&) {}
+        void pre_parse(ParserT const& p, ScannerT const&) {}
 
         template <typename ResultT, typename ParserT, typename ScannerT>
         ResultT& post_parse(ResultT& hit, ParserT const&, ScannerT const&)
-        { hit.value(frame[phoenix::tuple_index<0>()]); return hit; }
+        { hit.value() = frame[phoenix::tuple_index<0>()]; return hit; }
 
     private:
 

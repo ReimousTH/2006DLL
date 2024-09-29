@@ -1,13 +1,18 @@
 /* boost random/normal_distribution.hpp header file
  *
  * Copyright Jens Maurer 2000-2001
- * Distributed under the Boost Software License, Version 1.0. (See
- * accompanying file LICENSE_1_0.txt or copy at
- * http://www.boost.org/LICENSE_1_0.txt)
+ * Permission to use, copy, modify, sell, and distribute this software
+ * is hereby granted without fee provided that the above copyright notice
+ * appears in all copies and that both that copyright notice and this
+ * permission notice appear in supporting documentation,
+ *
+ * Jens Maurer makes no representations about the suitability of this
+ * software for any purpose. It is provided "as is" without express or
+ * implied warranty.
  *
  * See http://www.boost.org for most recent version including documentation.
  *
- * $Id: normal_distribution.hpp,v 1.20 2004/07/27 03:43:32 dgregor Exp $
+ * $Id: normal_distribution.hpp,v 1.16 2002/12/22 22:03:10 jmaurer Exp $
  *
  * Revision history
  *  2001-02-18  moved to individual header files
@@ -18,54 +23,56 @@
 
 #include <cmath>
 #include <cassert>
-#include <iostream>
-#include <boost/limits.hpp>
-#include <boost/static_assert.hpp>
+#include <boost/random/uniform_01.hpp>
 
 namespace boost {
 
 // deterministic polar method, uses trigonometric functions
-template<class RealType = double>
+template<class UniformRandomNumberGenerator, class RealType = double,
+        class Adaptor = uniform_01<UniformRandomNumberGenerator, RealType> >
 class normal_distribution
 {
 public:
-  typedef RealType input_type;
+  typedef Adaptor adaptor_type;
+  typedef UniformRandomNumberGenerator base_type;
   typedef RealType result_type;
 
-#if !defined(BOOST_NO_LIMITS_COMPILE_TIME_CONSTANTS) && !(defined(BOOST_MSVC) && BOOST_MSVC <= 1300)
-    BOOST_STATIC_ASSERT(!std::numeric_limits<RealType>::is_integer);
-#endif
-
-  explicit normal_distribution(const result_type& mean = result_type(0),
+  explicit normal_distribution(base_type & rng,
+                               const result_type& mean = result_type(0),
                                const result_type& sigma = result_type(1))
-    : _mean(mean), _sigma(sigma), _valid(false)
+    : _rng(rng), _mean(mean), _sigma(sigma), _valid(false)
   {
     assert(sigma >= result_type(0));
   }
 
+#ifndef BOOST_NO_LIMITS_COMPILE_TIME_CONSTANTS
+    BOOST_STATIC_ASSERT(!std::numeric_limits<RealType>::is_integer);
+#endif
+
   // compiler-generated copy constructor is NOT fine, need to purge cache
   normal_distribution(const normal_distribution& other)
-    : _mean(other._mean), _sigma(other._sigma), _valid(false)
+    : _rng(other._rng), _mean(other._mean), _sigma(other._sigma), _valid(false)
   {
   }
 
   // compiler-generated copy ctor and assignment operator are fine
 
+  adaptor_type& adaptor() { return _rng; }
+  base_type& base() const { return _rng.base(); }
   RealType mean() const { return _mean; }
   RealType sigma() const { return _sigma; }
 
   void reset() { _valid = false; }
 
-  template<class Engine>
-  result_type operator()(Engine& eng)
+  result_type operator()()
   {
 #ifndef BOOST_NO_STDC_NAMESPACE
     // allow for Koenig lookup
     using std::sqrt; using std::log; using std::sin; using std::cos;
 #endif
     if(!_valid) {
-      _r1 = eng();
-      _r2 = eng();
+      _r1 = _rng();
+      _r2 = _rng();
       _cached_rho = sqrt(-result_type(2) * log(result_type(1)-_r2));
       _valid = true;
     } else {
@@ -79,8 +86,15 @@ public:
                           sin(result_type(2)*pi*_r1))
       * _sigma + _mean;
   }
+#ifndef BOOST_NO_OPERATORS_IN_NAMESPACE
+  friend bool operator==(const normal_distribution& x, 
+                         const normal_distribution& y)
+  {
+    return x._mean == y._mean && x._sigma == y._sigma && 
+      x._valid == y._valid && x._rng == y._rng;
+  }
 
-#if !defined(BOOST_NO_OPERATORS_IN_NAMESPACE) && !defined(BOOST_NO_MEMBER_TEMPLATE_FRIENDS)
+#ifndef BOOST_NO_MEMBER_TEMPLATE_FRIENDS
   template<class CharT, class Traits>
   friend std::basic_ostream<CharT,Traits>&
   operator<<(std::basic_ostream<CharT,Traits>& os, const normal_distribution& nd)
@@ -100,7 +114,17 @@ public:
     return is;
   }
 #endif
+
+#else
+  // Use a member function
+  bool operator==(const normal_distribution& rhs) const
+  {
+    return _mean == rhs._mean && _sigma == rhs._sigma && 
+      _valid == rhs._valid && _rng == rhs._rng;
+  }
+#endif
 private:
+  adaptor_type _rng;
   result_type _mean, _sigma;
   result_type _r1, _r2, _cached_rho;
   bool _valid;

@@ -26,25 +26,23 @@
 // representations about the suitability of this software for any
 // purpose.  It is provided "as is" without express or implied warranty.
 //
-
-// Copyright 2002 The Trustees of Indiana University.
-
-// Use, modification and distribution is subject to the Boost Software 
-// License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)
-
-//  Boost.MultiArray Library
-//  Authors: Ronald Garcia
-//           Jeremy Siek
-//           Andrew Lumsdaine
-//  See http://www.boost.org/libs/multi_array for documentation.
+// Copyright (C) 2002 Ronald Garcia
+//
+// Permission to copy, use, sell and distribute this software is granted
+// provided this copyright notice appears in all copies. 
+// Permission to modify the code and to distribute modified code is granted
+// provided this copyright notice appears in all copies, and a notice 
+// that the code was modified is included with the copyright notice.
+//
+// This software is provided "as is" without express or implied warranty, 
+// and with no claim as to its suitability for any purpose.
+//
 
 
 #include "boost/iterator.hpp"
 
 namespace boost {
-namespace detail {
-namespace multi_array {
+
 //--------------------------------------------------
 // copy_n (not part of the C++ standard)
 #if 1
@@ -96,8 +94,7 @@ copy_n(InputIter first, Size count, OutputIter result) {
 }
 
 #endif // 1
-} // namespace multi_array
-} // namespace detail
+
 } // namespace boost
 
 #endif // BOOST_ALGORITHM_RG071801_HPP

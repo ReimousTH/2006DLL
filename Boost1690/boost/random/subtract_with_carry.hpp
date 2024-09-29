@@ -1,13 +1,18 @@
 /* boost random/subtract_with_carry.hpp header file
  *
  * Copyright Jens Maurer 2002
- * Distributed under the Boost Software License, Version 1.0. (See
- * accompanying file LICENSE_1_0.txt or copy at
- * http://www.boost.org/LICENSE_1_0.txt)
+ * Permission to use, copy, modify, sell, and distribute this software
+ * is hereby granted without fee provided that the above copyright notice
+ * appears in all copies and that both that copyright notice and this
+ * permission notice appear in supporting documentation,
+ *
+ * Jens Maurer makes no representations about the suitability of this
+ * software for any purpose. It is provided "as is" without express or
+ * implied warranty.
  *
  * See http://www.boost.org for most recent version including documentation.
  *
- * $Id: subtract_with_carry.hpp,v 1.24 2005/05/21 15:57:00 dgregor Exp $
+ * $Id: subtract_with_carry.hpp,v 1.11 2003/01/15 15:43:36 david_abrahams Exp $
  *
  * Revision history
  *  2002-03-02  created
@@ -16,31 +21,20 @@
 #ifndef BOOST_RANDOM_SUBTRACT_WITH_CARRY_HPP
 #define BOOST_RANDOM_SUBTRACT_WITH_CARRY_HPP
 
-#include <cmath>
 #include <iostream>
 #include <algorithm>     // std::equal
 #include <stdexcept>
-#include <cmath>         // std::pow
 #include <boost/config.hpp>
 #include <boost/limits.hpp>
 #include <boost/cstdint.hpp>
 #include <boost/static_assert.hpp>
-#include <boost/detail/workaround.hpp>
 #include <boost/random/linear_congruential.hpp>
 
 
 namespace boost {
 namespace random {
 
-#if BOOST_WORKAROUND(_MSC_FULL_VER, BOOST_TESTED_AT(13102292)) && BOOST_MSVC > 1300
-#  define BOOST_RANDOM_EXTRACT_SWC_01
-#endif
-
-#if defined(__APPLE_CC__) && defined(__GNUC__) && (__GNUC__ == 3) && (__GNUC_MINOR__ <= 3)
-#  define BOOST_RANDOM_EXTRACT_SWC_01
-#endif
-
-# ifdef BOOST_RANDOM_EXTRACT_SWC_01
+# if BOOST_WORKAROUND(_MSC_FULL_VER, BOOST_TESTED_AT(13102292)) && BOOST_MSVC > 1300
 namespace detail
 {
   template <class IStream, class SubtractWithCarry, class RealType>
@@ -123,23 +117,20 @@ public:
     k = 0;
    }
 
-  result_type min BOOST_PREVENT_MACRO_SUBSTITUTION () const { return min_value; }
-  result_type max BOOST_PREVENT_MACRO_SUBSTITUTION () const { return max_value; }
+  result_type min() const { return min_value; }
+  result_type max() const { return max_value; }
 
   result_type operator()()
   {
     int short_index = k - short_lag;
     if(short_index < 0)
       short_index += long_lag;
-    IntType delta;
-    if (x[short_index] >= x[k] + carry) {
-      // x(n) >= 0
-      delta =  x[short_index] - (x[k] + carry);
-      carry = 0;
-    } else {
-      // x(n) < 0
-      delta = modulus - x[k] - carry + x[short_index];
+    IntType delta = x[short_index] - x[k] - carry;
+    if(delta < 0) {
+      delta += modulus;
       carry = 1;
+    } else {
+      carry = 0;
     }
     x[k] = delta;
     ++k;
@@ -224,7 +215,7 @@ private:
   // ranlux_4: 370 nsec, ranlux_7: 688 nsec, ranlux_14: 1343 nsec
   IntType x[long_lag];
   unsigned int k;
-  int carry;
+  unsigned int carry;
 };
 
 #ifndef BOOST_NO_INCLASS_MEMBER_INITIALIZATION
@@ -285,7 +276,7 @@ public:
     using std::fmod;
 #endif
     random::linear_congruential<int32_t, 40014, 0, 2147483563, 0> gen(value);
-    unsigned long array[(w+31)/32 * long_lag];
+    unsigned long array[(w/32+1) * long_lag];
     for(unsigned int j = 0; j < sizeof(array)/sizeof(unsigned long); ++j)
       array[j] = gen();
     unsigned long * start = array;
@@ -303,23 +294,21 @@ public:
     unsigned long mask = ~((~0u) << (w%32));   // now lowest (w%32) bits set
     RealType two32 = pow(RealType(2), 32);
     unsigned int j;
-    for(j = 0; j < long_lag && first != last; ++j) {
+    for(j = 0; j < long_lag && first != last; ++j, ++first) {
       x[j] = RealType(0);
       for(int i = 0; i < w/32 && first != last; ++i, ++first)
         x[j] += *first / pow(two32,i+1);
-      if(first != last && mask != 0) {
+      if(first != last && mask != 0)
         x[j] += fmod((*first & mask) / _modulus, RealType(1));
-        ++first;
-      }
     }
     if(first == last && j < long_lag)
-      throw std::invalid_argument("subtract_with_carry_01::seed");
+      throw std::invalid_argument("subtract_with_carry::seed");
     carry = (x[long_lag-1] ? 0 : 1 / _modulus);
     k = 0;
   }
 
-  result_type min BOOST_PREVENT_MACRO_SUBSTITUTION () const { return result_type(0); }
-  result_type max BOOST_PREVENT_MACRO_SUBSTITUTION () const { return result_type(1); }
+  result_type min() const { return result_type(0); }
+  result_type max() const { return result_type(1); }
 
   result_type operator()()
   {
@@ -367,13 +356,10 @@ public:
   friend std::basic_istream<CharT,Traits>&
   operator>>(std::basic_istream<CharT,Traits>& is, subtract_with_carry_01& f)
   {
-# ifdef BOOST_RANDOM_EXTRACT_SWC_01
+# if BOOST_WORKAROUND(_MSC_FULL_VER, BOOST_TESTED_AT(13102292)) && BOOST_MSVC > 1300
       detail::extract_subtract_with_carry_01(is, f, f.carry, f.x, f._modulus);
 # else
-    // MSVC (up to 7.1) and Borland (up to 5.64) don't handle the template type
-    // parameter "RealType" available from the class template scope, so use
-    // the member typedef
-    typename subtract_with_carry_01::result_type value;
+    RealType value;
     for(unsigned int j = 0; j < long_lag; ++j) {
       is >> value >> std::ws;
       f.x[j] = value / f._modulus;

@@ -1,7 +1,8 @@
-// Copyright David Abrahams 2002.
-// Distributed under the Boost Software License, Version 1.0. (See
-// accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)
+// Copyright David Abrahams 2002. Permission to copy, use,
+// modify, sell and distribute this software is granted provided this
+// copyright notice appears in all copies. This software is provided
+// "as is" without express or implied warranty, and with no claim as
+// to its suitability for any purpose.
 
 //  See http://www.boost.org/libs/python for documentation.
 
@@ -35,7 +36,6 @@
 # include <boost/python/list.hpp>
 # include <boost/python/long.hpp>
 # include <boost/python/lvalue_from_pytype.hpp>
-# include <boost/python/make_constructor.hpp>
 # include <boost/python/make_function.hpp>
 # include <boost/python/manage_new_object.hpp>
 # include <boost/python/module.hpp>
@@ -43,16 +43,13 @@
 # include <boost/python/object.hpp>
 # include <boost/python/object_protocol.hpp>
 # include <boost/python/object_protocol_core.hpp>
-# include <boost/python/opaque_pointer_converter.hpp>
 # include <boost/python/operators.hpp>
+# include <boost/python/opaque_pointer_converter.hpp>
 # include <boost/python/other.hpp>
 # include <boost/python/overloads.hpp>
 # include <boost/python/pointee.hpp>
-# include <boost/python/pure_virtual.hpp>
 # include <boost/python/ptr.hpp>
 # include <boost/python/reference_existing_object.hpp>
-# include <boost/python/register_ptr_to_python.hpp>
-# include <boost/python/return_arg.hpp>
 # include <boost/python/return_internal_reference.hpp>
 # include <boost/python/return_opaque_pointer.hpp>
 # include <boost/python/return_value_policy.hpp>

@@ -1,6 +1,7 @@
 #pragma once	
 
 
+#include <xtl.h>
 
 #define alloc06(size) ((void* (__fastcall *)(size_t))0x82186158)(size)
 
@@ -36,14 +37,14 @@ namespace Sonicteam{
 				template <typename T>
 				inline static void DestroyObject(T& obj,unsigned int flag){
 					if ((flag & 1) != 0) {
-						delete obj;
+						free(obj);
 					}
 				}
 				template <typename T>
 				inline static void DestroyObjectEX(T& obj,unsigned int flag){
 					&obj->~T();
 					if ((flag & 1) != 0) {
-						delete obj;
+						free(obj);
 					}
 				}
 			};

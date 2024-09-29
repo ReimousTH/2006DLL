@@ -1,19 +1,21 @@
 /*=============================================================================
+    Spirit v1.6.0
     Copyright (c) 1998-2003 Joel de Guzman
     Copyright (c) 2001 Daniel Nuffer
     Copyright (c) 2001 Bruce Florman
     Copyright (c) 2002 Raghavendra Satish
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Permission to copy, use, modify, sell and distribute this software is
+    granted provided this copyright notice appears in all copies. This
+    software is provided "as is" without express or implied warranty, and
+    with no claim as to its suitability for any purpose.
 =============================================================================*/
 #if !defined(BOOST_SPIRIT_DIRECTIVES_IPP)
 #define BOOST_SPIRIT_DIRECTIVES_IPP
 
 ///////////////////////////////////////////////////////////////////////////////
-#include <boost/spirit/core/scanner/skipper.hpp>
+#include "boost/spirit/core/scanner/skipper.hpp"
 
 namespace boost { namespace spirit {
 
@@ -43,9 +45,9 @@ namespace boost { namespace spirit {
         {
             typedef scanner_policies<
                 no_skipper_iteration_policy<
-                    BOOST_DEDUCED_TYPENAME ScannerT::iteration_policy_t>,
-                BOOST_DEDUCED_TYPENAME ScannerT::match_policy_t,
-                BOOST_DEDUCED_TYPENAME ScannerT::action_policy_t
+                    BOOST_SPIRIT_TYPENAME ScannerT::iteration_policy_t>,
+                BOOST_SPIRIT_TYPENAME ScannerT::match_policy_t,
+                BOOST_SPIRIT_TYPENAME ScannerT::action_policy_t
             > policies_t;
 
             scan.skip(scan);
@@ -87,9 +89,9 @@ namespace boost { namespace spirit {
         {
             typedef scanner_policies<
                 no_skipper_iteration_policy<
-                    BOOST_DEDUCED_TYPENAME ScannerT::iteration_policy_t>,
-                BOOST_DEDUCED_TYPENAME ScannerT::match_policy_t,
-                BOOST_DEDUCED_TYPENAME ScannerT::action_policy_t
+                    BOOST_SPIRIT_TYPENAME ScannerT::iteration_policy_t>,
+                BOOST_SPIRIT_TYPENAME ScannerT::match_policy_t,
+                BOOST_SPIRIT_TYPENAME ScannerT::action_policy_t
             > policies_t;
 
             scan.skip(scan);
@@ -131,9 +133,9 @@ namespace boost { namespace spirit {
         {
             typedef scanner_policies<
                 inhibit_case_iteration_policy<
-                    BOOST_DEDUCED_TYPENAME ScannerT::iteration_policy_t>,
-                BOOST_DEDUCED_TYPENAME ScannerT::match_policy_t,
-                BOOST_DEDUCED_TYPENAME ScannerT::action_policy_t
+                    BOOST_SPIRIT_TYPENAME ScannerT::iteration_policy_t>,
+                BOOST_SPIRIT_TYPENAME ScannerT::match_policy_t,
+                BOOST_SPIRIT_TYPENAME ScannerT::action_policy_t
             > policies_t;
 
             return s.parse(scan.change_policies(policies_t(scan)));

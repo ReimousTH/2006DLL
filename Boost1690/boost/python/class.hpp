@@ -1,17 +1,15 @@
-// Copyright David Abrahams 2002.
-// Distributed under the Boost Software License, Version 1.0. (See
-// accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)
+// Copyright David Abrahams 2002. Permission to copy, use,
+// modify, sell and distribute this software is granted provided this
+// copyright notice appears in all copies. This software is provided
+// "as is" without express or implied warranty, and with no claim as
+// to its suitability for any purpose.
 #ifndef CLASS_DWA200216_HPP
 # define CLASS_DWA200216_HPP
-
-# include <boost/python/detail/prefix.hpp>
-
-# include <boost/noncopyable.hpp>
 
 # include <boost/python/class_fwd.hpp>
 # include <boost/python/object/class.hpp>
 
+# include <boost/python/bases.hpp>
 # include <boost/python/object.hpp>
 # include <boost/python/type_id.hpp>
 # include <boost/python/data_members.hpp>
@@ -20,18 +18,8 @@
 # include <boost/python/init.hpp>
 # include <boost/python/args_fwd.hpp>
 
-# include <boost/python/object/class_metadata.hpp>
-# include <boost/python/object/pickle_support.hpp>
-# include <boost/python/object/add_to_namespace.hpp>
-
-# include <boost/python/detail/overloads_fwd.hpp>
-# include <boost/python/detail/operator_id.hpp>
-# include <boost/python/detail/def_helper.hpp>
-# include <boost/python/detail/force_instantiate.hpp>
-# include <boost/python/detail/unwrap_type_id.hpp>
-# include <boost/python/detail/unwrap_wrapper.hpp>
-
 # include <boost/type_traits/is_same.hpp>
+# include <boost/type_traits/is_convertible.hpp>
 # include <boost/type_traits/is_member_function_pointer.hpp>
 # include <boost/type_traits/is_polymorphic.hpp>
 
@@ -39,27 +27,26 @@
 # include <boost/mpl/for_each.hpp>
 # include <boost/mpl/bool.hpp>
 # include <boost/mpl/not.hpp>
+# include <boost/mpl/or.hpp>
 
+# include <boost/python/object/select_holder.hpp>
+# include <boost/python/object/class_wrapper.hpp>
+# include <boost/python/object/make_instance.hpp>
+# include <boost/python/object/pickle_support.hpp>
+# include <boost/python/object/add_to_namespace.hpp>
+# include <boost/python/object/class_converters.hpp>
+
+# include <boost/python/detail/string_literal.hpp>
+# include <boost/python/detail/overloads_fwd.hpp>
+# include <boost/python/detail/operator_id.hpp>
+# include <boost/python/detail/member_function_cast.hpp>
+# include <boost/python/detail/def_helper.hpp>
+# include <boost/python/detail/force_instantiate.hpp>
+
+# include <boost/utility.hpp>
 # include <boost/detail/workaround.hpp>
 
-# if BOOST_WORKAROUND(__MWERKS__, <= 0x3004)                        \
-    /* pro9 reintroduced the bug */                                 \
-    || (BOOST_WORKAROUND(__MWERKS__, > 0x3100)                      \
-        && BOOST_WORKAROUND(__MWERKS__, BOOST_TESTED_AT(0x3201)))   \
-    || BOOST_WORKAROUND(__GNUC__, < 3)
-
-#  define BOOST_PYTHON_NO_MEMBER_POINTER_ORDERING 1
-
-# endif
-
-# ifdef BOOST_PYTHON_NO_MEMBER_POINTER_ORDERING
-#  include <boost/mpl/and.hpp>
-#  include <boost/type_traits/is_member_pointer.hpp>
-# endif
-
 namespace boost { namespace python {
-
-template <class DerivedVisitor> class def_visitor;
 
 enum no_init_t { no_init };
 
@@ -82,28 +69,34 @@ namespace detail
       type_info** p;
   };
 
-  template <class T>
-  struct is_data_member_pointer
-      : mpl::and_<
-            is_member_pointer<T>
-          , mpl::not_<is_member_function_pointer<T> >
-        >
-  {};
-  
-# ifdef BOOST_PYTHON_NO_MEMBER_POINTER_ORDERING
-#  define BOOST_PYTHON_DATA_MEMBER_HELPER(D) , detail::is_data_member_pointer<D>()
-#  define BOOST_PYTHON_YES_DATA_MEMBER , mpl::true_
-#  define BOOST_PYTHON_NO_DATA_MEMBER , mpl::false_
-# elif defined(BOOST_NO_FUNCTION_TEMPLATE_ORDERING)
-#  define BOOST_PYTHON_DATA_MEMBER_HELPER(D) , 0
-#  define BOOST_PYTHON_YES_DATA_MEMBER , int
-#  define BOOST_PYTHON_NO_DATA_MEMBER , ...
-# else 
-#  define BOOST_PYTHON_DATA_MEMBER_HELPER(D)
-#  define BOOST_PYTHON_YES_DATA_MEMBER
-#  define BOOST_PYTHON_NO_DATA_MEMBER
-# endif
-  
+  template <class T, class Prev = detail::not_specified>
+  struct select_held_type;
+
+  template <class T1, class T2, class T3>
+  struct has_noncopyable;
+
+  template <detail::operator_id, class L, class R>
+  struct operator_;
+
+  // Register to_python converters for a class T.  The first argument
+  // will be mpl::true_ unless noncopyable was specified as a
+  // class_<...> template parameter. The 2nd argument is a pointer to
+  // the type of holder that must be created. The 3rd argument is a
+  // reference to the Python type object to be created.
+  template <class T, class SelectHolder>
+  inline void register_class_to_python(mpl::true_ copyable, SelectHolder selector, T* = 0)
+  {
+      typedef typename SelectHolder::type holder;
+      force_instantiate(objects::class_cref_wrapper<T, objects::make_instance<T,holder> >());
+      SelectHolder::register_();
+  }
+
+  template <class T, class SelectHolder>
+  inline void register_class_to_python(mpl::false_ copyable, SelectHolder selector, T* = 0)
+  {
+      SelectHolder::register_();
+  }
+
   namespace error
   {
     //
@@ -152,7 +145,7 @@ namespace detail
 // This is the primary mechanism through which users will expose
 // C++ classes to Python.
 template <
-    class W // class being wrapped
+    class T // class being wrapped
     , class X1 // = detail::not_specified
     , class X2 // = detail::not_specified
     , class X3 // = detail::not_specified
@@ -161,22 +154,36 @@ class class_ : public objects::class_base
 {
  public: // types
     typedef objects::class_base base;
-    typedef class_<W,X1,X2,X3> self;
-    typedef typename objects::class_metadata<W,X1,X2,X3> metadata;
-    typedef W wrapped_type;
+    typedef T wrapped_type;
     
+    typedef class_<T,X1,X2,X3> self;
+    BOOST_STATIC_CONSTANT(bool, is_copyable = (!detail::has_noncopyable<X1,X2,X3>::value));
+
+    typedef typename detail::select_held_type<
+        X1, typename detail::select_held_type<
+        X2, typename detail::select_held_type<
+        X3
+    >::type>::type>::type held_type;
+
+    typedef objects::select_holder<T,held_type> holder_selector;
+
  private: // types
+
+    typedef typename detail::select_bases<X1
+            , typename detail::select_bases<X2
+              , typename boost::python::detail::select_bases<X3>::type
+              >::type
+            >::type bases;
+
 
     // A helper class which will contain an array of id objects to be
     // passed to the base class constructor
     struct id_vector
     {
-        typedef typename metadata::bases bases;
-        
         id_vector()
         {
             // Stick the derived class id into the first element of the array
-            ids[0] = detail::unwrap_type_id((W*)0, (W*)0);
+            ids[0] = type_id<T>();
 
             // Write the rest of the elements into succeeding positions.
             type_info* p = ids + 1;
@@ -205,7 +212,9 @@ class class_ : public objects::class_base
     inline class_(char const* name, init_base<DerivedT> const& i)
         : base(name, id_vector::size, id_vector().ids)
     {
-        this->initialize(i);
+        this->register_();
+        define_init(*this, i.derived());
+        this->set_instance_size(holder_selector::additional_size());
     }
 
     // Construct with class name, docstring and init<> function
@@ -213,28 +222,28 @@ class class_ : public objects::class_base
     inline class_(char const* name, char const* doc, init_base<DerivedT> const& i)
         : base(name, id_vector::size, id_vector().ids, doc)
     {
-        this->initialize(i);
+        this->register_();
+        define_init(*this, i.derived());
+        this->set_instance_size(holder_selector::additional_size());
     }
 
  public: // member functions
     
-    // Generic visitation
-    template <class Derived>
-    self& def(def_visitor<Derived> const& visitor)
+    // Define additional constructors
+    template <class DerivedT>
+    self& def(init_base<DerivedT> const& i)
     {
-        visitor.visit(*this);
+        define_init(*this, i.derived());
         return *this;
     }
 
     // Wrap a member function or a non-member function which can take
-    // a T, T cv&, or T cv* as its first parameter, a callable
-    // python object, or a generic visitor.
+    // a T, T cv&, or T cv* as its first parameter, or a callable
+    // python object.
     template <class F>
     self& def(char const* name, F f)
     {
-        this->def_impl(
-            detail::unwrap_wrapper((W*)0)
-          , name, f, detail::def_helper<char const*>(0), &f);
+        this->def_impl(name, f, detail::def_helper<char const*>(0), &f);
         return *this;
     }
 
@@ -253,10 +262,9 @@ class class_ : public objects::class_base
         //      def(name, function, doc_string, policy)
 
         this->def_impl(
-            detail::unwrap_wrapper((W*)0)
-          , name, fn
-          , detail::def_helper<A1,A2>(a1,a2)
-          , &fn);
+            name, fn
+            , detail::def_helper<A1,A2>(a1,a2)
+            , &fn);
 
         return *this;
     }
@@ -265,110 +273,64 @@ class class_ : public objects::class_base
     self& def(char const* name, Fn fn, A1 const& a1, A2 const& a2, A3 const& a3)
     {
         this->def_impl(
-            detail::unwrap_wrapper((W*)0)
-          , name, fn
-          , detail::def_helper<A1,A2,A3>(a1,a2,a3)
-          , &fn);
+            name, fn
+            , detail::def_helper<A1,A2,A3>(a1,a2,a3)
+            , &fn);
 
         return *this;
+    }
+
+    template <detail::operator_id id, class L, class R>
+    self& def(detail::operator_<id,L,R> const& op)
+    {
+        typedef detail::operator_<id,L,R> op_t;
+        return this->def(op.name(), &op_t::template apply<T>::execute);
     }
 
     //
     // Data member access
     //
-    template <class D>
-    self& def_readonly(char const* name, D const& d, char const* doc=0)
+    template <class D, class B>
+    self& def_readonly(char const* name, D B::*pm_)
     {
-        return this->def_readonly_impl(name, d, doc BOOST_PYTHON_DATA_MEMBER_HELPER(D));
+        D T::*pm = pm_;
+        this->add_property(name, make_getter(pm));
+        return *this;
     }
 
-    template <class D>
-    self& def_readwrite(char const* name, D const& d, char const* doc=0)
+    template <class D, class B>
+    self& def_readwrite(char const* name, D B::*pm_)
     {
-        return this->def_readwrite_impl(name, d, doc BOOST_PYTHON_DATA_MEMBER_HELPER(D));
-    }
-    
-    template <class D>
-    self& def_readonly(char const* name, D& d, char const* doc=0)
-    {
-        return this->def_readonly_impl(name, d, doc BOOST_PYTHON_DATA_MEMBER_HELPER(D));
-    }
-
-    template <class D>
-    self& def_readwrite(char const* name, D& d, char const* doc=0)
-    {
-        return this->def_readwrite_impl(name, d, doc BOOST_PYTHON_DATA_MEMBER_HELPER(D));
+        D T::*pm = pm_;
+        return this->add_property(name, make_getter(pm), make_setter(pm));
     }
 
     // Property creation
-# if !BOOST_WORKAROUND(BOOST_MSVC, <= 1300)
-    template <class Get>
-    self& add_property(char const* name, Get fget, char const* docstr = 0)
-    {
-        base::add_property(name, this->make_getter(fget), docstr);
-        return *this;
-    }
-
-    template <class Get, class Set>
-    self& add_property(char const* name, Get fget, Set fset, char const* docstr = 0)
-    {
-        base::add_property(
-            name, this->make_getter(fget), this->make_setter(fset), docstr);
-        return *this;
-    }
-# else
- private:
-    template <class Get>
-    self& add_property_impl(char const* name, Get fget, char const* docstr, int)
-    {
-        base::add_property(name, this->make_getter(fget), docstr);
-        return *this;
-    }
-
-    template <class Get, class Set>
-    self& add_property_impl(char const* name, Get fget, Set fset, ...)
-    {
-        base::add_property(
-            name, this->make_getter(fget), this->make_setter(fset), 0);
-        return *this;
-    }
-
- public:    
     template <class Get>
     self& add_property(char const* name, Get fget)
     {
-        base::add_property(name, this->make_getter(fget), 0);
-        return *this;
-    }
-
-    template <class Get, class DocStrOrSet>
-    self& add_property(char const* name, Get fget, DocStrOrSet docstr_or_set)
-    {
-        this->add_property_impl(name, this->make_getter(fget), docstr_or_set, 0);
+        base::add_property(
+            name
+            , object(
+                detail::member_function_cast<T,Get>::stage1(fget).stage2((T*)0).stage3(fget)
+                )
+            );
+        
         return *this;
     }
 
     template <class Get, class Set>
-    self&
-    add_property(char const* name, Get fget, Set fset, char const* docstr)
+    self& add_property(char const* name, Get fget, Set fset)
     {
         base::add_property(
-            name, this->make_getter(fget), this->make_setter(fset), docstr);
-        return *this;
-    }
-# endif
-        
-    template <class Get>
-    self& add_static_property(char const* name, Get fget)
-    {
-        base::add_static_property(name, object(fget));
-        return *this;
-    }
-
-    template <class Get, class Set>
-    self& add_static_property(char const* name, Get fget, Set fset)
-    {
-        base::add_static_property(name, object(fget), object(fset));
+            name
+            , object(
+                detail::member_function_cast<T,Get>::stage1(fget).stage2((T*)0).stage3(fget)
+                )
+            , object(
+                detail::member_function_cast<T,Set>::stage1(fset).stage2((T*)0).stage3(fset)
+                )
+            );
         return *this;
     }
         
@@ -393,12 +355,6 @@ class class_ : public objects::class_base
       return *this;
     }
 
-    self& enable_pickling()
-    {
-        this->base::enable_pickling_(false);
-        return *this;
-    }
-
     self& staticmethod(char const* name)
     {
         this->make_method_static(name);
@@ -406,163 +362,60 @@ class class_ : public objects::class_base
     }
  private: // helper functions
 
-    // Builds a method for this class around the given [member]
-    // function pointer or object, appropriately adjusting the type of
-    // the first signature argument so that if f is a member of a
-    // (possibly not wrapped) base class of T, an lvalue argument of
-    // type T will be required.
+    inline void register_() const;
+
     //
-    // @group PropertyHelpers {
-    template <class F>
-    object make_getter(F f)
-    {
-        typedef typename api::is_object_operators<F>::type is_obj_or_proxy;
-        
-        return this->make_fn_impl(
-            detail::unwrap_wrapper((W*)0)
-          , f, is_obj_or_proxy(), (char*)0, detail::is_data_member_pointer<F>()
-        );
-    }
-    
-    template <class F>
-    object make_setter(F f)
-    {
-        typedef typename api::is_object_operators<F>::type is_obj_or_proxy;
-        
-        return this->make_fn_impl(
-            detail::unwrap_wrapper((W*)0)
-          , f, is_obj_or_proxy(), (int*)0, detail::is_data_member_pointer<F>()
-        );
-    }
-    
-    template <class T, class F>
-    object make_fn_impl(T*, F const& f, mpl::false_, void*, mpl::false_)
-    {
-        return python::make_function(f, default_call_policies(), detail::get_signature(f, (T*)0));
-    }
-
-    template <class T, class D, class B>
-    object make_fn_impl(T*, D B::*pm_, mpl::false_, char*, mpl::true_)
-    {
-        D T::*pm = pm_;
-        return python::make_getter(pm);
-    }
-
-    template <class T, class D, class B>
-    object make_fn_impl(T*, D B::*pm_, mpl::false_, int*, mpl::true_)
-    {
-        D T::*pm = pm_;
-        return python::make_setter(pm);
-    }
-
-    template <class T, class F>
-    object make_fn_impl(T*, F const& x, mpl::true_, void*, mpl::false_)
-    {
-        return x;
-    }
-    // }
-    
-    template <class D, class B>
-    self& def_readonly_impl(
-        char const* name, D B::*pm_, char const* doc BOOST_PYTHON_YES_DATA_MEMBER)
-    {
-        return this->add_property(name, pm_, doc);
-    }
-
-    template <class D, class B>
-    self& def_readwrite_impl(
-        char const* name, D B::*pm_, char const* doc BOOST_PYTHON_YES_DATA_MEMBER)
-    {
-        return this->add_property(name, pm_, pm_, doc);
-    }
-
-    template <class D>
-    self& def_readonly_impl(
-        char const* name, D& d, char const* BOOST_PYTHON_NO_DATA_MEMBER)
-    {
-        return this->add_static_property(name, python::make_getter(d));
-    }
-
-    template <class D>
-    self& def_readwrite_impl(
-        char const* name, D& d, char const* BOOST_PYTHON_NO_DATA_MEMBER)
-    {
-        return this->add_static_property(name, python::make_getter(d), python::make_setter(d));
-    }
-
-    template <class DefVisitor>
-    inline void initialize(DefVisitor const& i)
-    {
-        metadata::register_(); // set up runtime metadata/conversions
-        
-        typedef typename metadata::holder holder;
-        this->set_instance_size( objects::additional_instance_size<holder>::value );
-        
-        this->def(i);
-    }
-    
-    inline void initialize(no_init_t)
-    {
-        metadata::register_(); // set up runtime metadata/conversions
-        this->def_no_init();
-    }
-    
+    // These two overloads discriminate between def() as applied to
+    // things which are already wrapped into callable python::object
+    // instances and everything else.
     //
-    // These two overloads discriminate between def() as applied to a
-    // generic visitor and everything else.
-    //
-    // @group def_impl {
-    template <class T, class Helper, class LeafVisitor, class Visitor>
+    template <class F, class A1>
     inline void def_impl(
-        T*
-      , char const* name
-      , LeafVisitor
-      , Helper const& helper
-      , def_visitor<Visitor> const* v
-    )
+        char const* name
+        , F f
+        , detail::def_helper<A1> const& helper
+        , object const*)
     {
-        v->visit(*this, name,  helper);
+        // It's too late to specify anything other than docstrings, if
+        // the callable object is already wrapped.
+        BOOST_STATIC_ASSERT(
+            (is_same<char const*,A1>::value
+             || detail::is_string_literal<A1>::value));
+        
+        objects::add_to_namespace(*this, name, f, helper.doc());
     }
 
-    template <class T, class Fn, class Helper>
+    template <class Fn, class Helper>
     inline void def_impl(
-        T*
-      , char const* name
-      , Fn fn
-      , Helper const& helper
-      , ...
-    )
+        char const* name
+        , Fn fn
+        , Helper const& helper
+        , ...)
     {
         objects::add_to_namespace(
-            *this
-          , name
-          , make_function(
-                fn
-              , helper.policies()
-              , helper.keywords()
-              , detail::get_signature(fn, (T*)0)
-            )
-          , helper.doc()
-        );
+            *this, name,
+            make_function(
+                // This bit of nastiness casts F to a member function of T if possible.
+                detail::member_function_cast<T,Fn>::stage1(fn).stage2((T*)0).stage3(fn)
+                , helper.policies(), helper.keywords())
+            , helper.doc());
 
         this->def_default(name, fn, helper, mpl::bool_<Helper::has_default_implementation>());
     }
-    // }
 
     //
     // These two overloads handle the definition of default
     // implementation overloads for virtual functions. The second one
     // handles the case where no default implementation was specified.
     //
-    // @group def_default {
     template <class Fn, class Helper>
     inline void def_default(
         char const* name
-        , Fn
+        , Fn fn
         , Helper const& helper
         , mpl::bool_<true>)
     {
-        detail::error::virtual_function_default<W,Fn>::must_be_derived_class_member(
+        detail::error::virtual_function_default<T,Fn>::must_be_derived_class_member(
             helper.default_implementation());
             
         objects::add_to_namespace(
@@ -575,7 +428,6 @@ class class_ : public objects::class_base
     template <class Fn, class Helper>
     inline void def_default(char const*, Fn, Helper const&, mpl::bool_<false>)
     { }
-    // }
     
     //
     // These two overloads discriminate between def() as applied to
@@ -583,7 +435,6 @@ class class_ : public objects::class_base
     // BOOST_PYTHON_FUNCTION_OVERLOADS(). The final argument is used to
     // discriminate.
     //
-    // @group def_maybe_overloads {
     template <class OverloadsT, class SigT>
     void def_maybe_overloads(
         char const* name
@@ -606,15 +457,11 @@ class class_ : public objects::class_base
         , ...)
     {
         this->def_impl(
-            detail::unwrap_wrapper((W*)0)
-          , name
-          , fn
-          , detail::def_helper<A1>(a1)
-          , &fn
-        );
+            name, fn
+            , detail::def_helper<A1>(a1)
+            , &fn);
 
     }
-    // }
 };
 
 
@@ -622,33 +469,80 @@ class class_ : public objects::class_base
 // implementations
 //
 
-template <class W, class X1, class X2, class X3>
-inline class_<W,X1,X2,X3>::class_(char const* name, char const* doc)
-    : base(name, id_vector::size, id_vector().ids, doc)
+// register converters
+template <class T, class X1, class X2, class X3>
+inline void class_<T,X1,X2,X3>::register_() const
 {
-    this->initialize(init<>());
-//  select_holder::assert_default_constructible();
+    objects::register_class_from_python<T,bases>();
+
+    detail::register_class_to_python<T>(
+        mpl::bool_<is_copyable>()
+# if BOOST_WORKAROUND(__MWERKS__, <= 0x2407)
+        , holder_selector::execute((held_type*)0)
+# elif BOOST_WORKAROUND(BOOST_MSVC, <= 1300)
+        , holder_selector::type()
+# else 
+        , typename holder_selector::type()
+# endif 
+        );
 }
 
-template <class W, class X1, class X2, class X3>
-inline class_<W,X1,X2,X3>::class_(char const* name, no_init_t)
+template <class T, class X1, class X2, class X3>
+inline class_<T,X1,X2,X3>::class_(char const* name, char const* doc)
+    : base(name, id_vector::size, id_vector().ids, doc)
+{
+    this->register_();
+    this->set_instance_size(holder_selector::additional_size());
+# if BOOST_WORKAROUND(__MWERKS__, <= 0x2407)
+    holder_selector::execute((held_type*)0).assert_default_constructible();
+# else 
+    holder_selector::type::assert_default_constructible();
+# endif 
+    this->def(init<>());
+}
+
+template <class T, class X1, class X2, class X3>
+inline class_<T,X1,X2,X3>::class_(char const* name, no_init_t)
     : base(name, id_vector::size, id_vector().ids)
 {
-    this->initialize(no_init);
+    this->register_();
+    this->def_no_init();
 }
 
-template <class W, class X1, class X2, class X3>
-inline class_<W,X1,X2,X3>::class_(char const* name, char const* doc, no_init_t)
+template <class T, class X1, class X2, class X3>
+inline class_<T,X1,X2,X3>::class_(char const* name, char const* doc, no_init_t)
     : base(name, id_vector::size, id_vector().ids, doc)
 {
-    this->initialize(no_init);
+    this->register_();
+    this->def_no_init();
+}
+
+namespace detail
+{
+  template <class T1, class T2, class T3>
+  struct has_noncopyable
+      : mpl::or_<
+          is_same<T1,noncopyable>
+        , is_same<T2,noncopyable>
+        , is_same<T3,noncopyable>
+      >
+  {};
+
+
+    template <class T, class Prev>
+    struct select_held_type
+        : mpl::if_<
+             mpl::or_<
+                 specifies_bases<T>
+               , is_same<T,noncopyable>
+            >
+            , Prev
+            , T
+          >
+    {
+    };
 }
 
 }} // namespace boost::python
-
-# undef BOOST_PYTHON_DATA_MEMBER_HELPER
-# undef BOOST_PYTHON_YES_DATA_MEMBER
-# undef BOOST_PYTHON_NO_DATA_MEMBER
-# undef BOOST_PYTHON_NO_MEMBER_POINTER_ORDERING
 
 #endif // CLASS_DWA200216_HPP

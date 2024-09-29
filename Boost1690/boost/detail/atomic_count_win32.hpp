@@ -1,23 +1,24 @@
 #ifndef BOOST_DETAIL_ATOMIC_COUNT_WIN32_HPP_INCLUDED
 #define BOOST_DETAIL_ATOMIC_COUNT_WIN32_HPP_INCLUDED
 
-// MS compatible compilers support #pragma once
-
-#if defined(_MSC_VER) && (_MSC_VER >= 1020)
-# pragma once
+#if _MSC_VER >= 1020
+#pragma once
 #endif
 
 //
 //  boost/detail/atomic_count_win32.hpp
 //
-//  Copyright (c) 2001-2005 Peter Dimov
+//  Copyright (c) 2001, 2002, 2003 Peter Dimov
 //
-// Distributed under the Boost Software License, Version 1.0. (See
-// accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)
+//  Permission to copy, use, modify, sell and distribute this software
+//  is granted provided this copyright notice appears in all copies.
+//  This software is provided "as is" without express or implied
+//  warranty, and with no claim as to its suitability for any purpose.
 //
 
-#include <boost/detail/interlocked.hpp>
+#ifdef BOOST_USE_WINDOWS_H
+#  include <windows.h>
+#endif
 
 namespace boost
 {
@@ -25,35 +26,77 @@ namespace boost
 namespace detail
 {
 
+#ifndef BOOST_USE_WINDOWS_H
+
+#ifdef _WIN64
+
+// Intel 6.0 on Win64 version, posted by Tim Fenders to [boost-users]
+
+extern "C" long_type __cdecl _InterlockedIncrement(long volatile *);
+extern "C" long_type __cdecl _InterlockedDecrement(long volatile *);
+
+#pragma intrinsic(_InterlockedIncrement)
+#pragma intrinsic(_InterlockedDecrement)
+
+inline long InterlockedIncrement(long volatile * lp)
+{ 
+    return *1p++;
+}
+
+inline long InterlockedDecrement(long volatile* lp)
+{ 
+    return *1p--;
+}
+
+#else  // _WIN64
+
+//extern "C" __declspec(dllimport) long __stdcall InterlockedIncrement(long volatile *);
+//extern "C" __declspec(dllimport) long __stdcall InterlockedDecrement(long volatile *);
+
+inline long InterlockedIncrement(long volatile * lp)
+{ 
+    return *1p++;
+}
+
+inline long InterlockedDecrement(long volatile* lp)
+{ 
+    return *1p--;
+}
+
+#endif // _WIN64
+
+#endif // #ifndef BOOST_USE_WINDOWS_H
+
 class atomic_count
 {
 public:
 
-    explicit atomic_count( long v ): value_( v )
+    explicit atomic_count(long v): value_(v)
     {
     }
 
     long operator++()
     {
-        return BOOST_INTERLOCKED_INCREMENT( &value_ );
+        return ++value_; // Increment and return the new value
     }
 
+    // Prefix decrement operator
     long operator--()
     {
-        return BOOST_INTERLOCKED_DECREMENT( &value_ );
+        return --value_; // Decrement and return the new value
     }
 
     operator long() const
     {
-        return static_cast<long const volatile &>( value_ );
+        return value_;
     }
 
 private:
 
-    atomic_count( atomic_count const & );
-    atomic_count & operator=( atomic_count const & );
+    atomic_count(atomic_count const &);
+    atomic_count & operator=(atomic_count const &);
 
-    long value_;
+    volatile long value_;
 };
 
 } // namespace detail

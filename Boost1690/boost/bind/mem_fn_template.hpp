@@ -5,9 +5,10 @@
 //
 //  Copyright (c) 2001 Peter Dimov and Multi Media Ltd.
 //
-// Distributed under the Boost Software License, Version 1.0. (See
-// accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)
+//  Permission to copy, use, modify, sell and distribute this software
+//  is granted provided this copyright notice appears in all copies.
+//  This software is provided "as is" without express or implied
+//  warranty, and with no claim as to its suitability for any purpose.
 //
 //  See http://www.boost.org/libs/bind/mem_fn.html for documentation.
 //
@@ -54,16 +55,6 @@ public:
     {
         BOOST_MEM_FN_RETURN (t.*f_)();
     }
-
-    bool operator==(BOOST_MEM_FN_NAME(mf0) const & rhs) const
-    {
-        return f_ == rhs.f_;
-    }
-
-    bool operator!=(BOOST_MEM_FN_NAME(mf0) const & rhs) const
-    {
-        return f_ != rhs.f_;
-    }
 };
 
 // cmf0
@@ -102,16 +93,6 @@ public:
     R operator()(T const & t) const
     {
         BOOST_MEM_FN_RETURN (t.*f_)();
-    }
-
-    bool operator==(BOOST_MEM_FN_NAME(cmf0) const & rhs) const
-    {
-        return f_ == rhs.f_;
-    }
-
-    bool operator!=(BOOST_MEM_FN_NAME(cmf0) const & rhs) const
-    {
-        return f_ != rhs.f_;
     }
 };
 
@@ -158,16 +139,6 @@ public:
     {
         BOOST_MEM_FN_RETURN (t.*f_)(a1);
     }
-
-    bool operator==(BOOST_MEM_FN_NAME(mf1) const & rhs) const
-    {
-        return f_ == rhs.f_;
-    }
-
-    bool operator!=(BOOST_MEM_FN_NAME(mf1) const & rhs) const
-    {
-        return f_ != rhs.f_;
-    }
 };
 
 // cmf1
@@ -207,16 +178,6 @@ public:
     R operator()(T const & t, A1 a1) const
     {
         BOOST_MEM_FN_RETURN (t.*f_)(a1);
-    }
-
-    bool operator==(BOOST_MEM_FN_NAME(cmf1) const & rhs) const
-    {
-        return f_ == rhs.f_;
-    }
-
-    bool operator!=(BOOST_MEM_FN_NAME(cmf1) const & rhs) const
-    {
-        return f_ != rhs.f_;
     }
 };
 
@@ -261,16 +222,6 @@ public:
     {
         BOOST_MEM_FN_RETURN (t.*f_)(a1, a2);
     }
-
-    bool operator==(BOOST_MEM_FN_NAME(mf2) const & rhs) const
-    {
-        return f_ == rhs.f_;
-    }
-
-    bool operator!=(BOOST_MEM_FN_NAME(mf2) const & rhs) const
-    {
-        return f_ != rhs.f_;
-    }
 };
 
 // cmf2
@@ -308,16 +259,6 @@ public:
     R operator()(T const & t, A1 a1, A2 a2) const
     {
         BOOST_MEM_FN_RETURN (t.*f_)(a1, a2);
-    }
-
-    bool operator==(BOOST_MEM_FN_NAME(cmf2) const & rhs) const
-    {
-        return f_ == rhs.f_;
-    }
-
-    bool operator!=(BOOST_MEM_FN_NAME(cmf2) const & rhs) const
-    {
-        return f_ != rhs.f_;
     }
 };
 
@@ -362,16 +303,6 @@ public:
     {
         BOOST_MEM_FN_RETURN (t.*f_)(a1, a2, a3);
     }
-
-    bool operator==(BOOST_MEM_FN_NAME(mf3) const & rhs) const
-    {
-        return f_ == rhs.f_;
-    }
-
-    bool operator!=(BOOST_MEM_FN_NAME(mf3) const & rhs) const
-    {
-        return f_ != rhs.f_;
-    }
 };
 
 // cmf3
@@ -409,16 +340,6 @@ public:
     R operator()(T const & t, A1 a1, A2 a2, A3 a3) const
     {
         BOOST_MEM_FN_RETURN (t.*f_)(a1, a2, a3);
-    }
-
-    bool operator==(BOOST_MEM_FN_NAME(cmf3) const & rhs) const
-    {
-        return f_ == rhs.f_;
-    }
-
-    bool operator!=(BOOST_MEM_FN_NAME(cmf3) const & rhs) const
-    {
-        return f_ != rhs.f_;
     }
 };
 
@@ -463,16 +384,6 @@ public:
     {
         BOOST_MEM_FN_RETURN (t.*f_)(a1, a2, a3, a4);
     }
-
-    bool operator==(BOOST_MEM_FN_NAME(mf4) const & rhs) const
-    {
-        return f_ == rhs.f_;
-    }
-
-    bool operator!=(BOOST_MEM_FN_NAME(mf4) const & rhs) const
-    {
-        return f_ != rhs.f_;
-    }
 };
 
 // cmf4
@@ -510,16 +421,6 @@ public:
     R operator()(T const & t, A1 a1, A2 a2, A3 a3, A4 a4) const
     {
         BOOST_MEM_FN_RETURN (t.*f_)(a1, a2, a3, a4);
-    }
-
-    bool operator==(BOOST_MEM_FN_NAME(cmf4) const & rhs) const
-    {
-        return f_ == rhs.f_;
-    }
-
-    bool operator!=(BOOST_MEM_FN_NAME(cmf4) const & rhs) const
-    {
-        return f_ != rhs.f_;
     }
 };
 
@@ -564,16 +465,6 @@ public:
     {
         BOOST_MEM_FN_RETURN (t.*f_)(a1, a2, a3, a4, a5);
     }
-
-    bool operator==(BOOST_MEM_FN_NAME(mf5) const & rhs) const
-    {
-        return f_ == rhs.f_;
-    }
-
-    bool operator!=(BOOST_MEM_FN_NAME(mf5) const & rhs) const
-    {
-        return f_ != rhs.f_;
-    }
 };
 
 // cmf5
@@ -611,16 +502,6 @@ public:
     R operator()(T const & t, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5) const
     {
         BOOST_MEM_FN_RETURN (t.*f_)(a1, a2, a3, a4, a5);
-    }
-
-    bool operator==(BOOST_MEM_FN_NAME(cmf5) const & rhs) const
-    {
-        return f_ == rhs.f_;
-    }
-
-    bool operator!=(BOOST_MEM_FN_NAME(cmf5) const & rhs) const
-    {
-        return f_ != rhs.f_;
     }
 };
 
@@ -665,16 +546,6 @@ public:
     {
         BOOST_MEM_FN_RETURN (t.*f_)(a1, a2, a3, a4, a5, a6);
     }
-
-    bool operator==(BOOST_MEM_FN_NAME(mf6) const & rhs) const
-    {
-        return f_ == rhs.f_;
-    }
-
-    bool operator!=(BOOST_MEM_FN_NAME(mf6) const & rhs) const
-    {
-        return f_ != rhs.f_;
-    }
 };
 
 // cmf6
@@ -712,16 +583,6 @@ public:
     R operator()(T const & t, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6) const
     {
         BOOST_MEM_FN_RETURN (t.*f_)(a1, a2, a3, a4, a5, a6);
-    }
-
-    bool operator==(BOOST_MEM_FN_NAME(cmf6) const & rhs) const
-    {
-        return f_ == rhs.f_;
-    }
-
-    bool operator!=(BOOST_MEM_FN_NAME(cmf6) const & rhs) const
-    {
-        return f_ != rhs.f_;
     }
 };
 
@@ -766,16 +627,6 @@ public:
     {
         BOOST_MEM_FN_RETURN (t.*f_)(a1, a2, a3, a4, a5, a6, a7);
     }
-
-    bool operator==(BOOST_MEM_FN_NAME(mf7) const & rhs) const
-    {
-        return f_ == rhs.f_;
-    }
-
-    bool operator!=(BOOST_MEM_FN_NAME(mf7) const & rhs) const
-    {
-        return f_ != rhs.f_;
-    }
 };
 
 // cmf7
@@ -813,16 +664,6 @@ public:
     R operator()(T const & t, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7) const
     {
         BOOST_MEM_FN_RETURN (t.*f_)(a1, a2, a3, a4, a5, a6, a7);
-    }
-
-    bool operator==(BOOST_MEM_FN_NAME(cmf7) const & rhs) const
-    {
-        return f_ == rhs.f_;
-    }
-
-    bool operator!=(BOOST_MEM_FN_NAME(cmf7) const & rhs) const
-    {
-        return f_ != rhs.f_;
     }
 };
 
@@ -867,16 +708,6 @@ public:
     {
         BOOST_MEM_FN_RETURN (t.*f_)(a1, a2, a3, a4, a5, a6, a7, a8);
     }
-
-    bool operator==(BOOST_MEM_FN_NAME(mf8) const & rhs) const
-    {
-        return f_ == rhs.f_;
-    }
-
-    bool operator!=(BOOST_MEM_FN_NAME(mf8) const & rhs) const
-    {
-        return f_ != rhs.f_;
-    }
 };
 
 // cmf8
@@ -919,16 +750,6 @@ public:
     R operator()(T const & t, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8) const
     {
         BOOST_MEM_FN_RETURN (t.*f_)(a1, a2, a3, a4, a5, a6, a7, a8);
-    }
-
-    bool operator==(BOOST_MEM_FN_NAME(cmf8) const & rhs) const
-    {
-        return f_ == rhs.f_;
-    }
-
-    bool operator!=(BOOST_MEM_FN_NAME(cmf8) const & rhs) const
-    {
-        return f_ != rhs.f_;
     }
 };
 

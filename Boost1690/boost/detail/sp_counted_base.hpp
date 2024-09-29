@@ -41,11 +41,11 @@
 
 #elif defined( __MWERKS__ ) && defined( __POWERPC__ )
 
-# include <boost/detail/sp_counted_base_cw_ppc.hpp>
+# include <boost/detail/sp_counted_base_w32.hpp>
 
 #elif defined( __GNUC__ ) && ( defined( __powerpc__ ) || defined( __ppc__ ) )
 
-# include <boost/detail/sp_counted_base_gcc_ppc.hpp>
+# include <boost/detail/sp_counted_base_w32.hpp>
 
 #elif defined( WIN32 ) || defined( _WIN32 ) || defined( __WIN32__ )
 

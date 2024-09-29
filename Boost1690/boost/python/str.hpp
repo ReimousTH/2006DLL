@@ -1,11 +1,10 @@
-// Copyright David Abrahams 2002.
-// Distributed under the Boost Software License, Version 1.0. (See
-// accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)
+// Copyright David Abrahams 2002. Permission to copy, use,
+// modify, sell and distribute this software is granted provided this
+// copyright notice appears in all copies. This software is provided
+// "as is" without express or implied warranty, and with no claim as
+// to its suitability for any purpose.
 #ifndef STR_20020703_HPP
 #define STR_20020703_HPP
-
-# include <boost/python/detail/prefix.hpp>
 
 #include <boost/python/object.hpp>
 #include <boost/python/list.hpp>
@@ -125,11 +124,6 @@ namespace detail
       str_base(); // new str
     
       str_base(const char* s); // new str
-
-      str_base(char const* start, char const* finish);
-      
-      str_base(char const* start, std::size_t length);
-      
       explicit str_base(object_cref other);
 
       BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(str_base, object)
@@ -146,14 +140,6 @@ class str : public detail::str_base
     str() {} // new str
     
     str(const char* s) : base(s) {} // new str
-    
-    str(char const* start, char const* finish) // new str
-      : base(start, finish)
-    {}
-    
-    str(char const* start, std::size_t length) // new str
-      : base(start, length)
-    {}
     
     template <class T>
     explicit str(T const& other)

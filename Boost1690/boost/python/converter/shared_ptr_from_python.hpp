@@ -1,16 +1,13 @@
-// Copyright David Abrahams 2002.
-// Distributed under the Boost Software License, Version 1.0. (See
-// accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)
+// Copyright David Abrahams 2002. Permission to copy, use,
+// modify, sell and distribute this software is granted provided this
+// copyright notice appears in all copies. This software is provided
+// "as is" without express or implied warranty, and with no claim as
+// to its suitability for any purpose.
 #ifndef SHARED_PTR_FROM_PYTHON_DWA20021130_HPP
 # define SHARED_PTR_FROM_PYTHON_DWA20021130_HPP
 
 # include <boost/python/handle.hpp>
 # include <boost/python/converter/shared_ptr_deleter.hpp>
-# include <boost/python/converter/from_python.hpp>
-# include <boost/python/converter/rvalue_from_python_data.hpp>
-# include <boost/python/converter/registered.hpp>
-# include <boost/shared_ptr.hpp>
 
 namespace boost { namespace python { namespace converter { 
 
@@ -22,13 +19,14 @@ struct shared_ptr_from_python
         converter::registry::insert(&convertible, &construct, type_id<shared_ptr<T> >());
     }
 
+    static shared_ptr_from_python const registration;
  private:
     static void* convertible(PyObject* p)
     {
-        if (p == Py_None)
-            return p;
-        
-        return converter::get_lvalue_from_python(p, registered<T>::converters);
+        return p == Py_None
+            ? p
+            : converter::get_lvalue_from_python(p, registered<T>::converters)
+            ;
     }
     
     static void construct(PyObject* source, rvalue_from_python_stage1_data* data)
@@ -46,6 +44,9 @@ struct shared_ptr_from_python
         data->convertible = storage;
     }
 };
+
+template <class T>
+shared_ptr_from_python<T> const shared_ptr_from_python<T>::registration;
 
 }}} // namespace boost::python::converter
 

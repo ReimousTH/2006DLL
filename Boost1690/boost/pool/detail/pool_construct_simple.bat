@@ -1,6 +1,6 @@
 @echo off
 rem
-rem Copyright (C) 2001 Stephen Cleary
+rem Copyright (C) 2001 Stephen Cleary (shammah@voyager.net)
 rem
 rem This file can be redistributed and/or modified under the terms found
 rem  in "copyright.html"

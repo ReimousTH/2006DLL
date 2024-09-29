@@ -1,78 +1,131 @@
+//-----------------------------------------------------------------------------
+// boost mpl/distance.hpp header file
+// See http://www.boost.org for updates, documentation, and revision history.
+//-----------------------------------------------------------------------------
+//
+// Copyright (c) 2000-02
+// Aleksey Gurtovoy
+//
+// Permission to use, copy, modify, distribute and sell this software
+// and its documentation for any purpose is hereby granted without fee, 
+// provided that the above copyright notice appears in all copies and 
+// that both the copyright notice and this permission notice appear in 
+// supporting documentation. No representations are made about the 
+// suitability of this software for any purpose. It is provided "as is" 
+// without express or implied warranty.
 
 #ifndef BOOST_MPL_DISTANCE_HPP_INCLUDED
 #define BOOST_MPL_DISTANCE_HPP_INCLUDED
 
-// Copyright Aleksey Gurtovoy 2000-2004
-//
-// Distributed under the Boost Software License, Version 1.0. 
-// (See accompanying file LICENSE_1_0.txt or copy at 
-// http://www.boost.org/LICENSE_1_0.txt)
-//
-// See http://www.boost.org/libs/mpl for documentation.
+#include "boost/mpl/aux_/iter_distance.hpp"
+#include "boost/mpl/aux_/iterator_category.hpp"
+#include "boost/mpl/iterator_tag.hpp"
+#include "boost/mpl/iter_fold.hpp"
+#include "boost/mpl/iterator_range.hpp"
+#include "boost/mpl/integral_c.hpp"
+#include "boost/mpl/next.hpp"
+#include "boost/mpl/aux_/common_name_wknd.hpp"
+#include "boost/mpl/aux_/void_spec.hpp"
+#include "boost/config.hpp"
 
-// $Source: /cvsroot/boost/boost/boost/mpl/distance.hpp,v $
-// $Date: 2005/01/26 01:58:33 $
-// $Revision: 1.10 $
+namespace boost {
+namespace mpl {
 
-#include <boost/mpl/distance_fwd.hpp>
-#include <boost/mpl/iter_fold.hpp>
-#include <boost/mpl/iterator_range.hpp>
-#include <boost/mpl/long.hpp>
-#include <boost/mpl/next.hpp>
-#include <boost/mpl/tag.hpp>
-#include <boost/mpl/apply_wrap.hpp>
-#include <boost/mpl/aux_/msvc_eti_base.hpp>
-#include <boost/mpl/aux_/value_wknd.hpp>
-#include <boost/mpl/aux_/na_spec.hpp>
-#include <boost/mpl/aux_/config/forwarding.hpp>
-#include <boost/mpl/aux_/config/static_constant.hpp>
+BOOST_MPL_AUX_COMMON_NAME_WKND(distance)
 
+#if !defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
 
-namespace boost { namespace mpl {
+namespace aux {
 
-// default implementation for forward/bidirectional iterators
-template< typename Tag > struct distance_impl
+// forward/bidirectional iterators
+template< typename Category, typename First, typename Last >
+struct distance_impl
+    : iter_fold<
+          iterator_range<First,Last>
+        , integral_c<long, 0>
+        , next<>
+        >
 {
-    template< typename First, typename Last > struct apply
-#if !defined(BOOST_MPL_CFG_NO_NESTED_FORWARDING)
-        : aux::msvc_eti_base< typename iter_fold<
-              iterator_range<First,Last>
-            , mpl::long_<0>
-            , next<>
-            >::type >
-    {
+};
+
+template< typename First, typename Last >
+struct distance_impl<ra_iter_tag_,First,Last>
+    : aux::iter_distance<First,Last>
+{
+};
+
+} // namespace aux
+
+BOOST_MPL_AUX_AGLORITHM_NAMESPACE_BEGIN
+
+template<
+      typename BOOST_MPL_AUX_VOID_SPEC_PARAM(First)
+    , typename BOOST_MPL_AUX_VOID_SPEC_PARAM(Last)
+    >
+struct distance
+{
+    // agurt, 29/sep/02: Borland doesn't like inheritance here
+    typedef typename aux::distance_impl<
+          typename BOOST_MPL_AUX_ITERATOR_CATEGORY(First)
+        , First
+        , Last
+        >::type type;
+};
+
+BOOST_MPL_AUX_AGLORITHM_NAMESPACE_END
+
 #else
-    {
-        typedef typename iter_fold<
+
+namespace aux {
+
+// forward/bidirectional iterators
+template< typename Category >
+struct distance_impl
+{
+    template< typename First, typename Last > struct result_
+        : iter_fold<
               iterator_range<First,Last>
-            , mpl::long_<0>
+            , integral_c<long, 0>
             , next<>
-            >::type type;
-        
-        BOOST_STATIC_CONSTANT(long, value =
-              (iter_fold<
-                  iterator_range<First,Last>
-                , mpl::long_<0>
-                , next<>
-                >::type::value)
-            );
-#endif
+            >
+    {
     };
 };
 
-template<
-      typename BOOST_MPL_AUX_NA_PARAM(First)
-    , typename BOOST_MPL_AUX_NA_PARAM(Last)
-    >
-struct distance
-    : distance_impl< typename tag<First>::type >
-        ::template apply<First, Last>
+template<>
+struct distance_impl<ra_iter_tag_>
 {
-    BOOST_MPL_AUX_LAMBDA_SUPPORT(2, distance, (First, Last))
+    template< typename First, typename Last > struct result_
+        : aux::iter_distance<First,Last>
+    {
+    };
 };
 
-BOOST_MPL_AUX_NA_SPEC(2, distance)
+} // namespace aux
 
-}}
+BOOST_MPL_AUX_AGLORITHM_NAMESPACE_BEGIN
+
+template<
+      typename BOOST_MPL_AUX_VOID_SPEC_PARAM(First)
+    , typename BOOST_MPL_AUX_VOID_SPEC_PARAM(Last)
+    >
+struct distance
+#if !defined(BOOST_MSVC) || BOOST_MSVC != 1300
+    : aux::distance_impl< typename BOOST_MPL_AUX_ITERATOR_CATEGORY(First) >
+#else
+    : aux::distance_impl< fwd_iter_tag_ >
+#endif
+        ::template result_<First,Last>
+{
+};
+
+BOOST_MPL_AUX_AGLORITHM_NAMESPACE_END
+
+#endif // BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
+
+BOOST_MPL_AUX_ALGORITHM_VOID_SPEC(2, distance)
+
+} // namespace mpl
+} // namespace boost
 
 #endif // BOOST_MPL_DISTANCE_HPP_INCLUDED

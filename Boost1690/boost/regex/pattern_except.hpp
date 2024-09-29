@@ -1,11 +1,15 @@
 /*
  *
  * Copyright (c) 1998-2002
- * John Maddock
+ * Dr John Maddock
  *
- * Use, modification and distribution are subject to the 
- * Boost Software License, Version 1.0. (See accompanying file 
- * LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+ * Permission to use, copy, modify, distribute and sell this software
+ * and its documentation for any purpose is hereby granted without fee,
+ * provided that the above copyright notice appear in all copies and
+ * that both that copyright notice and this permission notice appear
+ * in supporting documentation.  Dr John Maddock makes no representations
+ * about the suitability of this software for any purpose.  
+ * It is provided "as is" without express or implied warranty.
  *
  */
  
@@ -19,65 +23,42 @@
 #ifndef BOOST_RE_PAT_EXCEPT_HPP
 #define BOOST_RE_PAT_EXCEPT_HPP
 
-#ifndef BOOST_REGEX_CONFIG_HPP
 #include <boost/regex/config.hpp>
-#endif
-
-#include <stdexcept>
-#include <cstddef>
-#include <boost/regex/v4/error_type.hpp>
 
 namespace boost{
 
-#ifdef BOOST_HAS_ABI_HEADERS
-#  include BOOST_ABI_PREFIX
+#ifdef __BORLANDC__
+   #pragma option push -a8 -b -Vx -Ve -pc
 #endif
 
 #ifdef BOOST_MSVC
 #pragma warning(push)
 #pragma warning(disable : 4275)
 #endif
-   class BOOST_REGEX_DECL regex_error : public std::runtime_error
+class BOOST_REGEX_DECL bad_pattern : public std::runtime_error
 {
 public:
-   explicit regex_error(const std::string& s, regex_constants::error_type err, std::ptrdiff_t pos);
-   explicit regex_error(regex_constants::error_type err);
-   ~regex_error() throw();
-   regex_constants::error_type code()const
-   { return m_error_code; }
-   std::ptrdiff_t position()const
-   { return m_position; }
-   void raise()const;
-private:
-   regex_constants::error_type m_error_code;
-   std::ptrdiff_t m_position;
+   explicit bad_pattern(const std::string& s) : std::runtime_error(s){};
+   ~bad_pattern() throw();
+};
+#ifdef BOOST_MSVC
+#pragma warning(pop)
+#endif
+
+class BOOST_REGEX_DECL bad_expression : public bad_pattern
+{
+public:
+   explicit bad_expression(const std::string& s) : bad_pattern(s) {}
+   ~bad_expression() throw();
 };
 
-typedef regex_error bad_pattern;
-typedef regex_error bad_expression;
 
-namespace re_detail{
-
-BOOST_REGEX_DECL void BOOST_REGEX_CALL raise_runtime_error(const std::runtime_error& ex);
-
-template <class traits>
-void raise_error(const traits& t, regex_constants::error_type code)
-{
-   (void)t;  // warning suppression
-   std::runtime_error e(t.error_string(code));
-   ::boost::re_detail::raise_runtime_error(e);
-}
-
-}
-
-
-#ifdef BOOST_HAS_ABI_HEADERS
-#  include BOOST_ABI_SUFFIX
+#ifdef __BORLANDC__
+  #pragma option pop
 #endif
 
 } // namespace boost
 
 #endif
-
 
 

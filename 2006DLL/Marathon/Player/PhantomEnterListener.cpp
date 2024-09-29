@@ -9,7 +9,14 @@ Sonicteam::Player::PhantomEnterListener::PhantomEnterListener(boost::function<in
 	this->PELOnEnter = fnc;
 }
 
+
+
 void Sonicteam::Player::PhantomEnterListener::PhLsProcessMessage2(Sonicteam::SoX::Physics::PLMessage&)
 {
 	this->PELOnEnter();
+}
+
+Sonicteam::Player::PhantomEnterListener::~PhantomEnterListener(void)
+{
+
 }

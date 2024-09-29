@@ -10,11 +10,11 @@
 //
 //  Copyright (c) 2001, 2002 Peter Dimov and Multi Media Ltd.
 //  Copyright (c) 2002 Lars Gullik Bjønnes <larsbj@lyx.org>
-//  Copyright 2003-2005 Peter Dimov
 //
-//  Distributed under the Boost Software License, Version 1.0. (See
-//  accompanying file LICENSE_1_0.txt or copy at
-//  http://www.boost.org/LICENSE_1_0.txt)
+//  Permission to copy, use, modify, sell and distribute this software
+//  is granted provided this copyright notice appears in all copies.
+//  This software is provided "as is" without express or implied
+//  warranty, and with no claim as to its suitability for any purpose.
 //
 
 #include <bits/atomicity.h>
@@ -24,13 +24,6 @@ namespace boost
 
 namespace detail
 {
-
-#if defined(__GLIBCXX__) // g++ 3.4+
-
-using __gnu_cxx::__atomic_add;
-using __gnu_cxx::__exchange_and_add;
-
-#endif
 
 class atomic_count
 {
@@ -45,7 +38,7 @@ public:
 
     long operator--()
     {
-        return __exchange_and_add(&value_, -1) - 1;
+        return !__exchange_and_add(&value_, -1);
     }
 
     operator long() const
@@ -58,7 +51,7 @@ private:
     atomic_count(atomic_count const &);
     atomic_count & operator=(atomic_count const &);
 
-    mutable _Atomic_word value_;
+    _Atomic_word value_;
 };
 
 } // namespace detail

@@ -1,29 +1,31 @@
+//-----------------------------------------------------------------------------
+// boost mpl/pair.hpp header file
+// See http://www.boost.org for updates, documentation, and revision history.
+//-----------------------------------------------------------------------------
+//
+// Copyright (c) 2001-02
+// Aleksey Gurtovoy
+//
+// Permission to use, copy, modify, distribute and sell this software
+// and its documentation for any purpose is hereby granted without fee, 
+// provided that the above copyright notice appears in all copies and 
+// that both the copyright notice and this permission notice appear in 
+// supporting documentation. No representations are made about the 
+// suitability of this software for any purpose. It is provided "as is" 
+// without express or implied warranty.
 
 #ifndef BOOST_MPL_PAIR_HPP_INCLUDED
 #define BOOST_MPL_PAIR_HPP_INCLUDED
 
-// Copyright Aleksey Gurtovoy 2001-2004
-//
-// Distributed under the Boost Software License, Version 1.0. 
-// (See accompanying file LICENSE_1_0.txt or copy at 
-// http://www.boost.org/LICENSE_1_0.txt)
-//
-// See http://www.boost.org/libs/mpl for documentation.
+#include "boost/mpl/aux_/void_spec.hpp"
+#include "boost/mpl/aux_/lambda_support.hpp"
 
-// $Source: /cvsroot/boost/boost/boost/mpl/pair.hpp,v $
-// $Date: 2004/12/14 14:05:31 $
-// $Revision: 1.5 $
-
-#include <boost/mpl/aux_/msvc_eti_base.hpp>
-#include <boost/mpl/aux_/na_spec.hpp>
-#include <boost/mpl/aux_/lambda_support.hpp>
-#include <boost/mpl/aux_/config/eti.hpp>
-
-namespace boost { namespace mpl {
+namespace boost {
+namespace mpl {
 
 template<
-      typename BOOST_MPL_AUX_NA_PARAM(T1)
-    , typename BOOST_MPL_AUX_NA_PARAM(T2)
+      typename BOOST_MPL_AUX_VOID_SPEC_PARAM(T1)
+    , typename BOOST_MPL_AUX_VOID_SPEC_PARAM(T2)
     >
 struct pair
 {
@@ -34,37 +36,9 @@ struct pair
     BOOST_MPL_AUX_LAMBDA_SUPPORT(2,pair,(T1,T2))
 };
 
-template<
-      typename BOOST_MPL_AUX_NA_PARAM(P)
-    >
-struct first
-{
-#if !defined(BOOST_MPL_CFG_MSVC_70_ETI_BUG)
-    typedef typename P::first type;
-#else
-    typedef typename aux::msvc_eti_base<P>::first type;
-#endif
-    BOOST_MPL_AUX_LAMBDA_SUPPORT(1,first,(P))
-};
+BOOST_MPL_AUX_VOID_SPEC(2, pair)
 
-template<
-      typename BOOST_MPL_AUX_NA_PARAM(P)
-    >
-struct second
-{
-#if !defined(BOOST_MPL_CFG_MSVC_70_ETI_BUG)
-    typedef typename P::second type;
-#else
-    typedef typename aux::msvc_eti_base<P>::second type;
-#endif
-    BOOST_MPL_AUX_LAMBDA_SUPPORT(1,second,(P))
-};
-
-
-BOOST_MPL_AUX_NA_SPEC_NO_ETI(2, pair)
-BOOST_MPL_AUX_NA_SPEC(1, first)
-BOOST_MPL_AUX_NA_SPEC(1, second)
-
-}}
+} // namespace mpl
+} // namespace boost
 
 #endif // BOOST_MPL_PAIR_HPP_INCLUDED

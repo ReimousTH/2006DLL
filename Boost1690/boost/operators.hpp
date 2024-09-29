@@ -1,9 +1,10 @@
 //  Boost operators.hpp header file  ----------------------------------------//
 
-//  (C) Copyright David Abrahams, Jeremy Siek, Daryle Walker 1999-2001.
-//  Distributed under the Boost Software License, Version 1.0. (See
-//  accompanying file LICENSE_1_0.txt or copy at
-//  http://www.boost.org/LICENSE_1_0.txt)
+//  (C) Copyright David Abrahams, Jeremy Siek, and Daryle Walker 1999-2001.
+//  Permission to copy, use, modify, sell and distribute this software is
+//  granted provided this copyright notice appears in all copies.  This
+//  software is provided "as is" without express or implied warranty, and
+//  with no claim as to its suitability for any purpose.
 
 //  See http://www.boost.org/libs/utility/operators.htm for documentation.
 
@@ -77,10 +78,9 @@
 
 #include <boost/config.hpp>
 #include <boost/iterator.hpp>
-#include <boost/detail/workaround.hpp>
 
 #if defined(__sgi) && !defined(__GNUC__)
-#   pragma set woff 1234
+#pragma set woff 1234
 #endif
 
 #if defined(BOOST_MSVC)
@@ -152,9 +152,6 @@ struct equality_comparable1 : B
      friend bool operator!=(const T& x, const T& y) { return !(x == y); }
 };
 
-// A macro which produces "name_2left" from "name".
-#define BOOST_OPERATOR2_LEFT(name) name##2##_##left
-
 //  NRVO-friendly implementation (contributed by Daniel Frey) ---------------//
 
 #if defined(BOOST_HAS_NRVO) || defined(BOOST_FORCE_SYMMETRIC_OPERATORS)
@@ -181,34 +178,33 @@ struct NAME##1 : B                                                            \
     { T nrv( lhs ); nrv OP##= rhs; return nrv; }                              \
 };
 
-#define BOOST_BINARY_OPERATOR_NON_COMMUTATIVE( NAME, OP )           \
-template <class T, class U, class B = ::boost::detail::empty_base>  \
-struct NAME##2 : B                                                  \
-{                                                                   \
-  friend T operator OP( const T& lhs, const U& rhs )                \
-    { T nrv( lhs ); nrv OP##= rhs; return nrv; }                    \
-};                                                                  \
-                                                                    \
-template <class T, class U, class B = ::boost::detail::empty_base>  \
-struct BOOST_OPERATOR2_LEFT(NAME) : B                               \
-{                                                                   \
-  friend T operator OP( const U& lhs, const T& rhs )                \
-    { T nrv( lhs ); nrv OP##= rhs; return nrv; }                    \
-};                                                                  \
-                                                                    \
-template <class T, class B = ::boost::detail::empty_base>           \
-struct NAME##1 : B                                                  \
-{                                                                   \
-  friend T operator OP( const T& lhs, const T& rhs )                \
-    { T nrv( lhs ); nrv OP##= rhs; return nrv; }                    \
+#define BOOST_BINARY_OPERATOR_NON_COMMUTATIVE( NAME, OP )                     \
+template <class T, class U, class B = ::boost::detail::empty_base>            \
+struct NAME##2 : B                                                            \
+{                                                                             \
+  friend T operator OP( const T& lhs, const U& rhs )                          \
+    { T nrv( lhs ); nrv OP##= rhs; return nrv; }                              \
+};                                                                            \
+                                                                              \
+template <class T, class U, class B = ::boost::detail::empty_base>            \
+struct NAME##2_left : B                                                       \
+{                                                                             \
+  friend T operator OP( const U& lhs, const T& rhs )                          \
+    { T nrv( lhs ); nrv OP##= rhs; return nrv; }                              \
+};                                                                            \
+                                                                              \
+template <class T, class B = ::boost::detail::empty_base>                     \
+struct NAME##1 : B                                                            \
+{                                                                             \
+  friend T operator OP( const T& lhs, const T& rhs )                          \
+    { T nrv( lhs ); nrv OP##= rhs; return nrv; }                              \
 };
 
 #else // defined(BOOST_HAS_NRVO) || defined(BOOST_FORCE_SYMMETRIC_OPERATORS)
 
-// For compilers without NRVO the following code is optimal, but not
-// symmetric!  Note that the implementation of
-// BOOST_OPERATOR2_LEFT(NAME) only looks cool, but doesn't provide
-// optimization opportunities to the compiler :)
+// For compilers without NRVO the following code is optimal, but not symmetric!
+// Note that the implementation of NAME##2_left only looks cool, but doesn't
+// provide optimization opportunities to the compiler :)
 
 #define BOOST_BINARY_OPERATOR_COMMUTATIVE( NAME, OP )                         \
 template <class T, class U, class B = ::boost::detail::empty_base>            \
@@ -224,24 +220,24 @@ struct NAME##1 : B                                                            \
   friend T operator OP( T lhs, const T& rhs ) { return lhs OP##= rhs; }       \
 };
 
-#define BOOST_BINARY_OPERATOR_NON_COMMUTATIVE( NAME, OP )               \
-template <class T, class U, class B = ::boost::detail::empty_base>      \
-struct NAME##2 : B                                                      \
-{                                                                       \
-  friend T operator OP( T lhs, const U& rhs ) { return lhs OP##= rhs; } \
-};                                                                      \
-                                                                        \
-template <class T, class U, class B = ::boost::detail::empty_base>      \
-struct BOOST_OPERATOR2_LEFT(NAME) : B                                   \
-{                                                                       \
-  friend T operator OP( const U& lhs, const T& rhs )                    \
-    { return T( lhs ) OP##= rhs; }                                      \
-};                                                                      \
-                                                                        \
-template <class T, class B = ::boost::detail::empty_base>               \
-struct NAME##1 : B                                                      \
-{                                                                       \
-  friend T operator OP( T lhs, const T& rhs ) { return lhs OP##= rhs; } \
+#define BOOST_BINARY_OPERATOR_NON_COMMUTATIVE( NAME, OP )                     \
+template <class T, class U, class B = ::boost::detail::empty_base>            \
+struct NAME##2 : B                                                            \
+{                                                                             \
+  friend T operator OP( T lhs, const U& rhs ) { return lhs OP##= rhs; }       \
+};                                                                            \
+                                                                              \
+template <class T, class U, class B = ::boost::detail::empty_base>            \
+struct NAME##2_left : B                                                       \
+{                                                                             \
+  friend T operator OP( const U& lhs, const T& rhs )                          \
+    { return T( lhs ) OP##= rhs; }                                            \
+};                                                                            \
+                                                                              \
+template <class T, class B = ::boost::detail::empty_base>                     \
+struct NAME##1 : B                                                            \
+{                                                                             \
+  friend T operator OP( T lhs, const T& rhs ) { return lhs OP##= rhs; }       \
 };
 
 #endif // defined(BOOST_HAS_NRVO) || defined(BOOST_FORCE_SYMMETRIC_OPERATORS)
@@ -257,7 +253,6 @@ BOOST_BINARY_OPERATOR_COMMUTATIVE( orable, | )
 
 #undef BOOST_BINARY_OPERATOR_COMMUTATIVE
 #undef BOOST_BINARY_OPERATOR_NON_COMMUTATIVE
-#undef BOOST_OPERATOR2_LEFT
 
 //  incrementable and decrementable contributed by Jeremy Siek
 
@@ -674,7 +669,7 @@ struct random_access_iteratable
 // Here's where we put it all together, defining the xxxx forms of the templates
 // in namespace boost. We also define specializations of is_chained_base<> for
 // the xxxx, xxxx1, and xxxx2 templates, importing them into boost:: as
-// necessary.
+// neccessary.
 //
 #ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 
@@ -699,7 +694,7 @@ template<class T> struct is_chained_base {
 
 } // namespace boost
 
-// Import a 4-type-argument operator template into boost (if necessary) and
+// Import a 4-type-argument operator template into boost (if neccessary) and
 // provide a specialization of 'is_chained_base<>' for it.
 # define BOOST_OPERATOR_TEMPLATE4(template_name4)                     \
   BOOST_IMPORT_TEMPLATE4(template_name4)                              \
@@ -708,7 +703,7 @@ template<class T> struct is_chained_base {
     typedef ::boost::detail::true_t value;                            \
   };
 
-// Import a 3-type-argument operator template into boost (if necessary) and
+// Import a 3-type-argument operator template into boost (if neccessary) and
 // provide a specialization of 'is_chained_base<>' for it.
 # define BOOST_OPERATOR_TEMPLATE3(template_name3)                     \
   BOOST_IMPORT_TEMPLATE3(template_name3)                              \
@@ -717,7 +712,7 @@ template<class T> struct is_chained_base {
     typedef ::boost::detail::true_t value;                            \
   };
 
-// Import a 2-type-argument operator template into boost (if necessary) and
+// Import a 2-type-argument operator template into boost (if neccessary) and
 // provide a specialization of 'is_chained_base<>' for it.
 # define BOOST_OPERATOR_TEMPLATE2(template_name2)                  \
   BOOST_IMPORT_TEMPLATE2(template_name2)                           \
@@ -726,7 +721,7 @@ template<class T> struct is_chained_base {
     typedef ::boost::detail::true_t value;                         \
   };
 
-// Import a 1-type-argument operator template into boost (if necessary) and
+// Import a 1-type-argument operator template into boost (if neccessary) and
 // provide a specialization of 'is_chained_base<>' for it.
 # define BOOST_OPERATOR_TEMPLATE1(template_name1)                  \
   BOOST_IMPORT_TEMPLATE1(template_name1)                           \

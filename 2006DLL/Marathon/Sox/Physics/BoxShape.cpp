@@ -5,7 +5,7 @@ using namespace Sonicteam::SoX::Physics;
 
 Sonicteam::SoX::Physics::BoxShape::BoxShape(double width,double height,double length)
 {
-	this->UnkReference = 0;
+	
 	this->Width = width;
 	this->Height = height;
 	this->Length = length;

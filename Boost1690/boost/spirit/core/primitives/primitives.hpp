@@ -1,20 +1,36 @@
 /*=============================================================================
+    Spirit v1.6.0
     Copyright (c) 1998-2003 Joel de Guzman
     Copyright (c) 2003 Martin Wille
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Permission to copy, use, modify, sell and distribute this software is
+    granted provided this copyright notice appears in all copies. This
+    software is provided "as is" without express or implied warranty, and
+    with no claim as to its suitability for any purpose.
 =============================================================================*/
 #if !defined(BOOST_SPIRIT_PRIMITIVES_HPP)
 #define BOOST_SPIRIT_PRIMITIVES_HPP
 
-#include <boost/ref.hpp>
-#include <boost/spirit/core/assert.hpp>
-#include <boost/spirit/core/parser.hpp>
-#include <boost/spirit/core/composite/impl/directives.ipp>
-#include <boost/spirit/core/primitives/impl/primitives.ipp>
+#if !defined(BOOST_REF_HPP_INCLUDED)
+#include "boost/ref.hpp"
+#endif
+
+#if !defined(BOOST_SPIRIT_ASSERT_HPP)
+#include "boost/spirit/core/assert.hpp"
+#endif
+
+#if !defined(BOOST_SPIRIT_PARSER_HPP)
+#include "boost/spirit/core/parser.hpp"
+#endif
+
+#if !defined(BOOST_SPIRIT_DIRECTIVES_IPP)
+#include "boost/spirit/core/composite/impl/directives.ipp"
+#endif
+
+#if !defined(BOOST_SPIRIT_PRIMITIVES_IPP)
+#include "boost/spirit/core/primitives/impl/primitives.ipp"
+#endif
 
 namespace boost { namespace spirit {
 
@@ -28,8 +44,8 @@ namespace boost { namespace spirit {
     {
         typedef DerivedT self_t;
         template <typename ScannerT>
-        struct result
-        {
+        struct result {
+
             typedef typename match_result<
                 ScannerT,
                 typename ScannerT::value_t
@@ -50,7 +66,7 @@ namespace boost { namespace spirit {
                 if (this->derived().test(ch))
                 {
                     iterator_t save(scan.first);
-                    ++scan.first;
+                    ++scan;
                     return scan.create_match(1, ch, save, scan.first);
                 }
             }
@@ -75,9 +91,7 @@ namespace boost { namespace spirit {
 
         template <typename T>
         bool test(T ch) const
-        { 
-            return !positive.test(ch); 
-        }
+        { return !positive.test(ch); }
 
         positive_t const positive;
     };
@@ -109,9 +123,7 @@ namespace boost { namespace spirit {
 
         template <typename T>
         bool test(T ch_) const
-        { 
-            return ch_ == ch; 
-        }
+        { return ch_ == ch; }
 
         CharT   ch;
     };
@@ -119,20 +131,7 @@ namespace boost { namespace spirit {
     template <typename CharT>
     inline chlit<CharT>
     ch_p(CharT ch)
-    { 
-        return chlit<CharT>(ch); 
-    }
-
-    // This should take care of ch_p("a") "bugs"
-    template <typename CharT, std::size_t N>
-    inline chlit<CharT>
-    ch_p(CharT const (& str)[N])
-    {
-        //  ch_p's argument should be a single character or a null-terminated
-        //  string with a single character
-        BOOST_STATIC_ASSERT(N < 3);
-        return chlit<CharT>(str[0]);
-    }
+    { return chlit<CharT>(ch); }
 
     ///////////////////////////////////////////////////////////////////////////
     //
@@ -150,9 +149,7 @@ namespace boost { namespace spirit {
 
         template <typename T>
         bool test(T ch) const
-        { 
-            return !(CharT(ch) < first) && !(last < CharT(ch)); 
-        }
+        { return !(CharT(ch) < first) && !(last < CharT(ch)); }
 
         CharT   first;
         CharT   last;
@@ -161,9 +158,7 @@ namespace boost { namespace spirit {
     template <typename CharT>
     inline range<CharT>
     range_p(CharT first, CharT last)
-    { 
-        return range<CharT>(first, last); 
-    }
+    { return range<CharT>(first, last); }
 
     ///////////////////////////////////////////////////////////////////////////
     //
@@ -204,16 +199,12 @@ namespace boost { namespace spirit {
     template <typename CharT>
     inline chseq<CharT const*>
     chseq_p(CharT const* str)
-    { 
-        return chseq<CharT const*>(str); 
-    }
+    { return chseq<CharT const*>(str); }
 
     template <typename IteratorT>
     inline chseq<IteratorT>
     chseq_p(IteratorT first, IteratorT last)
-    { 
-        return chseq<IteratorT>(first, last); 
-    }
+    { return chseq<IteratorT>(first, last); }
 
     ///////////////////////////////////////////////////////////////////////////
     //
@@ -250,31 +241,12 @@ namespace boost { namespace spirit {
     template <typename CharT>
     inline strlit<CharT const*>
     str_p(CharT const* str)
-    { 
-        return strlit<CharT const*>(str); 
-    }
-
-    template <typename CharT>
-    inline strlit<CharT *>
-    str_p(CharT * str)
-    { 
-        return strlit<CharT *>(str); 
-    }
+    { return strlit<CharT const*>(str); }
 
     template <typename IteratorT>
     inline strlit<IteratorT>
     str_p(IteratorT first, IteratorT last)
-    { 
-        return strlit<IteratorT>(first, last); 
-    }
-
-    // This should take care of str_p('a') "bugs"
-    template <typename CharT>
-    inline chlit<CharT>
-    str_p(CharT ch)
-    {
-        return chlit<CharT>(ch);
-    }
+    { return strlit<IteratorT>(first, last); }
 
     ///////////////////////////////////////////////////////////////////////////
     //
@@ -290,9 +262,7 @@ namespace boost { namespace spirit {
         template <typename ScannerT>
         typename parser_result<self_t, ScannerT>::type
         parse(ScannerT const& scan) const
-        { 
-            return scan.no_match(); 
-        }
+        { return scan.no_match(); }
     };
 
     nothing_parser const nothing_p = nothing_parser();
@@ -310,18 +280,10 @@ namespace boost { namespace spirit {
 
         template <typename CharT>
         bool test(CharT) const
-        { 
-            return true; 
-        }
+        { return true; }
     };
 
     anychar_parser const anychar_p = anychar_parser();
-
-    inline nothing_parser
-    operator~(anychar_parser)
-    {
-        return nothing_p;
-    }
 
     ///////////////////////////////////////////////////////////////////////////
     //
@@ -336,9 +298,7 @@ namespace boost { namespace spirit {
 
         template <typename CharT>
         bool test(CharT ch) const
-        { 
-            return impl::isalnum_(ch); 
-        }
+        { return impl::isalnum_(ch); }
     };
 
     alnum_parser const alnum_p = alnum_parser();
@@ -356,9 +316,7 @@ namespace boost { namespace spirit {
 
         template <typename CharT>
         bool test(CharT ch) const
-        { 
-            return impl::isalpha_(ch); 
-        }
+        { return impl::isalpha_(ch); }
     };
 
     alpha_parser const alpha_p = alpha_parser();
@@ -376,9 +334,7 @@ namespace boost { namespace spirit {
 
         template <typename CharT>
         bool test(CharT ch) const
-        { 
-            return impl::iscntrl_(ch); 
-        }
+        { return impl::iscntrl_(ch); }
     };
 
     cntrl_parser const cntrl_p = cntrl_parser();
@@ -396,9 +352,7 @@ namespace boost { namespace spirit {
 
         template <typename CharT>
         bool test(CharT ch) const
-        { 
-            return impl::isdigit_(ch); 
-        }
+        { return impl::isdigit_(ch); }
     };
 
     digit_parser const digit_p = digit_parser();
@@ -416,9 +370,7 @@ namespace boost { namespace spirit {
 
         template <typename CharT>
         bool test(CharT ch) const
-        { 
-            return impl::isgraph_(ch); 
-        }
+        { return impl::isgraph_(ch); }
     };
 
     graph_parser const graph_p = graph_parser();
@@ -436,9 +388,7 @@ namespace boost { namespace spirit {
 
         template <typename CharT>
         bool test(CharT ch) const
-        { 
-            return impl::islower_(ch); 
-        }
+        { return impl::islower_(ch); }
     };
 
     lower_parser const lower_p = lower_parser();
@@ -456,9 +406,7 @@ namespace boost { namespace spirit {
 
         template <typename CharT>
         bool test(CharT ch) const
-        { 
-            return impl::isprint_(ch);
-        }
+        { return impl::isprint_(ch); }
     };
 
     print_parser const print_p = print_parser();
@@ -476,9 +424,7 @@ namespace boost { namespace spirit {
 
         template <typename CharT>
         bool test(CharT ch) const
-        { 
-            return impl::ispunct_(ch); 
-        }
+        { return impl::ispunct_(ch); }
     };
 
     punct_parser const punct_p = punct_parser();
@@ -496,11 +442,11 @@ namespace boost { namespace spirit {
 
         template <typename CharT>
         bool test(CharT ch) const
-        { 
-            return impl::isblank_(ch);
-        }
+        { return ch == ' ' || ch == '\t'; }
+        // some systems have isblank(), but some don't, so just do it manually.
     };
 
+    //////////////////////////////////
     blank_parser const blank_p = blank_parser();
 
     ///////////////////////////////////////////////////////////////////////////
@@ -516,9 +462,7 @@ namespace boost { namespace spirit {
 
         template <typename CharT>
         bool test(CharT ch) const
-        { 
-            return impl::isspace_(ch); 
-        }
+        { return impl::isspace_(ch); }
     };
 
     space_parser const space_p = space_parser();
@@ -536,9 +480,7 @@ namespace boost { namespace spirit {
 
         template <typename CharT>
         bool test(CharT ch) const
-        { 
-            return impl::isupper_(ch); 
-        }
+        { return impl::isupper_(ch); }
     };
 
     upper_parser const upper_p = upper_parser();
@@ -556,9 +498,7 @@ namespace boost { namespace spirit {
 
         template <typename CharT>
         bool test(CharT ch) const
-        { 
-            return impl::isxdigit_(ch); 
-        }
+        { return impl::isxdigit_(ch); }
     };
 
     xdigit_parser const xdigit_p = xdigit_parser();
@@ -579,18 +519,17 @@ namespace boost { namespace spirit {
         parse(ScannerT const& scan) const
         {
             typename ScannerT::iterator_t save = scan.first;
-            std::size_t len = 0;
+            int len = 0;
 
             if (!scan.at_end() && *scan == '\r')    // CR
             {
-                ++scan.first;
+                ++scan;
                 ++len;
             }
 
-            // Don't call skipper here
-            if (scan.first != scan.last && *scan == '\n')    // LF
+            if (!scan.at_end() && *scan == '\n')    // LF
             {
-                ++scan.first;
+                ++scan;
                 ++len;
             }
 
@@ -632,9 +571,7 @@ namespace boost { namespace spirit {
     ///////////////////////////////////////////////////////////////////////////
     inline strlit<char const*> const
     pizza_p(char const* your_favorite_pizza)
-    { 
-        return your_favorite_pizza; 
-    }
+    { return your_favorite_pizza; }
 
 }} // namespace boost::spirit
 

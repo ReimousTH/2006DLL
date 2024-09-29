@@ -1,13 +1,18 @@
 /* boost random/uniform_on_sphere.hpp header file
  *
  * Copyright Jens Maurer 2000-2001
- * Distributed under the Boost Software License, Version 1.0. (See
- * accompanying file LICENSE_1_0.txt or copy at
- * http://www.boost.org/LICENSE_1_0.txt)
+ * Permission to use, copy, modify, sell, and distribute this software
+ * is hereby granted without fee provided that the above copyright notice
+ * appears in all copies and that both that copyright notice and this
+ * permission notice appear in supporting documentation,
+ *
+ * Jens Maurer makes no representations about the suitability of this
+ * software for any purpose. It is provided "as is" without express or
+ * implied warranty.
  *
  * See http://www.boost.org for most recent version including documentation.
  *
- * $Id: uniform_on_sphere.hpp,v 1.11 2004/07/27 03:43:32 dgregor Exp $
+ * $Id: uniform_on_sphere.hpp,v 1.9 2002/12/22 22:03:11 jmaurer Exp $
  *
  * Revision history
  *  2001-02-18  moved to individual header files
@@ -23,27 +28,32 @@
 
 namespace boost {
 
-template<class RealType = double, class Cont = std::vector<RealType> >
+template<class UniformRandomNumberGenerator, class RealType = double,
+         class Cont = std::vector<RealType>,
+         class Adaptor = uniform_01<UniformRandomNumberGenerator, RealType> >
 class uniform_on_sphere
 {
 public:
-  typedef RealType input_type;
+  typedef Adaptor adaptor_type;
+  typedef UniformRandomNumberGenerator base_type;
   typedef Cont result_type;
 
-  explicit uniform_on_sphere(int dim = 2) : _container(dim), _dim(dim) { }
+  explicit uniform_on_sphere(base_type & rng, int dim = 2)
+    : _rng(rng), _container(dim), _dim(dim) { }
 
   // compiler-generated copy ctor and assignment operator are fine
 
-  void reset() { _normal.reset(); }
+  adaptor_type& adaptor() { return _rng.adaptor(); }
+  base_type& base() const { return _rng.base(); }
+  void reset() { _rng.reset(); }
 
-  template<class Engine>
-  const result_type & operator()(Engine& eng)
+  const result_type & operator()()
   {
     RealType sqsum = 0;
     for(typename Cont::iterator it = _container.begin();
         it != _container.end();
         ++it) {
-      RealType val = _normal(eng);
+      RealType val = _rng();
       *it = val;
       sqsum += val * val;
     }
@@ -56,7 +66,12 @@ public:
     return _container;
   }
 
-#if !defined(BOOST_NO_OPERATORS_IN_NAMESPACE) && !defined(BOOST_NO_MEMBER_TEMPLATE_FRIENDS)
+#ifndef BOOST_NO_OPERATORS_IN_NAMESPACE
+  friend bool operator==(const uniform_on_sphere& x, 
+                         const uniform_on_sphere& y)
+  { return x._dim == y._dim && x._rng == y._rng; }
+
+#ifndef BOOST_NO_MEMBER_TEMPLATE_FRIENDS
   template<class CharT, class Traits>
   friend std::basic_ostream<CharT,Traits>&
   operator<<(std::basic_ostream<CharT,Traits>& os, const uniform_on_sphere& sd)
@@ -75,8 +90,13 @@ public:
   }
 #endif
 
+#else
+  // Use a member function
+  bool operator==(const uniform_on_sphere& rhs) const
+  { return _dim == rhs._dim && _rng == rhs._rng; }
+#endif
 private:
-  normal_distribution<RealType> _normal;
+  normal_distribution<base_type, RealType, Adaptor> _rng;
   result_type _container;
   int _dim;
 };

@@ -1,10 +1,9 @@
 
-//  (C) Copyright John Maddock 2000.
-//  Use, modification and distribution are subject to the Boost Software License,
-//  Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-//  http://www.boost.org/LICENSE_1_0.txt).
-//
-//  See http://www.boost.org/libs/type_traits for most recent version including documentation.
+// (C) Copyright John Maddock 2000.
+// Permission to copy, use, modify, sell and distribute this software is 
+// granted provided this copyright notice appears in all copies. This software
+// is provided "as is" without express or implied warranty, and with no claim 
+// as to its suitability for any purpose.
 
 #ifndef BOOST_TT_ALIGNMENT_OF_HPP_INCLUDED
 #define BOOST_TT_ALIGNMENT_OF_HPP_INCLUDED
@@ -19,7 +18,7 @@
 #   pragma warning(push)
 #   pragma warning(disable: 4121) // alignment is sensitive to packing
 #endif
-#if defined(__BORLANDC__) && (__BORLANDC__ < 0x600)
+#ifdef __BORLANDC__
 #pragma option push -Vx- -Ve-
 #endif
 
@@ -87,7 +86,7 @@ BOOST_TT_AUX_SIZE_T_TRAIT_SPEC1(alignment_of,void const volatile,0)
 
 } // namespace boost
 
-#if defined(__BORLANDC__) && (__BORLANDC__ < 0x600)
+#ifdef __BORLANDC__
 #pragma option pop
 #endif
 #ifdef BOOST_MSVC

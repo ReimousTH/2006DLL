@@ -1,16 +1,17 @@
 /*=============================================================================
-    Phoenix V1.2.1
+    Phoenix V1.0
     Copyright (c) 2001-2002 Joel de Guzman
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Permission to copy, use, modify, sell and distribute this software
+    is granted provided this copyright notice appears in all copies.
+    This software is provided "as is" without express or implied
+    warranty, and with no claim as to its suitability for any purpose.
 ==============================================================================*/
 #ifndef PHOENIX_COMPOSITE_HPP
 #define PHOENIX_COMPOSITE_HPP
 
 ///////////////////////////////////////////////////////////////////////////////
-#include <boost/spirit/phoenix/actor.hpp>
+#include "boost/spirit/phoenix/actor.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace phoenix {
@@ -1354,11 +1355,9 @@ namespace impl {
         static type
         construct(actor<BaseT> const& _0)
         {
-            typedef typename make_composite
-                    <OperationT, actor<BaseT> >::composite_type
-                ret_t;
-
-            return ret_t(OperationT(), _0);
+            return impl::make_composite
+                <OperationT, actor<BaseT> >::composite_type
+                (OperationT(), _0);
         }
     };
 
@@ -1372,11 +1371,9 @@ namespace impl {
         static type
         construct(actor<BaseT> const& _0, B const& _1)
         {
-            typedef typename make_composite
-                    <OperationT, actor<BaseT>, B>::composite_type
-                ret_t;
-            
-            return ret_t(OperationT(), _0, as_actor<B>::convert(_1));
+            return impl::make_composite
+                <OperationT, actor<BaseT>, B>::composite_type
+                (OperationT(), _0, as_actor<B>::convert(_1));
         }
     };
 
@@ -1390,11 +1387,9 @@ namespace impl {
         static type
         construct(A const& _0, actor<BaseT> const& _1)
         {
-            typedef typename make_composite
-                    <OperationT, A, actor<BaseT> >::composite_type
-                ret_t;
-
-            return ret_t(OperationT(), as_actor<A>::convert(_0), _1);
+            return impl::make_composite
+                <OperationT, A, actor<BaseT> >::composite_type
+                (OperationT(), as_actor<A>::convert(_0), _1);
         }
     };
 
@@ -1408,15 +1403,12 @@ namespace impl {
         static type
         construct(actor<BaseA> const& _0, actor<BaseB> const& _1)
         {
-            typedef typename make_composite
-                    <OperationT, actor<BaseA>, actor<BaseB> >::composite_type
-                ret_t;
-
-            return ret_t(OperationT(), _0, _1);
+            return impl::make_composite
+                <OperationT, actor<BaseA>, actor<BaseB> >::composite_type
+                (OperationT(), _0, _1);
         }
     };
-
-}   // namespace impl
+}
 
 }   //  namespace phoenix
 

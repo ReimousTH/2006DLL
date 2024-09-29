@@ -1,14 +1,13 @@
 #if !defined(BOOST_PP_IS_ITERATING)
 
-// Copyright David Abrahams 2002.
-// Distributed under the Boost Software License, Version 1.0. (See
-// accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)
+// Copyright David Abrahams 2002. Permission to copy, use,
+// modify, sell and distribute this software is granted provided this
+// copyright notice appears in all copies. This software is provided
+// "as is" without express or implied warranty, and with no claim as
+// to its suitability for any purpose.
 
 # ifndef CALL_DWA2002411_HPP
 #  define CALL_DWA2002411_HPP
-
-# include <boost/python/detail/prefix.hpp>
 
 #  include <boost/type.hpp>
 
@@ -39,10 +38,7 @@ namespace boost { namespace python {
 # endif // CALL_DWA2002411_HPP
 
 #elif BOOST_PP_ITERATION_DEPTH() == 1
-# if !(BOOST_WORKAROUND(__MWERKS__, > 0x3100)                      \
-        && BOOST_WORKAROUND(__MWERKS__, BOOST_TESTED_AT(0x3201)))
-#  line BOOST_PP_LINE(__LINE__, call.hpp)
-# endif
+# line BOOST_PP_LINE(__LINE__, call.hpp)
 
 # define N BOOST_PP_ITERATION()
 
@@ -56,22 +52,13 @@ call(PyObject* callable
     , boost::type<R>* = 0
     )
 {
-    PyObject* const result = 
+    converter::return_from_python<R> converter;
+    return converter(
         PyEval_CallFunction(
             callable
             , const_cast<char*>("(" BOOST_PP_REPEAT_1ST(N, BOOST_PYTHON_FIXED, "O") ")")
             BOOST_PP_REPEAT_1ST(N, BOOST_PYTHON_FAST_ARG_TO_PYTHON_GET, nil)
-            );
-    
-    // This conversion *must not* be done in the same expression as
-    // the call, because, in the special case where the result is a
-    // reference a Python object which was created by converting a C++
-    // argument for passing to PyEval_CallFunction, its reference
-    // count will be 2 until the end of the full expression containing
-    // the conversion, and that interferes with dangling
-    // pointer/reference detection.
-    converter::return_from_python<R> converter;
-    return converter(result);
+            ));
 }
 
 # undef N

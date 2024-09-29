@@ -1,45 +1,24 @@
-//  (C) Copyright Gennadiy Rozental 2001-2005.
-//  Distributed under the Boost Software License, Version 1.0.
-//  (See accompanying file LICENSE_1_0.txt or copy at 
-//  http://www.boost.org/LICENSE_1_0.txt)
+//  (C) Copyright Gennadiy Rozental 2001-2002.
+//  Permission to copy, use, modify, sell and distribute this software
+//  is granted provided this copyright notice appears in all copies.
+//  This software is provided "as is" without express or implied warranty,
+//  and with no claim as to its suitability for any purpose.
 
-//  See http://www.boost.org/libs/test for the library home page.
+//  See http://www.boost.org for most recent version including documentation.
 //
 //  File        : $RCSfile: floating_point_comparison.hpp,v $
 //
-//  Version     : $Revision: 1.23 $
+//  Version     : $Id: floating_point_comparison.hpp,v 1.7 2002/11/02 19:31:04 rogeeff Exp $
 //
 //  Description : defines algoirthms for comparing 2 floating point values
 // ***************************************************************************
 
-#ifndef BOOST_TEST_FLOATING_POINT_COMPARISON_HPP_071894GER
-#define BOOST_TEST_FLOATING_POINT_COMPARISON_HPP_071894GER
+#ifndef BOOST_FLOATING_POINT_COMPARISON_HPP
+#define BOOST_FLOATING_POINT_COMPARISON_HPP
 
-#include <boost/limits.hpp>  // for std::numeric_limits
+#include <boost/limits.hpp>  // for std::numareic_limits
 
-#include <boost/test/utils/class_properties.hpp>
-
-#include <boost/test/detail/suppress_warnings.hpp>
-
-//____________________________________________________________________________//
-
-namespace boost {
-
-namespace test_tools {
-
-using unit_test::readonly_property;
-
-// ************************************************************************** //
-// **************        floating_point_comparison_type        ************** //
-// ************************************************************************** //
-
-enum floating_point_comparison_type { FPC_STRONG, FPC_WEAK };
-
-// ************************************************************************** //
-// **************                    details                   ************** //
-// ************************************************************************** //
-
-namespace tt_detail {
+#include <boost/test/detail/class_properties.hpp>
 
 template<typename FPT>
 inline FPT
@@ -55,123 +34,73 @@ template<typename FPT>
 inline FPT 
 safe_fpt_division( FPT f1, FPT f2 )
 {
-    return  (f2 < 1 && f1 > f2 * (std::numeric_limits<FPT>::max)())               ? (std::numeric_limits<FPT>::max)()
-            : ((f2 > 1 && f1 < f2 * (std::numeric_limits<FPT>::min)() || f1 == 0) ? 0
-                                                                                  : f1/f2 );
+    return  (f2 < 1 && f1 > f2 * std::numeric_limits<FPT>::max())   ? std::numeric_limits<FPT>::max() :
+           ((f2 > 1 && f1 < f2 * std::numeric_limits<FPT>::min() || 
+             f1 == 0)                                               ? 0                               :
+                                                                      f1/f2 );
 }
 
 //____________________________________________________________________________//
 
-} // namespace tt_detail
-
-// ************************************************************************** //
-// **************             close_at_tolerance               ************** //
-// ************************************************************************** //
-
-template<typename FPT, typename PersentType = FPT >
+template<typename FPT>
 class close_at_tolerance {
 public:
-    // Public typedefs
-    typedef bool result_type;
+    explicit    close_at_tolerance( FPT tolerance, bool strong_or_weak = true ) 
+    : p_tolerance( tolerance ), m_strong_or_weak( strong_or_weak ) {}
 
-    // Constructor
-    explicit    close_at_tolerance( PersentType percentage_tolerance, floating_point_comparison_type fpc_type = FPC_STRONG ) 
-    : p_fraction_tolerance( static_cast<FPT>(0.01)*percentage_tolerance ), p_strong_or_weak( fpc_type ==  FPC_STRONG ) {}
+    explicit    close_at_tolerance( int number_of_rounding_errors, bool strong_or_weak = true ) 
+    : p_tolerance( std::numeric_limits<FPT>::epsilon() * number_of_rounding_errors/2 ), 
+      m_strong_or_weak( strong_or_weak ) {}
 
     bool        operator()( FPT left, FPT right ) const
     {
-        FPT diff = tt_detail::fpt_abs( left - right );
-        FPT d1   = tt_detail::safe_fpt_division( diff, tt_detail::fpt_abs( right ) );
-        FPT d2   = tt_detail::safe_fpt_division( diff, tt_detail::fpt_abs( left ) );
+        FPT diff = fpt_abs( left - right );
+        FPT d1   = safe_fpt_division( diff, fpt_abs( right ) );
+        FPT d2   = safe_fpt_division( diff, fpt_abs( left ) );
         
-        return p_strong_or_weak ? (d1 <= p_fraction_tolerance.get() && d2 <= p_fraction_tolerance.get()) 
-                                : (d1 <= p_fraction_tolerance.get() || d2 <= p_fraction_tolerance.get());
+        return m_strong_or_weak ? (d1 <= p_tolerance.get() && d2 <= p_tolerance.get()) 
+                                : (d1 <= p_tolerance.get() || d2 <= p_tolerance.get());
     }
 
-    // Public properties
-    readonly_property<FPT>  p_fraction_tolerance;
-    readonly_property<bool> p_strong_or_weak;
+    // Data members
+    BOOST_READONLY_PROPERTY( FPT, 0, () )
+                p_tolerance;
+private:
+    bool        m_strong_or_weak;
 };
 
 //____________________________________________________________________________//
 
-// ************************************************************************** //
-// **************               check_is_close                 ************** //
-// ************************************************************************** //
+template<typename FPT, typename ToleranceSource>
+bool
+check_is_closed( FPT left, FPT right, ToleranceSource tolerance, bool strong_or_weak = true )
+{
+    close_at_tolerance<FPT> pred( tolerance, strong_or_weak );
 
-struct check_is_close_t {
-    // Public typedefs
-    typedef bool result_type;
-
-    template<typename FPT, typename PersentType>
-    bool
-    operator()( FPT left, FPT right, PersentType percentage_tolerance, floating_point_comparison_type fpc_type = FPC_STRONG )
-    {
-        close_at_tolerance<FPT,PersentType> pred( percentage_tolerance, fpc_type );
-
-        return pred( left, right );
-    }
-};
-
-namespace {
-check_is_close_t check_is_close;
+    return pred( left, right );
 }
 
 //____________________________________________________________________________//
 
-// ************************************************************************** //
-// **************               check_is_small                 ************** //
-// ************************************************************************** //
+template<typename FPT, typename ToleranceSource>
+FPT
+compute_tolerance( ToleranceSource tolerance, FPT /* unfortunately we need to pass type information this way*/ )
+{
+    close_at_tolerance<FPT> pred( tolerance );
 
-struct check_is_small_t {
-    // Public typedefs
-    typedef bool result_type;
-
-    template<typename FPT>
-    bool
-    operator()( FPT fpv, FPT tolerance )
-    {
-        return tt_detail::fpt_abs( fpv ) < tolerance;
-    }
-};
-
-namespace {
-check_is_small_t check_is_small;
+    return pred.p_tolerance.get();
 }
 
 //____________________________________________________________________________//
-
-} // namespace test_tools
-
-} // namespace boost
-
-//____________________________________________________________________________//
-
-#include <boost/test/detail/enable_warnings.hpp>
 
 // ***************************************************************************
 //  Revision History :
 //  
 //  $Log: floating_point_comparison.hpp,v $
-//  Revision 1.23  2005/05/29 08:54:57  rogeeff
-//  allow bind usage
+//  Revision 1.7  2002/11/02 19:31:04  rogeeff
+//  merged into the main trank
 //
-//  Revision 1.22  2005/02/21 10:21:40  rogeeff
-//  check_is_small implemented
-//  check functions implemented as function objects
-//
-//  Revision 1.21  2005/02/20 08:27:05  rogeeff
-//  This a major update for Boost.Test framework. See release docs for complete list of fixes/updates
-//
-//  Revision 1.20  2005/02/01 06:40:06  rogeeff
-//  copyright update
-//  old log entries removed
-//  minor stilistic changes
-//  depricated tools removed
-//
-//  Revision 1.19  2005/01/22 19:22:12  rogeeff
-//  implementation moved into headers section to eliminate dependency of included/minimal component on src directory
-//
+
 // ***************************************************************************
 
-#endif // BOOST_FLOATING_POINT_COMAPARISON_HPP_071894GER
+#endif // BOOST_FLOATING_POINT_COMAPARISON_HPP

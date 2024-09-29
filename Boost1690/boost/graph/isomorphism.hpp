@@ -1,4 +1,4 @@
-// Copyright (C) 2001 Jeremy Siek, Douglas Gregor, Brian Osman
+// Copyright (C) 2001 Jeremy Siek, Doug Gregor, Brian Osman
 //
 // Permission to copy, use, sell and distribute this software is granted
 // provided this copyright notice appears in all copies.
@@ -15,7 +15,6 @@
 #include <vector>
 #include <iterator>
 #include <algorithm>
-#include <boost/config.hpp>
 #include <boost/graph/depth_first_search.hpp>
 #include <boost/utility.hpp>
 #include <boost/detail/algorithm.hpp>
@@ -54,23 +53,14 @@ namespace boost {
       std::vector<vertex1_t> dfs_vertices;
       typedef typename std::vector<vertex1_t>::iterator vertex_iter;
       std::vector<int> dfs_num_vec;
-      typedef safe_iterator_property_map<typename std::vector<int>::iterator,
-                                         IndexMap1
-#ifdef BOOST_NO_STD_ITERATOR_TRAITS
-                                         , int, int&
-#endif /* BOOST_NO_STD_ITERATOR_TRAITS */
-                                         > DFSNumMap;
+      typedef safe_iterator_property_map<typename std::vector<int>::iterator, IndexMap1> DFSNumMap;
       DFSNumMap dfs_num;
       std::vector<edge1_t> ordered_edges;
       typedef typename std::vector<edge1_t>::iterator edge_iter;
     
       std::vector<char> in_S_vec;
       typedef safe_iterator_property_map<typename std::vector<char>::iterator,
-                                         IndexMap2
-#ifdef BOOST_NO_STD_ITERATOR_TRAITS
-                                         , char, char&
-#endif /* BOOST_NO_STD_ITERATOR_TRAITS */
-                                         > InSMap;
+                                                                     IndexMap2> InSMap;
       InSMap in_S;
     
       int num_edges_on_k;
@@ -107,13 +97,13 @@ namespace boost {
           : G1(G1), dfs_num(dfs_num) { }
         bool operator()(const edge1_t& e1, const edge1_t& e2) const {
           using namespace std;
-          int u1 = dfs_num[source(e1,G1)], v1 = dfs_num[target(e1,G1)];
-          int u2 = dfs_num[source(e2,G1)], v2 = dfs_num[target(e2,G1)];
-          int m1 = (max)(u1, v1);
-          int m2 = (max)(u2, v2);
+          vertex1_t u1 = dfs_num[source(e1,G1)], v1 = dfs_num[target(e1,G1)];
+          vertex1_t u2 = dfs_num[source(e2,G1)], v2 = dfs_num[target(e2,G1)];
+          int m1 = max(u1, v1);
+          int m2 = max(u2, v2);
           // lexicographical comparison 
-          return std::make_pair(m1, std::make_pair(u1, v1))
-            < std::make_pair(m2, std::make_pair(u2, v2));
+          return make_pair(m1, make_pair(u1, v1))
+            < make_pair(m2, make_pair(u2, v2));
         }
         const Graph1& G1;
         DFSNumMap dfs_num;
@@ -129,11 +119,7 @@ namespace boost {
       {
         in_S_vec.resize(num_vertices(G1));
         in_S = make_safe_iterator_property_map
-          (in_S_vec.begin(), in_S_vec.size(), index_map2
-#ifdef BOOST_NO_STD_ITERATOR_TRAITS
-           , in_S_vec.front()
-#endif /* BOOST_NO_STD_ITERATOR_TRAITS */
-           );
+          (in_S_vec.begin(), in_S_vec.size(), index_map2);
       }
     
       bool test_isomorphism()
@@ -163,12 +149,7 @@ namespace boost {
         }
         
         std::vector<default_color_type> color_vec(num_vertices(G1));
-        safe_iterator_property_map<std::vector<default_color_type>::iterator,
-                                   IndexMap1
-#ifdef BOOST_NO_STD_ITERATOR_TRAITS
-                                   , default_color_type, default_color_type&
-#endif /* BOOST_NO_STD_ITERATOR_TRAITS */
-                                   >
+        safe_iterator_property_map<std::vector<default_color_type>::iterator, IndexMap1>
           color_map(color_vec.begin(), color_vec.size(), index_map1);
         record_dfs_order dfs_visitor(dfs_vertices, ordered_edges);
         typedef color_traits<default_color_type> Color;
@@ -181,12 +162,7 @@ namespace boost {
         // Create the dfs_num array and dfs_num_map
         dfs_num_vec.resize(num_vertices(G1));
         dfs_num = make_safe_iterator_property_map(dfs_num_vec.begin(),
-                                                  dfs_num_vec.size(), 
-                                                  index_map1
-#ifdef BOOST_NO_STD_ITERATOR_TRAITS
-                                                  , dfs_num_vec.front()
-#endif /* BOOST_NO_STD_ITERATOR_TRAITS */
-                                                  );
+                                                  dfs_num_vec.size(), index_map1);
         size_type n = 0;
         for (vertex_iter v = dfs_vertices.begin(); v != dfs_vertices.end(); ++v)
           dfs_num[*v] = n++;
@@ -210,14 +186,8 @@ namespace boost {
                 f[kp1] = u;
                 in_S[u] = true;
                 num_edges_on_k = 0;
-                
-                if (match(iter, dfs_num_k + 1))
-#if 0
-                    // dwa 2003/7/11 -- this *HAS* to be a bug!
-                    ;
-#endif 
-                    return true;
-                    
+                if (match(iter, dfs_num_k + 1));
+                return true;
                 in_S[u] = false;
               }
             }
@@ -240,8 +210,7 @@ namespace boost {
                 f[j] = v;
                 in_S[v] = true;
                 num_edges_on_k = 1;
-                BOOST_USING_STD_MAX();
-                int next_k = max BOOST_PREVENT_MACRO_SUBSTITUTION(dfs_num_k, max BOOST_PREVENT_MACRO_SUBSTITUTION(dfs_num[i], dfs_num[j]));
+                int next_k = std::max(dfs_num_k, std::max(dfs_num[i], dfs_num[j]));
                 if (match(next(iter), next_k))
                   return true;
                 in_S[v] = false;
@@ -296,7 +265,7 @@ namespace boost {
         + get(m_in_degree_map, v);
     }
     // The largest possible vertex invariant number
-    size_type max BOOST_PREVENT_MACRO_SUBSTITUTION () const { 
+    size_type max() const { 
       return num_vertices(m_g) * num_vertices(m_g) + num_vertices(m_g);
     }
   private:
@@ -367,22 +336,12 @@ namespace boost {
                           const bgl_named_params<P,T,R>& params)
     {
       std::vector<std::size_t> in_degree1_vec(num_vertices(G1));
-      typedef safe_iterator_property_map<std::vector<std::size_t>::iterator,
-                                         IndexMap1
-#ifdef BOOST_NO_STD_ITERATOR_TRAITS
-                                         , std::size_t, std::size_t&
-#endif /* BOOST_NO_STD_ITERATOR_TRAITS */
-                                         > InDeg1;
+      typedef safe_iterator_property_map<std::vector<std::size_t>::iterator, IndexMap1> InDeg1;
       InDeg1 in_degree1(in_degree1_vec.begin(), in_degree1_vec.size(), index_map1);
       compute_in_degree(G1, in_degree1);
 
       std::vector<std::size_t> in_degree2_vec(num_vertices(G2));
-      typedef safe_iterator_property_map<std::vector<std::size_t>::iterator, 
-                                         IndexMap2
-#ifdef BOOST_NO_STD_ITERATOR_TRAITS
-                                         , std::size_t, std::size_t&
-#endif /* BOOST_NO_STD_ITERATOR_TRAITS */
-                                         > InDeg2;
+      typedef safe_iterator_property_map<std::vector<std::size_t>::iterator, IndexMap2> InDeg2;
       InDeg2 in_degree2(in_degree2_vec.begin(), in_degree2_vec.size(), index_map2);
       compute_in_degree(G2, in_degree2);
 
@@ -392,7 +351,7 @@ namespace boost {
       return isomorphism(G1, G2, f,
                          choose_param(get_param(params, vertex_invariant1_t()), invariant1),
                          choose_param(get_param(params, vertex_invariant2_t()), invariant2),
-                         choose_param(get_param(params, vertex_max_invariant_t()), (invariant2.max)()),
+                         choose_param(get_param(params, vertex_max_invariant_t()), invariant2.max()),
                          index_map1, index_map2
                          );  
     }  

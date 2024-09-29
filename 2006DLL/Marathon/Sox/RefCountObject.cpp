@@ -3,29 +3,34 @@
 
 using namespace Sonicteam::SoX;
 
-Sonicteam::SoX::RefCountObject::RefCountObject(void)
-{
-	this->UnkReference = 0;
 
+void Sonicteam::SoX::RefCountObject::AddReference()
+{
+ ++referenceCount;
 }
 
-Sonicteam::SoX::RefCountObject::~RefCountObject(void)
+void Sonicteam::SoX::RefCountObject::Release()
 {
-
+	if (--referenceCount == 0) {
+		DestroyObject(1);
+	}
 }
 
 void Sonicteam::SoX::RefCountObject::DestroyObject(unsigned int flag)
 {
-
-	this->~RefCountObject();
 	Sonicteam::SoX::Memory::IUDestructible::DestroyObject(this,flag);
-
 }
 
-void Sonicteam::SoX::RefCountObject::LoseObject()
+RefCountObject& Sonicteam::SoX::RefCountObject::operator=(const RefCountObject& other)
 {
-	this->UnkReference--;
-	if (UnkReference == 0){
-		this->DestroyObject(1);
+	referenceCount++;
+	return *this;
+}
+
+void Sonicteam::SoX::RefCountObject_OLD::LoseObject()
+{
+
+	if (--UnkReference == 0) {
+		DestroyObject(1);
 	}
 }

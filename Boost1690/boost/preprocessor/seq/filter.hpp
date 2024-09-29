@@ -1,9 +1,10 @@
 # /* **************************************************************************
 #  *                                                                          *
-#  *     (C) Copyright Paul Mensonides 2002.
-#  *     Distributed under the Boost Software License, Version 1.0. (See
-#  *     accompanying file LICENSE_1_0.txt or copy at
-#  *     http://www.boost.org/LICENSE_1_0.txt)
+#  *     (C) Copyright Paul Mensonides 2002.  Permission to copy, use,        *
+#  *     modify, sell, and distribute this software is granted provided       *
+#  *     this copyright notice appears in all copies.  This software is       *
+#  *     provided "as is" without express or implied warranty, and with       *
+#  *     no claim at to its suitability for any purpose.                      *
 #  *                                                                          *
 #  ************************************************************************** */
 #
@@ -36,11 +37,7 @@
 #    define BOOST_PP_SEQ_FILTER_O(s, st, elem) BOOST_PP_SEQ_FILTER_O_I(s, BOOST_PP_TUPLE_ELEM(3, 0, st), BOOST_PP_TUPLE_ELEM(3, 1, st), BOOST_PP_TUPLE_ELEM(3, 2, st), elem)
 # endif
 #
-# if ~BOOST_PP_CONFIG_FLAGS() & BOOST_PP_CONFIG_DMC()
-#   define BOOST_PP_SEQ_FILTER_O_I(s, pred, data, res, elem) (pred, data, res BOOST_PP_EXPR_IF(pred(s, data, elem), (elem)))
-# else
-#   define BOOST_PP_SEQ_FILTER_O_I(s, pred, data, res, elem) (pred, data, res BOOST_PP_EXPR_IF(pred##(s, data, elem), (elem)))
-# endif
+# define BOOST_PP_SEQ_FILTER_O_I(s, pred, data, res, elem) (pred, data, res BOOST_PP_EXPR_IF(pred(s, data, elem), (elem)))
 #
 # /* BOOST_PP_SEQ_FILTER_S */
 #

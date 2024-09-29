@@ -1,9 +1,7 @@
-//  (C) Copyright John Maddock 2001 - 2003. 
-//  (C) Copyright Darin Adler 2001 - 2002. 
-//  (C) Copyright Bill Kempf 2002. 
-//  Use, modification and distribution are subject to the 
-//  Boost Software License, Version 1.0. (See accompanying file 
-//  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+//  (C) Copyright Boost.org 2001. Permission to copy, use, modify, sell and
+//  distribute this software is granted provided this copyright notice appears
+//  in all copies. This software is provided "as is" without express or implied
+//  warranty, and with no claim as to its suitability for any purpose.
 
 //  See http://www.boost.org for most recent version.
 
@@ -15,17 +13,15 @@
 
 // Using the Mac OS X system BSD-style C library.
 
+#  define BOOST_NO_CTYPE_FUNCTIONS
+#  define BOOST_NO_CWCHAR
 #  ifndef BOOST_HAS_UNISTD_H
 #    define BOOST_HAS_UNISTD_H
 #  endif
-//
-// Begin by including our boilerplate code for POSIX
-// feature detection, this is safe even when using
-// the MSL as Metrowerks supply their own <unistd.h>
-// to replace the platform-native BSD one. G++ users
-// should also always be able to do this on MaxOS X.
-//
-#  include <boost/config/posix_features.hpp>
+// boilerplate code:
+#  ifndef TARGET_CARBON
+#     include <boost/config/posix_features.hpp>
+#  endif
 #  ifndef BOOST_HAS_STDINT_H
 #     define BOOST_HAS_STDINT_H
 #  endif
@@ -39,7 +35,7 @@
 #  define BOOST_HAS_GETTIMEOFDAY
 #  define BOOST_HAS_SIGACTION
 
-#  if (__GNUC__ < 3) && !defined( __APPLE_CC__)
+#  ifndef __APPLE_CC__
 
 // GCC strange "ignore std" mode works better if you pretend everything
 // is in the std namespace, for the most part.
@@ -53,15 +49,9 @@
 
 // We will eventually support threads in non-Carbon builds, but we do
 // not support this yet.
-#  if ( defined(TARGET_API_MAC_CARBON) && TARGET_API_MAC_CARBON ) || ( defined(TARGET_CARBON) && TARGET_CARBON )
+#  if TARGET_CARBON
 
-#  if !defined(BOOST_HAS_PTHREADS)
 #    define BOOST_HAS_MPTASKS
-#  elif ( __dest_os == __mac_os_x )
-// We are doing a Carbon/Mach-O/MSL build which has pthreads, but only the
-// gettimeofday and no posix.
-#  define BOOST_HAS_GETTIMEOFDAY
-#  endif
 
 // The MP task implementation of Boost Threads aims to replace MP-unsafe
 // parts of the MSL, so we turn on threads unconditionally.
@@ -73,6 +63,4 @@
 #  endif
 
 #endif
-
-
 

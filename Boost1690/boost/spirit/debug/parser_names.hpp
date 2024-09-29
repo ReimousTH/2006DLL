@@ -1,11 +1,13 @@
 /*=============================================================================
+    Spirit v1.6.0
     Copyright (c) 2001-2003 Joel de Guzman
     Copyright (c) 2002-2003 Hartmut Kaiser
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Permission to copy, use, modify, sell and distribute this software is
+    granted provided this copyright notice appears in all copies. This
+    software is provided "as is" without express or implied warranty, and
+    with no claim as to its suitability for any purpose.
 =============================================================================*/
 #if !defined(BOOST_SPIRIT_PARSER_NAMES_HPP)
 #define BOOST_SPIRIT_PARSER_NAMES_HPP
@@ -13,7 +15,7 @@
 #if defined(BOOST_SPIRIT_DEBUG)
 
 //////////////////////////////////
-#include <boost/spirit/core.hpp>
+#include "boost/spirit/core.hpp"
 
 namespace boost { namespace spirit {
 
@@ -190,9 +192,9 @@ namespace boost { namespace spirit {
 
 ///////////////////////////////////////////////////////////////////////////////
 //  from rule.hpp
-    template<typename T0, typename T1, typename T2>
+    template<typename ContextT, typename ScannerT>
     std::string
-    parser_name(rule<T0, T1, T2> const& p);
+    parser_name(rule<ContextT, ScannerT> const& p);
 
 ///////////////////////////////////////////////////////////////////////////////
 //  from subrule.hpp
@@ -216,13 +218,9 @@ namespace boost { namespace spirit {
 //  Decide, if a node is to be traced or not
 //
 ///////////////////////////////////////////////////////////////////////////////
-    template<
-        typename DerivedT, typename EmbedT, 
-        typename T0, typename T1, typename T2
-    >
+    template<typename ContextT, typename ScannerT>
     bool
-    trace_parser(impl::rule_base<DerivedT, EmbedT, T0, T1, T2> 
-        const& p);
+    trace_parser(rule<ContextT, ScannerT> const& p);
 
     template <typename DerivedT, typename ContextT>
     bool
@@ -232,18 +230,13 @@ namespace boost { namespace spirit {
     bool
     trace_parser(subrule<ID, ContextT> const& p);
 
-    template <typename ParserT, typename ActorTupleT>
-    struct init_closure_parser;
-
-    template <typename ParserT, typename ActorTupleT>
-    bool
-    trace_parser(init_closure_parser<ParserT, ActorTupleT> const& p);
-
 ///////////////////////////////////////////////////////////////////////////////
 }} // namespace boost::spirit
 
 //////////////////////////////////
-#include <boost/spirit/debug/impl/parser_names.ipp>
+#if !defined(BOOST_SPIRIT_PARSER_NAMES_IPP)
+#include "boost/spirit/debug/impl/parser_names.ipp"
+#endif
 
 #endif // defined(BOOST_SPIRIT_DEBUG)
 

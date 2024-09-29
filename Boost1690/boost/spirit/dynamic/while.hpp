@@ -1,18 +1,28 @@
 /*=============================================================================
+    Spirit v1.6.0
     Copyright (c) 2002-2003 Joel de Guzman
     Copyright (c) 2002-2003 Martin Wille
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Permission to copy, use, modify, sell and distribute this software is
+    granted provided this copyright notice appears in all copies. This
+    software is provided "as is" without express or implied warranty, and
+    with no claim as to its suitability for any purpose.
 =============================================================================*/
 #ifndef BOOST_SPIRIT_WHILE_HPP
 #define BOOST_SPIRIT_WHILE_HPP
 
-#include <boost/spirit/core/parser.hpp>
-#include <boost/spirit/core/composite/composite.hpp>
-#include <boost/spirit/dynamic/impl/conditions.ipp>
+#if !defined(BOOST_SPIRIT_PARSER_HPP)
+#include "boost/spirit/core/parser.hpp"
+#endif
+
+#if !defined(BOOST_SPIRIT_COMPOSITE_HPP)
+#include "boost/spirit/core/composite/composite.hpp"
+#endif
+
+#if !defined(BOOST_SPIRIT_CONDITIONS_IPP)
+#include "boost/spirit/dynamic/impl/conditions.ipp"
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace boost { namespace spirit {
@@ -68,7 +78,7 @@ namespace boost { namespace spirit {
             typedef typename ScannerT::iterator_t                    iterator_t;
 
             iterator_t save(scan.first);
-            std::size_t length = 0;
+            int length = 0;
             int eval_length = 0;
 
             bool dont_check_condition = is_do_parser;

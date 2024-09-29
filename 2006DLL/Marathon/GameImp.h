@@ -18,6 +18,16 @@
 #include <ActorManager.h>
 #include <Player/Load.h>
 
+#include <ActorManager.h>
+
+#define  GAMEIMP_START_LEVEL 1
+#define  GAMEIMP_START_CUTSCENE 2
+#define  GAMEIMP_START_CGI_CUTSCENE 3
+#define  GAMEIMP_STOP_LEVEL 4
+#define  GAMEIMP_STOP_CUTSCENE 5
+#define  GAMEIMP_DESTROY_ALL 9
+
+
 
 namespace Sonicteam{
 
@@ -91,6 +101,7 @@ namespace Sonicteam{
 		public:
 			~GameImp();
 			GameImp();
+		
 
 		
 			unsigned int				PrevState;
@@ -115,7 +126,7 @@ namespace Sonicteam{
 
 			Sonicteam::SoX::LinkNodeA<Sonicteam::SoX::Engine::Task> TaskAdapter_TL_HeadUpDisplay; //0x10A0, eiter 0x0 separater OR  is part of it or just complilator :|
 			Sonicteam::SoX::LinkNodeA<Sonicteam::SoX::Engine::Task> TaskAdapter_TL_NonStopTask; //0x10B0;
-			unsigned int Unk0x10C0[4]; // 0x10C0
+			unsigned int GamePlayerActorID[4]; // 0x10C0, usually -1, or oxFFFFFFFF
 			Sonicteam::SoX::Engine::Task* PauseAdapter; //0x10D0
 			Sonicteam::SoX::Engine::Task* ImpactManager; //0x10D4
 			std::string GameArea; //0x10D8  //wap/shadow/a
@@ -142,7 +153,7 @@ namespace Sonicteam{
 			unsigned char _no_idea_0x1130[3*0x1C];
 			Sonicteam::SoX::MessageReceiver* GameScript; // GameScript //0x1184
 			unsigned int ObjPlayersActorID[0xF]; //0x1188 // contain table of each player actor ID, amigo change included(like kdv silver) mb mor
-			boost::shared_ptr<Sonicteam::ActorManager> ActorManager; //0x11C4
+			boost::shared_ptr<Sonicteam::ActorManager> GameActorManager; //0x11C4
 			Sonicteam::SoX::IResource* TextBook_msg_system; //0x11CC
 			unsigned int unk0x11D0;
 			unsigned int unk0x11D4;
@@ -267,12 +278,23 @@ namespace Sonicteam{
 			} GameSplinePath;
 
  
-			boost::shared_ptr<Sonicteam::SoX::RefCountObject*> GameKeyframedPathScene; //Sonicteam::KeyframedPathScene 			//14D8
-			boost::shared_ptr<unsigned int> GameUnk0x14E0[5]; //0x14E0
-			unsigned int unk0x1508;
-			unsigned int unk0x150C;
-	
-			boost::shared_ptr<unsigned int> unk0x1510; //Sonicteam::MeshPathManage //0x1510
+			struct GameKeyframedPathSceneVariant{
+				enum {
+					Default,
+					Grind,
+					Guide,
+					PathObj,
+					PhysicsPath
+				};
+				boost::shared_ptr<Sonicteam::SoX::RefCountObject*> keyframes[5];  //0x14D8
+				boost::shared_ptr<Sonicteam::SoX::RefCountObject*>* operator[](int index) {
+					return &keyframes[index];
+				}
+			} GameKeyframedPathScene;
+
+
+			boost::shared_ptr<unsigned int> GameMeshPathScene[2]; //0x1500, Grind, Guide 
+			boost::shared_ptr<unsigned int> GameMeshPathManager; //Sonicteam::MeshPathManage //0x1510
 			boost::shared_ptr<unsigned int> GameKeyframedPathManager; //Sonicteam::KeyframedPathManager //0x1518
 
 			boost::shared_ptr<Sonicteam::Player::Load> GamePlayerLoad; //0x1520
@@ -408,5 +430,29 @@ namespace Sonicteam{
 			virtual void DestroyObject(unsigned int flag);
 			virtual int OnMessageRecieved(Sonicteam::SoX::Message*);
 
+
+			virtual bool IsPrevDestroyAll();
+			virtual Sonicteam::DocMarathonImp* GetDocMarathon();
+			virtual boost::shared_ptr<Sonicteam::ActorManager> GetActorManager();
+			virtual bool IsGameKyWorldDef();
+			virtual Sonicteam::SoX::RefCountObjContainer<Sonicteam::SoX::RefCountObject> GetWorldHavok();
+			virtual unsigned int CollisionFilterFunc01(unsigned int);
+			virtual unsigned int GetGameObjInfoMgr();
+			virtual void GameActivateProp(Sonicteam::SoX::RefCountObject**);
+			virtual void GameImpUnk01();
+			virtual boost::shared_ptr<unsigned int> GameGetPropManager();
+			virtual Sonicteam::SoX::Engine::Task* GameGetPropTask(unsigned int);
+			virtual boost::shared_ptr<Sonicteam::Player::Load> GameGetPlayerLoad();
+			virtual boost::shared_ptr<Sonicteam::SoX::RefCountObject*>* GameGetKeyFramedScene(unsigned int);
+			virtual std::string* GameGetCameraParamLua();
+			virtual bool GameOLDGetActivePlayerA0Pos_1(XMVECTOR*,double); //not used ??????
+			virtual bool GameOLDGetActivePlayerA0Pos_2(XMVECTOR*,double); //not used ??????
+			virtual bool GameNEWGetActivePlayerA0Pos(XMVECTOR*,double);
+			virtual Sonicteam::SoX::Engine::Task* GameGetImpactManager();
+			virtual void GameProcessGlobalEventActions(double a2);
+			virtual int GameGetSoundData();
+			virtual int GameParticleContainerFirstData();
+			virtual int GameGetGameRuleContext();
+			virtual int GameGetPhysicsMaterialMgr();
 	};
 };

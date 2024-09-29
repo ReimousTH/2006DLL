@@ -1,11 +1,13 @@
 /*=============================================================================
+    Spirit v1.6.0
     Copyright (c) 2001-2003 Joel de Guzman
     Copyright (c) 2002-2003 Hartmut Kaiser
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Permission to copy, use, modify, sell and distribute this software is
+    granted provided this copyright notice appears in all copies. This
+    software is provided "as is" without express or implied warranty, and
+    with no claim as to its suitability for any purpose.
 =============================================================================*/
 #if !defined(BOOST_SPIRIT_PARSER_NAMES_IPP)
 #define BOOST_SPIRIT_PARSER_NAMES_IPP
@@ -16,7 +18,7 @@
 #include <iostream>
 #include <map>
 
-#include <boost/config.hpp>
+#include "boost/config.hpp"
 #ifdef BOOST_NO_STRINGSTREAM
 #include <strstream>
 #define BOOST_SPIRIT_SSTREAM std::strstream
@@ -422,22 +424,9 @@ namespace boost { namespace spirit {
         }
     }   // namespace impl
 
-    template<
-        typename DerivedT, typename EmbedT, 
-        typename T0, typename T1, typename T2
-    >
+    template<typename ContextT, typename ScannerT>
     inline std::string
-    parser_name(impl::rule_base<DerivedT, EmbedT, T0, T1, T2> const& p)
-    {
-        return std::string("rule_base")
-            + std::string("(")
-            + impl::get_node_registry().find_node(&p)
-            + std::string(")");
-    }
-
-    template<typename T0, typename T1, typename T2>
-    inline std::string
-    parser_name(rule<T0, T1, T2> const& p)
+    parser_name(rule<ContextT, ScannerT> const& p)
     {
         return std::string("rule")
             + std::string("(")
@@ -494,20 +483,9 @@ namespace boost { namespace spirit {
 
 ///////////////////////////////////////////////////////////////////////////////
 //  decide, if a node is to be traced or not
-    template<
-        typename DerivedT, typename EmbedT, 
-        typename T0, typename T1, typename T2
-    >
+    template<typename ContextT, typename ScannerT>
     inline bool
-    trace_parser(impl::rule_base<DerivedT, EmbedT, T0, T1, T2> 
-        const& p)
-    {
-        return impl::get_node_registry().trace_node(&p);
-    }
-
-    template<typename T0, typename T1, typename T2>
-    inline bool
-    trace_parser(rule<T0, T1, T2> const& p)
+    trace_parser(rule<ContextT, ScannerT> const& p)
     {
         return impl::get_node_registry().trace_node(&p);
     }
@@ -519,23 +497,9 @@ namespace boost { namespace spirit {
         return impl::get_node_registry().trace_node(&p);
     }
 
-    template <typename DerivedT, int N, typename ContextT>
-    inline bool
-    trace_parser(impl::entry_grammar<DerivedT, N, ContextT> const& p)
-    {
-        return impl::get_node_registry().trace_node(&p);
-    }
-
     template <int ID, typename ContextT>
     bool
     trace_parser(subrule<ID, ContextT> const& p)
-    {
-        return impl::get_node_registry().trace_node(&p);
-    }
-
-    template <typename ParserT, typename ActorTupleT>
-    bool
-    trace_parser(init_closure_parser<ParserT, ActorTupleT> const& p)
     {
         return impl::get_node_registry().trace_node(&p);
     }

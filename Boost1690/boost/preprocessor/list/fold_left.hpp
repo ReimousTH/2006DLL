@@ -2,9 +2,10 @@
 #  * Housemarque Oy
 #  * http://www.housemarque.com
 #  *
-#  * Distributed under the Boost Software License, Version 1.0. (See
-#  * accompanying file LICENSE_1_0.txt or copy at
-#  * http://www.boost.org/LICENSE_1_0.txt)
+#  * Permission to copy, use, modify, sell and distribute this software is
+#  * granted provided this copyright notice appears in all copies. This
+#  * software is provided "as is" without express or implied warranty, and
+#  * with no claim as to its suitability for any purpose.
 #  */
 #
 # /* Revised by Paul Mensonides (2002) */
@@ -35,8 +36,6 @@
 #
 # if BOOST_PP_CONFIG_FLAGS() & BOOST_PP_CONFIG_EDG()
 #    include <boost/preprocessor/list/detail/edg/fold_left.hpp>
-# elif BOOST_PP_CONFIG_FLAGS() & BOOST_PP_CONFIG_DMC()
-#    include <boost/preprocessor/list/detail/dmc/fold_left.hpp>
 # else
 #    include <boost/preprocessor/list/detail/fold_left.hpp>
 # endif

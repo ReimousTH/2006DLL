@@ -1,10 +1,8 @@
 #ifndef BOOST_MEM_FN_HPP_INCLUDED
 #define BOOST_MEM_FN_HPP_INCLUDED
 
-// MS compatible compilers support #pragma once
-
-#if defined(_MSC_VER) && (_MSC_VER >= 1020)
-# pragma once
+#if _MSC_VER+0 >= 1020
+#pragma once
 #endif
 
 //
@@ -12,18 +10,17 @@
 //
 //  Copyright (c) 2001, 2002 Peter Dimov and Multi Media Ltd.
 //  Copyright (c) 2001 David Abrahams
-//  Copyright (c) 2003-2005 Peter Dimov
 //
-// Distributed under the Boost Software License, Version 1.0. (See
-// accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)
+//  Permission to copy, use, modify, sell and distribute this software
+//  is granted provided this copyright notice appears in all copies.
+//  This software is provided "as is" without express or implied
+//  warranty, and with no claim as to its suitability for any purpose.
 //
 //  See http://www.boost.org/libs/bind/mem_fn.html for documentation.
 //
 
 #include <boost/config.hpp>
 #include <boost/get_pointer.hpp>
-#include <boost/detail/workaround.hpp>
 
 namespace boost
 {
@@ -48,18 +45,6 @@ template<class V> struct mf
 
 #undef BOOST_MEM_FN_CC
 #undef BOOST_MEM_FN_NAME
-
-#ifdef BOOST_MEM_FN_ENABLE_CDECL
-
-#define BOOST_MEM_FN_NAME(X) inner_##X##_cdecl
-#define BOOST_MEM_FN_CC __cdecl
-
-#include <boost/bind/mem_fn_template.hpp>
-
-#undef BOOST_MEM_FN_CC
-#undef BOOST_MEM_FN_NAME
-
-#endif
 
 #ifdef BOOST_MEM_FN_ENABLE_STDCALL
 
@@ -102,18 +87,6 @@ template<> struct mf<void>
 #undef BOOST_MEM_FN_CC
 #undef BOOST_MEM_FN_NAME
 
-#ifdef BOOST_MEM_FN_ENABLE_CDECL
-
-#define BOOST_MEM_FN_NAME(X) inner_##X##_cdecl
-#define BOOST_MEM_FN_CC __cdecl
-
-#include <boost/bind/mem_fn_template.hpp>
-
-#undef BOOST_MEM_FN_CC
-#undef BOOST_MEM_FN_NAME
-
-#endif
-
 #ifdef BOOST_MEM_FN_ENABLE_STDCALL
 
 #define BOOST_MEM_FN_NAME(X) inner_##X##_stdcall
@@ -154,20 +127,6 @@ template<> struct mf<void>
 #undef BOOST_MEM_FN_NAME
 #undef BOOST_MEM_FN_NAME2
 #undef BOOST_MEM_FN_CC
-
-#ifdef BOOST_MEM_FN_ENABLE_CDECL
-
-#define BOOST_MEM_FN_NAME(X) X##_cdecl
-#define BOOST_MEM_FN_NAME2(X) inner_##X##_cdecl
-#define BOOST_MEM_FN_CC __cdecl
-
-#include <boost/bind/mem_fn_vw.hpp>
-
-#undef BOOST_MEM_FN_NAME
-#undef BOOST_MEM_FN_NAME2
-#undef BOOST_MEM_FN_CC
-
-#endif
 
 #ifdef BOOST_MEM_FN_ENABLE_STDCALL
 
@@ -217,18 +176,6 @@ namespace _mfi
 #undef BOOST_MEM_FN_CC
 #undef BOOST_MEM_FN_NAME
 
-#ifdef BOOST_MEM_FN_ENABLE_CDECL
-
-#define BOOST_MEM_FN_NAME(X) X##_cdecl
-#define BOOST_MEM_FN_CC __cdecl
-
-#include <boost/bind/mem_fn_template.hpp>
-
-#undef BOOST_MEM_FN_CC
-#undef BOOST_MEM_FN_NAME
-
-#endif
-
 #ifdef BOOST_MEM_FN_ENABLE_STDCALL
 
 #define BOOST_MEM_FN_NAME(X) X##_stdcall
@@ -269,18 +216,6 @@ namespace _mfi
 
 #undef BOOST_MEM_FN_NAME
 #undef BOOST_MEM_FN_CC
-
-#ifdef BOOST_MEM_FN_ENABLE_CDECL
-
-#define BOOST_MEM_FN_NAME(X) X##_cdecl
-#define BOOST_MEM_FN_CC __cdecl
-
-#include <boost/bind/mem_fn_cc.hpp>
-
-#undef BOOST_MEM_FN_NAME
-#undef BOOST_MEM_FN_CC
-
-#endif
 
 #ifdef BOOST_MEM_FN_ENABLE_STDCALL
 
@@ -357,7 +292,7 @@ public:
         return call(u, &u);
     }
 
-#if !BOOST_WORKAROUND(BOOST_MSVC, <= 1300) && !BOOST_WORKAROUND(__MWERKS__, < 0x3200)
+#if !defined(BOOST_MSVC) || (BOOST_MSVC > 1300)
 
     R & operator()(T & t) const
     {
@@ -369,16 +304,6 @@ public:
     R const & operator()(T const & t) const
     {
         return (t.*f_);
-    }
-
-    bool operator==(dm const & rhs) const
-    {
-        return f_ == rhs.f_;
-    }
-
-    bool operator!=(dm const & rhs) const
-    {
-        return f_ != rhs.f_;
     }
 };
 

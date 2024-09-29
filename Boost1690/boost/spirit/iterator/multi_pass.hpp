@@ -1,28 +1,47 @@
 /*=============================================================================
+    Spirit v1.6.0
     Copyright (c) 2001, Daniel C. Nuffer
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Permission to copy, use, modify, sell and distribute this software is
+    granted provided this copyright notice appears in all copies. This
+    software is provided "as is" without express or implied warranty, and
+    with no claim as to its suitability for any purpose.
 =============================================================================*/
 #ifndef BOOST_SPIRIT_ITERATOR_MULTI_PASS_HPP
 #define BOOST_SPIRIT_ITERATOR_MULTI_PASS_HPP
 
-#include <boost/config.hpp>
-#include <boost/throw_exception.hpp>
+#include "boost/config.hpp"
+#include "boost/throw_exception.hpp"
+
+#if defined(BOOST_MSVC) && (BOOST_MSVC <= 1300)
+// The multi_pass for VC++ is currently broken
+#else
+// the newer version of multi_pass
+
 #include <deque>
 #include <iterator>
 #include <iostream>
 #include <algorithm>    // for std::swap
 #include <exception>    // for std::exception
+
 #include <boost/limits.hpp>
-#include <boost/iterator.hpp>
 
-#include <boost/spirit/core/assert.hpp> // for BOOST_SPIRIT_ASSERT
-#include <boost/spirit/iterator/fixed_size_queue.hpp>
-#include <boost/detail/iterator.hpp> // for boost::detail::iterator_traits
+#include "fixed_size_queue.hpp"
+#include "boost/spirit/core/assert.hpp" // for BOOST_SPIRIT_ASSERT
 
+#if defined(BOOST_MSVC) && (BOOST_MSVC <= 1300)
+#define BOOST_SPIRIT_IT_NS impl
+#else
+#define BOOST_SPIRIT_IT_NS std
+#endif
+
+#if (defined(BOOST_INTEL_CXX_VERSION) && !defined(_STLPORT_VERSION))
+#undef BOOST_SPIRIT_IT_NS
+#define BOOST_SPIRIT_IT_NS impl
+#endif
+
+///////////////////////////////////////////////////////////////////////////////
 namespace boost { namespace spirit {
 
 namespace impl {
@@ -44,7 +63,7 @@ class ref_counted
 {
     protected:
         ref_counted()
-            : count(new std::size_t(1))
+            : count(new unsigned int(1))
         {}
 
         ref_counted(ref_counted const& x)
@@ -78,7 +97,7 @@ class ref_counted
 
     public:
         // returns true if there is only one iterator in existence.
-        // std_deque StoragePolicy will free it's buffered data if this
+        // std_dequeu StoragePolicy will free it's buffered data if this
         // returns true.
         bool unique() const
         {
@@ -86,7 +105,7 @@ class ref_counted
         }
 
     private:
-        std::size_t* count;
+        unsigned int* count;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -242,8 +261,11 @@ class std_deque
 template <typename ValueT>
 class inner
 {
+#ifdef __BORLANDC__
+    public:
+#else
     private:
-
+#endif
         typedef std::deque<ValueT> queue_type;
         queue_type* queuedElements;
         mutable typename queue_type::size_type queuePosition;
@@ -262,7 +284,7 @@ class inner
         // will be called from the destructor of the last iterator.
         void destroy()
         {
-            BOOST_SPIRIT_ASSERT(NULL != queuedElements);
+            BOOST_SPIRIT_ASSERT(queuedElements);
             delete queuedElements;
             queuedElements = 0;
         }
@@ -381,8 +403,11 @@ class fixed_size_queue
 template <typename ValueT>
 class inner
 {
+#ifdef __BORLANDC__
+    public:
+#else
     private:
-
+#endif
         typedef boost::spirit::fixed_size_queue<ValueT, N> queue_type;
         queue_type * queuedElements;
         mutable typename queue_type::iterator queuePosition;
@@ -401,7 +426,7 @@ class inner
         // will be called from the destructor of the last iterator.
         void destroy()
         {
-            BOOST_SPIRIT_ASSERT(NULL != queuedElements);
+            BOOST_SPIRIT_ASSERT(queuedElements);
             delete queuedElements;
             queuedElements = 0;
         }
@@ -486,100 +511,79 @@ class input_iterator
 template <typename InputT>
 class inner
 {
-        typedef
-            typename boost::detail::iterator_traits<InputT>::value_type
-            result_type;
-
-        struct Data {
-            Data(InputT const &input_) 
-            :   input(input_), was_initialized(false)
-            {}
-            
-            InputT input;
-            result_type curtok;
-            bool was_initialized;
-        };
-
-       // Needed by compilers not implementing the resolution to DR45. For
-       // reference, see
-       // http://www.open-std.org/JTC1/SC22/WG21/docs/cwg_defects.html#45.
-
-       friend struct Data;
-
     public:
-        typedef result_type value_type;
-        typedef
-            typename boost::detail::iterator_traits<InputT>::difference_type
+        typedef 
+            typename BOOST_SPIRIT_IT_NS::iterator_traits<InputT>::value_type 
+            value_type;
+        typedef 
+            typename BOOST_SPIRIT_IT_NS::iterator_traits<InputT>::difference_type
             difference_type;
-        typedef
-            typename boost::detail::iterator_traits<InputT>::pointer
+        typedef 
+            typename BOOST_SPIRIT_IT_NS::iterator_traits<InputT>::pointer 
             pointer;
-        typedef
-            typename boost::detail::iterator_traits<InputT>::reference
+        typedef 
+            typename BOOST_SPIRIT_IT_NS::iterator_traits<InputT>::reference 
             reference;
 
     protected:
         inner()
-            : data(0)
+            : input(new InputT())
+            , val(new value_type)
         {}
 
         inner(InputT x)
-            : data(new Data(x))
+            : input(new InputT(x))
+            , val(new value_type(**input))
         {}
 
         inner(inner const& x)
-            : data(x.data)
+            : input(x.input)
+            , val(x.val)
         {}
 
         void destroy()
         {
-            delete data;
-            data = 0;
+            delete input;
+            input = 0;
+            delete val;
+            val = 0;
         }
 
         bool same_input(inner const& x) const
         {
-            return data == x.data;
+            return input == x.input;
         }
 
-        typedef
-            typename boost::detail::iterator_traits<InputT>::value_type
+        typedef 
+            typename BOOST_SPIRIT_IT_NS::iterator_traits<InputT>::value_type 
             value_t;
         void swap(inner& x)
         {
-            impl::mp_swap(data, x.data);
-        }
-
-        void ensure_initialized() const
-        {
-            if (data && !data->was_initialized) {
-                data->curtok = *data->input;      // get the first token
-                data->was_initialized = true;
-            }
+            impl::mp_swap(input, x.input);
+            impl::mp_swap(val, x.val);
         }
 
     public:
         reference get_input() const
         {
-            BOOST_SPIRIT_ASSERT(NULL != data);
-            ensure_initialized();
-            return data->curtok;
+            return *val;
         }
 
         void advance_input()
         {
-            BOOST_SPIRIT_ASSERT(NULL != data);
-            data->was_initialized = false;        // should get the next token
-            ++data->input;
+            ++*input;
+            *val = **input;
         }
 
         bool input_at_eof() const
         {
-            return !data || data->input == InputT();
+            return *input == InputT();
         }
 
     private:
-        Data *data;
+        InputT* input;
+        value_type* val;
+
 };
 
 };
@@ -747,36 +751,6 @@ class inner
 } // namespace multi_pass_policies
 
 ///////////////////////////////////////////////////////////////////////////////
-// iterator_base_creator
-///////////////////////////////////////////////////////////////////////////////
-
-namespace iterator_ { namespace impl {
-
-// Meta-function to generate a std::iterator<> base class for multi_pass. This
-//  is used mainly to improve conformance of compilers not supporting PTS
-//  and thus relying on inheritance to recognize an iterator.
-// We are using boost::iterator<> because it offers an automatic workaround
-//  for broken std::iterator<> implementations.
-template <typename InputPolicyT, typename InputT>
-struct iterator_base_creator
-{
-    typedef typename InputPolicyT::BOOST_NESTED_TEMPLATE inner<InputT> input_t;
-
-    typedef boost::iterator
-    <
-        std::forward_iterator_tag,
-        typename input_t::value_type,
-        typename input_t::difference_type,
-        typename input_t::pointer,
-        typename input_t::reference
-    > type;
-};
-
-}}
-
-
-
-///////////////////////////////////////////////////////////////////////////////
 // class template multi_pass (declaration)
 ///////////////////////////////////////////////////////////////////////////////
 template
@@ -808,30 +782,24 @@ class multi_pass
     , public StoragePolicy::template inner<
                 typename InputPolicy::template inner<InputT>::value_type>
     , public InputPolicy::template inner<InputT>
-    , public iterator_::impl::iterator_base_creator<InputPolicy, InputT>::type
 {
         typedef OwnershipPolicy OP;
         typedef CheckingPolicy CHP;
         typedef typename StoragePolicy::template inner<
             typename InputPolicy::template inner<InputT>::value_type> SP;
         typedef typename InputPolicy::template inner<InputT> IP;
-        typedef typename
-            iterator_::impl::iterator_base_creator<InputPolicy, InputT>::type
-            IB;
 
     public:
-        typedef typename IB::value_type value_type;
-        typedef typename IB::difference_type difference_type;
-        typedef typename IB::reference reference;
-        typedef typename IB::pointer pointer;
+    typedef std::forward_iterator_tag iterator_category;
+        typedef typename IP::value_type value_type;
+        typedef typename IP::difference_type difference_type;
+        typedef typename IP::pointer pointer;
+        typedef typename IP::reference reference;
+
         typedef InputT iterator_type;
 
         multi_pass();
         explicit multi_pass(InputT input);
-
-#if BOOST_WORKAROUND(__GLIBCPP__, == 20020514)
-        multi_pass(int);
-#endif // BOOST_WORKAROUND(__GLIBCPP__, == 20020514)
 
         ~multi_pass();
 
@@ -889,32 +857,6 @@ multi_pass(InputT input)
     , IP(input)
 {
 }
-
-#if BOOST_WORKAROUND(__GLIBCPP__, == 20020514)
-    // The standard library shipped with gcc-3.1 has a bug in
-    // bits/basic_string.tcc. It tries  to use iter::iter(0) to
-    // construct an iterator. Ironically, this  happens in sanity
-    // checking code that isn't required by the standard.
-    // The workaround is to provide an additional constructor that
-    // ignores its int argument and behaves like the default constructor.
-template
-<
-    typename InputT,
-    typename InputPolicy,
-    typename OwnershipPolicy,
-    typename CheckingPolicy,
-    typename StoragePolicy
->
-inline
-multi_pass<InputT, InputPolicy, OwnershipPolicy, CheckingPolicy, StoragePolicy>::
-multi_pass(int)
-    : OP()
-    , CHP()
-    , SP()
-    , IP()
-{
-}
-#endif // BOOST_WORKAROUND(__GLIBCPP__, == 20020514)
 
 template
 <
@@ -1118,14 +1060,11 @@ multi_pass<InputT, InputPolicy, OwnershipPolicy, CheckingPolicy, StoragePolicy>:
 operator==(const multi_pass<InputT, InputPolicy, OwnershipPolicy, CheckingPolicy,
         StoragePolicy>& y) const
 {
-    bool is_eof_ = SP::is_eof(*this);
-    bool y_is_eof_ = SP::is_eof(y);
-    
-    if (is_eof_ && y_is_eof_)
+    if (is_eof() && y.is_eof())
     {
         return true;  // both are EOF
     }
-    else if (is_eof_ ^ y_is_eof_)
+    else if (is_eof() ^ y.is_eof())
     {
         return false; // one is EOF, one isn't
     }
@@ -1263,11 +1202,6 @@ class look_ahead :
         look_ahead(look_ahead const& x)
             : base_t(x) {}
 
-#if BOOST_WORKAROUND(__GLIBCPP__, == 20020514)
-        look_ahead(int)         // workaround for a bug in the library
-            : base_t() {}       // shipped with gcc 3.1
-#endif // BOOST_WORKAROUND(__GLIBCPP__, == 20020514)
-
     // default generated operators destructor and assignment operator are okay.
 };
 
@@ -1291,7 +1225,9 @@ void swap(
 }
 
 namespace impl {
-
+#if __GNUC__ == 2
+    using std::swap;
+#endif
     template <typename T>
     inline void mp_swap(T& t1, T& t2)
     {
@@ -1301,8 +1237,10 @@ namespace impl {
     }
 }
 
+///////////////////////////////////////////////////////////////////////////////
 }} // namespace boost::spirit
 
-#endif // BOOST_SPIRIT_ITERATOR_MULTI_PASS_HPP
-
+#undef BOOST_SPIRIT_IT_NS
+#endif  // defined(BOOST_MSVC) && (BOOST_MSVC <= 1300)
+#endif  // BOOST_SPIRIT_ITERATOR_MULTI_PASS_HPP
 
