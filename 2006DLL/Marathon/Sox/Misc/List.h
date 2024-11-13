@@ -2,6 +2,8 @@
 
 
 
+
+
 namespace Sonicteam{
 	namespace SoX{
 
@@ -34,15 +36,46 @@ namespace Sonicteam{
 					do 
 					{
 						nextNode = current->Next;
+
 						current->Parent = 0;
 						current->Prev = 0;
 						current->Next = 0;
+
+
 						current = nextNode;
 					} while (nextNode);
 					
 				}
 
 			} 
+			//Separate Between Classes
+			void Disconnect(){
+
+				if (Active){
+					T* current = root;
+					T* nextNode = 0;
+					do 
+					{
+						nextNode = current->Next;
+						DisconnectActions();
+						current = nextNode;
+					} while (nextNode);
+
+				}
+			}
+			//here for custom class DO Algoright , example 82594590
+			void DisconnectActions();
+
+			static T* FindNonActiveNode(T* a1,T* a2){
+
+				T* v3 = a1->Active;
+				for ( a1->instance = a2; v3; v3 = v3->Prev )
+					a1 = FindNonActiveNode(v3,a2)
+				return a1;
+			}
+
+				
+
 			void __forceinline  EmptyParent(T* root){
 				if (Parent == NULL) return;
 				T* ParentTask = Parent;
@@ -78,7 +111,7 @@ LABEL_12:
 				v11= 0; //just
 			}
 		};
-	
+
 
 		template <typename T>
 		struct LinkNodeBase {
@@ -94,8 +127,8 @@ LABEL_12:
 			}
 
 			void ClearLink(){
-				NThread->NThread = PThread;
-				PThread->PThread = NThread;
+				NThread->PThread = PThread;
+				PThread->NThread = NThread;
 				PThread = NULL;
 				NThread = NULL;
 
@@ -152,6 +185,13 @@ LABEL_12:
 
 		};
 
+		template <typename T,size_t N>
+		struct LinkNodeCounted{
+			int count;
+			LinkNode<T> _array[N];
+		};
+
+
 
 		template <typename T>
 		struct LinkNodeList:LinkNodeBase<LinkNodeList<T>> {
@@ -163,11 +203,19 @@ LABEL_12:
 			//More like, little improve of original (sub_82581618)
 			int* ForEach(void (*clear_func)(T*));
 			int ForEach(int v); //should be static seems, and different in each others
+
+			int EachClear();
+			static int EachClearADV(T*);
+	
 			void Empty();
 			void Add(T*);
 		};
 
+	
 
+
+
+	
 
 		//LOOK MORE, 0x0 T*, 0x4,0x8 (*Without 0x0)
 		template <typename T>
@@ -178,6 +226,8 @@ LABEL_12:
 			LinkNodeA(T* TThread) : LinkNodeBaseA<LinkNodeA<T>>(), TThread(TThread) {}
 
 		};
+
+		
 
 
 
@@ -194,6 +244,8 @@ LABEL_12:
 			void Empty();
 
 		};
+
+
 
 	
 	

@@ -5,28 +5,7 @@ namespace Sonicteam{
 	namespace SoX{
 
 
-		class RefCountObject_OLD
-		{
-		public:
-			RefCountObject_OLD(void);
-			//Fake 
-			//virtual void ObjectDestroy(unsigned int flag);
-			~RefCountObject_OLD(void);
-
-			virtual void DestroyObject(unsigned int flag);
-
-			//not sure, my custom for easier 
-			template <typename T>
-			T* GetObject();
-			void LoseObject();
-
-			unsigned int UnkReference;
-
-
-
-
-			
-		};
+		
 
 		typedef class RefCountObject;
 
@@ -54,7 +33,7 @@ namespace Sonicteam{
 			void Release();
 			virtual void DestroyObject(unsigned int flag);
 
-			RefCountObject& operator=(const RefCountObject& other);
+		
 
 			//not sure, my custom for easier 
 			template <typename T>
@@ -72,20 +51,10 @@ namespace Sonicteam{
 		template <typename T>
 		T* Sonicteam::SoX::RefCountObject::GetObject()
 		{
+			this->AddReference();
 			return (T*)this;
 		}
 
-
-
-
-
-
-		template <typename T>
-			T* Sonicteam::SoX::RefCountObject_OLD::GetObject()
-		{
-			this->UnkReference++;
-			return (T*)this;
-		}
 	
 
 	}

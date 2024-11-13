@@ -45,19 +45,19 @@ namespace CompleteGauge{
 
 	void StateSoundOnUnknownFlags01(int _this,int flags){
 
-		Sonicteam::SoX::RefCountObject_OLD* RefSound;
+		Sonicteam::SoX::RefCountObject* RefSound;
 		//LVL-Up
 			
 		if ((flags & 0x10000000) != 0){
 			BranchTo(0x82265898,int,&RefSound, _this - 0x20, *(_DWORD *)(_this + 0x1DC-0x20));
-			if (RefSound) RefSound->LoseObject();
+			if (RefSound) RefSound->Release();
 		}
 		//Full Gauge
 		if ((flags & 0x20000000) != 0){
 
 	
 			BranchTo(0x82265898,int,&RefSound, _this - 0x20, *(_DWORD *)(_this + 0x1D8-0x20));
-			if (RefSound) RefSound->LoseObject();
+			if (RefSound) RefSound->Release();
 		}
 
 		//Homing Smash
@@ -65,14 +65,14 @@ namespace CompleteGauge{
 
 
 			BranchTo(0x82265898,int,&RefSound, _this - 0x20, *(_DWORD *)(_this + 0x1D0-0x20));
-			if (RefSound) RefSound->LoseObject();
+			if (RefSound) RefSound->Release();
 		}
 		//Homing Smash Release
 		if ((flags & 0x4000000) != 0){
 
 
 			BranchTo(0x82265898,int,&RefSound, _this - 0x20, *(_DWORD *)(_this + 0x1D4-0x20));
-			if (RefSound) RefSound->LoseObject();
+			if (RefSound) RefSound->Release();
 		}
 
 

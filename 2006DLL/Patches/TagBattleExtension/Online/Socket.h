@@ -48,14 +48,14 @@ typedef unsigned long long XUID;
 #define SM_REPLICATE 1
 
 struct SocketMessage {
-
-	int ID;
-	int PROTOCOL;
-	int replicate;
-	XUID sender_xuid; // sender_xuid
-	XUID replicated_xuid; // replicated xuid, save  client(XUID)-server-client(XUID)
-	sockaddr address_from;
-	char _message_[512];
+	int ID; //0x0
+	int PROTOCOL; //0x4
+	int replicate; //0x8
+	int replicate_null; //0xC 
+	XUID sender_xuid; // sender_xuid (0x10)
+	XUID replicated_xuid; // replicated xuid, save  client(XUID)-server-client(XUID) (0x18)
+	sockaddr address_from; //0x20
+	char _message_[512]; //0x30
 public:
 	SocketMessage(int ID, int PROTOCOL, int REPLICATE, void* from, int size);
 	SocketMessage();

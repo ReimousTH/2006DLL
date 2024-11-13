@@ -234,6 +234,7 @@ void Socket::UpdateServer(float delta) {
 		SocketMessage buffer;
 		sockaddr senderAddr;  // Use sockaddr_in for better type safety
 		int addrLen = sizeof(senderAddr);
+			
 		SOCKET socket = accept(_tcpSocket, (struct sockaddr*)&senderAddr, &addrLen);
 		if (socket != INVALID_SOCKET) {
 			// Check if the client is already connected

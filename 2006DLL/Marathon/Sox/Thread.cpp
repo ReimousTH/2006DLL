@@ -31,7 +31,7 @@ Sonicteam::SoX::Thread::Thread(const char* ThreadName,int Priority,int Flag):Lin
 	
 
 	this->m_ThreadHandle = CreateThread(0,0,SonicTeamSOXThreadProcFunc,this,4u,(LPDWORD)&this->m_ThreadID);
-	SetThreadPriority(this->m_ThreadHandle,Priority);
+	XSetThreadProcessor(this->m_ThreadHandle,Priority);
 
 
 

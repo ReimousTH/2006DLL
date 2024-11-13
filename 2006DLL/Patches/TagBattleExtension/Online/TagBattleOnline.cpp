@@ -81,12 +81,14 @@ struct SMDATA_PPL_CHANGE_CBEHAVIOUR_REPLICATE {
 struct SMDATA_PPL_CHANGE_RINGS {
 	DEFINE_SOCKET_MESSAGE_DATA_ID_PROTOCOL(7, IPPROTO_UDP);
 	int RingsCount;
+
 	XUID sender_xuid;
 };
 
 struct SMDATA_PPL_CHANGE_RINGS_REPLICATE {
 	DEFINE_SOCKET_MESSAGE_DATA_ID_PROTOCOL(8, IPPROTO_UDP);
 	int RingsCount;
+
 	XUID sender_xuid;
 };
 
@@ -102,32 +104,6 @@ struct SMDATA_PPL_CHANGE_CHR_REPLICATE {
 	XUID sender_xuid;
 };
 
-
-
-struct SMDATA_PPL_JOIN_INFO{
-	DEFINE_SOCKET_MESSAGE_DATA_ID_PROTOCOL(11, IPPROTO_TCP);
-	XUID sender_xuid;
-
-	XMMATRIX Transform;
-	XMVECTOR Position;
-	XMVECTOR Rotation;
-
-	XMFLOAT4 StickFixedRotationMb;
-	int AnimationID;
-	int AnimationState;
-
-	//Context
-	int ContextFlags;
-	int ExportWeaponRequestFlag;	
-	int ExportPostureRequestFlag;	
-	int UnknownFlags01;	
-	unsigned long long UnknownFlags0xC8;
-	
-	int RingsCount;
-
-	char sender_character[64];
-	char scene_name[128];
-};
 
 
 
@@ -182,7 +158,7 @@ OBJPlayerSpawnData::OBJPlayerSpawnData()
 Socket _socket;
 int LocalPlayer;
 Sonicteam::CsdObject* Player_TAG;
-Sonicteam::SoX::RefCountObject_OLD* Player_TAG_DRAWABLE;
+Sonicteam::SoX::RefCountObject* Player_TAG_DRAWABLE;
 Sonicteam::SoX::IResource* Player_TAG_SHADER;
 bool GameIMP_LOADED_SCENE = false;
 bool GameIMP_LOADED_CUTSCENE = false;
@@ -207,9 +183,9 @@ struct PPL_DATA{
 	bool local;
 
 	Sonicteam::CsdObject* CSD;
-	Sonicteam::SoX::RefCountObject_OLD* CSD_SHADER;
-	Sonicteam::SoX::RefCountObject_OLD* TechniqueCSD3D;
-	Sonicteam::SoX::RefCountObject_OLD* CsdObjectDrawable;
+	Sonicteam::SoX::RefCountObject* CSD_SHADER;
+	Sonicteam::SoX::RefCountObject* TechniqueCSD3D;
+	Sonicteam::SoX::RefCountObject* CsdObjectDrawable;
 
 	std::string scene;
 	int object_player;
@@ -366,32 +342,6 @@ void MSG_HANDLE_SERVER_XUI_JOIN(Socket* _sock, SOCKET sock, XUID xuid){
 	Players_DATA[xuid] = data;
 	std::stringstream stream; stream << "[Server] ADD XUID " << std::hex << xuid;
 	DebugLogV2::PrintNextFixed(stream.str());
-
-
-	for (std::map<XUID,PPL_DATA>::iterator it = Players_DATA.begin();it != Players_DATA.end();it++){
-
-		SMDATA_PPL_JOIN_INFO _data_;
-		_data_.sender_xuid = it->first;
-		_data_.AnimationID = it->second.Context_Animation_ID;
-		_data_.AnimationState = it->second.Context_Animation_STATE;
-		_data_.ContextFlags = it->second.ContextFlags;
-		_data_.ExportPostureRequestFlag = it->second.ExportPostureRequestFlag;
-		_data_.ExportWeaponRequestFlag = it->second.ExportWeaponRequestFlag;
-		_data_.Position = it->second.Position_FRAME;
-		_data_.RingsCount = it->second.RingsCount;
-		_data_.Rotation = it->second.Rotation_Posture;
-		_data_.StickFixedRotationMb = it->second.StickFixedRotationMb;
-		_data_.Transform = it->second.RFTransformMatrix0x70_FRAME;
-		_data_.UnknownFlags01 = it->second.UnknownFlags01;
-		_data_.UnknownFlags0xC8 = it->second.UnknownFlags0xC8;
-		memcpy(&_data_.scene_name,it->second.scene.c_str(),it->second.scene.length()+1);
-		memcpy(&_data_.sender_character,it->second.player_pkg.c_str(),it->second.scene.length()+1);
-		SocketMessage msg  =  DEFINE_SOCKET_MESSAGE_FROM_CONST_DATA(_data_);	
-		_sock->SendTCPMessageTo(sock,&msg);
-	}
-	
-
-
 }
 
 
@@ -506,7 +456,7 @@ void DestroyLabelByXUID(XUID xuid){
 
 		if (d->CsdObjectDrawable) {
 			
-			d->CsdObjectDrawable->LoseObject();
+			d->CsdObjectDrawable->Release();
 			d->CsdObjectDrawable = 0;
 			d->CSD = 0;
 			d->CSD_SHADER = 0;
@@ -557,7 +507,7 @@ void SpawnPlayerLabelByXUID(XUID xuid){
 
 	
 
-	d->CsdObjectDrawable =  (Sonicteam::SoX::RefCountObject_OLD*)BranchTo(0x82616C68,int,malloc06(0xA0),impl->DocGetMyGraphicDevice(),&d->CSD);
+	d->CsdObjectDrawable =  (Sonicteam::SoX::RefCountObject*)BranchTo(0x82616C68,int,malloc06(0xA0),impl->DocGetMyGraphicDevice(),&d->CSD);
 	d->CsdObjectDrawable->GetObject<int>();
 	BranchTo(0x82616EB0,int,d->CsdObjectDrawable,&Players_DATA[xuid].TechniqueCSD3D);
 
@@ -629,24 +579,6 @@ static void CommonMessages(Socket* socket, SOCKET client_socket, SocketMessage* 
 	}
 
 	
-
-	if (message->ID == SMDATA_PPL_JOIN_INFO::GetID()){
-		SMDATA_PPL_JOIN_INFO* _data_ = EXTRACT_SOCKET_MESSAGE_FROM_MESSAGE_PTR(message,SMDATA_PPL_JOIN_INFO);
-
-		PPL_DATA* it =  &Players_DATA[_data_->sender_xuid];
-		it->Context_Animation_ID = _data_->AnimationID;
-		it->Context_Animation_STATE = _data_->AnimationState;
-		it->ContextFlags = _data_->ContextFlags;
-		it->ExportPostureRequestFlag = _data_->ExportPostureRequestFlag;
-		it->ExportWeaponRequestFlag = _data_->ExportWeaponRequestFlag;
-		it->Position_FRAME = _data_->Position;
-		it->RingsCount = _data_->RingsCount;
-		it->Rotation_Posture = _data_->Rotation;
-		it->StickFixedRotationMb = _data_->StickFixedRotationMb;
-		it->RFTransformMatrix0x70_FRAME = _data_->Transform;
-		it->UnknownFlags01 = _data_->UnknownFlags01;
-	}
-
 
 	bool replicate_transform = false;
 	if (message->ID == SMDATA_PPL_CHANGE_TRANSFORM::GetID() || message->ID == SMDATA_PPL_CHANGE_TRANSFORM_REPLICATE::GetID()){
@@ -884,7 +816,7 @@ extern "C" int EngineDocOnUpdateHE(Sonicteam::DocMarathonImp* a1, double a2) {
 			data->CSD->CsdLink0x8(a2);
 
 		}
-		if (Sonicteam::SoX::RefCountObject_OLD* drawable =  data->CsdObjectDrawable){
+		if (Sonicteam::SoX::RefCountObject* drawable =  data->CsdObjectDrawable){
 
 		//	std::stringstream cantjust; cantjust <<  "XUID : " << it->first << std::hex << " X : " << data->Position_FRAME.x << " Y : " << data->Position_FRAME.y << " Z : " << data->Position_FRAME.z;
 		//	DebugLogV2::PrintNextFixed(cantjust.str());
@@ -978,7 +910,6 @@ extern "C" int EngineDocOnUpdateHE(Sonicteam::DocMarathonImp* a1, double a2) {
 				_socket.MSG_HANDLE_SERVER_MESSAGES = ServerMessages;
 				_socket.MSG_HANDLE_SERVER_CLIENT_LOST_CONNECTION = ServerClientLost;
 				_socket.MSG_HANDLE_SERVER_XUI_JOIN = MSG_HANDLE_SERVER_XUI_JOIN;
-				
 
 				PPL_DATA data =   PPL_DATA();
 				data.local = true;
@@ -1062,7 +993,7 @@ int __fastcall sub_8229A5D0(int a1, double a2){
 	__int64 *v38; // r3
 	int v39; // r30
 	_DWORD *v40; // r3
-	Sonicteam::SoX::RefCountObject_OLD* v41; // [sp+50h] [-230h] BYREF
+	Sonicteam::SoX::RefCountObject* v41; // [sp+50h] [-230h] BYREF
 	float v42; // [sp+54h] [-22Ch] BYREF
 	int v43; // [sp+58h] [-228h] BYREF
 	int v44; // [sp+5Ch] [-224h] BYREF

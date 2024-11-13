@@ -3006,7 +3006,7 @@ LPCWSTR g_pwstrButtonsXx[1] = { L"------------OK----------------" };
 
 
 	bool _extra_is_loaded = false;
-	Sonicteam::SoX::RefCountObject_OLD* RefLoadedCSDObject;
+	Sonicteam::SoX::RefCountObject* RefLoadedCSDObject;
 	UINT32 TextEntityStatic = 0;
 
 
@@ -3105,18 +3105,18 @@ LPCWSTR g_pwstrButtonsXx[1] = { L"------------OK----------------" };
 		if (!_extra_is_loaded){
 			_extra_is_loaded = true;
 
-			Sonicteam::SoX::RefCountObject_OLD* RefSpriteObj;
-			Sonicteam::SoX::RefCountObject_OLD** RefSpriteObj2 = BranchTo(0x82617570,Sonicteam::SoX::RefCountObject_OLD**,&RefSpriteObj,&std::string("sprite/debug_UI"));
+			Sonicteam::SoX::RefCountObject* RefSpriteObj;
+			Sonicteam::SoX::RefCountObject** RefSpriteObj2 = BranchTo(0x82617570,Sonicteam::SoX::RefCountObject**,&RefSpriteObj,&std::string("sprite/debug_UI"));
 
-			RefLoadedCSDObject = RefSpriteObj->GetObject<Sonicteam::SoX::RefCountObject_OLD>();
-			RefLoadedCSDObject->LoseObject();
+			RefLoadedCSDObject = RefSpriteObj->GetObject<Sonicteam::SoX::RefCountObject>();
+			RefLoadedCSDObject->Release();
 			//RefSpriteObj->LoseObject();
 
 			if (RefLoadedCSDObject){
 				*(int*)((int)(RefLoadedCSDObject)+0x20) &= 0xFFFFFFF7;
 				BranchTo(0x8262AF00,int,(int)(RefLoadedCSDObject)+8,20.0);
 
-				RefLoadedCSDObject = RefLoadedCSDObject->GetObject<Sonicteam::SoX::RefCountObject_OLD>();
+				RefLoadedCSDObject = RefLoadedCSDObject->GetObject<Sonicteam::SoX::RefCountObject>();
 				CellLoadSpriteWithAnim((int*)&RefLoadedCSDObject,"text_log",0);
 
 

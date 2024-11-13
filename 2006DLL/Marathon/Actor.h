@@ -30,7 +30,7 @@ namespace Sonicteam{
 			~Actor();
 			 Actor(Sonicteam::Actor* other, boost::weak_ptr<unsigned int>& gameimp);
 
-			boost::weak_ptr<unsigned int> ActorUnk0x4C;
+			boost::weak_ptr<unsigned int> GameImp;
 		
 			virtual void DestroyObject(unsigned int flag);
 

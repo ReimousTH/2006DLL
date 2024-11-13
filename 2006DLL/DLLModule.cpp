@@ -379,10 +379,14 @@ boost::shared_ptr<Sonicteam::ActorManager> T01( Sonicteam::GameImp* imp) {
 }
 
 
+
+
+
 extern "C" void OnDLLStart(){
 
 	
 	
+
 
 
 

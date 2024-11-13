@@ -1,5 +1,5 @@
 #pragma once
-#include <Sox/Graphics/Frame.h>
+#include <Sox/Graphics/FrameBase.h>
 #include <Sox/Memory/IDestructible.h>
 #include <Player/IPlugIn.h>
 #include <Player/IExportExternalFlag.h>

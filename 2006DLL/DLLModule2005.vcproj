@@ -1051,6 +1051,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Marathon\Player\IModel.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Player\IModel.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Marathon\Player\INotification.cpp"
 					>
 				</File>
@@ -1779,27 +1787,11 @@
 					Name="Graphics"
 					>
 					<File
-						RelativePath=".\Marathon\Sox\Graphics\Frame.cpp"
+						RelativePath=".\Marathon\Sox\Graphics\FrameBase.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\Marathon\Sox\Graphics\Frame.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Marathon\Sox\Graphics\FrameObserver.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Marathon\Sox\Graphics\FrameObserver.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Marathon\Sox\Graphics\FrameSynchronizer.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Marathon\Sox\Graphics\FrameSynchronizer.h"
+						RelativePath=".\Marathon\Sox\Graphics\FrameBase.h"
 						>
 					</File>
 				</Filter>

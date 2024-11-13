@@ -74,6 +74,38 @@ namespace Sonicteam{
 
 
 		template <typename T>
+		int Sonicteam::SoX::LinkNodeList<T>::EachClear()
+		{
+			Sonicteam::SoX::LinkNodeList<T>* PThread_1 = this->PThread;
+			Sonicteam::SoX::LinkNodeList<T>* RootComp = this; 
+			Sonicteam::SoX::LinkNodeList<T>* v10; 
+			T* v9;
+			if ( this->PThread != this )
+			{
+				do
+				{
+					v9 = PThread_1->TThread;
+					v10 = PThread_1->PThread;
+					EachClearADV(v9);
+					PThread_1 = v10;
+				}
+				while ( v10 != RootComp );
+			}
+
+			return v;
+
+		}
+
+
+
+		template <typename T>
+		int Sonicteam::SoX::LinkNodeList<T>::EachClearADV(T*)
+		{
+			return 0;
+		}
+
+
+		template <typename T>
 		void Sonicteam::SoX::LinkNodeList<T>::Empty()
 		{
 
@@ -107,7 +139,14 @@ namespace Sonicteam{
 		{
  
 		}
+
+
+
+	
+
 	};
+
+		
 };
 
 

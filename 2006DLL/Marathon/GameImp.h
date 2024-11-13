@@ -67,24 +67,22 @@ namespace Sonicteam{
 	};
 	//0x4C;
 	struct UnkPlayerData0xE40{
-		unsigned int ActorID;
-		unsigned int RingCount;
-		unsigned int unk0xC;
-		unsigned int LifeCount;
-		unsigned int ScoreCount;
-		unsigned int LocalTime; //idk
-		unsigned int GlobalTime; //for display
-		unsigned int unk0x20;
-		unsigned int unk0x24;
-		float GaugeValue; //0x28
-		float LastGaugeValue; // probably //0x2C
- 
-		float MaturityValue; //0x30
-		float LastMaturityValue; // probably //0x34
-
-		int LastSelectedGem; //probably : //0x38
-		int SelectedGem;  //0x3C
-		unsigned char _later_[0x10];
+		unsigned int ActorID; //0x0
+		unsigned int RingCount; //0x4
+		unsigned int unk0xC; //0x8
+		unsigned int LifeCount; //0xC
+		unsigned int ScoreCount; //0x10
+		       float AliveTime; // 0x14
+			   float Time; //0x18
+		unsigned int unk0x1C; //0x1C
+			   float SectionSaveTime; //0x20
+			   float MaturityLevel; //0x24
+			   float LastGaugeValue; // probably //0x28
+			   float MaturityValue; //0x2C
+		unsigned int unk0x30; // probably //0x30
+		int unk0x34; //probably : //0x34
+		int SelectedGem;  //0x38
+		unsigned char _later_[0x10]; //0x3C
 	};
 
 

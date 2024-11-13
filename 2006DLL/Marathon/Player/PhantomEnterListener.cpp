@@ -3,10 +3,9 @@
 
 using namespace Sonicteam::Player;;
 
-Sonicteam::Player::PhantomEnterListener::PhantomEnterListener(boost::function<int()> fnc)
+Sonicteam::Player::PhantomEnterListener::PhantomEnterListener(boost::function<int()> fnc):PELOnEnter(fnc) //NOICE 
 {
 
-	this->PELOnEnter = fnc;
 }
 
 
