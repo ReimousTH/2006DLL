@@ -367,8 +367,6 @@ namespace DebugLogV2{
 				const char* keyF = lua_tostring(L, -2);
 				std::string key = keyF;
 				int valueType = lua_type(L, -1);
-			
-
 				switch (valueType) {
 			case LUA_TBOOLEAN:
 				_params[key] = static_cast<bool>(lua_toboolean(L, -1));
@@ -378,10 +376,8 @@ namespace DebugLogV2{
 				break;
 			case LUA_TSTRING:
 				_params[key] = std::string(lua_tostring(L, -1));
-		
 				break;
 				}
-
 			}
 		
 			// Pop the value, keep the key for the next iteration
@@ -462,7 +458,7 @@ namespace DebugLogV2{
 		
 		///
 
-		int PlacementTypePTRB[2] = {0,0};
+		int PlacementTypePTRB[2] = {0,0}; //shared_ptr
 		//default,design,....
 		BranchTo(0x82461848,int,&PlacementTypePTRB, *(_DWORD *)(gameimp + 0x1278), PlacementIndex);
 		int PlacementTypePTR = PlacementTypePTRB[0];
@@ -473,7 +469,7 @@ namespace DebugLogV2{
 		char bufferX[512];
 		sprintf(bufferX,"%s%d",OBJ_ID,obj_index); //dashpanel 101
 
-		ObjectSetData* ObjData = new ObjectSetData(bufferX,OBJ_ID,&Pos,&Rot);
+        ObjectSetData* ObjData = new((void*)malloc06(sizeof(ObjectSetData))) ObjectSetData(bufferX, OBJ_ID, &Pos, &Rot);
 		ObjData->ParamsCount = PropParamsCount;
 
 
@@ -516,7 +512,6 @@ namespace DebugLogV2{
 				case String:
 					if (boost::any_cast<std::string>(_sorted_params[i].second).size() > 0)
 					{
-
 						STRX = boost::any_cast<std::string>(_sorted_params[i].second);
 						const char* s = (const char*)malloc06(STRX.length()+1);
 						memset((void*)s,0,STRX.length()+1);

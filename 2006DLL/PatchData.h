@@ -139,18 +139,7 @@ namespace AmyRework{
 	void GlobalInstall();
 };
 
-namespace AmyLOS{
 
-
-	class AmyContextE:public Sonicteam::Player::State::AmyContext{
-
-	public:
-		float c_before_dizzy_time;
-	};
-
-
-	void GlobalInstall();
-};
 
 namespace TagStory{
 	void GlobalInstall();

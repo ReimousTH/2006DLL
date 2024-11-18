@@ -830,6 +830,18 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="Characters"
+					>
+					<File
+						RelativePath=".\Patches\Characters\Amy.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\Characters\Amy.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Hook"

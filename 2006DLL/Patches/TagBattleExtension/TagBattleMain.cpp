@@ -102,7 +102,6 @@ int TakeSlot(PLAYERS_DATA* dt){
 int FreeSlot(PLAYERS_DATA* dt){
 	int slot =GetSlot(dt);
 	ordered_input[slot] = 0;
-
 	return slot;
 
 }
@@ -668,10 +667,10 @@ int __fastcall MainMenuTask_UI(Sonicteam::MainMenuTask *a1,float delta){
 						v78 = a1->CSD_tag_character;
 						int CSD_OBJECT = *(_DWORD *)(v78 + 0x70);
 						Sonicteam::SoX::RefCountObject* csd = (Sonicteam::SoX::RefCountObject*)CSD_OBJECT;
-						csd->GetObject<int>();
-						csd->GetObject<int>();
-						csd->GetObject<int>();
-						csd->GetObject<int>();
+						csd->GetObject<int>(); //ref add
+						csd->GetObject<int>(); //ref add
+						csd->GetObject<int>(); //ref add
+						csd->GetObject<int>(); //ref add
 						std::stringstream p_tug; p_tug << ID << "p_tug";
 						std::stringstream p_crusor; p_crusor << ID << "p_cursor";
 						std::stringstream p_name; p_name << ID << "p_name";
@@ -699,7 +698,7 @@ int __fastcall MainMenuTask_UI(Sonicteam::MainMenuTask *a1,float delta){
 
 			}
 			else if ((plr->input_data & 0x20) != 0){
-
+				//CONFIFM
 				if ((plr->selected & 2) != 0){
 					plr->selected &= ~2;
 					plr->selected |= 1;
@@ -933,6 +932,7 @@ int __fastcall MainMenuTask_UI(Sonicteam::MainMenuTask *a1,float delta){
 
 			
 			
+				//restore-origin-input-data
 				for (int i = 0;i<4;i++){
 					a1->GetCurrentDoc()->SetRealControllerID(i,origin_index_order[i]);
 				}

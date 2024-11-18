@@ -58,6 +58,7 @@ void operator delete(void* ptr) {
 #include <Player/LuaInfoInit.h>
 #include <System/Peripheral/ManagerImpXenon.h>
 #include "Patches/Inverse/Inverse.h"
+#include "Patches/Characters/Amy.h"
 
 
 struct DFastActions{

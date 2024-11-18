@@ -1355,7 +1355,7 @@ int __fastcall GameImpEngGlobalActionsRecieved(int a1, double a2, int a3, int a4
 					buffer[0] = 0x10007;
 					PMessages->OnMessageRecieved((Sonicteam::SoX::Message*)buffer);
 
-
+					if (index >= 4) {continue;}
 					BranchTo(0x82457BE8,int,gameimp->GamePropActiveArea[index],	&buffer[4]);
 					BranchTo(0x82461510,int,gameimp->GamePropGenerateArea[index],	&buffer[4]);
 
@@ -1368,7 +1368,7 @@ int __fastcall GameImpEngGlobalActionsRecieved(int a1, double a2, int a3, int a4
 			{
 
 				Sonicteam::GameImp* gameimp = (Sonicteam::GameImp*)(a1);
-				BranchTo(0x821EDDB0,int,gameimp->DocMarathon->DocGameRuleContext,Players_DATA.size());
+				if (gameimp->DocMarathon->DocGameRuleContext) BranchTo(0x821EDDB0,int,gameimp->DocMarathon->DocGameRuleContext,Players_DATA.size());
 
 			}
 
@@ -1710,8 +1710,6 @@ int __fastcall ObjectUpdate(int a1, double a2){
 				 Players_DATA[_socket.GetXUID(0)].UnknownFlags01 = PlayerContext->UnknownFlags01;
 				 Players_DATA[_socket.GetXUID(0)].UnknownFlags0xC8 = PlayerContext->UnknownFlags0xC8;
 				 Players_DATA[_socket.GetXUID(0)].StickFixedRotationMb = PlayerContext->StickFixedRotationMb;
-			 
-
 			 }
 
 			 _socket.SendUDPMessageToClients(&msg);
