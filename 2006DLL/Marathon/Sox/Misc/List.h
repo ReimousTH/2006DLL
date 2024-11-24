@@ -119,10 +119,10 @@ LABEL_12:
 			T* PThread;
 
 		public:
-			LinkNodeBase() : NThread(NULL), PThread(NULL) {  
+			LinkNodeBase() : NThread(0), PThread(0) {  
 				
-				this->PThread = (T*)this;
-				this->NThread = (T*)this;
+	//			this->PThread = 0;
+	//			this->NThread = (T*)this;
 			
 			}
 
@@ -132,6 +132,10 @@ LABEL_12:
 				PThread = NULL;
 				NThread = NULL;
 
+			}
+			void Link(){
+				this->PThread = (T*)this;
+				this->NThread = (T*)this;
 			}
 			 void RemoveLink(){
 				 if (PThread)
@@ -179,9 +183,12 @@ LABEL_12:
 		struct LinkNode:LinkNodeBase<LinkNode<T>> {
 		public:
 			T* TThread;
-			LinkNode() : LinkNodeBase<LinkNode<T>>() {this->PThread = this;this->NThread = this;}
+			LinkNode() {}
 			__forceinline ~LinkNode();
-			LinkNode(T* TThread) : LinkNodeBase<LinkNode<T>>(), TThread(TThread) {}
+			LinkNode(T* TThread) : LinkNodeBase<LinkNode<T>>(),TThread(TThread) {} // use link separated
+
+		
+
 
 		};
 
@@ -197,8 +204,8 @@ LABEL_12:
 		struct LinkNodeList:LinkNodeBase<LinkNodeList<T>> {
 		public:
 			T* TThread;
-			LinkNodeList();
-			LinkNodeList(T* TThread) : LinkNodeBase<LinkNodeList<T>>(), TThread(TThread) {}
+			LinkNodeList() {this->Link();}
+			LinkNodeList(T* TThread) : LinkNodeBase<LinkNodeList<T>>(), TThread(TThread) {this->Link();}
 
 			//More like, little improve of original (sub_82581618)
 			int* ForEach(void (*clear_func)(T*));

@@ -3,17 +3,11 @@
 
 using namespace Sonicteam::SoX;
 
-Component::Component(Component* component)
+//FINALY SAME CONSTRUCTORS, until i change LINK NODE AGAIN :(
+Component::Component(Component* component):LastComponent(component),LinkedComponent(this),LComponentList()
 {	
 
-	this->LastComponent = component;
 	Sonicteam::SoX::LinkNode<Component>* link =  &this->LinkedComponent;
-	this->LinkedComponent.NThread = 0;
-	this->LinkedComponent.PThread = 0;
-	this->LinkedComponent.TThread = this;
-
-	this->LComponentList = Sonicteam::SoX::LinkNodeList<Component>(0);
-
 
 
 	if (component){

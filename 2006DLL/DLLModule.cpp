@@ -37,9 +37,10 @@
 
 
 #include <xtl.h>
+
 /*
 void* operator new(size_t size) {
-	return HeapAlloc(GetProcessHeap(), 0, size);
+	return HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, size);
 }
 
 void operator delete(void* ptr) {
@@ -452,7 +453,12 @@ extern "C" void OnDLLStart(){
 
 	}
 
-	ShowXenonMessage(L"LoadedDLLPatches",Loaded.c_str());
+	MESSAGEBOX_RESULT res;
+	res.dwButtonPressed = -1;
+	PushXenonMessage(L"LoadedDLLPatches",Loaded.c_str(),&res);
+
+
+
 	Loaded.clear();
 
 	//PostureInverseStick::GlobalInstall();

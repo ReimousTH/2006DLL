@@ -11,7 +11,7 @@
 #include <Sox/StepableThread.h>
 
 
-#define CUTSCENE_MODE true
+#define CUTSCENE_MODE false
 
 using namespace TagBattleMain;
 
@@ -60,6 +60,9 @@ struct SMDATA_PPL_CHANGE_CBEHAVIOUR {
 	int ExportPostureRequestFlag;	
 	int UnknownFlags01;	
 	unsigned long long UnknownFlags0xC8;
+
+	//Sonic-context
+	unsigned int gem_color;
 	XUID sender_xuid;
 };
 
@@ -75,7 +78,11 @@ struct SMDATA_PPL_CHANGE_CBEHAVIOUR_REPLICATE {
 	int ExportPostureRequestFlag;	
 	int UnknownFlags01;	
 	unsigned long long UnknownFlags0xC8;
+	
+	//Sonic Context
+	unsigned int gem_color;
 	XUID sender_xuid;
+
 };
 
 struct SMDATA_PPL_CHANGE_RINGS {
@@ -180,6 +187,7 @@ struct PPL_DATA{
 	unsigned int ExportWeaponRequestFlag;
 	unsigned int UnknownFlags01;
 	unsigned int UnknownFlags0xC8;
+	unsigned int gem_color;
 	bool local;
 
 	Sonicteam::CsdObject* CSD;
@@ -613,6 +621,7 @@ static void CommonMessages(Socket* socket, SOCKET client_socket, SocketMessage* 
 		Players_DATA[_data_->sender_xuid].UnknownFlags01 = _data_->UnknownFlags01;
 		Players_DATA[_data_->sender_xuid].UnknownFlags0xC8 = _data_->UnknownFlags0xC8;
 		Players_DATA[_data_->sender_xuid].StickFixedRotationMb = _data_->StickFixedRotationMb;
+		Players_DATA[_data_->sender_xuid].gem_color = _data_->gem_color;
 
 
 	}
@@ -724,6 +733,7 @@ static void CommonMessages(Socket* socket, SOCKET client_socket, SocketMessage* 
 					_data_.UnknownFlags01 = it->second.UnknownFlags01;
 					_data_.UnknownFlags0xC8 = it->second.UnknownFlags0xC8;
 					_data_.StickFixedRotationMb = it->second.StickFixedRotationMb;
+					_data_.gem_color = it->second.gem_color;
 
 
 
@@ -1493,6 +1503,16 @@ int __fastcall ObjectUpdate(int a1, double a2){
 	 BranchTo(0x82196AB8,int,a1);
 
 	 if (!IsNetworkPlayer) BranchTo(0x82196F78,int,a1); //CheckAIFLAGS
+
+
+	 if (IsNetworkPlayer){
+
+		 Sonicteam::Player::State::CommonContext* PlayerContext = *(Sonicteam::Player::State::CommonContext**)((*(int*)(a1 + 0xE4)) + 0x50);
+		 if ( Sonicteam::Player::State::SonicContext* sonic_context =  dynamic_cast<Sonicteam::Player::State::SonicContext*>(PlayerContext)){
+			 sonic_context->CurrentGemImage = NetworkPlayer_DATA->gem_color;
+		 }
+	 }
+
 	 BranchTo(0x82196850,int,a1); //UpgradeRunner(
 
 
@@ -1507,7 +1527,7 @@ int __fastcall ObjectUpdate(int a1, double a2){
 				 context->ICOnPostInputTick();
 
 				 std::stringstream ss; ss <<std::hex << context->Input;
-				 DebugLogV2::PrintNextFixed(ss.str());
+				// DebugLogV2::PrintNextFixed(ss.str());
 
 				 if ((context->Input & 0x80) != 0 && PlayerMachine->GetCurrentMashineStateID() != 0x26){
 					 PlayerMachine->ChangeMashineState(0xA);
@@ -1668,6 +1688,12 @@ int __fastcall ObjectUpdate(int a1, double a2){
 				 _data2_.UnknownFlags0xC8 = PlayerContext->UnknownFlags0xC8;
 				 _data2_.StickFixedRotationMb = PlayerContext->StickFixedRotationMb;
 
+					 if ( Sonicteam::Player::State::SonicContext* sonic_context =  dynamic_cast<Sonicteam::Player::State::SonicContext*>(PlayerContext)){
+						 _data2_.gem_color = sonic_context->CurrentGemImage;
+					 }
+				
+
+
 				// std::stringstream test; test << "[NetworkPlayer] : ";
 				// test << PlayerContext->ContextFlags << " " << PlayerContext->ExportWeaponRequestFlag << " " << PlayerContext->UnknownFlags01 << " " << PlayerContext->UnknownFlags0xC8;
 				// DebugLogV2::PrintNextFixed(test.str());
@@ -1702,6 +1728,10 @@ int __fastcall ObjectUpdate(int a1, double a2){
 			 Players_DATA[_socket.GetXUID(0)].RFTransformMatrix0x70_FRAME =PlayerFrame->FrameGetTransformMatrix2();
 			 Players_DATA[_socket.GetXUID(0)].Position_FRAME =*(XMVECTOR*)((*(UINT32*)(a1 + 0xDC)) + 0xB0) ;
 			 Players_DATA[_socket.GetXUID(0)].Rotation_Posture =*(XMVECTOR*)((*(UINT32*)(a1 + 0xDC)) + 0xC0) ;
+
+			 if ( Sonicteam::Player::State::SonicContext* sonic_context =  dynamic_cast<Sonicteam::Player::State::SonicContext*>(PlayerContext)){
+				  Players_DATA[_socket.GetXUID(0)].gem_color  = sonic_context->CurrentGemImage;
+			 }
 
 			 if (dynamic_cast<Sonicteam::Player::State::CommonContext*>(PlayerContext)){
 				 Players_DATA[_socket.GetXUID(0)].ContextFlags = PlayerContext->ContextFlags;
@@ -1863,7 +1893,7 @@ int __fastcall Character_AmigoSwitch(int result){
 						
 						// OBJ AMIGO COLLISION ALSO O_O (82014ED8)
 						std::stringstream test; test << "*(byte*)(HitObject + 0xCA) " << std::hex << HitObject;
-						DebugLogV2::PrintNextFixed(test.str());
+						//DebugLogV2::PrintNextFixed(test.str());
 						SMDATA_PPL_CHANGE_CHR _data_;
 						_data_.sender_xuid = _socket.GetXUID(0);
 						std::string* str = NULL;

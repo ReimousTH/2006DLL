@@ -283,14 +283,24 @@ void ShowXenonMessage(LPCWSTR Title,LPCWSTR wTitle);
 
 wchar_t *convertCharArrayToLPCWSTR(const char* charArray);
 void ShowXenonMessage(LPCWSTR Title,char* wTitle);
+void ShowXenonMessage(LPCWSTR Title,const char* wTitle);
 
-MESSAGEBOX_RESULT* ShowXenonMessage(LPCWSTR Title,const char* wTitle);
+
 
 void ShowXenonMessage(LPCWSTR Title,int value,char*);
 
 
 
 void ShowXenonMessage(LPCWSTR Title,float value,char*);
+
+
+
+template <typename T>
+void PushXenonMessage(LPCWSTR Title,T value);
+
+template <typename T>
+static void PushXenonMessage(LPCWSTR Title,T value,MESSAGEBOX_RESULT* oute);
+
 
 
 //template <typename T>
@@ -300,6 +310,7 @@ void ShowXenonMessage(LPCWSTR Title,float value,char*);
 
 //Contains Original06 Function
 
+#include "Basics.inl"  // Include the .inl file here\
 
 #endif
 

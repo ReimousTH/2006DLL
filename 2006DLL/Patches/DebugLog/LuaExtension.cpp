@@ -1569,6 +1569,7 @@ namespace DebugLogV2{
 
 
 	extern "C" int PrintNextFixed(std::string msg){
+		
 		int length = msg.length() + 1;
 		wchar_t* wcharPtr = new wchar_t[length];
 		std::memset(wcharPtr, 0, length * sizeof(wchar_t));

@@ -313,8 +313,8 @@
 			/>
 			<Tool
 				Name="VCCLX360CompilerTool"
-				Optimization="2"
-				InlineFunctionExpansion="1"
+				Optimization="0"
+				InlineFunctionExpansion="2"
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="0"
 				EnableFiberSafeOptimizations="false"
@@ -359,7 +359,7 @@
 				ModuleDefinitionFile="DllModule.def"
 				GenerateDebugInformation="true"
 				GenerateMapFile="true"
-				OptimizeReferences="1"
+				OptimizeReferences="2"
 				EnableCOMDATFolding="1"
 				SetChecksum="true"
 			/>
@@ -560,6 +560,10 @@
 							Name="VCCustomBuildTool"
 						/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\Basics.inl"
+					>
 				</File>
 				<File
 					RelativePath=".\IdaExports.h"

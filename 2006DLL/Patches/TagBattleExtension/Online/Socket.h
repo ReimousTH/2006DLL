@@ -157,7 +157,6 @@ public:
 	XUID GetXUID(int);
 	void GetName(char* buffer);
 	std::string XUIDToName(XUID xuid);
-	;
 
 private:
 	SOCKET _tcpSocket;      // TCP socket

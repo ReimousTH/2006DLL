@@ -43,6 +43,8 @@ const DWORD JumpASMNoPreserveI[] = { /*Dont always have enough space to preserve
 	0x4E800421  // bcctr (Used For PatchInJumpEx bcctr 20, 0 == bctr)
 };
 
+
+
 #define ADDRESS_HIGHER(X) ( ( X >> 16 ) & 0xFFFF )
 #define ADDRESS_LOWER(X)  ( X & 0xFFFF )
 

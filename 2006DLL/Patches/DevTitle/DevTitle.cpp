@@ -248,10 +248,18 @@ namespace DevTitleV2{
 	}
 
 
+	HOOK_EXTERN_C(Sonicteam::SoX::Component*, __fastcall,sub_825BAAA0,0x825BAAA0 ,void* a1,Sonicteam::SoX::Component* comp){
+
+		return new(a1)Sonicteam::SoX::Component(comp);
+	}
+
+
+
 	
 	void GlobalInstall()
 	{
 
+		//INSTALL_HOOK(sub_825BAAA0);
 	
 	
 		//INSTALL_HOOK(sub_82581470);

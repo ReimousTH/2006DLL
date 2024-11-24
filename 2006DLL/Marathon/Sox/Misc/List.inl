@@ -6,12 +6,7 @@ namespace Sonicteam{
 	namespace SoX{
 
 
-		template <typename T>
-		Sonicteam::SoX::LinkNodeList<T>::LinkNodeList()
-		{
-
-		}
-
+	
 
 		template <typename T>
 		Sonicteam::SoX::LinkNode<T>::~LinkNode()

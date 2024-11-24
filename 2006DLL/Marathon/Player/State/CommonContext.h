@@ -57,9 +57,9 @@ namespace Sonicteam{
 				int PComboAttackManager;
 				int UnknownFlags01;
 				unsigned int unkA0;
-				unsigned int ContextFlags; //Export
-				unsigned int ExportPostureRequestFlag;
-				unsigned int ExportWeaponRequestFlag;
+				unsigned int ContextFlags; //Export //0xA4
+				unsigned int ExportPostureRequestFlag;  //0xA8
+				unsigned int ExportWeaponRequestFlag; //0xAC
 				float DamageInvincibleTime;
 				float InvicibilityTimerWEffect;
 				float SpeedUpTime;
@@ -71,14 +71,19 @@ namespace Sonicteam{
 				int UnknownFlags0xD4;
 				int UnknownUnUsedFlagD8;
 				int FreeUnknownFlagsDC;
-				char IsSonicDied; //0xDD 
-				char IsRingGhostMode; //0xDE
-				char IsBlinkingMode; //0xDF 
-				char IsForcedMovement; //0xE0 ( IsSonicDead)
-				char IsInvulnerable;
-				char IsInvulnerable2;
-				char IsUnkE6;
-				char IsGravityDisabled;
+				
+				
+				char IsUnkDD; //0xDD 
+				char IsUnkDE; //0xDE
+				char IsUnkDF; //0xDF 
+				char IsSonicDead; //0xE0 ( IsSonicDead)
+				char IsRingGhostMode; //0xE1 
+				char BlinkInvulMode; //0xE2
+				char IsAnimationRotationLocked; //0xE3 (left,right,down)
+				char IsUnkE4; //Homing-Force (or some like it???)
+				char IsUnkE5; //?
+				char IsUnkE6; //??
+				char IsGravityDisabled; //0xE7
 				char IsUnkE8;
 				char IsJumped_PostureVelocityYHandle;
 				char IsInActionsRunJumpBound_MB;
@@ -113,16 +118,16 @@ namespace Sonicteam{
 				char IsUnk101;
 				char IsUnk102;
 				char IsUnk103;
-				char IsBarrier;
-				char IsUnk105_AlwaysSetsZero;
-				char IsDoSomethingWeirdWithChrRotation;
+				char IsBarrier; //x0104
+				char IsUnk105_AlwaysSetsZero; //0x105
+				char IsDoSomethingWeirdWithChrRotation; //0x106
 				char IsUnk107;
-				char IsPsiEffect;
-				char IsCharacterControlTypeB;
-				char IsAntiGravity;
-				char IsChrCamDisabled;
+				char IsPsiEffect; //0x108
+				char IsCharacterControlTypeB; //0x109
+				char IsAntiGravity; //0x10A
+				char IsChrCamDisabled; //0x10B
 				char IsUnk10C;
-				char IsOneHitMode;
+				char IsOneHitMode; //0x10D
 				char IsUnk10E;
 				char IsUnk10F;
 				char IsUnk110;
