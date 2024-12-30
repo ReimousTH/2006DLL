@@ -5,7 +5,7 @@
 <h1>Requirements</h1>
 <ul>
 <li>Microsoft Visual Studio 2005 </li>
-<li>Xbox360 SDK (3529.1)</li>
+<li>Xbox360 SDK (3529)</li>
 </ul>
 
 <h1>How To Build</h1>
