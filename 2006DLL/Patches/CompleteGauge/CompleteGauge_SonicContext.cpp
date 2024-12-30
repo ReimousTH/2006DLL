@@ -59,7 +59,7 @@ namespace CompleteGauge{
 
 
 			//Ground
-			if ((_this->GroundAirDataFlags & 1) != 0){
+			if ((_this->GroundAirFlags & 1) != 0){
 
 			}
 			//Air
@@ -119,7 +119,7 @@ namespace CompleteGauge{
 			}
 
 
-			if (_this->ScorePlugin.get()->RingsCount <= 0 || _this->IsSonicDied){
+			if (_this->ScorePlugin.get()->RingsCount <= 0 || _this->IsSonicDead){
 				_this->IsInvulnerable = 0;
 				_this->IsSuper = false;
 				//Switch backB

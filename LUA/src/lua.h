@@ -177,6 +177,7 @@ LUA_API void  lua_newtable06 (lua_State *L);
 LUA_API void *lua_newuserdata (lua_State *L, size_t sz);
 LUA_API void *lua_newuserdata06 (lua_State *L, size_t sz);
 LUA_API int   lua_getmetatable (lua_State *L, int objindex);
+LUA_API int   lua_getmetatable06 (lua_State *L, int objindex);
 LUA_API void  lua_getfenv (lua_State *L, int idx);
 
 
@@ -277,6 +278,7 @@ LUA_API void  lua_concat06 (lua_State *L, int n);
 #define lua_isfunction(L,n)	(lua_type(L,n) == LUA_TFUNCTION)
 #define lua_istable(L,n)	(lua_type(L,n) == LUA_TTABLE)
 #define lua_islightuserdata(L,n)	(lua_type(L,n) == LUA_TLIGHTUSERDATA)
+#define lua_isregularuserdata(L,n)	(lua_type(L,n) == LUA_TUSERDATA)
 #define lua_isnil(L,n)		(lua_type(L,n) == LUA_TNIL)
 #define lua_isboolean(L,n)	(lua_type(L,n) == LUA_TBOOLEAN)
 #define lua_isnone(L,n)		(lua_type(L,n) == LUA_TNONE)
@@ -317,6 +319,10 @@ LUA_API int lua_pushupvalues (lua_State *L);
 	(lua_pushstring(L, n), \
 	lua_pushcfunction(L, f), \
 	lua_settable(L, i-2))
+
+
+
+
 
 
 /* compatibility with ref system */

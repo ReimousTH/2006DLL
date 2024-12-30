@@ -15,7 +15,6 @@ namespace DebugLogV2{
 		if (LS == 0){
 			WRITE_DWORD(0x82195AAC,POWERPC_ADDIS(11,0,POWERPC_HI((unsigned int)&FixedPlayerFunctionsTables)));
 			WRITE_DWORD(0x82195AB4,POWERPC_ADDI(11,11,POWERPC_LO((unsigned int)&FixedPlayerFunctionsTables)));
-	
 			return;
 		}
 
@@ -38,10 +37,12 @@ namespace DebugLogV2{
 		lua_pushstring06(LS, "GetPosition");lua_pushcfunction06(LS, PlayerR__GetPosition);lua_settable06(LS, -3); // Equivalent to table["GetPosition"] = PlayerR__GetPosition
 		lua_pushstring06(LS, "SetPosition");lua_pushcfunction06(LS, PlayerR__SetPosition);lua_settable06(LS, -3); // Equivalent to table["SetPosition"] = PlayerR__SetPosition
 		lua_pushstring06(LS, "SetActorPTR");lua_pushcfunction06(LS, PlayerR__SetActorPTR);lua_settable06(LS, -3); // Equivalent to table["SetActorPTR"] = PlayerR__SetActorPTR
+		lua_pushstring06(LS, "GetActorID");lua_pushcfunction06(LS, PlayerR__GetActorID);lua_settable06(LS, -3); // Equivalent to table["GetActorID"] = PlayerR__GetActorID
 		lua_pushstring06(LS, "GetStateID");lua_pushcfunction06(LS, PlayerR__GetStateID);lua_settable06(LS, -3); // Equivalent to table["GetStateID"] = PlayerR__GetStateID
 		lua_pushstring06(LS, "SetStateID");lua_pushcfunction06(LS, PlayerR__SetStateID);lua_settable06(LS, -3); // Equivalent to table["SetStateID"] = PlayerR__SetStateID
 		lua_pushstring06(LS, "GetMachine2");lua_pushcfunction06(LS, PlayerR__GetMachine2);lua_settable06(LS, -3); // Equivalent to table["SetStateID"] = PlayerR__SetStateID
 
+		lua_pushstring06(LS,"GetIPluginByName"); lua_pushcfunction06(LS, PlayerR__GetIPluginByName);lua_settable06(LS, -3); // Equivalent to table["GetIPluginByName"] = PlayerR__GetIPluginByName
 		
 
 		
@@ -53,6 +54,27 @@ namespace DebugLogV2{
 	
 
 	}
+
+	 int GetPlayerActorsID(unsigned int ID){
+
+
+		Sonicteam::DocMarathonImp* impl = 	*(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
+		UINT32 gameimp = *(UINT32*)(impl->DocCurrentMode + 0x6C);
+
+		int LocalPlayer = 0;
+		if (gameimp == 0 || *(UINT32*)gameimp != 0x82001AEC) return -1;
+		UINT32 vft =  *(UINT32*)impl->DocCurrentMode;
+
+
+		if (vft != 0x82033534) return -1;
+		if ( *(UINT32*)(gameimp+0x11C4) == 0) return -1;
+		INT32 ActorManager = *(UINT32*)(gameimp+0x11C4);
+		
+		int ActorID =  *(int*)(gameimp + 0xE40) + (ID * 0x4C);
+
+		return ActorID;
+	}
+
 
 	void GetPlayerActorsR(UINT32* pstack,bool AI){
 
@@ -338,6 +360,15 @@ namespace DebugLogV2{
 	}
 
 
+	extern "C" int PlayerR__GetActorID(lua_State* L)
+	{
+		lua_pushstring06(L,"ID");
+		lua_gettable(L,1);
+		int ID  = lua_tonumber(L,-1);
+		lua_pushnumber(L,GetPlayerActorsID(ID));
+		return 1;
+	}
+
 	extern "C" int PlayerR__GetActorPTR(lua_State* L){
 
 		
@@ -413,16 +444,40 @@ namespace DebugLogV2{
 
 		if (OBJPlayer ){
 			Sonicteam::Player::State::IMachine* Mashine = *(Sonicteam::Player::State::IMachine**)(OBJPlayer + 0xE4);
-			Sonicteam::Player::State::Machine2* Machine2 = dynamic_cast<Sonicteam::Player::State::Machine2*>(Mashine);
+		//	Sonicteam::Player::State::Machine2* Machine2 = dynamic_cast<Sonicteam::Player::State::Machine2*>(Mashine);
 
 			lua_getglobal06(L,"StateIMachine");
-			lua_pushlightuserdata(L,(void*)Machine2);
+			lua_pushlightuserdata(L,(void*)Mashine);
 			lua_pcall06(L,1,1,0);
 		}
 
 		return 1;
 
 
+	}
+
+	extern "C" int PlayerR__GetIPluginByName(lua_State* L)
+	{
+
+		lua_pushstring06(L,"ptr");
+		lua_gettable(L,1);
+		int OBJPlayer = (int)lua_touserdata(L,-1);
+		const char* plugname = lua_tostring(L,2);
+
+
+		int found_plugin = 0;
+		std::vector<boost::shared_ptr<Sonicteam::Player::IPlugIn>>* IPluginP = reinterpret_cast<std::vector<boost::shared_ptr<Sonicteam::Player::IPlugIn>>*>(OBJPlayer + 0x114);
+		for (std::vector<boost::shared_ptr<Sonicteam::Player::IPlugIn>>::iterator it = IPluginP->begin(); it != IPluginP->end(); it++) {
+			boost::shared_ptr<Sonicteam::Player::IPlugIn> pluginPtr = *it;
+			Sonicteam::Player::IPlugIn* plugin = (*it).get();
+				if  (plugin->PluginName == plugname){
+					found_plugin = (int)plugin;
+					break;
+				}
+		}
+
+		Memory__CreateMetatable(L,found_plugin,0);
+		return 1;
 	}
 
 }

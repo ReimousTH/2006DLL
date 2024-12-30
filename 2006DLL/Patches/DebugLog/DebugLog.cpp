@@ -38,6 +38,8 @@ namespace DebugLogV2{
 		PlayerLIB_GlobalInstall(LS);
 		STRLIB_GlobalInstall(LS);
 		MemoryLIB_GlobalInstall(LS);
+		BufferLIB_GlobalInstall(LS);
+		Uint64LIB_GlobalInstall(LS);
 		//VectorLIB_GlobalInstall(LS);
 	
 

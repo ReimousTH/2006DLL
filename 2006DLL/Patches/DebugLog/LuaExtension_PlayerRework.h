@@ -58,6 +58,8 @@ namespace DebugLogV2 {
 	extern "C" int PlayerR__GetPosition(lua_State* L);
 	extern "C" int PlayerR__SetPosition(lua_State* L);
 
+
+	extern "C" int PlayerR__GetActorID(lua_State* L);
 	extern "C" int PlayerR__GetActorPTR(lua_State* L);
 	extern "C" int PlayerR__SetActorPTR(lua_State* L);
 
@@ -66,6 +68,7 @@ namespace DebugLogV2 {
 
 
 	extern "C" int PlayerR__GetMachine2(lua_State* L);
+	extern "C" int PlayerR__GetIPluginByName(lua_State* L);
 	
 
 

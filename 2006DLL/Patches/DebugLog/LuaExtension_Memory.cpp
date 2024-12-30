@@ -68,20 +68,23 @@ namespace DebugLogV2{
 		lua_pushstring06(L, "GetBYTE"); lua_pushcfunction06(L, Memory__GetBYTE); 	lua_settable06(L, -3);
 		lua_pushstring06(L, "GetPointer"); lua_pushcfunction06(L, Memory__GetPointer); 	lua_settable06(L, -3);
 		lua_pushstring06(L, "GetDWORD"); lua_pushcfunction06(L, Memory__GetDWORD); 	lua_settable06(L, -3);
+		lua_pushstring06(L, "GetVector"); lua_pushcfunction06(L, Memory__GetVector); 	lua_settable06(L, -3);
 
 		lua_pushstring06(L, "SetDWORD"); lua_pushcfunction06(L, Memory__SetDWORD); 	lua_settable06(L, -3);
 		lua_pushstring06(L, "SetFLOAT"); lua_pushcfunction06(L, Memory__SetFLOAT); 	lua_settable06(L, -3);
 		lua_pushstring06(L, "SetBYTE"); lua_pushcfunction06(L, Memory__SetBYTE); 	lua_settable06(L, -3);
 		lua_pushstring06(L, "SetPointer"); lua_pushcfunction06(L, Memory__SetPointer); 	lua_settable06(L, -3);
+		lua_pushstring06(L, "SetVector"); lua_pushcfunction06(L, Memory__SetVector); 	lua_settable06(L, -3);
 		lua_pushstring06(L, "IsValidPTR"); lua_pushcfunction06(L, Memory__IsValidPTR); 	lua_settable06(L, -3);
+
+		lua_pushstring06(L, "CallFunc"); lua_pushcfunction06(L, Memory_CallFunc); 	lua_settable06(L, -3);
+		lua_pushstring06(L, "AsInt"); lua_pushcfunction06(L, Memory_AsInt); 	lua_settable06(L, -3);
+		lua_pushstring06(L, "AsFloat"); lua_pushcfunction06(L, Memory_AsFloat); 	lua_settable06(L, -3);
 
 		lua_pushstring06(L, "GetPTR"); lua_pushcfunction06(L, Memory__GetPTR); 	lua_settable06(L, -3);
 		lua_pushstring06(L, "GetClassName"); lua_pushcfunction06(L, Memory__GetClassName); 	lua_settable06(L, -3);
 
 		
-
-
-
 
 
 		lua_pop(L,1);
@@ -176,6 +179,7 @@ namespace DebugLogV2{
 
 
 
+
 		if (lua_isuserdata(L,2)){
 			move += (int)lua_touserdata(L,2);
 		}
@@ -236,6 +240,7 @@ namespace DebugLogV2{
 		int emove = 0;
 		if (lua_isuserdata(L,arg)){
 			emove = (int)lua_touserdata(L,arg);
+			//add MemoryMeta :)
 		}
 		else if (lua_isnumber(L,arg)){
 			emove = lua_tonumber(L,arg);
@@ -453,7 +458,13 @@ namespace DebugLogV2{
 				break;
 			case  2:
 				*(char*)(ptr + move) = value;
-
+			case 5:
+				XMVECTOR* vec = (XMVECTOR*)(ptr + move);
+				lua_rawgeti(L,arg_value_num,1); vec->x = lua_tonumber(L,-1); lua_pop(L,1);
+				lua_rawgeti(L,arg_value_num,2); vec->y = lua_tonumber(L,-1); lua_pop(L,1);
+				lua_rawgeti(L,arg_value_num,3); vec->z = lua_tonumber(L,-1); lua_pop(L,1);
+				lua_rawgeti(L,arg_value_num,4); vec->w = lua_tonumber(L,-1); lua_pop(L,1);
+				break;
 			}
 
 
@@ -481,6 +492,12 @@ namespace DebugLogV2{
 	extern "C" Memory__SetPointer(lua_State* L){
 
 		return Memory__SET(L,3);
+
+	}
+
+	extern "C" Memory__SetVector(lua_State* L){
+
+		return Memory__SET(L,5);
 
 	}
 
@@ -519,7 +536,6 @@ namespace DebugLogV2{
 		}
 		
 
-
 	
 			switch (type){
 				//DWORD 
@@ -539,8 +555,16 @@ namespace DebugLogV2{
 				Memory__CreateMetatable(L,*(unsigned int*)(ptr + move),0);
 				break;
 			case 4:
-			
 				lua_pushstring06(L,"");
+				break;
+			case 5:
+				lua_getglobal06(L,"Vector");
+				XMVECTOR* vec = (XMVECTOR*)(ptr + move);
+				lua_pushnumber(L,vec->x);
+				lua_pushnumber(L,vec->y);
+				lua_pushnumber(L,vec->z);
+				lua_pushnumber(L,vec->w);
+				lua_pcall06(L,4,1,0);
 				break;
 
 			}
@@ -572,6 +596,11 @@ namespace DebugLogV2{
 
 	}
 
+
+	extern "C" int Memory__GetVector(lua_State* L)
+	{
+		return Memory__GET(L,5);
+	}
 
 	extern "C" int Memory__GetClassName(lua_State* L)
 	{
@@ -665,6 +694,166 @@ namespace DebugLogV2{
 		*(char*)(ptr) =  lua_tonumber(L,2);
 
 		return 0;
+	}
+
+
+	void THREAD_REGISTER_CHANGE(int r3_value) {
+		__asm{
+			mr r3,r3_value
+		}
+	}
+	extern "C" Memory_CallFunc(lua_State* L)
+	{
+		
+		int args = lua_gettop(L);
+		unsigned long long registers_values[9];
+		double registers_values_float[9];
+		char* registers_values_string[9]; //only to free 
+		unsigned long long registers_values_or[31];
+
+		int arg_count = 0;
+
+		for (int i = 2; i <= args; i++) {
+
+			if (lua_isnumber(L, i)) {
+				registers_values[arg_count] = (int)lua_tonumber(L, i);
+				registers_values_float[arg_count] = lua_tonumber(L, i); // Use double for float
+				arg_count++;
+			}
+
+			else if (lua_istable(L,i)){
+
+				lua_getmetatable06(L,i);
+				luaL_getmetatable06(L,"Uint64Meta");
+				if (lua_rawequal(L,-1,-2)){
+
+					lua_pop(L,1);
+					lua_pushstring06(L, "part1");
+					lua_gettable(L, i);
+					unsigned long value_1 = (unsigned long)lua_touserdata(L, -1);
+
+
+					lua_pushstring06(L, "part2");
+					lua_gettable(L, i);
+					unsigned long value_2 = (unsigned long)lua_touserdata(L, -1);
+
+
+					registers_values[arg_count] = ((unsigned long long)value_1 << 32) | value_2; 
+					arg_count++;
+				}
+
+				lua_pop(L,1);
+			}
+			else if (lua_islightuserdata(L, i)) {
+
+				registers_values[arg_count] = (unsigned long long)lua_touserdata(L, i);
+				arg_count++;
+			}
+			else if (lua_isstring(L,i)){
+				registers_values[arg_count] = (unsigned long long)lua_tostring(L, i);
+				arg_count++;
+			}
+		}
+
+		lua_pushstring06(L,"ptr");
+		lua_gettable(L,1);
+		int ptr =  (int)lua_touserdata(L,-1);
+
+		lua_pushstring06(L,"move");
+		lua_gettable(L,1);
+		int move =  (int)lua_touserdata(L,-1);
+
+		int func_ptr = ptr + move;
+	
+
+
+		int return_value = 0;
+		float return_value_float = 0.0;
+		
+
+		unsigned long long r3_value = registers_values[0];
+		unsigned long long r4_value = registers_values[1];
+		unsigned long long r5_value = registers_values[2];
+		unsigned long long r6_value = registers_values[3];
+		unsigned long long r7_value = registers_values[4];
+		unsigned long long r8_value = registers_values[5];
+		unsigned long long r9_value = registers_values[6];
+
+
+		float f1_value = registers_values_float[0];
+		float f2_value = registers_values_float[1];
+		float f3_value = registers_values_float[2];
+		float f4_value = registers_values_float[3];
+		float f5_value = registers_values_float[4];
+		float f6_value = registers_values_float[5];
+		float f7_value = registers_values_float[6];
+
+
+		__asm {
+			stmw r3, registers_values_or
+		}
+
+		__asm{
+			mr r3,r3_value
+			mr r4,r4_value
+			mr r5,r5_value
+			mr r6,r6_value
+			mr r7,r7_value
+			mr r8,r8_value
+			mr r9,r9_value
+
+			fmr fp1,f1_value
+			fmr fp2,f2_value
+			fmr fp3,f3_value
+			fmr fp4,f4_value
+			fmr fp5,f5_value
+			fmr fp6,f6_value
+			fmr fp7,f7_value
+
+		}
+
+		__asm{
+			mtctr func_ptr 
+			bctrl
+			mr return_value,r3
+			fmr return_value_float,fp1
+		}
+
+
+
+		__asm {
+			lmw r3, registers_values_or
+
+		}
+
+
+		
+
+		Memory__CreateMetatable(L,return_value,0);
+
+
+
+		return 1;
+	}
+
+	extern "C" Memory_AsInt(lua_State* L)
+	{
+		lua_pushstring06(L,"ptr");
+		lua_gettable(L,1);
+		int ptr =  (int)lua_touserdata(L,-1);
+		lua_pushnumber(L,ptr);
+		return 1;
+
+
+	}
+
+	extern "C" Memory_AsFloat(lua_State* L)
+	{
+		lua_pushstring06(L,"ptr");
+		lua_gettable(L,1);
+		int ptr =  (int)lua_touserdata(L,-1);
+		lua_pushnumber(L,*(float*)&ptr);
+		return 1;
 	}
 
 	extern "C" Memory_GetDWORD(lua_State* L){

@@ -182,7 +182,7 @@ void CommonContext::ICOnInputTick(float delta)
 
 	v5 = (this->FreeUnknownFlagsDC >> 2) & 1;
 	v6 = (this->UnkownFlagsUnk01 & 0x40000000) != 0;
-	this->GroundAirDataFlags = 0;
+	this->GroundAirFlags = 0;
 	this->AnimationState = 0;
 	this->UnknownFlags0xC8 = 1;
 	this->UnknownFlags0xD0 = 0;
@@ -224,9 +224,9 @@ void CommonContext::ICOnInputTick(float delta)
 		else this->SpeedUpTime = 0.0;
 	}
 
-	v14 = this->IsBlinkingMode == 0;
+	v14 = this->BlinkInvulMode == 0;
 	v15 = this->IsInvulnerable;
-	v16 = (this->IsSonicDied);
+	v16 = (this->IsSonicDead);
 	__asm{
 		cntlzw    v16, v16
 	}

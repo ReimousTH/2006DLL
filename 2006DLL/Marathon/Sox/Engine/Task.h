@@ -11,7 +11,8 @@ namespace Sonicteam{
 			struct IO_TASK{
 				//Fields
 				unsigned int Tuint0x24; //Flag?
-				unsigned int Tuint0x28; //Flag
+				unsigned int Tuint0x28; //Flag  // ????????
+			public: IO_TASK();
 			};
 
 			class Task:public Sonicteam::SoX::Component,MessageReceiver,public IO_TASK,public SimpleLinkNode<Task>

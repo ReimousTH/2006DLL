@@ -59,11 +59,13 @@ namespace DebugLogV2 {
 	extern "C" Memory__SetFLOAT(lua_State* L);
 	extern "C" Memory__SetBYTE(lua_State* L);
 	extern "C" Memory__SetPointer(lua_State* L);
+	extern "C" Memory__SetVector(lua_State* L);
 
 	extern "C" int Memory__GetDWORD(lua_State* L);
 	extern "C" int Memory__GetFLOAT(lua_State* L);
 	extern "C" int Memory__GetBYTE(lua_State* L);
 	extern "C" int Memory__GetPointer(lua_State* L);
+	extern "C" int Memory__GetVector(lua_State* L);
 
 	extern "C" int Memory__GetPTR(lua_State* L);
 
@@ -83,6 +85,14 @@ namespace DebugLogV2 {
 	extern "C" Memory_SetFLOAT(lua_State* L);
 	extern "C" Memory_GetBYTE(lua_State* L);
 	extern "C" Memory_SetBYTE(lua_State* L);
+
+
+
+	
+	extern "C" Memory_CallFunc(lua_State* L);
+	extern "C" Memory_AsInt(lua_State* L);
+	extern "C" Memory_AsFloat(lua_State* L);
+
 
 	
 }

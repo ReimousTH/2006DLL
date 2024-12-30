@@ -24,6 +24,7 @@ Sonicteam::SoX::Component::~Component(void)
 {
 	this->LComponentList.ForEach(0);
 	this->LComponentList.Empty();
+	this->LinkedComponent.RemoveLink();
 }
 
 

@@ -93,6 +93,8 @@ const DWORD JumpASMNoPreserveI[] = { /*Dont always have enough space to preserve
 #define malloc06(size) \
 	BranchTo(0x82186158,int,size) \
 
+#define free06(ptr) \
+	BranchTo(0x826DFFE8,int,ptr) \
 
 
 

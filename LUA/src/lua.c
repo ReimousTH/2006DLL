@@ -441,3 +441,8 @@ LUA_API int lua_load06(lua_State *L, lua_Chunkreader reader, void *dt, const cha
 	return ((int (__fastcall *)(lua_State *L, lua_Chunkreader reader, void *dt, const char *chunkname))0x825D6070)(L,reader,dt,chunkname);
 }
 
+LUA_API int lua_getmetatable06(lua_State *L, int objindex)
+{
+	return ((int (__fastcall *)(lua_State *L, int objindex))0x825D5CA8)(L,objindex);
+}
+

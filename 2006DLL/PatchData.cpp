@@ -5959,7 +5959,7 @@ namespace AmyRework{
 			return 1;
 		}
 
-		if ((a1->CObjContext->GroundAirDataFlags & 1) != 0  ){
+		if ((a1->CObjContext->GroundAirFlags & 1) != 0  ){
 
 			//Cancel Hammer Jump
 			if ( (a1->CObjContext->Input & 0x400u) != 0 &&  IsAttack(AmyAtk03,a1->Flags0)){
@@ -6034,7 +6034,7 @@ namespace AmyRework{
 
 		if (IsAttack(AmyAtk05 | AmyAtk04,a1->Flags0) == (AmyAtk04 | AmyAtk05)){
 
-			if ((a1->CObjContext->GroundAirDataFlags & 1) != 0  ){
+			if ((a1->CObjContext->GroundAirFlags & 1) != 0  ){
 				
 					return BranchTo(0x82209068,int,a1);
 				
@@ -6118,7 +6118,7 @@ namespace AmyRework{
 
 		a1->CObjContext->IsInvulnerable2 = 0;
 		(*(byte*)(&a1->BOContext->AmyUnkFlags )) = 0;
-		a1->BOContext->IsForcedMovement = 0;
+		a1->BOContext->IsAnimationRotationLocked = 0;
 		//a1->BOContext->StealthTime = a1->BOContext->c_stealth_limit;
 	}
 

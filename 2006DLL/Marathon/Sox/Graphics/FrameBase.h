@@ -53,6 +53,8 @@ namespace Sonicteam{
 				virtual int FrameUnk08();
 
 
+				//0x8
+				//0xC
 
 				//	Frame* Next; //0x10 
 				//	Frame* Prev; //0x14 

@@ -85,7 +85,7 @@ namespace DebugLogV2{
 	}
 
 	//Sonicteam::SoX::AI::StateMashine<IContext>*
-	void OnStateChange(Sonicteam::Player::State::Machine2* _this,boost::weak_ptr<Sonicteam::SoX::AI::State<Sonicteam::Player::State::IContext>> NextState,Sonicteam::Player::State::IContext* context){
+	void OnStateChange(Sonicteam::Player::State::Machine2* _this,boost::shared_ptr<Sonicteam::SoX::AI::State<Sonicteam::Player::State::IContext>> NextState,Sonicteam::Player::State::IContext* context){
 		
 
 		if (context){
@@ -99,13 +99,13 @@ namespace DebugLogV2{
 
 			if (Sonicteam::Player::State::IMachine* _thus = dynamic_cast<Sonicteam::Player::State::IMachine*>(_this))ProcessStateLua(_thus,0,-1,SM2_OnStateStart);
 			if (Sonicteam::Player::State::IMachine* _thus = dynamic_cast<Sonicteam::Player::State::IMachine*>(_this))ProcessStateLua(_thus,0,_thus->GetCurrentMashineStateID(),SM2_OnStateStart);
-			if (Sonicteam::SoX::AI::State<Sonicteam::Player::State::IContext>* state =  NextState.lock().get()) state->OnStateStart();
+			if (Sonicteam::SoX::AI::State<Sonicteam::Player::State::IContext>* state =  NextState.get()) state->OnStateStart();
 			if (Sonicteam::Player::State::IMachine* _thus = dynamic_cast<Sonicteam::Player::State::IMachine*>(_this))ProcessStateLua(_thus,0,-1,SM2_OnStateStartP);
 			if (Sonicteam::Player::State::IMachine* _thus = dynamic_cast<Sonicteam::Player::State::IMachine*>(_this))ProcessStateLua(_thus,0,_thus->GetCurrentMashineStateID(),SM2_OnStateStartP);
 		}
 		
 		
-		_this->CurrentState = NextState.lock();
+		_this->CurrentState = NextState;
 	}
 
 

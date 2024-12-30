@@ -150,7 +150,7 @@ namespace AmyLOS{
 			a1->CObjContext->SetAnimation(0x45);
 
 
-			if ((a1->CObjContext->GroundAirDataFlags & 1) != 0){
+			if ((a1->CObjContext->GroundAirFlags & 1) != 0){
 				a1->CObjContext->IsGravityDisabled = 0;
 				a1->CObjContext->base_speed_z = 0;
 				a1->CObjContext->base_speed_y = 0;
@@ -169,7 +169,7 @@ namespace AmyLOS{
 			return 1;
 		}
 
-		if ((a1->CObjContext->GroundAirDataFlags & 1) != 0  ){
+		if ((a1->CObjContext->GroundAirFlags & 1) != 0  ){
 
 			//Cancel Hammer Jump
 			if ( (a1->CObjContext->Input & 0x400u) != 0 &&  IsAttack(AmyAtk01,a1->Flags0)){
@@ -213,7 +213,7 @@ namespace AmyLOS{
 
 		}
 
-		if ((a1->CObjContext->GroundAirDataFlags & 1) != 0  )
+		if ((a1->CObjContext->GroundAirFlags & 1) != 0  )
 		{
 			if (IsAttack(AmyAtk04,a1->Flags0) || IsAttack (AmyAtk05,a1->Flags0)){
 
@@ -300,7 +300,7 @@ namespace AmyLOS{
 
 		a1->CObjContext->IsInvulnerable2 = 0;
 		(*(byte*)(&a1->BOContext->AmyUnkFlags )) = 0;
-		a1->BOContext->IsForcedMovement = 0;
+		a1->BOContext->IsAnimationRotationLocked = 0;
 		//a1->BOContext->StealthTime = a1->BOContext->c_stealth_limit;
 	}
 

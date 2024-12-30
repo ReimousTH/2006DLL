@@ -9,6 +9,30 @@
 #include "../Input/IListener.h"
 #include <xtl.h>
 
+//GroundAirFlags (Gordon Ramsay)
+#define CC_GROUND 0x1 //detects Ground 
+#define CC_WALLBRUSHING 0x8 // detects brushing against a wall
+#define CC_HEADONWALL 0x10 //detects head-on wall collision (will always be enabled w/ 2^3)
+#define CC_RAILGRIND 0x40 //Rail grinding
+#define CC_BEFOREFALL 0x100 // seems like Neutral or Pre-Fall? The moment before transitioning from the Jump to Fall animation
+#define CC_FALL 0x200 // is Falling
+#define CC_WATERLCOL 0x800 //  Water collision (making you slide down an incline)? 2^8(CC_BEFOREFALL) is often set with this
+#define CC_LIGHTDASHIN 0x4000 // Light Dashing (2 ^ 14)
+#define CC_QUICKROTATE 0x8000 // is moving the control stick in a non-forward direction (usually only active for a frame since the character instantly rotates)
+#define CC_TENTATIVE 0x10000 // is Tentative collision 
+#define CC_WATERSLIDE 0x20000 // Water sliding (2^17)	
+#define CC_GRASS 0x100000 // grass 2^20
+#define CC_DIRTCLAY 0x200000 // dirt/clay (2^21)
+#define CC_STONE 0x400000 // stone (2^22)
+#define CC_SHORELINE 0x1000000 // shoreline? sand? Uncertain (2^24) 
+//Comment
+//^ A lot of these are often set with 2^22, with the lower bit determining SFX/particles. For instance, the grass in Forest is 2^20 + 2^22.
+//Physics objects can get a bit weird (specifically the boxes) and are seemingly affected by what's below them.
+//Like, a bomb box at the start of Sonic's KDV A has the flag 27262976 while a wooden box has the flag 26214400. The difference in is 2^20, the flag for grass, which is what the bomb box is on top of.
+//Similarly, if you get on the Wood Box that's on top of the bomb box, it'll have the flag 26214656. But that will revert to the standard 26214400 if the Bomb Box goes away 
+
+
+
 
 namespace Sonicteam{
 
@@ -65,23 +89,18 @@ namespace Sonicteam{
 				float SpeedUpTime;
 				int UnkSomeTimer;
 				float AngleMoveDataMB;
-				unsigned int GroundAirDataFlags; //0xC4
+				unsigned int GroundAirFlags; //0xC4 (CC_??) FLAGS
 				unsigned long long UnknownFlags0xC8;
 				int UnknownFlags0xD0;
 				int UnknownFlags0xD4;
 				int UnknownUnUsedFlagD8;
 				int FreeUnknownFlagsDC;
-				
-				
-				char IsUnkDD; //0xDD 
-				char IsUnkDE; //0xDE
-				char IsUnkDF; //0xDF 
 				char IsSonicDead; //0xE0 ( IsSonicDead)
-				char IsRingGhostMode; //0xE1 
+				char IsGhostMode; //0xE1 
 				char BlinkInvulMode; //0xE2
 				char IsAnimationRotationLocked; //0xE3 (left,right,down)
-				char IsUnkE4; //Homing-Force (or some like it???)
-				char IsUnkE5; //?
+				char IsInvulnerable; //Homing-Force (or some like it???)
+				char IsInvulnerable2; //?
 				char IsUnkE6; //??
 				char IsGravityDisabled; //0xE7
 				char IsUnkE8;
@@ -124,17 +143,17 @@ namespace Sonicteam{
 				char IsUnk107;
 				char IsPsiEffect; //0x108
 				char IsCharacterControlTypeB; //0x109
-				char IsAntiGravity; //0x10A
+				char IsAntiGravity; //0x10A (collider)
 				char IsChrCamDisabled; //0x10B
-				char IsUnk10C;
-				char IsOneHitMode; //0x10D
+				char IsUnk10C; //0x10C
+				char IsKillChrIfZeroRings; //0x10D
 				char IsUnk10E;
 				char IsUnk10F;
 				char IsUnk110;
-				char UnknownFlags0x111[0x15];
+				char UnknownFlags0x111[0x15]; //chr-upgrades (get only)
 				char IsUnk126;
 				char IsUnk127;
-				boost::shared_ptr<Sonicteam::Player::Score> ScorePlugin;
+				boost::shared_ptr<Sonicteam::Player::Score> ScorePlugin; //0x128
 				boost::shared_ptr<int> GravityPlugin;
 				boost::shared_ptr<Sonicteam::Player::Input::IListener> ListenerNormalInputPlugin;
 				boost::shared_ptr<int> PlayerAIAmigoPlugin;

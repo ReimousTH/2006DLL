@@ -313,7 +313,7 @@
 			/>
 			<Tool
 				Name="VCCLX360CompilerTool"
-				Optimization="0"
+				Optimization="3"
 				InlineFunctionExpansion="2"
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="0"
@@ -359,7 +359,7 @@
 				ModuleDefinitionFile="DllModule.def"
 				GenerateDebugInformation="true"
 				GenerateMapFile="true"
-				OptimizeReferences="2"
+				OptimizeReferences="1"
 				EnableCOMDATFolding="1"
 				SetChecksum="true"
 			/>
@@ -617,6 +617,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Patches\DebugLog\LuaExtension_Buffer.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\DebugLog\LuaExtension_Buffer.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Patches\DebugLog\LuaExtension_LuaLCommonObject.cpp"
 						>
 					</File>
@@ -654,6 +662,14 @@
 					</File>
 					<File
 						RelativePath=".\Patches\DebugLog\LuaExtension_StateMachine2.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\DebugLog\LuaExtension_Uint64.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\DebugLog\LuaExtension_Uint64.h"
 						>
 					</File>
 					<File

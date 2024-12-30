@@ -586,6 +586,9 @@ LUA_API int lua_getmetatable (lua_State *L, int objindex) {
   return res;
 }
 
+LUA_API int   lua_getmetatable06 (lua_State *L, int objindex){
+	return 	 ((void* (__fastcall *)(lua_State *L, int objindex))0x825D5CA8)(L,objindex);
+}
 
 LUA_API void lua_getfenv (lua_State *L, int idx) {
   StkId o;
@@ -946,6 +949,8 @@ LUA_API void *lua_newuserdata06 (lua_State *L, size_t size) {
 
 	return 	 ((void* (__fastcall *)(lua_State *L, size_t size))0x825D6278)(L,size);
 }
+
+
 
 LUA_API void *lua_newuserdata (lua_State *L, size_t size) {
   Udata *u;

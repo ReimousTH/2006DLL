@@ -5,6 +5,7 @@
 #include "Player/State/CommonObject.h"
 #include "Player/State/SonicContext.h"
 #include "Player/Gauge/SonicGauge.h"
+#include "Player/State/CommonContext.h"
 
 
 namespace CompleteGauge{
@@ -43,28 +44,17 @@ namespace CompleteGauge{
 		// Use them both for Grab
 
 
-		if ((*v22 & 0x2000) != 0 && (*v22 & 0x80) == 0){
-
-			pass = true;
-		}
-
-
-		//OnGround
-		if ((*v22 & 1) != 0){
-
-
-			pass = false;
-
-
-		}
-		if (pass ){
-
+	
+	
+		if ((*v22 & CC_HEADONWALL) && (*v22 & CC_WALLBRUSHING) && (*v22 & CC_FALL)) {
+			// Your code here
+		
 
 
 			DWORD t =  *(DWORD*)(a1 + 0x120 + 0x24);
 			DWORD z  = *(DWORD*)(t + 0x14); // Count of corners that character touches
 
-			if (z > 0  && (*v22 & 1) == 0){
+			if (z > 0){
 				*(DWORD*)(Edge + 0x30) = 0x80;
 				*(byte*)(Edge + 0x4C) = 0x0;
 				*v22 = *v22 |  0x80;
@@ -78,7 +68,7 @@ namespace CompleteGauge{
 
 	void GlobalInstall_CommonPosture()
 	{
-		//WRITE_DWORD(0x82009050,PostureControlCmn);
+		WRITE_DWORD(0x82009050,PostureControlCmn);
 		
 	}
 	

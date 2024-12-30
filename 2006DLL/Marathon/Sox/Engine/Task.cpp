@@ -18,10 +18,9 @@ Task::Task(Sonicteam::SoX::Engine::Doc* doc):Component(0),SimpleLinkNode<Task>()
 }
 
 
-Sonicteam::SoX::Engine::Task::Task(Sonicteam::SoX::Engine::Task* task) :Component(task),SimpleLinkNode<Task>()
+Sonicteam::SoX::Engine::Task::Task(Sonicteam::SoX::Engine::Task* task) :Component(task),IO_TASK(),SimpleLinkNode<Task>()
 {
-	this->Tuint0x24 = 0;
-	this->Tuint0x28 = 0;
+
 	this->Parent = task;	
 	this->TaskEngineDoc = 0;
 	this->TaskList = Sonicteam::SoX::LinkNodeList<Task>(0);
@@ -82,3 +81,7 @@ void Sonicteam::SoX::Engine::Task::DestroyObject(unsigned int flag)
 	Sonicteam::SoX::Memory::IUDestructible::DestroyObject(this,flag);
 }
 
+Sonicteam::SoX::Engine::IO_TASK::IO_TASK()
+{
+	this->Tuint0x24 = 0;
+}
