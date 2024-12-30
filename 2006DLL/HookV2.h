@@ -12,6 +12,7 @@ public:
 	
 
 	static unsigned int IsNotEmulatedHardWare;
+
 	HookV2(void);
 	~HookV2(void);
 	

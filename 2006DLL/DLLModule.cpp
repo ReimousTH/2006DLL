@@ -421,6 +421,7 @@ extern "C" void OnDLLStart(){
 			WRITE_DWORD(0x82000B88,0x3D088889);
 
 		}
+		DebugLogV2::ThreadLog = BaseLua.GetGlobalBool("DebugLog_ThreadLog");
 
 
 		for (int i = 0;i<sizeof(_PreLoadPatches) / sizeof(DFastActions);i++){

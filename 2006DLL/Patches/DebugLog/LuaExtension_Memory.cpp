@@ -458,6 +458,7 @@ namespace DebugLogV2{
 				break;
 			case  2:
 				*(char*)(ptr + move) = value;
+				break;
 			case 5:
 				XMVECTOR* vec = (XMVECTOR*)(ptr + move);
 				lua_rawgeti(L,arg_value_num,1); vec->x = lua_tonumber(L,-1); lua_pop(L,1);
@@ -534,7 +535,7 @@ namespace DebugLogV2{
 				move += lua_tonumber(L,2);
 			}
 		}
-		
+
 
 	
 			switch (type){
@@ -789,9 +790,6 @@ namespace DebugLogV2{
 		float f7_value = registers_values_float[6];
 
 
-		__asm {
-			stmw r3, registers_values_or
-		}
 
 		__asm{
 			mr r3,r3_value
@@ -820,19 +818,7 @@ namespace DebugLogV2{
 		}
 
 
-
-		__asm {
-			lmw r3, registers_values_or
-
-		}
-
-
-		
-
 		Memory__CreateMetatable(L,return_value,0);
-
-
-
 		return 1;
 	}
 

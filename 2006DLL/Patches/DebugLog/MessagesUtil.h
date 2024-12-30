@@ -20,6 +20,8 @@ extern "C" {
 
 namespace DebugLogV2{
 
+	extern int ThreadLog;
+
 
 	static std::vector<int> DebugMessagesPlace;
 	static std::vector<int> DebugMessages;
@@ -41,7 +43,7 @@ namespace DebugLogV2{
 	
 	extern std::vector<std::string> log;
 
-	void MessageUtilGlobalInstall();
+	void MessageUtilGlobalInstall(lua_State* L);
 
 }
 

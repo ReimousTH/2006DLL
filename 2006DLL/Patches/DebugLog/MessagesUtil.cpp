@@ -37,6 +37,8 @@ namespace DebugLogV2{
 
 }
 
+int DebugLogV2::ThreadLog = false;
+
 void DebugLogV2::ChangeMessagePosition(UINT32 TextEntity,float x,float y)
 {
 
@@ -116,8 +118,11 @@ UINT32 DebugLogV2::SpawnMessage(const wchar_t* msg,float pos_y)
 
 
 
+
+
+
+
 namespace DebugLogV2{
-LPCWSTR g_pwstrButtonsXx[1] = { L"------------OK----------------" };
 wchar_t *convertCharArrayToLPCWSTR(const char* charArray)
 {
 	wchar_t* wString=new wchar_t[4096];
@@ -142,7 +147,7 @@ std::wstring ConcatenateStrings(const std::vector<std::string>& debugLog)
 
 DWORD WINAPI ThreadProc( LPVOID lpParameter )
 {
-
+	LPCWSTR g_pwstrButtonsXx[1] = { L"------------OK----------------" };
 	DWORD dwThreadNumber = (DWORD) lpParameter;
 
 
@@ -156,7 +161,8 @@ DWORD WINAPI ThreadProc( LPVOID lpParameter )
 		
 			MESSAGEBOX_RESULT result;
 			XOVERLAPPED m_Overlapped; 
-			XShowMessageBoxUI(0,L"DebugLog V2.0",ConcatenateStrings(log).c_str(),1,g_pwstrButtonsXx,1,XMB_ALERTICON,&result,&m_Overlapped);
+			XShowMessageBoxUI(0,L"DebugLog V2.0",DebugLogV2::ConcatenateStrings(log).c_str(),1,g_pwstrButtonsXx,1,XMB_ALERTICON,&result,&m_Overlapped);
+
 
 		//	while (result.dwButtonPressed != 0){
 		//	}
@@ -231,22 +237,55 @@ static int Printf (lua_State *L) {
 
 }
 
-std::vector<std::string> DebugLogV2::log = std::vector<std::string>();
 
-void DebugLogV2::MessageUtilGlobalInstall()
+
+std::vector<std::string> DebugLogV2::log = std::vector<std::string>();
+extern "C" ShowDebugLog(lua_State* LS){
+
+
+	LPCWSTR g_pwstrButtonsX_INL[1] = { L"------------OK----------------" };
+	MESSAGEBOX_RESULT result;
+	XOVERLAPPED m_Overlapped;
+	ZeroMemory(&m_Overlapped, sizeof(XOVERLAPPED));
+
+	HANDLE hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+	 m_Overlapped.hEvent = hEvent;
+
+	 XShowMessageBoxUI(0,L"DebugLog V2.0",DebugLogV2::ConcatenateStrings(DebugLogV2::log).c_str(),1,g_pwstrButtonsX_INL,1,XMB_ALERTICON,&result,&m_Overlapped);
+	DWORD waitResult = WaitForSingleObject(hEvent, INFINITE);
+	CloseHandle(hEvent);
+
+	return 0;
+}
+
+extern "C" ClearDebugLog(lua_State* LS){
+
+	DebugLogV2::log.clear();
+	return 0;
+}
+
+
+
+
+
+
+
+void DebugLogV2::MessageUtilGlobalInstall(lua_State* L)
 {
 
+	if  (L == 0){
+		WRITE_DWORD(0x8203B8AC,Printf);
+		WRITE_DWORD(0x82049094,luaB_print);
 
-	WRITE_DWORD(0x8203B8AC,Printf);
-	WRITE_DWORD(0x82049094,luaB_print);
-
-
-	if (!HookV2::IsNotEmulatedHardWare){
-		const int stackSize = 65536;
-		HANDLE Thr = CreateThread( NULL, stackSize, ThreadProc, (VOID *)0, CREATE_SUSPENDED, NULL );
-		ResumeThread(Thr);
+		if (!HookV2::IsNotEmulatedHardWare && DebugLogV2::ThreadLog){
+			const int stackSize = 65536;
+			HANDLE Thr = CreateThread( NULL, stackSize, ThreadProc, (VOID *)0, CREATE_SUSPENDED, NULL );
+			ResumeThread(Thr);
+		}
 	}
-
-
+	else{
+		lua_register06(L,"ShowDebugLog",ShowDebugLog);
+		lua_register06(L,"ClearDebugLog",ClearDebugLog);
+	}
 }
 

@@ -13,7 +13,7 @@ extern "C" {
 
 
 namespace DebugLogV2{
-
+	
 	void GlobalInstall();
 
 }
