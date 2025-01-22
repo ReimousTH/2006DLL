@@ -1,39 +1,6 @@
-//-----------------------------------------------------------------------------
-//  DLLModule.cpp
-//
-// Demonstrates the use of Dynamic Link Library (aka DLL) by
-// Using the Load/FreeLibrary API.
-//
-//
-// Xbox Advanced Technology Group.
-// Copyright (C) Microsoft Corporation. All rights reserved.
-//-----------------------------------------------------------------------------
-
-
 #pragma warning(push)
 #pragma warning(disable: 4101)
-// here goes your code where the warning occurs
 #pragma warning(pop)
-//-----------------------------------------------------------------------------
-//  DLLModule.cpp
-//
-// Demonstrates the use of Dynamic Link Library (aka DLL) by
-// Using the Load/FreeLibrary API.
-//
-//
-// Xbox Advanced Technology Group.
-// Copyright (C) Microsoft Corporation. All rights reserved.
-//-----------------------------------------------------------------------------
-
-
-
-//#include "MPatches.h"
-//#include "Marathon.h"
-//#include "Patches.cpp"
-
-
-
-
 
 
 #include <xtl.h>
@@ -220,11 +187,11 @@ void LoadDLLArcFile(const char* file){
 	if (CheckDLLFile(&_file))
 	{
 		Sonicteam::SoX::IResource* resouce;
-		ArcHandle(&resouce,_file,2,2);
+		ArcHandle(&resouce,_file,2,0);
 		sub_82582C10(resouce);
 	}
 	else{
-		
+		ShowXenonMessage(L"MSG","FAIL");
 	}
 
 }
@@ -279,6 +246,7 @@ int __fastcall sub_8264E068(int a1, int a2, int a3) {
 		std::vector<std::string>* pkg = 	ExFileSystem::GetArcs_pkg();
 		for (std::vector<std::string>::iterator it = pkg->begin();it!= pkg->end();it++){
 		
+			
 			LoadDLLArcFile(it->c_str());
 		}
 
@@ -413,6 +381,7 @@ extern "C" void OnDLLStart(){
 
 		Socket::IP_ADDR = BaseLua.GetGlobalString("IP_ADRESS");	
 
+		DebugLogV2::OpenStateExEnabled = BaseLua.GetGlobalBool("DebugLog_OpenStateExEnabled");
 
 		if (BaseLua.GetGlobalBool("FPS30") == true){
 
@@ -563,7 +532,7 @@ extern "C" void OnDLLStart(){
 //       The DllMain routine should not be used to load another module or call a
 //       routine that may block.
 //-----------------------------------------------------------------------------
-BOOL APIENTRY DllMain( HANDLE hModule, 
+__declspec(dllexport) BOOL APIENTRY DllMain( HANDLE hModule, 
                        DWORD  ul_reason_for_call, 
                        LPVOID lpReserved
                      )

@@ -977,11 +977,7 @@ LUALIB_API int luaopen_string (lua_State *L) {
 
 LUALIB_API int luaopen_string_06 (lua_State *L) {
 
-
-	((void (__fastcall *)(lua_State*,char*,const luaL_reg *,int))0x825D6700)(L,"string",strlib06,0);
-
-
-
+	luaL_openlib06(L,"string",strlib06,0);
 	return 1;
 }
 

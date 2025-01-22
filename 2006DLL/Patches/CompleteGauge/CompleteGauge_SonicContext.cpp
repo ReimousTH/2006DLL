@@ -16,7 +16,6 @@ namespace CompleteGauge{
 
 
 
-
 	//Core
 	void SonicContextOnStep(SonicContextExtended *_this, double a2){
 
@@ -30,7 +29,7 @@ namespace CompleteGauge{
 		bool IsSpeedUPGEM = false;
 
 
-		IsSpeedUPGEM = (bool)_this->IsMachSpeed;
+		IsSpeedUPGEM = (bool)_this->MachAura;
 
 		//std::stringstream sus;
 		//sus << std::hex<< _this->Input;
@@ -45,6 +44,31 @@ namespace CompleteGauge{
 		if (StateID == 0x4D || StateID == 0x4A || StateID == 0x4B || _this->isShrink || _this->isSlowTime){
 
 			//LockGaugeHeal = true;
+		}
+
+		if ((_this->Input & LN_GAMEPAD_BUTTON_RT_PRESS) != 0){
+			Sonicteam::DocMarathonImp* impl = 	*(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
+			Sonicteam::GameImp* gameimp = *(Sonicteam::GameImp**)(impl->DocCurrentMode + 0x6C);
+			Sonicteam::Prop::Manager* mgr =  gameimp->GamePropManager.get();
+
+			std::string Viser;
+		
+
+		
+			std::map<std::string, Sonicteam::Prop::Class*>* _map_ = (std::map<std::string,Sonicteam::Prop::Class*>*)&(mgr->PropClassRegistry->_registry_);
+
+			for (std::map<std::string, Sonicteam::Prop::Class*>::iterator it = 	_map_->begin(); it != _map_->end(); ++it) {
+
+					Viser.append(it->first);
+					Viser.append(":");
+					std::stringstream str; str << std::hex << it->second->ClassPropData->ClassName;
+					Viser.append(str.str());
+					Viser.append("\n");
+				
+			}
+
+//			PushXenonMessage(L"Test",Viser.c_str(),0);
+			
 		}
 
 
@@ -109,7 +133,7 @@ namespace CompleteGauge{
 
 		if (_this->IsSuper) {
 
-			_this->IsInvulnerable = 1; 
+			_this->HomingInvulnerable = 1; 
 			_this->c_super_ring_dec_time += a2;
 			if (_this->c_super_ring_dec_time > 1.0){
 				_this->c_super_ring_dec_time = 0.0f;
@@ -120,7 +144,7 @@ namespace CompleteGauge{
 
 
 			if (_this->ScorePlugin.get()->RingsCount <= 0 || _this->IsSonicDead){
-				_this->IsInvulnerable = 0;
+				_this->HomingInvulnerable = 0;
 				_this->IsSuper = false;
 				//Switch backB
 				Switch(_this,"player/sonic_new.lua","player/sonic_new","player_sonic","sonic");

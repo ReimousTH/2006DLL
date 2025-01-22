@@ -7,6 +7,7 @@
 #include <LuaSystem.h>
 #include <Player/INotification.h>
 
+#include <Sox/Scenery/Clump.h>
 
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
@@ -130,40 +131,83 @@ namespace CompleteGauge{
 	
 
 
-	
-
-
-		
-		
 		Sonicteam::Player::Load* package_player =  (Sonicteam::Player::Load*)*(_DWORD *)(ObjPlayer + 0x154);
 
-		/*
-		
-		//Reload Package
-		std::string* S1 =  (std::string *)(ObjPlayer + 0x74);
-		*S1 = package_name;
-		int v6 = *(_DWORD *)(ObjPlayer + 0x154);
-		if ( v6 )
-		{	
-				int v11[8];
-				int* v7 = (int *)(*(int (__fastcall **)(int *, int, int))(*(_DWORD *)v6 + 4))(v11, v6, ObjPlayer + 0x74); //Player Load Load Package File
-				int v8 = *v7;		
-
-				Sonicteam::SoX::RefCountObject* v9 = *(	Sonicteam::SoX::RefCountObject**)(ObjPlayer + 0xD0);
-				*(_DWORD *)(ObjPlayer + 0xD0) = v8;
-			
-		}
-
-
-		*/
 		
 
 		float Save0x18 = ObjPlayerGetCurrentAnimTime(_context);
 		int SavedAnim = ObjPlayerGetCurrentAnim(_context);
 	
-		
+	
 
 		//Reload (IVarible)) (input,model, gravity, state_context, zock, path, path_gd, path_col, score, physicsbody, automatic_dead, lockon, homing, lockon_homing, path_ld, lockon_lightdash, gauge, sonic_weapons,input vehicle, waterslider, item, ai)
+	
+
+		/*
+		for (std::vector<boost::shared_ptr<Sonicteam::Player::IPlugIn>>::iterator  it = IPluginP->begin();it!=IPluginP->end();it++ ){
+			
+			if ((*it)->PluginName == "model"){
+				int ModelCHR = (int)(*it).get();
+				Sonicteam::SoX::Scenery::Clump** clump_1 = (Sonicteam::SoX::Scenery::Clump**)(ModelCHR + 0x74);
+				Sonicteam::SoX::Scenery::Clump** clump_2 = (Sonicteam::SoX::Scenery::Clump**)(ModelCHR + 0x78);
+				Sonicteam::SoX::Scenery::Clump** clump_3 = (Sonicteam::SoX::Scenery::Clump**)(ModelCHR + 0x7C);
+				Sonicteam::SoX::Scenery::Clump** clump_4 = (Sonicteam::SoX::Scenery::Clump**)(ModelCHR + 0x80);
+
+
+				Sonicteam::SoX::Scenery::Clump** clump_5 = (Sonicteam::SoX::Scenery::Clump**)(ModelCHR + 0x130);
+				Sonicteam::SoX::Scenery::Clump** clump_6 = (Sonicteam::SoX::Scenery::Clump**)(ModelCHR + 0x134);
+				Sonicteam::SoX::Scenery::Clump** clump_7 = (Sonicteam::SoX::Scenery::Clump**)(ModelCHR + 0x138);
+				Sonicteam::SoX::Scenery::Clump** clump_8 = (Sonicteam::SoX::Scenery::Clump**)(ModelCHR + 0x13C);
+
+				int* ModelFlag = (int*)(ModelCHR+0x148);
+
+				if (*clump_1) (*clump_1)->SSSD08();
+				if (*clump_2) (*clump_2)->SSSD08();
+				if (*clump_3) (*clump_3)->SSSD08();
+				if (*clump_4) (*clump_4)->SSSD08();
+				if (*clump_5) (*clump_5)->SSSD08();
+				if (*clump_6) (*clump_6)->SSSD08();
+				if (*clump_7) (*clump_7)->SSSD08();
+				if (*clump_8) (*clump_8)->SSSD08();
+	
+
+	
+
+				(*clump_1)->DestroyObject(1);
+				(*clump_2)->DestroyObject(1);
+				(*clump_3)->DestroyObject(1);
+				(*clump_4)->DestroyObject(1);
+				(*clump_5)->DestroyObject(1);
+				(*clump_6)->DestroyObject(1);
+				(*clump_7)->DestroyObject(1);
+				(*clump_8)->DestroyObject(1);
+		
+
+			
+				*clump_1 = 0;
+				*clump_2 = 0;
+				*clump_3 = 0;
+				*clump_4 = 0;
+				*clump_5 = 0;
+				*clump_6 = 0;
+				*clump_7 = 0;
+				*clump_8 = 0;
+
+				*ModelFlag = 0;
+
+				boost::shared_ptr<Sonicteam::SoX::RefCountObject>*  element = (boost::shared_ptr<Sonicteam::SoX::RefCountObject>*)(ModelCHR + 0x30);
+				boost::shared_ptr<Sonicteam::SoX::RefCountObject>*  element_1 = (boost::shared_ptr<Sonicteam::SoX::RefCountObject>*)(ModelCHR + 0xD4);
+				element->reset();
+				element_1->reset();
+
+				(*it)->DestroyObject(0);
+
+			}
+		}
+		*/
+		
+
+
 		std::vector<boost::shared_ptr<Sonicteam::Player::IPlugIn>>* IPluginP = reinterpret_cast<std::vector<boost::shared_ptr<Sonicteam::Player::IPlugIn>>*>(ObjPlayer + 0x114);
 
 
@@ -179,20 +223,15 @@ namespace CompleteGauge{
 		std::vector<boost::shared_ptr<Sonicteam::Player::IStepable>>* IStepableP4 = reinterpret_cast<std::vector<boost::shared_ptr<Sonicteam::Player::IStepable>>*>(ObjPlayer + 0x27C);
 			
 		std::vector<boost::shared_ptr<Sonicteam::Player::IExportExternalFlag>>* IExportExternalFlagP = reinterpret_cast<std::vector<boost::shared_ptr<Sonicteam::Player::IExportExternalFlag>>*>(ObjPlayer + 0x28C);
-		//std::vector<boost::shared_ptr<Sonicteam::Player::IVariable>>* IVariblesP = reinterpret_cast<std::vector<boost::shared_ptr<Sonicteam::Player::IExportVehicleFlag>>*>(ObjPlayer + 0x29C);
+
+
 		std::vector<boost::shared_ptr<Sonicteam::Player::IExportPostureRequestFlag>>* IExportPostureRequestFlagP = reinterpret_cast<std::vector<boost::shared_ptr<Sonicteam::Player::IExportPostureRequestFlag>>*>(ObjPlayer + 0x2AC);
-
-		//std::vector<boost::shared_ptr<Sonicteam::Player::IVariable>>* IVariblesP = reinterpret_cast<std::vector<boost::shared_ptr<Sonicteam::Player::IExportWeaponRequestFlag>>*>(ObjPlayer + 0x2BC);
-
-	
-	//		std::vector<boost::shared_ptr<Sonicteam::Player::IVariable>>* IVariblesP = reinterpret_cast<std::vector<boost::shared_ptr<Sonicteam::Player::IStepablePost>>*>(ObjPlayer + 0x27C);
-
-		//std::vector<boost::shared_ptr<Sonicteam::Player::IVariable>>* IVariblesP = reinterpret_cast<std::vector<boost::shared_ptr<Sonicteam::Player::IImportAnimation>>*>(ObjPlayer + 0x2CC);
 		std::vector<boost::shared_ptr<Sonicteam::Player::INotification>>* INotificationP = reinterpret_cast<std::vector<boost::shared_ptr<Sonicteam::Player::INotification>>*>(ObjPlayer + 0x2DC);
 	
 
 
-/*
+
+		ClearObjectByPluignName(IVariblesP,"model");
 		ClearObjectByPluignName(IPluginP,"model");
 		ClearObjectByPluignName(IStepableP1,"model");
 		ClearObjectByPluignName(IDynamicLinkP,"model");
@@ -204,6 +243,32 @@ namespace CompleteGauge{
 		ClearObjectByPluignName(IExportPostureRequestFlagP,"model");
 		ClearObjectByPluignName(INotificationP,"model");
 
+
+
+
+		Sonicteam::SoX::Object* obj = (Sonicteam::SoX::Object*)ObjPlayer;
+		p->LuaProceedArgFunction(obj,std::string("SetupModule"));
+
+
+
+		for (std::vector<boost::shared_ptr<Sonicteam::Player::IVariable>>::iterator  it = IVariblesP->begin();it!=IVariblesP->end();it++ ){
+			(*it)->OnVarible(&p);
+		}
+
+		for (std::vector<boost::shared_ptr<Sonicteam::Player::IDynamicLink>>::iterator  it = IDynamicLinkP->begin();it!=IDynamicLinkP->end();it++ ){
+
+			for (std::vector<boost::shared_ptr<Sonicteam::Player::IPlugIn>>::iterator  it_2 = IPluginP->begin();it_2!=IPluginP->end();it_2++ ){
+
+				Sonicteam::Player::IPlugIn* plug = (*it_2).get();
+				(*it)->OnLink(plug);
+			}
+		}
+
+
+		
+
+
+/*
 		ClearObjectByPluignName(IPluginP,"effect");
 		ClearObjectByPluignName(IStepableP1,"effect");
 		ClearObjectByPluignName(IDynamicLinkP,"effect");
@@ -214,60 +279,35 @@ namespace CompleteGauge{
 		ClearObjectByPluignName(IExportExternalFlagP,"effect");
 		ClearObjectByPluignName(IExportPostureRequestFlagP,"effect");
 		ClearObjectByPluignName(INotificationP,"effect");
+
 */
 
+	
+		*(std::string*)(ObjPlayer + 0x1D8) = p->LuaNodeUnknown0x0F("c_player_name");
+	
+	
+		int ModelPlug =   (int)*(_DWORD *)(ObjPlayer + 0xD4);
+		Sonicteam::Player::Load* ModelLoad = *(Sonicteam::Player::Load**)(((int)ModelPlug) + 0x98);
+		
 
 
+
+	//	Sonicteam::Player::IVariable* ModelPlugIVariable =  (Sonicteam::Player::IVariable*)(*(_DWORD *)(ObjPlayer + 0xD4)   + 0x20);
+	//	ModelPlugIVariable->OnVarible(&p);
 
 	
-		Sonicteam::Player::IPlugIn* ref_model;
-		for (std::vector<boost::shared_ptr<Sonicteam::Player::IVariable>>::iterator it = IVariblesP->begin(); it != IVariblesP->end(); it++) {
-			boost::shared_ptr<Sonicteam::Player::IVariable> pluginPtr = *it;
-			Sonicteam::Player::IVariable* IVari = (*it).get();
-		
-			if (Sonicteam::Player::IPlugIn* plugin = dynamic_cast<Sonicteam::Player::IPlugIn*>(pluginPtr.get())) {
-				if  (plugin->PluginName == "item"){
-				//	_DWORD* v1 = (_DWORD *)plugin;
-				//	int v2 = (int)(plugin) + 0x38;
-				//	int v3 = *(_DWORD *)((int)(plugin) + 0x3C);
+	//	ModelLoad->ProcessClump02(	(Sonicteam::SoX::RefCountObject**)((PackageModel->get()) + 0x40));
+	//	ModelLoad->ProcessClump02_01((Sonicteam::SoX::RefCountObject**)(ModelPlug + 0x74));
 
-				//	int PlayerLoad = *(_DWORD *)(ObjPlayer + 0x154);
-				//	int PlayerRootFrame = *(_DWORD *)(ObjPlayer + 0xCC);
-				//	int a1 = (int)plugin;
-				//	BranchTo(//,int,plugin); //Destroy
-				//	memset((void*)plugin,0,0x4C);
-				//	BranchTo(0x8223C480,int,plugin,PlayerLoad,&PlayerRootFrame); //Destroy
-					//pluginPtr.get()->OnVarible(&p);
-					
-					
-
-				}
 			
-				if (plugin->PluginName == "model"){
-				//	ref_model = plugin;
-				//	IVari->OnVarible(&p);
-				//	ref_model->DestroyObject(0);
 
-				//	int RootFrame =  *(_DWORD *)(ObjPlayer + 0xCC);
-				//	BranchTo(0x82237878,int,ref_model,package_player,&RootFrame,0x820032C0);
-				//	IVari->OnVarible(&p);
-				}
-				if (plugin->PluginName == "context"){
-					IVari->OnVarible(&p);
-				}
+		//LOAD,statetable,package,mode,face,frameGP
+	//	Sonicteam::SoX::Scenery::Clump* ModelClumpBody = (Sonicteam::SoX::Scenery::Clump* )*(int*)(((int)PackageModel) + 0x40);
+	//	Sonicteam::SoX::Scenery::Clump* ModelClumpHead = (Sonicteam::SoX::Scenery::Clump* )*(int*)(((int)PackageModel) + 0x4C);
 
 
-			}
-
-		}
-
-	
-	      *(std::string*)(ObjPlayer + 0x1D8) = p->LuaNodeUnknown0x0F("c_player_name");
-	
-
-
-		
-		Sonicteam::Player::IPlugIn* ModelPlug =   (Sonicteam::Player::IPlugIn*)*(_DWORD *)(ObjPlayer + 0xD4);
+	//	ModelClumpBody->SSSD08();
+	//	ModelClumpHead->SSSD08();
 	
 	//	boost::shared_ptr<int>* ptr = (boost::shared_ptr<int>*)ObjPlayer + 0xD4;
 	//	ptr->reset();
@@ -398,7 +438,7 @@ namespace CompleteGauge{
 
 
 
-	//	p->LoseObject();
+		p->Release();
 
 
 	}
@@ -489,8 +529,8 @@ namespace CompleteGauge{
 		}
 
 		result->BOContext->IsGravityDisabled = 0;
-		result->BOContext->IsHoming = 0;
-		result->BOContext->IsInvulnerable = 0;
+		result->BOContext->HomingLockOn = 0;
+		result->BOContext->HomingInvulnerable = 0;
 		result->BOContext->IsJumped_PostureVelocityYHandle = 0;
 		result->BOContext->IsForceTypeA_DashpanelsJumpRunHoming = 0;
 		result->BOContext->byte23F = 0;

@@ -20,7 +20,7 @@ namespace Sonicteam{
 			//bool
 			virtual int Unk01(int,int) = 0; // FileArrayPtr,FileSizeMb
 			virtual int Unk02(); //return 0
-			virtual std::string Unk03(int,std::string) = 0;
+			virtual std::string GetResourceName(std::string* file_name) = 0;
 			virtual int Unk04(); //return 1
 
 

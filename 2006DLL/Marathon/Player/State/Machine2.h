@@ -31,8 +31,10 @@ namespace Sonicteam{
 			{
 			public:
 				Machine2(void);
-				virtual ~Machine2(void);
+				~Machine2(void);
 
+
+				virtual void DestroyObject(unsigned int flag) override;
 
 				///IMachine
 				virtual void OnMashineTick(float)  override;
@@ -44,12 +46,13 @@ namespace Sonicteam{
 				virtual unsigned int CompleteChangeMashineState(int) override;
 				virtual unsigned int GetCurrentMashineStateID() override;
 
+			
 		
 				//Mashine Fields
 				//unsigned int field_0x3C; // why did i even add this????????
 				std::vector<std::pair<int,StateConstructor>> MashineStates; //0x40
-				unsigned int field_0x50; //-1 (at constuctor)
-				unsigned int field_0x54;
+				unsigned int PreState; // -1 (at constuctor)
+				unsigned int PostState;
 						 byte MashineStateFlag1; //0x58
 						 byte MashineStateFlag2; //0x59
 						 byte MashineStateFlag3; //0x5A

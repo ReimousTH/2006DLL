@@ -70,7 +70,7 @@ void Sonicteam::GameImp::GameImpUnk01()
 
 }
 
-boost::shared_ptr<unsigned int> Sonicteam::GameImp::GameGetPropManager()
+boost::shared_ptr<Sonicteam::Prop::Manager> Sonicteam::GameImp::GameGetPropManager()
 {
 	return this->GamePropManager;
 }

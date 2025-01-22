@@ -19,24 +19,28 @@ void Sonicteam::ActorManager::DestroyObject(unsigned int flag)
 	Sonicteam::SoX::Memory::IUDestructible::DestroyObject(this,flag);
 }
 
-void Sonicteam::ActorManager::SearchActorByID(unsigned int& ID)
+Sonicteam::SoX::Engine::Task* Sonicteam::ActorManager::SearchActorByID(unsigned int& ID)
 {
 	int SearchIndex = 0;
-	if (MaxID - ID) return;
-	if ((LastActorIndex - 1) > 0){
-		for (int i = 0;i<LastActorIndex && SearchIndex < ID ;i++){
-			if (ActorID[i] < ID){	
-				SearchIndex = SearchIndex + 1;
-			}
-			else{
-				SearchIndex = LastActorIndex + SearchIndex;
-			}
+	if (ID > MaxID) return 0;
+
+	// Binary search for the index of ID in ActorIDs
+	int low = 0;
+	int high = this->LastActorIndex - 1;
+	int Index = 0;
+	while (low <= high) {
+		int mid = (low + high) / 2;
+
+		if (this->ActorID[mid] < ID) {
+			low = mid + 1; // Move to the upper half
+		} else if (this->ActorID[mid] > ID) {
+			high = mid - 1; // Move to the lower half
+		} else {
+			Index = mid; // Found the index of ID
 		}
 	}
 
-
-
-
-
+	if (!this->Actor[Index]) return 0;
+	return this->Actor[Index];
 
 }

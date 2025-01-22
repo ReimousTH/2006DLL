@@ -1,5 +1,9 @@
 #include "DebugLog.h"
 
+#include <Prop/Manager.h>
+#include <Prop/GenerateArea.h>
+#include <Prop/Scene.h>
+
 namespace DebugLogV2{
 
 
@@ -26,6 +30,8 @@ namespace DebugLogV2{
 		
 
 
+
+
 		BranchTo(0x825D9660,int,LS); //luaopen_base06
 		BranchTo(0x825D7D18,int,LS); //luaopen_table06
 		luaL_openlibf06(LS, 0,(const luaL_reg*)0x8203B8A8,15);
@@ -42,6 +48,8 @@ namespace DebugLogV2{
 		Uint64LIB_GlobalInstall(LS);
 		//VectorLIB_GlobalInstall(LS);
 	
+	
+
 
 
 
@@ -54,12 +62,9 @@ namespace DebugLogV2{
 		GlobalInstall_StateIMachine(LS);
 		GlobalInstall_StateMachine2(LS);
 		GlobalInstall_PlayerRework(LS);
+		OpenState_GlobalInstall(LS);
 
 	
-		
-
-
-
 		return sub_825DB498H(LS);
 	}
 
@@ -141,6 +146,7 @@ namespace DebugLogV2{
 		GlobalInstall_PlayerRework(0);
 		GameLIB_GlobalInstall(0);
 		MessageUtilGlobalInstall(0);
+		OpenState_GlobalInstall(0);
 
 
 	}

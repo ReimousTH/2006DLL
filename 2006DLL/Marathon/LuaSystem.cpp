@@ -18,10 +18,9 @@ LuaSystem::~LuaSystem(void)
 
 float Sonicteam::LuaSystem::GetFloatValue(std::string* nm)
 {
+	if (this->IsTableExist((char*)nm->c_str())){
 
-	if (this->LuaNodeUnknown0x0A((char*)nm->c_str())){
-
-		return LuaNodeUnknown0x0D((char*)nm->c_str());
+		return GetTableFloat((char*)nm->c_str());
 
 	}
 	return 0.0;
@@ -31,9 +30,9 @@ float Sonicteam::LuaSystem::GetFloatValue(std::string* nm)
 float Sonicteam::LuaSystem::GetFloatValue(std::string& nm)
 {
 
-	if (this->LuaNodeUnknown0x0A((char*)nm.c_str())){
+	if (this->IsTableExist((char*)nm.c_str())){
 
-		return LuaNodeUnknown0x0D((char*)nm.c_str());
+		return GetTableFloat((char*)nm.c_str());
 
 	}
 	return 0.0;
@@ -46,9 +45,9 @@ LuaSystem* Sonicteam::LuaSystem::LoadInitResource(LuaSystem*& value,std::string&
 	return 	((Sonicteam::LuaSystem* (__fastcall *)(...))0x82163620)(&value,&path);
 }
 
-void Sonicteam::LuaSystem::LuaProceedArgFunction(Sonicteam::SoX::Object*& arg,std::string& fncn)
+void Sonicteam::LuaSystem::LuaProceedArgFunction(void* arg,std::string& fncn)
 {
-	this->LuaNodeUnknown0x09(fncn.c_str(),(int)&arg);
+	this->LuaNodeUnknown0x09(fncn.c_str(),(int)arg);
 
 }
 

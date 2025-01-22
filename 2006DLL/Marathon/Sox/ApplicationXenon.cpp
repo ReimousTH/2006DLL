@@ -69,3 +69,6 @@ unsigned int Sonicteam::SoX::ApplicationXenon::ApplicationXenonProcessDLC(unsign
 {
 return 0;
 }
+
+ApplicationXenon*& Sonicteam::SoX::ApplicationXenon::ApplicationXenonMarathon = *(ApplicationXenon**)0x82D3B6E8;
+

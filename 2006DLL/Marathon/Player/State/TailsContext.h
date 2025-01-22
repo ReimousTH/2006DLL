@@ -13,23 +13,23 @@ namespace Sonicteam{
 
 		
 
-			//only fields for now, i finish when i comlete CommmonContext FUll  methods
 			class TailsContext:public CommonContext
 			{
 			public:
 
 				float TCuint0x230;
-				unsigned int TCuint0x234;
-				unsigned int TCuint0x238; //flags
-		
+				float BombCooldown; //0x234
+				unsigned int TailsFlags; //flags
+				char ThrowGroundBomb;  // (instantly throws a dummy ring bomb when set to 1, automatically turns itself off. Uses the trajectory of a ground throw)
+				char IsBombSearch; //(toggles FPS mode)
+				char unk0x23A; // ?
+				char ThrowAirBomb; //(same as GroundBomb but with aerial trajectory. Will spawn below the ground if you're grounded)
+
 				float c_flight_timer; //0x23C
 				float c_flight_timer_b;
 				float c_flight_acc;
 				float c_ignore_spread_time;
 	
-				
-
-
 			};
 
 		}

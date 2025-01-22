@@ -57,3 +57,8 @@ boost::shared_ptr<Sonicteam::Player::State::IContext> Machine2::GetMashineContex
 	return this->MashineContext;
 	
 }
+
+void Sonicteam::Player::State::Machine2::DestroyObject(unsigned int flag)
+{
+	throw std::logic_error("The method or operation is not implemented.");
+}

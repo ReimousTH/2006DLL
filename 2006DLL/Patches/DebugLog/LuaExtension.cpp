@@ -162,7 +162,6 @@ namespace DebugLogV2{
 		XMFLOAT4 Rotation;
 
 		unsigned int ParamsCount;
-
 		ObjectSetParamData* Params;
 
 	};
@@ -311,6 +310,7 @@ namespace DebugLogV2{
 	
 	
 
+
 		int atgs = lua_gettop(L);
 		XMVECTOR Pos = {0};
 		XMVECTOR Rot = {0};
@@ -396,8 +396,8 @@ namespace DebugLogV2{
 
 		Sonicteam::DocMarathonImp* impl = 	*(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
 		UINT32 gameimp = *(UINT32*)(impl->DocCurrentMode + 0x6C);
-		int UnkMGR =   *(_DWORD *)(gameimp  + 0x1278);
-		int PropSceneClass = *(_DWORD *)(UnkMGR + 0x44);
+		int GamePropManager =   *(_DWORD *)(gameimp  + 0x1278);
+		int PropSceneClass = *(_DWORD *)(GamePropManager + 0x44);
 
 		int RefObjectTypePropClass;
 		BranchTo(0x82456DA0,int,&RefObjectTypePropClass,PropSceneClass,&std::string(OBJ_ID)); //GetObjectTypePropClass
@@ -458,10 +458,10 @@ namespace DebugLogV2{
 		
 		///
 
-		int PlacementTypePTRB[2] = {0,0}; //shared_ptr
+		int PropSceneBoost[2] = {0,0}; //shared_ptr
 		//default,design,....
-		BranchTo(0x82461848,int,&PlacementTypePTRB, *(_DWORD *)(gameimp + 0x1278), PlacementIndex);
-		int PlacementTypePTR = PlacementTypePTRB[0];
+		BranchTo(0x82461848,int,&PropSceneBoost, *(_DWORD *)(gameimp + 0x1278), PlacementIndex);
+		int PropScenePTR = PropSceneBoost[0];
 
 
 
@@ -481,6 +481,11 @@ namespace DebugLogV2{
 		
 
 		int prm = (int)ObjData->Params;
+
+		Sonicteam::Prop::InstanceSetDataParams* prm1 = (Sonicteam::Prop::InstanceSetDataParams*)ObjData->Params;
+	
+		
+
 
 		for (int i = 0;i<PropParamsCount;i++){
 			int IPrm = prm + (i * 0x14);
@@ -541,15 +546,13 @@ namespace DebugLogV2{
 
 
 
-		int InstnceProp =  BranchTo(0x8245A080,int,malloc06(0x14),PlacementTypePTR,ObjData,&RefObjectTypePropClass);
-
-		int EntityHandle = BranchTo(0x82461128,int,malloc06(0x1c),PlacementTypePTR,obj_index);
+		int InstnceProp =  BranchTo(0x8245A080,int,malloc06(0x14),PropScenePTR,ObjData,&RefObjectTypePropClass);
+		int EntityHandle = BranchTo(0x82461128,int,malloc06(0x1c),PropScenePTR,obj_index);
 
 		*(int*)(EntityHandle + 0x18) = InstnceProp;
 
+
 		Sonicteam::SoX::RefCountObject* RUU = (Sonicteam::SoX::RefCountObject*)EntityHandle;
-
-
 
 
 
@@ -557,17 +560,13 @@ namespace DebugLogV2{
 		BranchTo(0x8245C680,int,&buffer,&InstnceProp,&EntityHandle,0,&std::string(OBJ_ID));
 
 
-
-
-
-
 		//Complete Creation
-		std::vector<dummy_container_entityhandle_Object>* EntityHandleAndObjectVector = (std::vector<dummy_container_entityhandle_Object>*)(PlacementTypePTR + 0x74-0x4); //0xD,0xE
-		std::vector<int>* InstancePropVector = (std::vector<int>*)(PlacementTypePTR + 0x2C-0x4); //0xD,0xE
+		std::vector<dummy_container_entityhandle_Object>* EntityHandleAndObjectVector = (std::vector<dummy_container_entityhandle_Object>*)(PropScenePTR + 0x74-0x4); //0xD,0xE
+		std::vector<int>* InstancePropVector = (std::vector<int>*)(PropScenePTR + 0x2C-0x4); //0xD,0xE
 		
 
 
-		int* PropManger = *(int**)PlacementTypePTR;
+		int* PropManger = *(int**)PropScenePTR;
 		int result = BranchTo(0x824619C8,int,(PropManger)[0xF], OBJ_ID, buffer);
 
 		EntityHandleAndObjectVector->push_back(dummy_container_entityhandle_Object(EntityHandle,result));

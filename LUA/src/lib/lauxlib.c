@@ -381,6 +381,18 @@ int luaL_getn (lua_State *L, int t) {
   return n - 1;
 }
 
+LUALIB_API int luaL_getn06 (lua_State *L, int t){
+
+	return 	((int (__fastcall *)(lua_State *L, int t))0x825D69F8 )(L,t);
+
+}
+
+LUALIB_API void luaL_setn06 (lua_State *L, int t, int n){
+
+	 ((int (__fastcall *)(lua_State *L, int t, int n))0x825D68D0 )(L,t,n);
+}
+
+
 /* }====================================================== */
 
 
@@ -550,6 +562,30 @@ LUALIB_API int luaL_ref (lua_State *L, int t) {
   return ref;
 }
 
+LUALIB_API int luaL_ref06 (lua_State *L, int t){
+	int ref;
+	t = abs_index(L, t);
+	if (lua_isnil(L, -1)) {
+		lua_pop(L, 1);  /* remove from stack */
+		return LUA_REFNIL;  /* `nil' has a unique fixed reference */
+	}
+	lua_rawgeti06(L, t, FREELIST_REF);  /* get first free element */
+	ref = (int)lua_tonumber(L, -1);  /* ref = t[FREELIST_REF] */
+	lua_pop(L, 1);  /* remove it from stack */
+	if (ref != 0) {  /* any free element? */
+		lua_rawgeti06(L, t, ref);  /* remove it from list */
+		lua_rawseti06(L, t, FREELIST_REF);  /* (t[FREELIST_REF] = t[ref]) */
+	}
+	else {  /* no free elements */
+		ref = luaL_getn06(L, t);
+		if (ref < RESERVED_REFS)
+			ref = RESERVED_REFS;  /* skip reserved references */
+		ref++;  /* create new reference */
+		luaL_setn06(L, t, ref);
+	}
+	lua_rawseti06(L, t, ref);
+	return ref;
+}
 
 LUALIB_API void luaL_unref (lua_State *L, int t, int ref) {
   if (ref >= 0) {

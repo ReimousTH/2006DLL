@@ -14,19 +14,19 @@ namespace Sonicteam{
 
 		template <typename T> // inheritance_only
 		struct SimpleLinkNode{
-			T* Next;
-			T* Prev;
 			T* Parent;
+			T* Prev;
+			T* Next;
 			T* Active;
-			SimpleLinkNode():Next( NULL),Prev(NULL),Parent(NULL),Active(NULL){}
+			SimpleLinkNode():Parent( NULL),Prev(NULL),Next(NULL),Active(NULL){}
 			void ClearLink(){
-				if (Next)
-					Next->Prev = Prev;
+				if (Parent)
+					Parent->Prev = Prev;
 				if (Prev)
-					Prev->Next = Next;
+					Prev->Next = Parent;
 				Prev = NULL;
-				Next = NULL;
-				Parent = NULL;	
+				Parent = NULL;
+				Next = NULL;	
 			}
 			void Empty(T* root){
 				
@@ -40,8 +40,6 @@ namespace Sonicteam{
 						current->Parent = 0;
 						current->Prev = 0;
 						current->Next = 0;
-
-
 						current = nextNode;
 					} while (nextNode);
 					
@@ -77,8 +75,8 @@ namespace Sonicteam{
 				
 
 			void __forceinline  EmptyParent(T* root){
-				if (Parent == NULL) return;
-				T* ParentTask = Parent;
+				if (Next == NULL) return;
+				T* ParentTask = Next;
 				T* PrevTask;
 				T* NextTask;
 				T* v11;

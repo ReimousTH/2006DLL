@@ -64,10 +64,14 @@ LUALIB_API int luaL_error06 (lua_State *L, const char *fmt, ...);
 LUALIB_API int luaL_findstring (const char *st, const char *const lst[]);
 
 LUALIB_API int luaL_ref (lua_State *L, int t);
+LUALIB_API int luaL_ref06 (lua_State *L, int t);
 LUALIB_API void luaL_unref (lua_State *L, int t, int ref);
 
 LUALIB_API int luaL_getn (lua_State *L, int t);
 LUALIB_API void luaL_setn (lua_State *L, int t, int n);
+
+LUALIB_API int luaL_getn06 (lua_State *L, int t);
+LUALIB_API void luaL_setn06 (lua_State *L, int t, int n);
 
 LUALIB_API int luaL_loadfile (lua_State *L, const char *filename);
 LUALIB_API int luaL_loadbuffer (lua_State *L, const char *buff, size_t sz,

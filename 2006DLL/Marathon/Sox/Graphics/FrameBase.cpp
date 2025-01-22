@@ -24,9 +24,9 @@ Sonicteam::SoX::Graphics::Frame::~Frame()
 
 
 
-	if (this->Parent){
+	if (this->Next){
 
-		Frame* v5 = this->Parent;
+		Frame* v5 = this->Next;
 		Frame* v6;
 		do{
 			v6 = v5->Prev;
@@ -35,17 +35,17 @@ Sonicteam::SoX::Graphics::Frame::~Frame()
 		} while (v6);
 	}
 
-	Frame* v7 = this->Next;
+	Frame* v7 = this->Parent;
 	if ( v7 )
 	{
 		Frame* v8 = this->Prev;
 		if ( !v8 )
-			v8 = v7->Parent;                          // Frame
+			v8 = v7->Next;                          // Frame
 		v8->Active = this->Active;
-		Frame* v9 = this->Next;
+		Frame* v9 = this->Parent;
 		Frame* v10 = this->Prev;
-		if ( v9->Parent == this )
-			v9->Parent = v10;
+		if ( v9->Next == this )
+			v9->Next = v10;
 		else
 			this->Active->Prev = v10;
 	}

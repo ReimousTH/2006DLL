@@ -496,40 +496,40 @@ Iterator</a>
     <td>Reference type</td>
     <td><tt>std::iterator_traits&lt;X&gt;::reference</tt></td>
     <td>The return type of dereferencing the iterator, which must be <tt>const 
-      T&amp;</tt>. </td></tr><!--  I don't think this is needed
-  <tr>
-    <td>Pointer type</td>
-    <td><tt>std::iterator_traits&lt;X&gt;::pointer</tt></td>
-    <td>
-     The pointer to the value type, which must be <tt>const T*</tt>.
-    </td>
-  </tr>
+      T&amp;</tt>. </td></tr><!--  I don't think this is needed
+  <tr>
+    <td>Pointer type</td>
+    <td><tt>std::iterator_traits&lt;X&gt;::pointer</tt></td>
+    <td>
+     The pointer to the value type, which must be <tt>const T*</tt>.
+    </td>
+  </tr>
 -->
   <tr>
     <td>Return Category</td>
     <td><tt>std::return_category&lt;X&gt;::type</tt></td>
     <td>A type convertible to <tt>std::constant_lvalue_iterator_tag</tt> 
-  </td></tr></tbody></table><!-- these are not necessary now that we use reference as operator* return type
-<h3>Valid expressions</h3>
-
-<Table border>
-<tr><TH>Name</TH><TH>Expression</TH><TH>Type requirements</TH><TH>Return type</TH></tr>
-<tr>
- <td>Dereference</td>
- <td><tt>*x</tt></td>
- <td>&nbsp;</td>
- <td><tt>std::iterator_traits&lt;X&gt;::reference</tt></td>
-</tr>
-<tr>
- <td>Member access</td>
- <td><tt>x-&gt;m</tt></td>
- <td><tt>T</tt> is a type with a member named <tt>m</tt>.</td>
- <td>
- &nbsp;
- </td>
-</tr>
-</table>
-
+  </td></tr></tbody></table><!-- these are not necessary now that we use reference as operator* return type
+<h3>Valid expressions</h3>
+
+<Table border>
+<tr><TH>Name</TH><TH>Expression</TH><TH>Type requirements</TH><TH>Return type</TH></tr>
+<tr>
+ <td>Dereference</td>
+ <td><tt>*x</tt></td>
+ <td>&nbsp;</td>
+ <td><tt>std::iterator_traits&lt;X&gt;::reference</tt></td>
+</tr>
+<tr>
+ <td>Member access</td>
+ <td><tt>x-&gt;m</tt></td>
+ <td><tt>T</tt> is a type with a member named <tt>m</tt>.</td>
+ <td>
+ &nbsp;
+ </td>
+</tr>
+</table>
+
 -->
 <p>
 </p><hr>
@@ -551,40 +551,40 @@ Iterator</a>.
     <td>Reference type</td>
     <td><tt>std::iterator_traits&lt;X&gt;::reference</tt></td>
     <td>The return type of dereferencing the iterator, which must be 
-      <tt>T&amp;</tt>.</td></tr><!-- I don't think this is necessary
-  <tr>
-    <td>Pointer type</td>
-    <td><tt>std::iterator_traits&lt;X&gt;::pointer</tt></td>
-    <td>
-     The pointer to the value type, which is <tt>T*</tt>.
-    </td>
-  </tr>
+      <tt>T&amp;</tt>.</td></tr><!-- I don't think this is necessary
+  <tr>
+    <td>Pointer type</td>
+    <td><tt>std::iterator_traits&lt;X&gt;::pointer</tt></td>
+    <td>
+     The pointer to the value type, which is <tt>T*</tt>.
+    </td>
+  </tr>
 -->
   <tr>
     <td>Return Category</td>
     <td><tt>std::return_category&lt;X&gt;::type</tt></td>
     <td>A type convertible to <tt>std::mutable_lvalue_iterator_tag</tt> 
-  </td></tr></tbody></table><!-- no longer needed since the return type is specified as reference in the readable iterator
-<h3>Valid expressions</h3>
-
-<Table border>
-<tr><TH>Name</TH><TH>Expression</TH><TH>Type requirements</TH><TH>Return type</TH></tr>
-<tr>
- <td>Dereference</td>
- <td><tt>*x</tt></td>
- <td>&nbsp;</td>
- <td><tt>std::iterator_traits&lt;X&gt;::reference</tt></td>
-</tr>
-<tr>
- <td>Member access</td>
- <td><tt>x-&gt;m</tt></td>
- <td><tt>T</tt> is a type with a member named <tt>m</tt>.</td>
- <td>
- &nbsp;
- </td>
-</tr>
-</table>
-
+  </td></tr></tbody></table><!-- no longer needed since the return type is specified as reference in the readable iterator
+<h3>Valid expressions</h3>
+
+<Table border>
+<tr><TH>Name</TH><TH>Expression</TH><TH>Type requirements</TH><TH>Return type</TH></tr>
+<tr>
+ <td>Dereference</td>
+ <td><tt>*x</tt></td>
+ <td>&nbsp;</td>
+ <td><tt>std::iterator_traits&lt;X&gt;::reference</tt></td>
+</tr>
+<tr>
+ <td>Member access</td>
+ <td><tt>x-&gt;m</tt></td>
+ <td><tt>T</tt> is a type with a member named <tt>m</tt>.</td>
+ <td>
+ &nbsp;
+ </td>
+</tr>
+</table>
+
 -->
 <p>
 </p><hr>
@@ -724,10 +724,10 @@ Comparable</a> where <tt>&lt;</tt> is a total ordering
     <td>unspecified</td></tr></tbody></table>
 <p>
 </p><hr>
-<!--  LocalWords:  HTML BGCOLOR FFFFFF TR TD Siek HREF mailto jsiek
- --><!--  LocalWords:  lsc edu tt const href http anubis dkuug dk JTC SC WG docs lt
- --><!--  LocalWords:  lwg html bool gt Sutter's htm Lvalue namespace std struct
- --><!--  LocalWords:  lvalue typename OldTraits reusability min iter prev inplace
- --><!--  LocalWords:  rvalue templated Preincrement Postincrement Predecrement
- --><!--  LocalWords:  Postdecrement
+<!--  LocalWords:  HTML BGCOLOR FFFFFF TR TD Siek HREF mailto jsiek
+ --><!--  LocalWords:  lsc edu tt const href http anubis dkuug dk JTC SC WG docs lt
+ --><!--  LocalWords:  lwg html bool gt Sutter's htm Lvalue namespace std struct
+ --><!--  LocalWords:  lvalue typename OldTraits reusability min iter prev inplace
+ --><!--  LocalWords:  rvalue templated Preincrement Postincrement Predecrement
+ --><!--  LocalWords:  Postdecrement
  --></body></html>

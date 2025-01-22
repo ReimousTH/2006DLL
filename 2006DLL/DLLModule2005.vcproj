@@ -353,13 +353,13 @@
 				Name="VCX360LinkerTool"
 				UseLibraryDependencyInputs="false"
 				AdditionalOptions="/FORCE:MULTIPLE /ignore:4089 /dll /entry:&quot;_DllMainCRTStartup&quot; /include:&quot;XboxKrnlBuildNumber&quot;&#x0D;&#x0A;"
-				AdditionalDependencies="d3d9.lib d3dx9.lib xgraphics.lib xaudio.lib x3daudio.lib xboxkrnl.lib xbdm.lib xact.lib xuirunltcg.lib xuirenderltcg.lib LUA.lib Xnet.lib"
+				AdditionalDependencies="d3d9.lib d3dx9.lib xgraphics.lib xaudio.lib x3daudio.lib xboxkrnl.lib xbdm.lib xact.lib xuirunltcg.lib xuirenderltcg.lib Xnet.lib LUA.lib"
 				OutputFile="$(OutDir)/$(ProjectName).dll"
 				AdditionalLibraryDirectories="D:\boost_1_69_0\boost_1_69_0\stage\lib;..\LUA\Release\;&quot;..\hkx550\Lib\win32_net_8-0\release_multithreaded&quot;"
 				ModuleDefinitionFile="DllModule.def"
 				GenerateDebugInformation="true"
 				GenerateMapFile="true"
-				OptimizeReferences="1"
+				OptimizeReferences="2"
 				EnableCOMDATFolding="1"
 				SetChecksum="true"
 			/>
@@ -638,6 +638,24 @@
 					</File>
 					<File
 						RelativePath=".\Patches\DebugLog\LuaExtension_Memory.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\DebugLog\LuaExtension_OpenState.cpp"
+						>
+						<FileConfiguration
+							Name="Release|Xbox 360"
+							>
+			<Tool
+				Name="VCCLX360CompilerTool"
+				Optimization="0"
+				InlineFunctionExpansion="1"
+				EnableIntrinsicFunctions="false"
+			/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath=".\Patches\DebugLog\LuaExtension_OpenState.h"
 						>
 					</File>
 					<File
@@ -1831,6 +1849,10 @@
 					Name="Misc"
 					>
 					<File
+						RelativePath=".\Marathon\Sox\Misc\LinkSoxNode.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Marathon\Sox\Misc\List.cpp"
 						>
 					</File>
@@ -1840,6 +1862,14 @@
 					</File>
 					<File
 						RelativePath=".\Marathon\Sox\Misc\List.inl"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Sox\Misc\SimpleNode.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Sox\Misc\SimpleNode.inl"
 						>
 					</File>
 				</Filter>
@@ -1856,6 +1886,34 @@
 					</File>
 					<File
 						RelativePath=".\Marathon\Sox\Memory\IDestructible.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Scenery"
+					>
+					<File
+						RelativePath=".\Marathon\Sox\Scenery\CameraEventCallback.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Sox\Scenery\CameraEventCallback.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Sox\Scenery\Clump.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Sox\Scenery\Clump.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Sox\Scenery\Drawable.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Sox\Scenery\Drawable.h"
 						>
 					</File>
 				</Filter>
@@ -1932,6 +1990,106 @@
 						>
 					</File>
 				</Filter>
+			</Filter>
+			<Filter
+				Name="Test"
+				>
+				<File
+					RelativePath=".\ForTesting.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ForTesting.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Prop"
+				>
+				<File
+					RelativePath=".\Marathon\Prop\AllocatedData.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Prop\AllocatedData.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Prop\Class.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Prop\Class.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Prop\ClassRegistry.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Prop\ClassRegistry.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Prop\GenerateArea.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Prop\GenerateArea.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Prop\Group.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Prop\Group.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Prop\Instance.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Prop\Instance.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Prop\Manager.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Prop\Manager.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Prop\PropClass.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Prop\Scene.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Prop\Scene.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Prop\SceneData.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Prop\SceneData.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Prop\SceneObject.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Prop\SceneObject.h"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter

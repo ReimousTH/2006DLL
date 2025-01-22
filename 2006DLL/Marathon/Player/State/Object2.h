@@ -15,7 +15,7 @@ namespace Sonicteam{
 
 		
 			//8200BAD8
-			class Object2:Sonicteam::SoX::AI::State<Sonicteam::Player::State::IContext>
+			class Object2:public Sonicteam::SoX::AI::State<Sonicteam::Player::State::IContext>
 			{
 			public:
 				Object2(IMachine*);
@@ -32,11 +32,11 @@ namespace Sonicteam{
 
 
 
-				virtual unsigned int* StateConstant(); // idk what real name 
-				virtual void OnStateStart(); //OnStateStart
-				virtual void OnStateUpdate(float); //OnStateUpdate
-				virtual void OnStateEnd(); //OnStateEnd
-				virtual unsigned int StateUnknown(); // li r3 ,0x0 blr
+				virtual unsigned int* StateConstant() override; // idk what real name 
+				virtual void OnStateStart(Sonicteam::Player::State::IContext* context) override; //OnStateStart
+				virtual void OnStateUpdate(float) override; //OnStateUpdate
+				virtual void OnStateEnd() override; //OnStateEnd
+				virtual unsigned int StateUnknown() override; // li r3 ,0x0 blr
 
 
 

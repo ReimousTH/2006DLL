@@ -19,8 +19,6 @@ namespace Sonicteam{
 		unsigned int Flag3;
 
 	};
-	
-
 	//not full
 	struct DocMarathonPlayerInput{
 		unsigned int Index;
@@ -130,7 +128,7 @@ namespace Sonicteam{
 
 
 			//field
-			unsigned int DocCurrentDocMode; //MainMode (0x5C) But ... StateGamemode .....
+			Sonicteam::SoX::Engine::Task* DocCurrentDocMode; //MainMode (0x5C) But ... StateGamemode ..... (DocMode)
 			unsigned int DocMyGraphicDevice; //0x60
 			unsigned int DocSceneParamManager; //0x64
 			std::vector<unsigned int>* Doculist; //0x68;

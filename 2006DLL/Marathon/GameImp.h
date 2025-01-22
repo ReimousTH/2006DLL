@@ -20,6 +20,10 @@
 
 #include <ActorManager.h>
 
+#include <Prop/Manager.h>
+#include <Prop/Scene.h>
+#include <Prop/GenerateArea.h>
+
 #define  GAMEIMP_START_LEVEL 1
 #define  GAMEIMP_START_CUTSCENE 2
 #define  GAMEIMP_START_CGI_CUTSCENE 3
@@ -165,7 +169,7 @@ namespace Sonicteam{
 			Sonicteam::SoX::LinkNodeA<Sonicteam::SoX::Engine::Task> GamePlayerDisplayTask[4]; // Sonicteam::MainDisplayTask 0x1230
 
 			boost::shared_ptr<unsigned int> GamePropActivationMgr; //Sonicteam::Prop::ActivationMgr //0x1270
-			boost::shared_ptr<unsigned int> GamePropManager; //Sonicteam::Prop::Manager (without VFT) 0x82461E48 //0x1278
+			boost::shared_ptr<Sonicteam::Prop::Manager> GamePropManager; //Sonicteam::Prop::Manager (without VFT) 0x82461E48 //0x1278
 
 
 			struct GamePropLibaryVariant{
@@ -207,7 +211,7 @@ namespace Sonicteam{
 			
 			//821826A8
 
-			boost::shared_ptr<unsigned int> GameProp[6]; 	//0x135C boost::shared_ptr<Sonicteam::Prop::Scene>[] //
+			boost::shared_ptr<Sonicteam::Prop::Scene> GameProp[6]; 	//0x135C boost::shared_ptr<Sonicteam::Prop::Scene>[] // 							
 			boost::shared_ptr<unsigned int> GameKynapseSystem; //Sonicteam::KynapseSystem 		//0x138C 
 			Sonicteam::SoX::IResource* GameKyWorldDef; //Sonicteam::KyWorldDef //0x1394
 			unsigned int unk0x1398;
@@ -438,7 +442,7 @@ namespace Sonicteam{
 			virtual unsigned int GetGameObjInfoMgr();
 			virtual void GameActivateProp(Sonicteam::SoX::RefCountObject**);
 			virtual void GameImpUnk01();
-			virtual boost::shared_ptr<unsigned int> GameGetPropManager();
+			virtual boost::shared_ptr<Sonicteam::Prop::Manager> GameGetPropManager();
 			virtual Sonicteam::SoX::Engine::Task* GameGetPropTask(unsigned int);
 			virtual boost::shared_ptr<Sonicteam::Player::Load> GameGetPlayerLoad();
 			virtual boost::shared_ptr<Sonicteam::SoX::RefCountObject*>* GameGetKeyFramedScene(unsigned int);

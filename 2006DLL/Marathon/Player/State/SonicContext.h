@@ -24,23 +24,23 @@ namespace Sonicteam{
 
 				DWORD CurrentGemImage;
 				boost::shared_ptr<Sonicteam::Player::SonicGauge> GaugePlugin;
-				char IsHoming; //byte23C
-				char byte23D;
-				char byte23E;
+				char HomingLockOn; //byte23C
+				char DisablePlayerMovement; // 0x23D They can still accrue speed/gravity and try to make inputs, but they'll be locked in place. Also stops rotation
+				char AntigravityHitbox; //0x23E
 				char byte23F;
-				char byte240;
+				char BoundAttackHitbox;
 				char byte241;
-				char isShrink;
-				char isThunderGuard;
-				char IsTornado;
-				char byte245;
-				char byte246;
-				char isSlowTime;
-				char IsMachSpeed;
-				char byte249;
+				char isShrink; //0x242 Activates Purple Gem properties (faster speed, ability to double jump, etc.) but does not activate visual shrink
+				char isThunderGuard; //0x243 Only togglable when the player has a barrier. Activates the outer yellow aura and ring-magnet effect.
+				char IsTornadoEnabled; //0x244 Activates the Green Gem tornado when called but keeps the hitbox active on Sonic as long as the byte is enabled
+				char IsBombSearch; //0x245 Tog	gles the first-person camera mode, camera can only be adjusted with the left stick
+				char ThrowGem; //0x246 Launches the sky gem
+				char isSlowTime; //0x247
+				char MachAura; //0x248 Enables the Blue Gem particles
+				char GemsEnabled; //0x249
 				char field_24A;
 				char field_24B;
-				DWORD HomingSmashCounter;
+				DWORD IsHomingFlip; //0x24C 0x24C/D/E/F  //Seems to make Sonic go into homing_after1 on his next HA recovery period
 				int CurrentGem;
 				float c_homing_spd;
 				float c_homing_brake;

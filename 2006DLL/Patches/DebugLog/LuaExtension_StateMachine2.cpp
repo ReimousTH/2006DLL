@@ -60,7 +60,7 @@ namespace DebugLogV2{
 		Sonicteam::Player::State::IContext* _context =   _this->MashineContext.get();
 		if (_context) _context->ICOnPostInputTick();
 
-		if (_this->field_0x50 != _this->field_0x54){
+		if (_this->PreState != _this->PostState){
 
 		}
 		BranchTo(0x8221E610,int,_this);
@@ -99,7 +99,7 @@ namespace DebugLogV2{
 
 			if (Sonicteam::Player::State::IMachine* _thus = dynamic_cast<Sonicteam::Player::State::IMachine*>(_this))ProcessStateLua(_thus,0,-1,SM2_OnStateStart);
 			if (Sonicteam::Player::State::IMachine* _thus = dynamic_cast<Sonicteam::Player::State::IMachine*>(_this))ProcessStateLua(_thus,0,_thus->GetCurrentMashineStateID(),SM2_OnStateStart);
-			if (Sonicteam::SoX::AI::State<Sonicteam::Player::State::IContext>* state =  NextState.get()) state->OnStateStart();
+			if (Sonicteam::SoX::AI::State<Sonicteam::Player::State::IContext>* state =  NextState.get()) state->OnStateStart(0);
 			if (Sonicteam::Player::State::IMachine* _thus = dynamic_cast<Sonicteam::Player::State::IMachine*>(_this))ProcessStateLua(_thus,0,-1,SM2_OnStateStartP);
 			if (Sonicteam::Player::State::IMachine* _thus = dynamic_cast<Sonicteam::Player::State::IMachine*>(_this))ProcessStateLua(_thus,0,_thus->GetCurrentMashineStateID(),SM2_OnStateStartP);
 		}
@@ -113,8 +113,8 @@ namespace DebugLogV2{
 	{
 		if (LS == 0){
 
-			WRITE_DWORD(0x8200BADC,Machine2Update);
-			WRITE_DWORD(0x8200BB04,OnStateChange);
+		//	WRITE_DWORD(0x8200BADC,Machine2Update);
+		//	WRITE_DWORD(0x8200BB04,OnStateChange);
 
 			return;
 		}
@@ -135,7 +135,6 @@ namespace DebugLogV2{
 		lua_pushstring06(LS, "AddState");lua_pushcfunction06(LS, StateIMachine__AddState);lua_settable06(LS, -3); // Equivalent to table["AddState"] = StateIMachine__GetStateID
 		lua_pushstring06(LS, "RemoveStateByID");lua_pushcfunction06(LS, StateIMachine__RemoveStateByID);lua_settable06(LS, -3); // Equivalent to table["RemoveStateByID"] = StateIMachine__GetStateID
 		lua_pushstring06(LS, "OnStateConnect");lua_pushcfunction06(LS, StateMachine2__OnStateConnect);lua_settable06(LS, -3); // Equivalent to table["RemoveStateByID"] = StateIMachine__GetStateID
-
 
 
 		lua_pop(LS,1);

@@ -49,5 +49,5 @@ CMemoryAllocMarathon*& Sonicteam::CMemoryAllocMarathon::GetInstanceMarathon()
 }
 
 CMemoryAllocMarathon* Sonicteam::CMemoryAllocMarathon::Instance;
-CMemoryAllocMarathon** Sonicteam::CMemoryAllocMarathon::InstanceMarathon = (CMemoryAllocMarathon**)0x82D3B6E8;
+CMemoryAllocMarathon** Sonicteam::CMemoryAllocMarathon::InstanceMarathon;
 

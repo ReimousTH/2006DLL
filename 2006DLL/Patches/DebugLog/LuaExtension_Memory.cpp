@@ -81,6 +81,8 @@ namespace DebugLogV2{
 		lua_pushstring06(L, "AsInt"); lua_pushcfunction06(L, Memory_AsInt); 	lua_settable06(L, -3);
 		lua_pushstring06(L, "AsFloat"); lua_pushcfunction06(L, Memory_AsFloat); 	lua_settable06(L, -3);
 
+		lua_pushstring06(L, "QueryProtect"); lua_pushcfunction06(L, Memory_QueryProtect); 	lua_settable06(L, -3);
+
 		lua_pushstring06(L, "GetPTR"); lua_pushcfunction06(L, Memory__GetPTR); 	lua_settable06(L, -3);
 		lua_pushstring06(L, "GetClassName"); lua_pushcfunction06(L, Memory__GetClassName); 	lua_settable06(L, -3);
 
@@ -447,6 +449,12 @@ namespace DebugLogV2{
 					value = (unsigned int)lua_tonumber(L,arg_value_num);
 			}
 		}
+		else if (lua_isstring(L,arg_value_num)){
+
+			const char* s = lua_tostring(L,2);
+			const TCHAR* hexString = _T(s); // Hex string to convert
+			value= _tcstoul(hexString, NULL, 16); // Convert hex string to unsigned long integer
+		}
 		
 	
 			switch (type){
@@ -468,7 +476,7 @@ namespace DebugLogV2{
 				break;
 			}
 
-
+	
 
 	
 		return 0;
@@ -697,6 +705,17 @@ namespace DebugLogV2{
 		return 0;
 	}
 
+
+	extern "C" Memory_QueryProtect(lua_State* L)
+	{
+		lua_pushstring06(L,"ptr");
+		lua_gettable(L,1);
+		void* ptr =  (void*)lua_touserdata(L,-1);
+		MEMORY_BASIC_INFORMATION data;
+		VirtualQuery((void*)ptr, &data,0);
+		lua_pushboolean(L,data.Protect);
+		return 1;
+	}
 
 	void THREAD_REGISTER_CHANGE(int r3_value) {
 		__asm{

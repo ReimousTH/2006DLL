@@ -99,18 +99,18 @@ namespace Sonicteam{
 				char IsGhostMode; //0xE1 
 				char BlinkInvulMode; //0xE2
 				char IsAnimationRotationLocked; //0xE3 (left,right,down)
-				char IsInvulnerable; //Homing-Force (or some like it???)
-				char IsInvulnerable2; //?
+				char HomingInvulnerable; // //0xE4
+				char IsInvulnerable2; //0xE5
 				char IsUnkE6; //??
 				char IsGravityDisabled; //0xE7
 				char IsUnkE8;
-				char IsJumped_PostureVelocityYHandle;
-				char IsInActionsRunJumpBound_MB;
-				char IsUnkEB;
-				char IsUnkEC;
-				char IsUnkED; //IsGrindFlag
-				char IsUnkEE;
-				char IsUnkEF;
+				char IsJumped_PostureVelocityYHandle; //0xE9
+				char IsInActionsRunJumpBound_MB; //0xEA
+				char IsUnkEB; //0xEB
+				char IsUnkEC; //0xEC
+				char IsUnkED; //0xED
+				char IsUnkEE; //0xEE
+				char JumpPush; //0xEF Dramatically reduces jump height when "pushing" against a surface. Used by the Push state
 
 				/* UnkownFlagsUnk01 OLD
 				char IsAttackSlideSpindashCollisionOn;
@@ -122,27 +122,34 @@ namespace Sonicteam{
 				char IsUnkF6;
 				char IsUnkF7;
 				*/
-				unsigned long long UnkownFlagsUnk01;
 
+				char UnkF0; //0xF0
+				char UnkF1; //0xF1
+				char UnkF2; //0xF2
+				char UnkF3; //0xF3
+				char IsEdgeGrab; //0xF4 (Probably). When initially set, stores your coordinates then attempts to keep you locked there.
+				char UnkF5; //0xF5
+				char UnkF6; //0xF6
+				char DisableGroundCollision; //0xF7  Detaches the player from the ground
+				char DisableGroundCollision2; //0xF8  Same as above but only lasts for a moment
 
-				char IsDidSpinAnimation;
-				char IsUnkF9;
-				char IsForceTypeA_DashpanelsJumpRunHoming;
-				char IsUnkFB;
-				char IsUnkFC;
-				char IsUnkFD;
-				char IsUnkFE;
-				char IsUnkFF;
-				char IsSendCharacterToPositionVectorZero;
+				char IsWaterSlider; //0xF9
+				char IsForceTypeA_DashpanelsJumpRunHoming; //0xFA
+				char IsUnkFB; //0xFB
+				char ResetGravity; //0xFC Resets accumulated gravity to 0
+				char DisableGravity; //0xFD Resets accumulated gravity to 0, turns off gravity accumulation, resets base Y Speed to 0 on A Release
+				char IsUnkFE; //0xFE
+				char IsUnkFF; //0xFF
+				char IsSendCharacterToPositionVectorZero; //0x100
 				char IsUnk101;
-				char IsUnk102;
-				char IsUnk103;
-				char IsBarrier; //x0104
+				char IsInvulnerableItemBox; //0x102 Probably triggered by an itembox
+				char IsUnk103; //0x103
+				char IsBarrier; //0x104
 				char IsUnk105_AlwaysSetsZero; //0x105
-				char IsDoSomethingWeirdWithChrRotation; //0x106
+				char IsGrabbed; //0x106 ? Maybe? Can be triggered by a glitch in multiplayer
 				char IsUnk107;
-				char IsPsiEffect; //0x108
-				char IsCharacterControlTypeB; //0x109
+				char IsGrabbedAura ; //0x108 Activates ESP shader
+				char LockRotationHold; //0x109   (probably for a Hold. This is different from 0xE3)
 				char IsAntiGravity; //0x10A (collider)
 				char IsChrCamDisabled; //0x10B
 				char IsUnk10C; //0x10C

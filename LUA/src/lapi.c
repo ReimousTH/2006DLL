@@ -364,6 +364,13 @@ LUA_API void *lua_touserdata (lua_State *L, int idx) {
   }
 }
 
+LUA_API void* lua_touserdata06(lua_State *L, int idx)
+{
+	return ((int (__fastcall *)(lua_State *L, int idx))0x825D5768)(L,idx);
+}
+
+
+
 
 LUA_API lua_State *lua_tothread (lua_State *L, int idx) {
   StkId o = luaA_indexAcceptable(L, idx);

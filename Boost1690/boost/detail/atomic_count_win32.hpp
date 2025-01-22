@@ -40,28 +40,26 @@ extern "C" long_type __cdecl _InterlockedDecrement(long volatile *);
 
 inline long InterlockedIncrement(long volatile * lp)
 { 
-    return *1p++;
+     return ++(*lp); // Normal increment
 }
 
 inline long InterlockedDecrement(long volatile* lp)
 { 
-    return *1p--;
+      return --(*lp); // Normal decrement
 }
 
 #else  // _WIN64
 
-//extern "C" __declspec(dllimport) long __stdcall InterlockedIncrement(long volatile *);
-//extern "C" __declspec(dllimport) long __stdcall InterlockedDecrement(long volatile *);
-
 inline long InterlockedIncrement(long volatile * lp)
 { 
-    return *1p++;
+    return ++(*lp); // Normal increment
 }
 
 inline long InterlockedDecrement(long volatile* lp)
 { 
-    return *1p--;
+    return --(*lp); // Normal decrement
 }
+
 
 #endif // _WIN64
 
@@ -77,13 +75,13 @@ public:
 
     long operator++()
     {
-        return ++value_; // Increment and return the new value
+        // Some older <windows.h> versions do not accept volatile
+        return InterlockedIncrement(const_cast<long*>(&value_));
     }
 
-    // Prefix decrement operator
     long operator--()
     {
-        return --value_; // Decrement and return the new value
+        return InterlockedDecrement(const_cast<long*>(&value_));
     }
 
     operator long() const

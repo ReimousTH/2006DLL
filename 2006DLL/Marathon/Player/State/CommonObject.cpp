@@ -34,8 +34,9 @@ void CommonObject::Object2PreUpdateCmn(float)
 	if ( (v2 & 0x40000) != 0 )
 		this->CObjContext->SpeedUpTime = this->CObjContext->c_speedup_time;
 
-	((byte*)&(this->CObjContext->UnkownFlagsUnk01))[3]=0;
-	((byte*)&(this->CObjContext->UnkownFlagsUnk01))[1]=0;
+	this->CObjContext->UnkF3 = 0;
+	this->CObjContext->UnkF1 = 0;
+
 
 
 

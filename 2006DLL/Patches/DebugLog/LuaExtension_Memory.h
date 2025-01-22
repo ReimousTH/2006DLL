@@ -87,6 +87,7 @@ namespace DebugLogV2 {
 	extern "C" Memory_SetBYTE(lua_State* L);
 
 
+	extern "C" Memory_QueryProtect(lua_State* L);
 
 	
 	extern "C" Memory_CallFunc(lua_State* L);

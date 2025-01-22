@@ -28,7 +28,8 @@ namespace Sonicteam{
 				Sonicteam::SoX::RefCountObject* instance; // 0xC
 			};
 
-
+	
+		
 			//TODO Original Destructor 
 			class Frame:public Sonicteam::SoX::RefCountObject,IO_FRAME,public Sonicteam::SoX::SimpleLinkNode<Frame> //Need Aditional Methods, FullClearLink()
 			{
@@ -63,7 +64,7 @@ namespace Sonicteam{
 
 				Sonicteam::SoX::LinkNodeListA<FrameObserver> OFrame; //0x20, since FrameObserver ~= Frame , then TThead == 0, Clear with based on class (0x10 size) (need look still)
 				//unsigned int Fuint0x2C; //proable padding
-				Sonicteam::SoX::Graphics::FrameSynchronizer* FrameSynchronizer; //Poitner only,
+				Sonicteam::SoX::Graphics::FrameSynchronizer* FrameSynchronizer; //Poitner only, 
 
 
 				//MAYBE , NODE structure with FIrst is Pointer, Other Just Elements, I have almost same in DocMarathon

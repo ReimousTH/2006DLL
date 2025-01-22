@@ -3,7 +3,10 @@
 #include <Sox/Object.h>
 #include <xtl.h>
 
+
+
 namespace Sonicteam{
+	class DocMarathonImp;
 	namespace SoX{
 		class ApplicationXenon:Sonicteam::SoX::Object,Sonicteam::SoX::IOObject
 		{
@@ -65,6 +68,7 @@ namespace Sonicteam{
 			unsigned int AXuint0x9C;
 			unsigned int AXuint0xA0;
 			unsigned int AXuint0xA4;
+			unsigned int AXuint0xA8;
 			unsigned int AXuint0xAC;
 			unsigned int AXuint0xB0;
 			unsigned int AXuint0xB4;
@@ -117,12 +121,13 @@ namespace Sonicteam{
 			unsigned int AXuint0x174;	
 			unsigned int AXuint0x178;	
 			unsigned int AXuint0x17C;	
-			unsigned int AXuint0x180;	
+			Sonicteam::DocMarathonImp* DocMarathon;	 //APPLICATGION_MARATHON MOVE LATER (or DocMode, ???) DocMarathonState
 			//mb
 
+
+
+			static ApplicationXenon*& ApplicationXenonMarathon;
 			
-
-
 
 			
 		};

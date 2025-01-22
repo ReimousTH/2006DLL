@@ -15,16 +15,17 @@ namespace Sonicteam{
 			{
 			public:
 				StateMashine(void) {};
-				virtual ~StateMashine(void) {};
+				virtual void DestroyObject(unsigned int flag);
 			//	
 				
-				virtual unsigned int OnStateChange(unsigned int,T*) {return 0;}; // For now nothing
-				virtual unsigned int Unk02() { return 0;}; // For now nothing
-				virtual unsigned int Unk03() { return 0;}; // For now nothing
+				virtual void OnStateChange(boost::shared_ptr<Sonicteam::SoX::AI::State<T>>& NextState,T* context); // For now nothing
+				virtual void OnStateUnk(boost::shared_ptr<Sonicteam::SoX::AI::State<T>>& NextState,T* context); // For now nothing
+				virtual unsigned int Unk03(T* context) { return 0;}; // For now nothing
 				virtual unsigned int Unk04() { return 0;}; // For now nothing
 				virtual unsigned int Unk05() { return 0;}; // For now nothing
 				virtual unsigned int Unk06() { return 0;}; // For now nothing
 
+			public:
 				//FIELDS
 				boost::shared_ptr<Sonicteam::SoX::AI::State<T>> CurrentState; //0x4
 				unsigned int field0xC; //0xC
@@ -38,8 +39,29 @@ namespace Sonicteam{
 
 			};
 
+			template<typename T>
+			void Sonicteam::SoX::AI::StateMashine<T>::OnStateUnk(boost::shared_ptr<Sonicteam::SoX::AI::State<T>>& NextState,T* context)
+			{
+
+			}
 		
 
+			template<typename T>
+			void Sonicteam::SoX::AI::StateMashine<T>::DestroyObject(unsigned int flag)
+			{
+
+			}
+
+			template<typename T>
+			void Sonicteam::SoX::AI::StateMashine<T>::OnStateChange(boost::shared_ptr<Sonicteam::SoX::AI::State<T>>& NextState,T* context) //IContext
+			{
+				boost::shared_ptr<Sonicteam::SoX::AI::State<T>> _next = NextState;
+				if (NextState){
+					if (this->CurrentState) this->CurrentState->OnStateEnd();
+					_next->OnStateStart(0);
+				}
+				this->CurrentState = _next;
+			}
 		}
 
 

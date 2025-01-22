@@ -181,7 +181,7 @@ void CommonContext::ICOnInputTick(float delta)
 	float result;
 
 	v5 = (this->FreeUnknownFlagsDC >> 2) & 1;
-	v6 = (this->UnkownFlagsUnk01 & 0x40000000) != 0;
+	v6 = (this->UnknownFlags0xC8 & 0x40000000) != 0;
 	this->GroundAirFlags = 0;
 	this->AnimationState = 0;
 	this->UnknownFlags0xC8 = 1;
@@ -225,7 +225,7 @@ void CommonContext::ICOnInputTick(float delta)
 	}
 
 	v14 = this->BlinkInvulMode == 0;
-	v15 = this->IsInvulnerable;
+	v15 = this->HomingInvulnerable;
 	v16 = (this->IsSonicDead);
 	__asm{
 		cntlzw    v16, v16
@@ -236,7 +236,7 @@ void CommonContext::ICOnInputTick(float delta)
 	this->ContextFlags = v17;
 	if ( v15
 		|| this->IsInvulnerable2
-		|| this->IsUnk102
+		|| this->IsInvulnerableItemBox
 		|| this->DamageInvincibleTime > 0.0
 		|| (v18 = 0, this->InvicibilityTimerWEffect > 0.0) )
 	{

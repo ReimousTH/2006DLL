@@ -35,10 +35,10 @@ namespace Sonicteam{
 			virtual bool	LuaNodeUnknown0x07(char*,int,char*) = 0 ;//8204E4E0
 			virtual int		LuaNodeUnknown0x08(char*,int,char*) = 0;//8204E4E4 ( lua_pushnumber sends back to .lua)
 			virtual int		LuaNodeUnknown0x09(const char*,int) = 0;//8204E4E8
-			virtual int		LuaNodeUnknown0x0A(char*) = 0;//8204E4EC
-			virtual int		LuaNodeUnknown0x0B(char*) = 0;//8204E4F0  (return lua_tonumber)
+			virtual int		IsTableExist(char*) = 0;//8204E4EC
+			virtual int		GetTableInt(char*) = 0;//8204E4F0  (return lua_tonumber)
 			virtual int		LuaNodeUnknown0x0C(char*,int) = 0;//8204E4F4
-			virtual float	LuaNodeUnknown0x0D(char*) = 0;//8204E4F8, get float value from lua file
+			virtual float	GetTableFloat(char*) = 0;//8204E4F8, get float value from lua file
 			virtual int		LuaNodeUnknown0x0E(char*,float) = 0;//8204E4FC
 			virtual char*	LuaNodeUnknown0x0F(char*) = 0;//8204E500
 			virtual int		LuaNodeUnknown0x10(char*,char*) = 0;//8204E504

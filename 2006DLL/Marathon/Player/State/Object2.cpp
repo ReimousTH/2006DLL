@@ -7,7 +7,7 @@ unsigned int* Object2::StateConstant()
 	return 0;
 }
 
-void Object2::OnStateStart()
+void Object2::OnStateStart(Sonicteam::Player::State::IContext* context)
 {
 	this->Object2Start();
 }
@@ -46,3 +46,5 @@ void Sonicteam::Player::State::Object2::DestroyObject(unsigned int flag)
 	Sonicteam::Player::State::Object2::~Object2();
 	Sonicteam::SoX::Memory::IUDestructible::DestroyObject(this,flag);
 }
+
+

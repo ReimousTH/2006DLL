@@ -35,7 +35,7 @@ namespace Sonicteam{
 
 			//other
 			static const unsigned int MaxID = 0xFFFFFFFF;
-			void SearchActorByID(unsigned int& ID);
+			Sonicteam::SoX::Engine::Task* SearchActorByID(unsigned int& ID);
 
 		
 

@@ -1,2 +1,3 @@
-
-
+LIBRARY "06API"
+EXPORTS
+    DllMain
