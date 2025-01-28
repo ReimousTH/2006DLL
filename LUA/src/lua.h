@@ -138,6 +138,7 @@ LUA_API int            lua_rawequal (lua_State *L, int idx1, int idx2);
 LUA_API int            lua_lessthan (lua_State *L, int idx1, int idx2);
 
 LUA_API lua_Number      lua_tonumber (lua_State *L, int idx);
+LUA_API lua_Number      lua_tonumber06 (lua_State *L, int idx);
 LUA_API int             lua_toboolean (lua_State *L, int idx);
 LUA_API const char     *lua_tostring (lua_State *L, int idx);
 LUA_API size_t          lua_strlen (lua_State *L, int idx);

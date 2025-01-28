@@ -3,7 +3,7 @@
 
 #include <Head.h>
 #include <string>
-#include <Player/State/AmyContext.h>
+
 
 #define AmyAtk01 0x1
 #define AmyAtk02 0x2

@@ -308,6 +308,10 @@ LUA_API lua_Number lua_tonumber (lua_State *L, int idx) {
     return 0;
 }
 
+LUA_API lua_Number lua_tonumber06 (lua_State *L, int idx){
+
+		return ((lua_Number (__fastcall *)(lua_State *L, int idx))0x825D55B0)(L,idx);
+}
 
 LUA_API int lua_toboolean (lua_State *L, int idx) {
   const TObject *o = luaA_indexAcceptable(L, idx);

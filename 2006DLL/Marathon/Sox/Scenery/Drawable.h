@@ -4,7 +4,7 @@
 #include <SoX/RefCountObject.h>
 #include <Sox/Memory/IDestructible.h>
 #include "CameraEventCallback.h"
-#include <Sox/Graphics/FrameBase.h>
+#include <Sox/Graphics/FrameObserver.h>
 #include <string>
 
 

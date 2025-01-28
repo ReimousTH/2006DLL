@@ -359,7 +359,7 @@
 				ModuleDefinitionFile="DllModule.def"
 				GenerateDebugInformation="true"
 				GenerateMapFile="true"
-				OptimizeReferences="2"
+				OptimizeReferences="1"
 				EnableCOMDATFolding="1"
 				SetChecksum="true"
 			/>
@@ -880,6 +880,18 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="Common"
+					>
+					<File
+						RelativePath=".\Patches\Common\Marathon.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Patches\Common\XEXALLOCATORS.H"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Hook"
@@ -1053,6 +1065,10 @@
 				Name="Player"
 				>
 				<File
+					RelativePath=".\Marathon\Player\Defs.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Marathon\Player\IDynamicLink.cpp"
 					>
 				</File>
@@ -1154,6 +1170,14 @@
 				</File>
 				<File
 					RelativePath=".\Marathon\Player\LuaInfoInit.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Player\ModelNode.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Player\ModelNode.h"
 					>
 				</File>
 				<File
@@ -1837,11 +1861,31 @@
 					Name="Graphics"
 					>
 					<File
-						RelativePath=".\Marathon\Sox\Graphics\FrameBase.cpp"
+						RelativePath=".\Marathon\Sox\Graphics\Defs.h"
 						>
 					</File>
 					<File
-						RelativePath=".\Marathon\Sox\Graphics\FrameBase.h"
+						RelativePath=".\Marathon\Sox\Graphics\Frame.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Sox\Graphics\Frame.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Sox\Graphics\FrameObserver.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Sox\Graphics\FrameObserver.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Sox\Graphics\FrameSynchronizer.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Marathon\Sox\Graphics\FrameSynchronizer.h"
 						>
 					</File>
 				</Filter>
@@ -2007,6 +2051,22 @@
 				Name="Prop"
 				>
 				<File
+					RelativePath=".\Marathon\Prop\ActorCreator.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Prop\ActorCreator.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Prop\ActorCreators.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Prop\ActorCreators.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Marathon\Prop\AllocatedData.cpp"
 					>
 				</File>
@@ -2031,6 +2091,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Marathon\Prop\EntityHandle.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Prop\EntityHandle.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Marathon\Prop\GenerateArea.cpp"
 					>
 				</File>
@@ -2047,11 +2115,27 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Marathon\Prop\IActorCreator.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Prop\IActorCreator.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Marathon\Prop\Instance.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\Marathon\Prop\Instance.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Prop\Library.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Marathon\Prop\Library.h"
 					>
 				</File>
 				<File

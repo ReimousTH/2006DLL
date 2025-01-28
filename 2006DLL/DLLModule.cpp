@@ -2,31 +2,24 @@
 #pragma warning(disable: 4101)
 #pragma warning(pop)
 
-
 #include <xtl.h>
-
-/*
-void* operator new(size_t size) {
-	return HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, size);
-}
-
-void operator delete(void* ptr) {
-	HeapFree(GetProcessHeap(), 0, ptr);
-}
-*/
-
-
-
-
 #include "PatchData.h"
+
+
+
+
+
+#include "Patches/Common/Marathon.h"
 #include "Patches/DebugLog/DebugLog.h"
 #include "Patches/DevTitle/DevTitle.h"
 #include "Patches/CompleteGauge/CompleteGauge.h"
 #include "Patches/TagBattleExtension/TagBattleMain.h"
-#include <Player/LuaInfoInit.h>
-#include <System/Peripheral/ManagerImpXenon.h>
 #include "Patches/Inverse/Inverse.h"
 #include "Patches/Characters/Amy.h"
+
+
+
+
 
 
 struct DFastActions{
@@ -228,7 +221,7 @@ HOOK(DWORD*,__fastcall,DocMarathonState_GLOBAL,0x82160B98,DWORD* a1,int a2){
 int __fastcall sub_8264E068(int a1, int a2, int a3) {
     Sonicteam::SoX::IResource* resource = (Sonicteam::SoX::IResource*)a1;
 
-    if (resource->str1.find("archive.pkg") != std::string::npos) {
+    if (resource->ResourceStr1.find("archive.pkg") != std::string::npos) {
         int FixedArchive = (*(int(__fastcall**)(int, const char*))(*(_DWORD*)a1 + 0x30))(a1, "archive_fixed");
         int Handle;
 
@@ -241,7 +234,7 @@ int __fastcall sub_8264E068(int a1, int a2, int a3) {
 
 
 
-    if (resource->str1.find("archive.pkg") != std::string::npos) {
+    if (resource->ResourceStr1.find("archive.pkg") != std::string::npos) {
 
 		std::vector<std::string>* pkg = 	ExFileSystem::GetArcs_pkg();
 		for (std::vector<std::string>::iterator it = pkg->begin();it!= pkg->end();it++){
@@ -354,8 +347,14 @@ boost::shared_ptr<Sonicteam::ActorManager> T01( Sonicteam::GameImp* imp) {
 
 extern "C" void OnDLLStart(){
 
-	
-	
+
+
+	return;
+//	WRITE_DWORD(0x82D5E890,0xFFFFFFFF);
+//	WRITE_DWORD(0x82D5E894,0xFFFFFFFF);
+	BranchTo(0x825383D8,void,0); // XapiInitProcess , custom new() delete() work early
+
+
 
 
 

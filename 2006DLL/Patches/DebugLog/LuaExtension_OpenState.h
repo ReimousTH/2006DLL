@@ -18,11 +18,6 @@ extern "C" {
 
 
 
-#include <Player/Input/IListener.h>
-#include <Player/State/IMachine.h>
-#include <Player/State/CommonContext.h>
-#include <Player/State/FastContext.h>
-
 
 #include <boost/any.hpp>
 #include <boost/shared_ptr.hpp>

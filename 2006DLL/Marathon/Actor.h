@@ -1,16 +1,9 @@
-#pragma once
 
 #ifndef __MARATHON_ACTOR__
 #define __MARATHON_ACTOR__
 
-#ifndef __MARATHON_ACTORMANAGER__
-#define __MARATHON_ACTORMANAGER__
+
 #include "ActorManager.h"
-#endif
-
-
-
-
 #include <Sox/Memory/IDestructible.h>
 #include <Sox/Engine/Task.h>
 #include <boost/weak_ptr.hpp>
@@ -30,7 +23,9 @@ namespace Sonicteam{
 			~Actor();
 			 Actor(Sonicteam::Actor* other, boost::weak_ptr<unsigned int>& gameimp);
 
-			boost::weak_ptr<unsigned int> GameImp;
+			boost::weak_ptr<unsigned int> GameImp; //0x4C-0x50
+			unsigned int ActorID;
+
 		
 			virtual void DestroyObject(unsigned int flag);
 

@@ -21,13 +21,7 @@ extern "C" {
 #include "LuaExtension_Uint64.h"
 #include "LuaExtension_BIT.h"
 
-#include <Player/Input/IListener.h>
-#include <Player/State/IMachine.h>
-#include <Player/State/CommonContext.h>
-#include <Player/State/FastContext.h>
 
-#include <Sox/Engine/Task.h>
-#include "Player/INotification.h"
 
 #include "LuaExtension_OpenState.h"
 #include "LuaExtension_PlayerRework.h"
@@ -36,7 +30,7 @@ extern "C" {
 #include "LuaExtension_StateMachine2.h"
 
 #include "LuaSystem.h"
-#include <GameImp.h>
+
 
 #include <boost/any.hpp>
 

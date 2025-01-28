@@ -49,25 +49,27 @@ namespace CompleteGauge{
 		if ((_this->Input & LN_GAMEPAD_BUTTON_RT_PRESS) != 0){
 			Sonicteam::DocMarathonImp* impl = 	*(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
 			Sonicteam::GameImp* gameimp = *(Sonicteam::GameImp**)(impl->DocCurrentMode + 0x6C);
-			Sonicteam::Prop::Manager* mgr =  gameimp->GamePropManager.get();
+			Sonicteam::Prop::Library* mgr =  gameimp->GamePropLibary[Sonicteam::GameImp::GamePropLibaryVariant::Waveocean];
 
 			std::string Viser;
 		
 
 		
-			std::map<std::string, Sonicteam::Prop::Class*>* _map_ = (std::map<std::string,Sonicteam::Prop::Class*>*)&(mgr->PropClassRegistry->_registry_);
+			mgr->LibraryPropClass[0]->DestroyObject(1);
+			std::map<std::string, int>* _map_ = (std::map<std::string,int>*)&(mgr->LibraryPropIndex);
 
-			for (std::map<std::string, Sonicteam::Prop::Class*>::iterator it = 	_map_->begin(); it != _map_->end(); ++it) {
+			for (std::map<std::string, int>::iterator it =_map_->begin(); it != _map_->end(); ++it) {
 
 					Viser.append(it->first);
 					Viser.append(":");
-					std::stringstream str; str << std::hex << it->second->ClassPropData->ClassName;
+					std::stringstream str; str << std::hex << it->second;
 					Viser.append(str.str());
 					Viser.append("\n");
 				
 			}
 
-//			PushXenonMessage(L"Test",Viser.c_str(),0);
+
+			PushXenonMessage(L"Test",Viser.c_str(),0);
 			
 		}
 

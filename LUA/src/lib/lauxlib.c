@@ -295,6 +295,7 @@ LUALIB_API void luaL_openlib (lua_State *L, const char *libname,
   lua_pop(L, nup);  /* remove upvalues */
 }
 
+// Dont Work Properly still
 LUALIB_API void luaL_openlibf06(lua_State *L, const char *libname, const luaL_reg *l, int num) {
 	int j = 0;
 
@@ -570,7 +571,7 @@ LUALIB_API int luaL_ref06 (lua_State *L, int t){
 		return LUA_REFNIL;  /* `nil' has a unique fixed reference */
 	}
 	lua_rawgeti06(L, t, FREELIST_REF);  /* get first free element */
-	ref = (int)lua_tonumber(L, -1);  /* ref = t[FREELIST_REF] */
+	ref = (int)lua_tonumber06(L, -1);  /* ref = t[FREELIST_REF] */
 	lua_pop(L, 1);  /* remove it from stack */
 	if (ref != 0) {  /* any free element? */
 		lua_rawgeti06(L, t, ref);  /* remove it from list */

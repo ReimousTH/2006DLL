@@ -102,43 +102,11 @@
 
 
 
-#include "Marathon/Player/RootFrame.h"
-
-#include "Marathon/Player/State/CommonContext.h"
-#include "Marathon/Player/State/SonicContext.h"
-#include "Marathon/Player/State/TailsContext.h"
-#include "Marathon/Player/State/AmyContext.h"
-#include "Marathon/Combo/AttackManager.h"
-#include "Marathon/Combo/ScoreManager.h"
-
-#include "Marathon/Player/Gauge/SonicGauge.h"
-#include "Marathon/Player/Gauge/GaugeStandard.h"
-#include "Marathon/Player/State/Machine2.h"
-
-
-#include "Marathon/Player/State/CommonObject.h"
-#include "Marathon/Player/State/BasedObject.h"
-#include "Marathon/Sox/Object.h"
-#include "Marathon/Sox/Component.h"
-
-
-#include "Marathon/DocMarathonImp.h"
-
-#include "Marathon/Player/Input/ListenerNormal.h"
-
-#include "Marathon/MainMenuTask.h"
-
-#include "Marathon/Player/Effect/IParticle.h"
-
-//#include "Marathon/MyPhysicsSystemFactory.h"
-
-
-
 
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
 
-#include "Marathon/Player/PhantomEnterListener.h"
+#include "Patches/Common/Marathon.h"
 
 
 #define  HK_CONFIG_SIMD HK_CONFIG_SIMD_DISABLED

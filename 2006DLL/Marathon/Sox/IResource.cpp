@@ -13,13 +13,13 @@ IResource::~IResource(void)
 
 }
 
-int IResource::Unk02()
+int IResource::ResouceUnk02()
 {
 
 	return 0;
 }
 
-int IResource::Unk04()
+int IResource::ResourceUnk04()
 {
 	return 1;
 }

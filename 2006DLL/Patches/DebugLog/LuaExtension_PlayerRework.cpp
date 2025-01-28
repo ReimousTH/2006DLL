@@ -28,8 +28,15 @@ namespace DebugLogV2{
 		lua_pushstring06(LS,"AI"); lua_pushboolean(LS,false); lua_settable06(LS,-3); // AI = 0
 		lua_pushstring06(LS,"__index"); lua_pushvalue(LS,-2); lua_settable06(LS,-3); // __index = PlayerMeta
 
+
+
+
+
 	
 		lua_newtable06(LS);lua_pushstring06(LS, "__index");luaL_getmetatable06(LS, "MemoryMeta");lua_settable06(LS, -3); lua_setmetatable06(LS, -2); //setmetatable(PlayerMeta, { __index = MemoryMeta })
+
+		
+
 
 		lua_pushstring06(LS, "GetName");lua_pushcfunction06(LS, PlayerR__GetName);lua_settable06(LS, -3); // Equivalent to table["GetName"] = PlayerR__GetName
 		lua_pushstring06(LS, "SWAP");lua_pushcfunction06(LS, PlayerR__SWAP);lua_settable06(LS, -3); // Equivalent to table["SWAP"] = PlayerR__SWAP
@@ -37,6 +44,9 @@ namespace DebugLogV2{
 		lua_pushstring06(LS, "GetPosition");lua_pushcfunction06(LS, PlayerR__GetPosition);lua_settable06(LS, -3); // Equivalent to table["GetPosition"] = PlayerR__GetPosition
 		lua_pushstring06(LS, "SetPosition");lua_pushcfunction06(LS, PlayerR__SetPosition);lua_settable06(LS, -3); // Equivalent to table["SetPosition"] = PlayerR__SetPosition
 		lua_pushstring06(LS, "SetActorPTR");lua_pushcfunction06(LS, PlayerR__SetActorPTR);lua_settable06(LS, -3); // Equivalent to table["SetActorPTR"] = PlayerR__SetActorPTR
+		lua_pushstring06(LS, "GetActorPTR");lua_pushcfunction06(LS, PlayerR__GetActorPTR);lua_settable06(LS, -3); // Equivalent to table["SetActorPTR"] = PlayerR__SetActorPTR
+
+		
 		lua_pushstring06(LS, "GetActorID");lua_pushcfunction06(LS, PlayerR__GetActorID);lua_settable06(LS, -3); // Equivalent to table["GetActorID"] = PlayerR__GetActorID
 		lua_pushstring06(LS, "GetStateID");lua_pushcfunction06(LS, PlayerR__GetStateID);lua_settable06(LS, -3); // Equivalent to table["GetStateID"] = PlayerR__GetStateID
 		lua_pushstring06(LS, "SetStateID");lua_pushcfunction06(LS, PlayerR__SetStateID);lua_settable06(LS, -3); // Equivalent to table["SetStateID"] = PlayerR__SetStateID
@@ -55,11 +65,12 @@ namespace DebugLogV2{
 
 	}
 
-	 int GetPlayerActorsID(unsigned int ID){
+	 int GetPlayerActorsID(unsigned int ID,bool AI){
 
 
 		Sonicteam::DocMarathonImp* impl = 	*(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
 		UINT32 gameimp = *(UINT32*)(impl->DocCurrentMode + 0x6C);
+		Sonicteam::GameImp* gameimp_2 = *(Sonicteam::GameImp**)(impl->DocCurrentMode + 0x6C);
 
 		int LocalPlayer = 0;
 		if (gameimp == 0 || *(UINT32*)gameimp != 0x82001AEC) return -1;
@@ -69,8 +80,15 @@ namespace DebugLogV2{
 		if (vft != 0x82033534) return -1;
 		if ( *(UINT32*)(gameimp+0x11C4) == 0) return -1;
 		INT32 ActorManager = *(UINT32*)(gameimp+0x11C4);
-		
+
 		int ActorID =  *(int*)(gameimp + 0xE40) + (ID * 0x4C);
+
+		if (AI){
+			ActorID = gameimp_2->ObjPlayersActorID[ID];
+		}
+	
+
+	
 
 		return ActorID;
 	}
@@ -97,57 +115,82 @@ namespace DebugLogV2{
 		if ( *(UINT32*)(gameimp+0x11C4) == 0) return;
 		INT32 ActorManager = *(UINT32*)(gameimp+0x11C4);
 
-		for (int i = 0;i<4;i++){
+		if (!AI){
+			for (int i = 0;i<4;i++){
 				UINT32 gameimp = *(UINT32*)(impl->DocCurrentMode + 0x6C);
 				int ActorID =  *(int*)(gameimp + 0xE40) + (i * 0x4C);
 				if (ActorID == -1) continue;
 				pstack[i] = BranchTo(0x821609D0,int,ActorManager,&ActorID);
+			}
 		}
+		else{
+			for (int i = 0;i<4;i++){
+				Sonicteam::GameImp* gameimp = *(Sonicteam::GameImp**)(impl->DocCurrentMode + 0x6C);
+				int ActorID  = gameimp->ObjPlayersActorID[i];
+				if (ActorID == -1) continue;
+				pstack[i] = BranchTo(0x821609D0,int,ActorManager,&ActorID);
+			}
+		}
+	
 
 	
 	}
 
 	void GetPlayerActorsPTR(UINT32* pstack,bool AI){
 
+		
 		pstack[0] = 0;
 		pstack[1] = 0;
 		pstack[2] = 0;
 		pstack[3] = 0;
 
+
 		Sonicteam::DocMarathonImp* impl = 	*(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
+		UINT32 gameimp = *(UINT32*)(impl->DocCurrentMode + 0x6C);
+
+		int LocalPlayer = 0;
+		if (gameimp == 0 || *(UINT32*)gameimp != 0x82001AEC) return;
 		UINT32 vft =  *(UINT32*)impl->DocCurrentMode;
 
-		if (vft == 0x82033534){ //GameMode
 
-			UINT32 gameimp = *(UINT32*)(impl->DocCurrentMode + 0x6C);
-			UINT32 ActorManager = *(UINT32*)(gameimp+0x11C4);
-			UINT32 ActorMangerActorsCount = *(UINT32*)(ActorManager+0x80000);
-			UINT32 PIX = 0;
-			for (int i = 0;i<ActorMangerActorsCount;i++)
-			{
-				UINT32 Actor = *(UINT32*)(ActorManager+0x40000+(i*4));
-				UINT32 ActorVFT = *(UINT32*)Actor;
-				if (ActorVFT == 0x82003564){ //Object_Player
+		if (vft != 0x82033534)return;
+		if ( *(UINT32*)(gameimp+0x11C4) == 0) return;
+		INT32 ActorManager = *(UINT32*)(gameimp+0x11C4);
 
-
-					byte IsObjectPlayerHaveControll = *(byte*)(Actor + 0xC8);
-					byte AIFLAG = *(byte*)(Actor + 0xCA);
-					if (AI)
-					{
-						if (IsObjectPlayerHaveControll == 0 && AIFLAG){
-							pstack[PIX++] = (UINT32)(ActorManager+0x40000+(i*4));
-						}
-
-
+		if (!AI){
+			for (int i = 0;i<4;i++){
+				Sonicteam::GameImp* gameimp_2 = *(Sonicteam::GameImp**)(impl->DocCurrentMode + 0x6C);
+				UINT32 gameimp = *(UINT32*)(impl->DocCurrentMode + 0x6C);
+				int ActorID =  *(int*)(gameimp + 0xE40) + (i * 0x4C);
+				if (ActorID == -1) continue;
+				Sonicteam::ActorManager* manager =  gameimp_2->GameActorManager.get();
+				
+				for (int j = 0;j<0xFFFF;j++){
+					if (manager->ActorID[j] == ActorID) {
+						pstack[i] = (UINT32)&manager->Actor[j];
+						break;
 					}
-					else{
-						if (IsObjectPlayerHaveControll){
-							pstack[PIX++] = (UINT32)(ActorManager+0x40000+(i*4));
-						}
-					}
-
-
 				}
+
+				
+
+				
+			}
+		}
+		else{
+			for (int i = 0;i<4;i++){
+				Sonicteam::GameImp* gameimp = *(Sonicteam::GameImp**)(impl->DocCurrentMode + 0x6C);
+				int ActorID  = gameimp->ObjPlayersActorID[i];
+				if (ActorID == -1) continue;
+				Sonicteam::ActorManager* manager =  gameimp->GameActorManager.get();
+
+				for (int j = 0;j<0xFFFF;j++){
+					if (manager->ActorID[j] == ActorID) {
+						pstack[i] = (UINT32)&manager->Actor[j];
+						break;
+					}
+				}
+				
 			}
 		}
 	}
@@ -156,9 +199,11 @@ namespace DebugLogV2{
 		
 
 		UINT32 stack1[16];
+		memset(&stack1,0,16*4);
 		UINT32 stack2[16];
+		memset(&stack2,0,16*4);
 		GetPlayerActorsR((UINT32*)&stack1, AI);
-		GetPlayerActorsPTR((UINT32*)&stack2, AI);
+		//GetPlayerActorsPTR((UINT32*)&stack2, AI); --Remove From Here to save perfomance
 
 
 		lua_getglobal06(L, "Memory");
@@ -179,9 +224,9 @@ namespace DebugLogV2{
 		lua_pushnumber(L, ID);
 		lua_settable06(L, -3); // self.ptr = ptr
 
-		lua_pushstring06(L, "ActorPTR");
-		lua_pushlightuserdata(L, (void*)stack2[ID]);
-		lua_settable06(L, -3); // self.ActorPTR = ptr
+	//	lua_pushstring06(L, "ActorPTR");
+		//lua_pushlightuserdata(L, (void*)stack2[ID]);
+	//	lua_settable06(L, -3); // self.ActorPTR = ptr
 
 
 		lua_pushstring06(L, "AI");
@@ -238,10 +283,10 @@ namespace DebugLogV2{
 
 
 
-		lua_pushstring06(L,"ActorPTR");
-		GetPlayerActorsPTR((UINT32*)&stack,AI);
-		lua_pushlightuserdata(L,(void*)stack[ID]);
-		lua_settable06(L,1);
+		//lua_pushstring06(L,"ActorPTR");
+		//GetPlayerActorsPTR((UINT32*)&stack,AI);
+		//lua_pushlightuserdata(L,(void*)stack[ID]);
+		//lua_settable06(L,1);
 
 
 
@@ -365,12 +410,72 @@ namespace DebugLogV2{
 		lua_pushstring06(L,"ID");
 		lua_gettable(L,1);
 		int ID  = lua_tonumber(L,-1);
-		lua_pushnumber(L,GetPlayerActorsID(ID));
+
+
+		lua_pushstring06(L,"AI");
+		lua_gettable(L,1);
+		bool AI  = lua_toboolean(L,-1);
+
+		lua_pushnumber(L,GetPlayerActorsID(ID,AI));
 		return 1;
 	}
 
 	extern "C" int PlayerR__GetActorPTR(lua_State* L){
 
+
+		lua_pushstring06(L,"ID");
+		lua_gettable(L,1);
+		int ID  = lua_tonumber(L,-1);
+
+
+		lua_pushstring06(L,"AI");
+		lua_gettable(L,1);
+		bool AI  = lua_toboolean(L,-1);
+
+
+
+		Sonicteam::DocMarathonImp* impl = 	*(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
+		UINT32 gameimp = *(UINT32*)(impl->DocCurrentMode + 0x6C);
+		Sonicteam::GameImp* gameimp_2 = *(Sonicteam::GameImp**)(impl->DocCurrentMode + 0x6C);
+
+		int LocalPlayer = 0;
+		if (gameimp == 0 || *(UINT32*)gameimp != 0x82001AEC) return 0;
+		UINT32 vft =  *(UINT32*)impl->DocCurrentMode;
+
+
+		if (vft != 0x82033534)  return 0;
+
+		Sonicteam::ActorManager* ActorManager = *(Sonicteam::ActorManager**)(gameimp+0x11C4);
+		
+		int AID = gameimp_2->PlayerGameplayerData[ID].ActorID;
+		if (AI){
+			AID = gameimp_2->ObjPlayersActorID[ID];
+		}
+
+	
+		unsigned int left = 0;
+		unsigned int right = ActorManager->LastActorIndex-1;
+		int Index = 0;
+
+		while (left <= right) {
+			unsigned int mid = left + (right - left) / 2;
+			if (ActorManager->ActorID[mid] == AID) {
+				Index = mid;
+				break;
+			}
+
+			if (ActorManager->ActorID[mid] < AID) {
+				left = mid + 1;
+			}
+			else {
+				right = mid - 1;
+			}
+		}
+
+
+
+		
+		lua_pushlightuserdata(L,&ActorManager->Actor[Index]);
 		
 
 		return 1;
@@ -379,13 +484,6 @@ namespace DebugLogV2{
 
 	extern "C" int PlayerR__SetActorPTR(lua_State* L)
 	{
-		if (lua_isuserdata(L,2)){
-
-			lua_pushstring06(L,"ActorPTR");
-			lua_gettable(L,1);
-			UINT32* ActorPTR  = (UINT32*)lua_touserdata(L,-1);
-			*ActorPTR = (UINT32)lua_touserdata(L,2);
-		}
 		return 0;
 	}
 

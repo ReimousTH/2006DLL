@@ -1,20 +1,22 @@
 
 
-#include <Sox/RefCountObject.h>
-#include "PropClass.h"
-
-
 
 
 #ifndef Sonicteam_Prop_SceneObject
 #define Sonicteam_Prop_SceneObject
 
 
+
+#include <Sox/RefCountObject.h>
+#include "PropClass.h"
+
+
+
 namespace Sonicteam { namespace Prop {
 
 
 
-	class SceneObject:Sonicteam::SoX::RefCountObject{
+	class SceneObject:public Sonicteam::SoX::RefCountObject{
 
 
 	public:
@@ -22,7 +24,6 @@ namespace Sonicteam { namespace Prop {
 		~SceneObject();
 
 		virtual void DestroyObject(unsigned int flag) override;
-
 		Sonicteam::Prop::Scene* PropScene;
 
 

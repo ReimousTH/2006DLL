@@ -1,7 +1,10 @@
-#pragma once
 
-//
-namespace Sonicteam { namespace Prop {
+#ifndef _PropClass_
+#define _PropClass_
+
+namespace Sonicteam { 	class GameImp; namespace Prop {
+
+
 
 	class GenerateArea; //+
 	class Manager; //+
@@ -19,10 +22,20 @@ namespace Sonicteam { namespace Prop {
 	class Instance; //+
 
 
-	class ActorCreators;
-	class SceneData;
+	class IActorCreator; // +
+	class ActorCreator; // +
+	class ActorCreators; // +
+	class SceneData; // +
 	class ClassRegistry; // +
 
 	class AllocatedData; //+
-	class Group; //+
+	class Group; //+-
+	class EntityHandle; // +
+	struct ActorCreatorCreationData; //+
+	class Library;
 }}
+
+
+#endif
+
+//

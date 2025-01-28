@@ -17,6 +17,7 @@ extern "C" {
 
 
 
+#include <GameImp.h>
 #include <Player/Input/IListener.h>
 #include <Player/State/IMachine.h>
 #include <Player/State/CommonContext.h>

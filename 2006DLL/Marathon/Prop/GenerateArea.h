@@ -1,5 +1,11 @@
 
 
+
+
+
+#ifndef Sonicteam_Prop_GenerateArea
+#define Sonicteam_Prop_GenerateArea
+
 #include "PropClass.h"
 #include "Manager.h"
 
@@ -9,9 +15,6 @@
 #include <boost/shared_ptr.hpp>
 #include <Sox/RefCountObject.h>
 
-
-
-#ifndef Sonicteam_Prop_GenerateArea
 
 namespace Sonicteam { namespace Prop {
 

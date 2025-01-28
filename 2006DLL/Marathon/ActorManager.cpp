@@ -18,6 +18,34 @@ void Sonicteam::ActorManager::DestroyObject(unsigned int flag)
 	Sonicteam::ActorManager::~ActorManager();
 	Sonicteam::SoX::Memory::IUDestructible::DestroyObject(this,flag);
 }
+//Update Laeter
+
+/*
+
+
+unsigned int left = 0;
+unsigned int right = ActorManager->LastActorIndex-1;
+int Index = 0;
+
+while (left <= right) {
+unsigned int mid = left + (right - left) / 2;
+if (ActorManager->ActorID[mid] == AID) {
+Index = mid;
+break;
+}
+
+if (ActorManager->ActorID[mid] < AID) {
+left = mid + 1;
+}
+else {
+right = mid - 1;
+}
+}
+*/
+
+
+
+
 
 Sonicteam::SoX::Engine::Task* Sonicteam::ActorManager::SearchActorByID(unsigned int& ID)
 {

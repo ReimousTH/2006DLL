@@ -1,11 +1,8 @@
-#pragma once
 
 #ifndef __MARATHON_ACTORMANAGER__
 #define __MARATHON_ACTORMANAGER__
 
-#ifndef __MARATHON_ACTOR__
 #include "Actor.h"
-#endif
 
 
 #include <vector>

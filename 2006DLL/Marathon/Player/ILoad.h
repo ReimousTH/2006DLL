@@ -5,7 +5,7 @@
 
 #include <sox/RefCountObject.h>
 #include <Player/Input/IListener.h>	
-#include <Sox/Graphics/FrameBase.h>
+#include <Sox/Graphics/Frame.h>
 #include <sox/StepableThread.h>
 
 namespace Sonicteam{

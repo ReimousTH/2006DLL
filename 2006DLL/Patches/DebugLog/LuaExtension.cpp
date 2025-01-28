@@ -309,8 +309,6 @@ namespace DebugLogV2{
 	extern "C" GameLIB_NewActorRestore(lua_State* L){
 	
 	
-
-
 		int atgs = lua_gettop(L);
 		XMVECTOR Pos = {0};
 		XMVECTOR Rot = {0};
@@ -338,7 +336,7 @@ namespace DebugLogV2{
 			if (lua_isstring(L,-1)){
 				Placement = lua_tostring(L,-1);
 			}
-		
+
 
 		}
 		const char* PlacementTypeTable[] = {"default","design","particle","test","area","pathobj"};
@@ -351,16 +349,16 @@ namespace DebugLogV2{
 
 
 
-	
 
 
-	
+
+
 
 
 
 		std::map<std::string, boost::any> _params;
 
-		
+
 		lua_pushnil(L);
 		while (lua_next(L, 2) != 0) {
 			if (lua_isstring(L, -2)) {
@@ -379,7 +377,7 @@ namespace DebugLogV2{
 				break;
 				}
 			}
-		
+
 			// Pop the value, keep the key for the next iteration
 			lua_pop(L, 1);
 		}
@@ -395,31 +393,38 @@ namespace DebugLogV2{
 		const char* OBJ_ID =  lua_tostring(L,1);
 
 		Sonicteam::DocMarathonImp* impl = 	*(Sonicteam::DocMarathonImp**)(*(UINT32*)0x82D3B348 + 0x180);
-		UINT32 gameimp = *(UINT32*)(impl->DocCurrentMode + 0x6C);
-		int GamePropManager =   *(_DWORD *)(gameimp  + 0x1278);
-		int PropSceneClass = *(_DWORD *)(GamePropManager + 0x44);
+		Sonicteam::GameImp* gameimp = *(Sonicteam::GameImp**)(impl->DocCurrentMode + 0x6C);
+		Sonicteam::Prop::Manager* GamePropManager =   gameimp->GamePropManager.get();
+		Sonicteam::Prop::ClassRegistry* PropSceneClass = GamePropManager->PropClassRegistry.get();
 
-		int RefObjectTypePropClass;
-		BranchTo(0x82456DA0,int,&RefObjectTypePropClass,PropSceneClass,&std::string(OBJ_ID)); //GetObjectTypePropClass
+
+
+		Sonicteam::Prop::Class* RefObjectTypePropClass = PropSceneClass->_registry_[std::string(OBJ_ID)];
+		//BranchTo(0x82456DA0,int,&RefObjectTypePropClass,PropSceneClass,&std::string(OBJ_ID)); //GetObjectTypePropClass
 
 		///
 		std::map<std::string,int> _props_origin_params;
 
 
 		std::vector<std::pair<std::string,boost::any>> _sorted_params;
-	//	std::map<std::string,boost::any> _sorted_params; //need unordered
-		unsigned int PropData =   *(unsigned int*)(RefObjectTypePropClass + 0x8);
-		int PropParamsCount =  *(int*)(PropData + 0x4);
-		int PropParamsDataPTR =  *(int*)(PropData + 0x8);
+		//	std::map<std::string,boost::any> _sorted_params; //need unordered
+
+
+		Sonicteam::Prop::ClassPropParamData* PropData =   RefObjectTypePropClass->ClassPropData;
+		int PropParamsCount =  PropData->ClassParamInfoCount;
+		Sonicteam::Prop::ClassPropParamInfo* PropParamsDataPTR =  PropData->ClassParamInfo;
+
 
 
 		for (int i = 0;i<PropParamsCount;i++){
-			int ParameterDataPTR = PropParamsDataPTR + (i*0x18);
-			const char* ParameterName = (const char*)ParameterDataPTR;
-			int ParameterType = *(int*)(ParameterDataPTR + 0x10);
-			
+			Sonicteam::Prop::ClassPropParamInfo* ParameterDataPTR = &PropParamsDataPTR[i];
+			const char* ParameterName = (const char*)&ParameterDataPTR->ParamName;
+			int ParameterType = ParameterDataPTR->ParamType;
+
 			std::string key = std::string(ParameterName);
 			_props_origin_params[key] = ParameterType;
+
+	
 
 			if (_params.find(key) ==  _params.end()){
 
@@ -446,7 +451,7 @@ namespace DebugLogV2{
 
 			}
 
-			
+
 
 			_sorted_params.push_back(std::make_pair(std::string(ParameterName),_params[std::string(ParameterName)]));
 
@@ -454,53 +459,40 @@ namespace DebugLogV2{
 		}
 
 
-	
-		
+
+
 		///
 
-		int PropSceneBoost[2] = {0,0}; //shared_ptr
-		//default,design,....
-		BranchTo(0x82461848,int,&PropSceneBoost, *(_DWORD *)(gameimp + 0x1278), PlacementIndex);
-		int PropScenePTR = PropSceneBoost[0];
 
-
-
-		int obj_index = 100;
+		Sonicteam::Prop::Scene* PropScenePTR = gameimp->GameProp[PlacementIndex].get();
+		int LastIndex = PropScenePTR->ScenePropInstance.size();
 		char bufferX[512];
-		sprintf(bufferX,"%s%d",OBJ_ID,obj_index); //dashpanel 101
+		sprintf(bufferX,"%s%d",OBJ_ID,LastIndex); //dashpanel 101
 
-        ObjectSetData* ObjData = new((void*)malloc06(sizeof(ObjectSetData))) ObjectSetData(bufferX, OBJ_ID, &Pos, &Rot);
+
+	
+		Sonicteam::Prop::InstanceSetData* ObjData =  new Sonicteam::Prop::InstanceSetData(bufferX, OBJ_ID, Pos, Rot);
 		ObjData->ParamsCount = PropParamsCount;
 
 
-		
 
-		ObjData->Params = (ObjectSetParamData*)malloc06(0x28 * ObjData->ParamsCount);
+
+		ObjData->Params = (Sonicteam::Prop::InstanceSetDataParams*)malloc06(0x28 * ObjData->ParamsCount);
 		memset(ObjData->Params,0,0x28 * ObjData->ParamsCount);
-
-		
-
-		int prm = (int)ObjData->Params;
-
-		Sonicteam::Prop::InstanceSetDataParams* prm1 = (Sonicteam::Prop::InstanceSetDataParams*)ObjData->Params;
-	
-		
+		Sonicteam::Prop::InstanceSetDataParams* prm = ObjData->Params;
 
 
 		for (int i = 0;i<PropParamsCount;i++){
-			int IPrm = prm + (i * 0x14);
-
-
+			int IPrm = (int)&prm[i];
 			int ParamType = _props_origin_params[_sorted_params[i].first];
-
 			*(unsigned int*)IPrm = ParamType;
 			const char* s = 0;
 			std::string STRX;
-		//	ShowXenonMessage(L"MSG",it->first.c_str());
+			//	ShowXenonMessage(L"MSG",it->first.c_str());
 
-			
-		
-		
+
+
+
 			switch (ParamType){
 				case Boolean:
 					*(int*)(IPrm + 0x4) = 	(int)boost::any_cast<bool>(_sorted_params[i].second);
@@ -528,55 +520,74 @@ namespace DebugLogV2{
 				case UInt32:
 					//ShowXenonMessage(L"MSG",(int)boost::any_cast<float>(it->second),0);
 					*(unsigned int*)(IPrm + 0x4) = (unsigned int)boost::any_cast<float>(_sorted_params[i].second);
-				//	ShowXenonMessage(L"MSG",(int)boost::any_cast<float>(it->second),0);
+					//	ShowXenonMessage(L"MSG",(int)boost::any_cast<float>(it->second),0);
 					break;
 				default:
 					break;
 
 			}
-			
-			
+
+
 
 
 		}
-		
 
 
 
 
 
 
-		int InstnceProp =  BranchTo(0x8245A080,int,malloc06(0x14),PropScenePTR,ObjData,&RefObjectTypePropClass);
-		int EntityHandle = BranchTo(0x82461128,int,malloc06(0x1c),PropScenePTR,obj_index);
 
-		*(int*)(EntityHandle + 0x18) = InstnceProp;
+		Sonicteam::Prop::Instance* InstnceProp =  BranchTo(0x8245A080,Sonicteam::Prop::Instance*,malloc06(0x14),PropScenePTR,ObjData,&RefObjectTypePropClass);
+		Sonicteam::Prop::EntityHandle* EntityHandle = BranchTo(0x82461128,Sonicteam::Prop::EntityHandle*,malloc06(0x1c),PropScenePTR,LastIndex);
+		EntityHandle->PropInstance = InstnceProp;
+		//*(Sonicteam::Prop::Instance**)(EntityHandle + 0x18) = InstnceProp;
 
 
 		Sonicteam::SoX::RefCountObject* RUU = (Sonicteam::SoX::RefCountObject*)EntityHandle;
 
 
-
-		int buffer[0x30]= {0};
-		BranchTo(0x8245C680,int,&buffer,&InstnceProp,&EntityHandle,0,&std::string(OBJ_ID));
-
-
-		//Complete Creation
-		std::vector<dummy_container_entityhandle_Object>* EntityHandleAndObjectVector = (std::vector<dummy_container_entityhandle_Object>*)(PropScenePTR + 0x74-0x4); //0xD,0xE
-		std::vector<int>* InstancePropVector = (std::vector<int>*)(PropScenePTR + 0x2C-0x4); //0xD,0xE
 		
 
-
-		int* PropManger = *(int**)PropScenePTR;
-		int result = BranchTo(0x824619C8,int,(PropManger)[0xF], OBJ_ID, buffer);
-
-		EntityHandleAndObjectVector->push_back(dummy_container_entityhandle_Object(EntityHandle,result));
-		InstancePropVector->push_back(InstnceProp);
+		Sonicteam::Prop::ActorCreatorCreationData buffer = Sonicteam::Prop::ActorCreatorCreationData(InstnceProp,EntityHandle,0,std::string(OBJ_ID));
+	//	int buffer[0x30]= {0};
+	//	BranchTo(0x8245C680,int,&buffer,&InstnceProp,&EntityHandle,0,&std::string(OBJ_ID));
 
 
 
 
 
-		return 0;
+		Sonicteam::Prop::Manager* PropManger = PropScenePTR->PropManager;
+
+		
+
+		Sonicteam::Prop::ActorCreators* ActorCreatorsVar =  PropManger->ActorCreators.lock().get();
+		Sonicteam::Actor* obj_actor =  ActorCreatorsVar->ActorCreator[std::string(OBJ_ID)]->CreateActor(ActorCreatorsVar->NamedActor,&ActorCreatorsVar->GameImp,&buffer);
+		
+		
+	
+		Sonicteam::Prop::SceneActor SceneActor;
+		SceneActor.Flag1  = 0;
+		SceneActor.Flag2 = 0;
+		SceneActor.ObjActorHandle = 0;
+		SceneActor.ObjActor = 0;
+
+	
+
+	
+
+//		PropScenePTR->SceneObject.push_back(SceneActor); cause crash :why: tho?
+		PropScenePTR->ScenePropInstance.push_back(InstnceProp);
+
+
+		//EntityHandleAndObjectVector->push_back(dummy_container_entityhandle_Object(EntityHandle,result));
+		//InstancePropVector->push_back(InstnceProp);
+
+
+		lua_pushlightuserdata(L,obj_actor);
+
+
+		return 1;
 	}
 
 	int GameLIB_GlobalInstall(lua_State* LS)

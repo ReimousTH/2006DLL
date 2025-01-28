@@ -211,12 +211,9 @@ namespace DebugLogV2{
 		lua_pushstring06(L,"ptr");lua_gettable(L,1);unsigned int V1 = (unsigned int)lua_touserdata(L,-1);
 		lua_pushstring06(L,"ptr");lua_gettable(L,2);unsigned int V2 = (unsigned int)lua_touserdata(L,-1);
 
-		bool result = false;
-		if (V1 == V2){
-			result = true;
-		}
 
-		lua_pushboolean(L,result);
+
+		lua_pushboolean(L,V1==V2);
 		return 1;
 	
 
@@ -227,12 +224,10 @@ namespace DebugLogV2{
 		lua_pushstring06(L,"ptr");lua_gettable(L,1);unsigned int V1 = (unsigned int)lua_touserdata(L,-1);
 		lua_pushstring06(L,"ptr");lua_gettable(L,2);unsigned int V2 = (unsigned int)lua_touserdata(L,-1);
 
-		bool result = false;
-		if (V1 != V2){
-			result = true;
-		}
 
-		lua_pushboolean(L,result);
+
+		
+		lua_pushboolean(L,V1 != V2);
 		return 1;
 	}
 
@@ -786,7 +781,7 @@ namespace DebugLogV2{
 		int func_ptr = ptr + move;
 	
 
-
+		
 		int return_value = 0;
 		float return_value_float = 0.0;
 		

@@ -10,7 +10,7 @@
 #include "CompleteGauge_SonicStates.h"
 #include "CompleteGauge_SonicModel.h"
 #include "CompleteGauge_PostureCommon.h"
-#include <Sox/Thread.h>
+
 
 
 extern "C" {

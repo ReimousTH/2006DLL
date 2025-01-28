@@ -31,9 +31,8 @@ namespace DebugLogV2{
 
 	//map[BornUserDataLua][StateTypeID][StateID][StateWhen] -> vector[... -> lua_ref func -> value]
 	
-
-
 	bool ExecuteLuaFunction(const LEOS_Store& store,void* StatePointer,void* Context,int stateID,int when,double delta) {
+
 
 		lua_State* L = (lua_State*)store.L;
 		lua_rawgeti06(L,LUA_REGISTRYINDEX,store.L_Ref);
@@ -127,25 +126,29 @@ namespace DebugLogV2{
 			if (_this->CurrentState){
 
 				if (!ProcessStateLuaEX(machine2,_this->CurrentState.get(),context,_this->PreState,LEOS_StateOnEndPre,LEOS_StateOnAnyNo,0)){
-					ProcessStateLuaEX(machine2,_this->CurrentState.get(),context,_this->PreState,LEOS_StateOnEndPre,LEOS_StateOnAny,0);
-					if (!ProcessStateLuaEX(machine2,_this->CurrentState.get(),context,_this->PreState,LEOS_StateOnEndNo,LEOS_StateOnEndNo,0)){
-						ProcessStateLuaEX(machine2,_this->CurrentState.get(),context,_this->PreState,LEOS_StateOnEndPre,LEOS_StateOnEndPre,0);
-						_this->CurrentState.get()->OnStateEnd();
-						ProcessStateLuaEX(machine2,_this->CurrentState.get(),context,_this->PreState,LEOS_StateOnEndPost,LEOS_StateOnEndPost,0);
+					if (!ProcessStateLuaEX(machine2,_this->CurrentState.get(),context,_this->PreState,LEOS_StateOnEndPre,LEOS_StateOnAny,0)){
+						if (!ProcessStateLuaEX(machine2,_this->CurrentState.get(),context,_this->PreState,LEOS_StateOnEndNo,LEOS_StateOnEndNo,0)){
+							if (!ProcessStateLuaEX(machine2,_this->CurrentState.get(),context,_this->PreState,LEOS_StateOnEndPre,LEOS_StateOnEndPre,0)){
+								_this->CurrentState.get()->OnStateEnd();
+								ProcessStateLuaEX(machine2,_this->CurrentState.get(),context,_this->PreState,LEOS_StateOnEndPost,LEOS_StateOnEndPost,0);
+							}
+						}
+						ProcessStateLuaEX(machine2,_this->CurrentState.get(),context,_this->PreState,LEOS_StateOnEndPost,LEOS_StateOnAnyPost,0);
 					}
-					ProcessStateLuaEX(machine2,_this->CurrentState.get(),context,_this->PreState,LEOS_StateOnEndPost,LEOS_StateOnAnyPost,0);
-
 				}
 			}
 
-			if (!ProcessStateLuaEX(machine2,_this->CurrentState.get(),context,_this->PreState,LEOS_StateOnStartPre,LEOS_StateOnAnyNo,0)){
-				ProcessStateLuaEX(machine2,NextState.get(),context,_this->PostState,LEOS_StateOnStartPre,LEOS_StateOnAny,0);
-				if (!ProcessStateLuaEX(machine2,NextState.get(),context,_this->PostState,LEOS_StateOnStartNo,LEOS_StateOnStartNo,0)){
-					ProcessStateLuaEX(machine2,NextState.get(),context,_this->PostState,LEOS_StateOnStartPre,LEOS_StateOnStartPre,0);
-					(NextState)->OnStateStart(context);
-					ProcessStateLuaEX(machine2,NextState.get(),context,_this->PostState,LEOS_StateOnStartPost,LEOS_StateOnStartPost,0);
+			if (!ProcessStateLuaEX(machine2,NextState.get(),context,_this->PreState,LEOS_StateOnStartPre,LEOS_StateOnAnyNo,0)){
+				if (!ProcessStateLuaEX(machine2,NextState.get(),context,_this->PostState,LEOS_StateOnStartPre,LEOS_StateOnAny,0)){
+					if (!ProcessStateLuaEX(machine2,NextState.get(),context,_this->PostState,LEOS_StateOnStartNo,LEOS_StateOnStartNo,0)){
+						if (!ProcessStateLuaEX(machine2,NextState.get(),context,_this->PostState,LEOS_StateOnStartPre,LEOS_StateOnStartPre,0)){
+							(NextState)->OnStateStart(context);
+							ProcessStateLuaEX(machine2,NextState.get(),context,_this->PostState,LEOS_StateOnStartPost,LEOS_StateOnStartPost,0);
+						}
+					}
+					ProcessStateLuaEX(machine2,NextState.get(),context,_this->PostState,LEOS_StateOnStartPost,LEOS_StateOnAnyPost,0);
 				}
-				ProcessStateLuaEX(machine2,NextState.get(),context,_this->PostState,LEOS_StateOnStartPost,LEOS_StateOnAnyPost,0);
+
 			}
 
 		}
@@ -161,23 +164,23 @@ namespace DebugLogV2{
 		Sonicteam::Player::State::Machine2* machine2 = dynamic_cast<Sonicteam::Player::State::Machine2*>(_this);
 		if ((machine2->MashineContext.get()))  machine2->MashineContext->ICOnPostInputTick();
 		BranchTo(0x8221E610,int,machine2,a2);
-		
+
 		if ((machine2->MashineContext.get()) && machine2->CurrentState.get()){
 
-			if (!ProcessStateLuaEX(machine2,machine2->CurrentState.get(),machine2->MashineContext.get(),machine2->PostState,LEOS_StateOnUpdatePre,LEOS_StateOnAny,a2)){
-				ProcessStateLuaEX(machine2,machine2->CurrentState.get(),machine2->MashineContext.get(),machine2->PostState,LEOS_StateOnUpdatePre,LEOS_StateOnAny,a2);
-
-				if (!ProcessStateLuaEX(machine2,machine2->CurrentState.get(),machine2->MashineContext.get(),machine2->PostState,LEOS_StateOnUpdateNo,LEOS_StateOnUpdateNo,a2)){
-					ProcessStateLuaEX(machine2,machine2->CurrentState.get(),machine2->MashineContext.get(),machine2->PostState,LEOS_StateOnUpdatePre,LEOS_StateOnUpdatePre,a2);
-					machine2->CurrentState->OnStateUpdate(a2);
-					ProcessStateLuaEX(machine2,machine2->CurrentState.get(),machine2->MashineContext.get(),machine2->PostState,LEOS_StateOnUpdatePost,LEOS_StateOnUpdatePost,a2);
-
+			if (!ProcessStateLuaEX(machine2,machine2->CurrentState.get(),machine2->MashineContext.get(),machine2->PostState,LEOS_StateOnUpdatePre,LEOS_StateOnAnyNo,a2)){
+				if (!ProcessStateLuaEX(machine2,machine2->CurrentState.get(),machine2->MashineContext.get(),machine2->PostState,LEOS_StateOnUpdatePre,LEOS_StateOnAny,a2)){
+					if (!ProcessStateLuaEX(machine2,machine2->CurrentState.get(),machine2->MashineContext.get(),machine2->PostState,LEOS_StateOnUpdateNo,LEOS_StateOnUpdateNo,a2)){
+						if (!ProcessStateLuaEX(machine2,machine2->CurrentState.get(),machine2->MashineContext.get(),machine2->PostState,LEOS_StateOnUpdatePre,LEOS_StateOnUpdatePre,a2)){
+							machine2->CurrentState->OnStateUpdate(a2);
+							ProcessStateLuaEX(machine2,machine2->CurrentState.get(),machine2->MashineContext.get(),machine2->PostState,LEOS_StateOnUpdatePost,LEOS_StateOnUpdatePost,a2);
+						}
+					}
+					ProcessStateLuaEX(machine2,machine2->CurrentState.get(),machine2->MashineContext.get(),machine2->PostState,LEOS_StateOnUpdatePost,LEOS_StateOnAnyPost,a2);
 				}
-				ProcessStateLuaEX(machine2,machine2->CurrentState.get(),machine2->MashineContext.get(),machine2->PostState,LEOS_StateOnUpdatePost,LEOS_StateOnAnyPost,a2);
 			}
 		}
 		BranchTo(0x8221E610,int,machine2,a2);
-		
+
 		if ((machine2->MashineContext.get()))  machine2->MashineContext->ICOnInputTick(a2);
 
 	}
@@ -196,10 +199,12 @@ namespace DebugLogV2{
 		//CRASH, take shadow, now crissis city, instant jump off CAR, MOVE, then crash why??
 		if (L == 0){
 
-			LEOS_CACHE_STATE.clear();
+
 			WRITE_DWORD(0x820033B4 ,OpenStateRework);
 			WRITE_DWORD(0x8200BB04,OnStateChangeRework);
-		//	WRITE_DWORD(0x8200BB0C,Machine2OnStateChangeWeird);
+	
+			
+			//	WRITE_DWORD(0x8200BB0C,Machine2OnStateChangeWeird);
 		//	WRITE_DWORD(0x8202B050,GameScriptDestreoy); //USELES O_O WHY?
 
 			WRITE_DWORD(0x8200BADC,StateMachine2Tick);
@@ -236,50 +241,35 @@ namespace DebugLogV2{
 
 	extern "C" Clear(lua_State* L){
 
+		int elm = (int)lua_touserdata06(L,1);
 
-		/*
-		for (std::map<int, std::map<int, std::map<int, std::vector<LEOS_Store>>>>::iterator LEOS_CACHE_STATE_1 = LEOS_CACHE_STATE.begin(); 
-			LEOS_CACHE_STATE_1 != LEOS_CACHE_STATE.end(); 
-			++LEOS_CACHE_STATE_1) {
 
-				for (std::map<int, std::map<int, std::vector<LEOS_Store>>>::iterator LEOS_CACHE_STATE_2 = LEOS_CACHE_STATE_1->second.begin(); 
-					LEOS_CACHE_STATE_2 != LEOS_CACHE_STATE_1->second.end(); 
-					++LEOS_CACHE_STATE_2) {
-
-						for (std::map<int, std::vector<LEOS_Store>>::iterator LEOS_CACHE_STATE_3 = LEOS_CACHE_STATE_2->second.begin(); 
-							LEOS_CACHE_STATE_3 != LEOS_CACHE_STATE_2->second.end(); 
-							++LEOS_CACHE_STATE_3) {
-
-								for (std::vector<LEOS_Store>::iterator leosStore = LEOS_CACHE_STATE_3->second.begin(); 
-									leosStore != LEOS_CACHE_STATE_3->second.end(); 
-									++leosStore) {
-										luaL_unref(leosStore->L,LUA_REGISTRYINDEX,leosStore->L_Ref);
-								}
-						}
-				}
+		if (LEOS_CACHE_STATE.find(elm) != LEOS_CACHE_STATE.end()){
+			LEOS_CACHE_STATE.erase(LEOS_CACHE_STATE.find(elm));
 		}
-		*/
+	
 
+		
+		
 
-
-		LEOS_CACHE_STATE.clear();
 		return 0;
 	}
 	extern "C" Connect(lua_State* L){
 		
 		lua_State* LuaHandle = L;
-		int user_data = (int)lua_touserdata(L,1);
-		int c_module_state = lua_tonumber(L,2); // Sonic,Shadow,Silver,.... StateContext 
-		int StateID = lua_tonumber(L,3); // 
-		int StateWHEN = lua_tonumber(L,4); //  LEOS_State_%
+		int user_data = (int)lua_touserdata06(L,1);
+		int c_module_state = lua_tonumber06(L,2); // Sonic,Shadow,Silver,.... StateContext 
+		int StateID = lua_tonumber06(L,3); // 
+		int StateWHEN = lua_tonumber06(L,4); //  LEOS_State_%
 
 		lua_pushvalue06(L,5);
 		int StateFuncFromLua = luaL_ref06(L,LUA_REGISTRYINDEX);
 		//luaL_unref(L,LUA_REGISTRYINDEX,StateFuncFromLua); // Stable For Now Finally :)
 	
+
+
 		LEOS_Store store =  LEOS_Store();store.L = (int)L; store.L_Ref = StateFuncFromLua;
 		LEOS_CACHE_STATE[user_data][c_module_state][StateID][StateWHEN].push_back(store);
-
 		OpenStateConnect__CreateMetatable(L,user_data,c_module_state,StateID,StateWHEN,StateFuncFromLua);
 
 
@@ -311,7 +301,7 @@ namespace DebugLogV2{
 
 	extern "C" int OpenStateConnect__CreateMetatable(lua_State* L,int user_data,int c_module_state,int StateID, int StateWHEN,int StateFuncFromLua)
 	{
-		lua_newtable(L);
+		lua_newtable06(L);
 		luaL_getmetatable06(L, "OpenStateExConnectMeta");
 		lua_setmetatable06(L,-2);
 

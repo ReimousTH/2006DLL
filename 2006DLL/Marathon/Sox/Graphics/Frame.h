@@ -1,4 +1,5 @@
-#pragma once
+#ifndef Sonicteam__SOX__Graphics
+#define Sonicteam__SOX__Graphics
 
 
 #include "../MessageReceiver.h"
@@ -8,6 +9,7 @@
 #include <Sox/Memory/IDestructible.h>
 #include <Sox/Memory/DEFINITIONS.hpp>
 
+#include "Defs.h"
 
 
 
@@ -16,10 +18,9 @@ namespace Sonicteam{
 	namespace SoX{
 		namespace Graphics{
 			class Frame;
-			class FrameSynchronizer;
-			class FrameObserver;
 
-				
+
+
 
 			///////FRAME//////////
 			struct IO_FRAME{
@@ -28,8 +29,8 @@ namespace Sonicteam{
 				Sonicteam::SoX::RefCountObject* instance; // 0xC
 			};
 
-	
-		
+
+
 			//TODO Original Destructor 
 			class Frame:public Sonicteam::SoX::RefCountObject,IO_FRAME,public Sonicteam::SoX::SimpleLinkNode<Frame> //Need Aditional Methods, FullClearLink()
 			{
@@ -85,105 +86,10 @@ namespace Sonicteam{
 				//Sonicteam::SoX::RefCountObject& Fuint0x48;
 
 
-
-
-				//just 
-				static Frame* New();
-				};
-
-
-
-			/////////////////FrameObserver//////////////
-			class FrameObserver
-			{
-
-			public:
-				FrameObserver();
-				~FrameObserver(void);
-
-				virtual void ObserveFrameStep(double a1) = 0;
-				virtual void DestroyObject(unsigned int flag);
-
-
-				Sonicteam::SoX::LinkNode<FrameObserver> RNodeH;
-				unsigned int UFOFlag0x10;
-	
-
-				void OnRNodeHClear();
-
-
-
-
-
 			};
-
-
-			////////////////////////FrameSynchronizer////////////////////////
-
-			/*
-			struct FrameSyncArray_Counted{
-				int count;
-			};
-
-
-			struct FrameSyncArray:FrameSyncArray_Counted{
-				Sonicteam::SoX::LinkNodeListA<Sonicteam::SoX::Graphics::Frame> _data[0];
-
-				static FrameSyncArray* NEW(int Count){
-
-					void* _data_ = (void*)malloc(4 + Count* sizeof(Sonicteam::SoX::Graphics::Frame));
-					memset(_data_,0,4  + Count* sizeof(Sonicteam::SoX::Graphics::Frame));
-					((FrameSyncArray*)_data_)->count = Count;
-					return (FrameSyncArray*)_data_;
-
-				}
-				static void FREE(FrameSyncArray* _array){
-					free(_array);
-				}
-
-
-			};
-
-			struct FrameSyncT01{
-				FrameSyncArray* _array;
-				int* FrameSyncArrayCount; //sync_frame_count
-				int FrameSyncArrayTotal; //count_in_general
-
-			public:	FrameSyncT01();
-			};
-
-
-*/
-			class FrameSynchronizer
-			{
-
-			public:
-				FrameSynchronizer();
-				FrameSynchronizer(unsigned int); //Frame Count
-				~FrameSynchronizer(void);
-
-				virtual void DestroyObject(unsigned int flag);
-
-				Sonicteam::SoX::LinkNodeListA<Sonicteam::SoX::Graphics::Frame> LFrame;
-				//	unsigned int FSuint0x4; //self
-				//	unsigned int FSuint0x8; //self
-				//	unsigned int FSuint0xC; 
-
-				/*
-				FrameSyncT01 FrameBuffer;
-				unsigned int FSFrameBuffer01; //0x10
-				unsigned int FSFrameBuffer02; //0x14
-				unsigned int FSFrameCount; //0x18
-				unsigned int FSuint0x1C; //
-				*/
-
-
-			};
-
-
-
-		}
-
+		};
 	}
 }
+
+#endif
 

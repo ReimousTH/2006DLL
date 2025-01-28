@@ -1,13 +1,12 @@
 
 
-#include "PropClass.h"
-#include <Sox/RefCountObject.h>
-#include <xtl.h>
-
 #ifndef Sonicteam_Prop_AllocatedData
 #define Sonicteam_Prop_AllocatedData
 
 
+#include "PropClass.h"
+#include <Sox/RefCountObject.h>
+#include <xtl.h>
 
 namespace Sonicteam { namespace Prop {
 
@@ -15,9 +14,10 @@ namespace Sonicteam { namespace Prop {
 
 
 
+
 	
 
-	class AllocatedData:Sonicteam::SoX::RefCountObject{
+	class AllocatedData:public Sonicteam::SoX::RefCountObject{
 
 		AllocatedData();
 		~AllocatedData();

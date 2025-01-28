@@ -2,8 +2,6 @@
 #ifndef ALL
 #define  ALL
 
-
-
 #include "Basics.h"
 
 #define _DWORD DWORD

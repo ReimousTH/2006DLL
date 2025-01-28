@@ -1,14 +1,14 @@
 
 
+
+#ifndef Sonicteam_Prop_ClassRegistry
+#define Sonicteam_Prop_ClassRegistry
+
 #include "PropClass.h"
 #include "Class.h"
 #include <Sox/RefCountObject.h>
 #include <xtl.h>
 #include <map>
-
-#ifndef Sonicteam_Prop_ClassRegistry
-#define Sonicteam_Prop_ClassRegistry
-
 
 
 namespace Sonicteam { namespace Prop {

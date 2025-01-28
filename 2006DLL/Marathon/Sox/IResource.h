@@ -18,10 +18,10 @@ namespace Sonicteam{
 
 
 			//bool
-			virtual int Unk01(int,int) = 0; // FileArrayPtr,FileSizeMb
-			virtual int Unk02(); //return 0
+			virtual int ResourceLoad(void* FilePTR,size_t FileSize) = 0; // FileArrayPtr,FileSizeMb
+			virtual int ResouceUnk02(); //return 0
 			virtual std::string GetResourceName(std::string* file_name) = 0;
-			virtual int Unk04(); //return 1
+			virtual int ResourceUnk04(); //return 1
 
 
 
@@ -29,13 +29,13 @@ namespace Sonicteam{
 
 			//fields
 	
-			unsigned int field8;
+			unsigned int IResouceUnk8;
 
-			std::string str1;
-			std::string str2;
-			std::string str3;
+			std::string ResourceStr1;
+			std::string ResourceStr2;
+			std::string ResourceStr3;
 
-			unsigned int field60; //or int
+			unsigned int IResouceUnk60; //or int
 
 		
 

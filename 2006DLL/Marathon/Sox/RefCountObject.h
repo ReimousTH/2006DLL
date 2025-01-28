@@ -1,6 +1,8 @@
 #pragma once				
 #include <SoX/Memory/IDestructible.h>
 
+#define REF_TYPE(Type) Sonicteam::SoX::RefCountObjContainer<Type>
+
 namespace Sonicteam{
 	namespace SoX{
 
@@ -13,14 +15,53 @@ namespace Sonicteam{
 		struct RefCountObjContainer {
 			T* param;
 
-		
-			RefCountObjContainer(T* other) : param(other) {other->AddReference();}
-			~RefCountObjContainer(){if (param) param->Release();}
-			operator T*() { return param; }
-			RefCountObjContainer& operator=(const RefCountObjContainer& other);
+			// Default constructor
+			RefCountObjContainer() : param(NULL) {}
 
-			RefCountObjContainer(const RefCountObjContainer& other);
-			RefCountObjContainer(RefCountObjContainer& other):param(other.param){}
+			// Constructor taking a raw pointer
+			RefCountObjContainer(T* other) : param(other) {
+				if (param) {
+					param->AddReference(); // Increment reference count
+				}
+			}
+
+			// Destructor
+			~RefCountObjContainer() {
+				if (param) {
+					param->Release(); // Decrement reference count
+				}
+			}
+
+			// Conversion operator to allow implicit conversion to T*
+			operator T*() const { 
+				return param; 
+			}
+
+			// Copy constructor
+			RefCountObjContainer(const RefCountObjContainer& other) : param(other.param) {
+				if (param) {
+					param->AddReference(); // Increment reference count for the new copy
+				}
+			}
+
+			// Assignment operator
+			RefCountObjContainer& operator=(const RefCountObjContainer& other) {
+				if (this != &other) { // Prevent self-assignment
+					if (param) {
+						param->Release(); // Release current object
+					}
+					param = other.param;
+					if (param) {
+						param->AddReference(); // Increment reference count for the new object
+					}
+				}
+				return *this;
+			}
+			// Overloading operator->
+			T* operator->() const {
+				return param; 
+			}
+
 		};
 
 		class RefCountObject {

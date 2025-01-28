@@ -161,9 +161,9 @@ namespace Sonicteam{
 				char IsUnk126;
 				char IsUnk127;
 				boost::shared_ptr<Sonicteam::Player::Score> ScorePlugin; //0x128
-				boost::shared_ptr<int> GravityPlugin;
-				boost::shared_ptr<Sonicteam::Player::Input::IListener> ListenerNormalInputPlugin;
-				boost::shared_ptr<int> PlayerAIAmigoPlugin;
+				boost::shared_ptr<int> GravityPlugin;  //0x130
+				boost::shared_ptr<Sonicteam::Player::Input::IListener> ListenerNormalInputPlugin; //0x138
+				boost::shared_ptr<int> PlayerAIAmigoPlugin; //0x140
 				float float148;
 				float gravity;
 				float c_brake_acc;

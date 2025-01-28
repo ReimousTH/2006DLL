@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include <Sox/Engine/Doc.h>
-#include <Sox/Graphics/FrameBase.h>
+#include <Sox/Graphics/FrameSynchronizer.h>
 #include <Sox/Engine/View.h>
 #include <boost/weak_ptr.hpp>
 #include <boost/shared_ptr.hpp>
